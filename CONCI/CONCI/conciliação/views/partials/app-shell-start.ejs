@@ -1,0 +1,80 @@
+<%
+  const nav = typeof currentNav !== 'undefined' ? currentNav : '';
+  const mode = typeof navMode !== 'undefined' ? navMode : 'empresa';
+  const mainCls = typeof mainClass !== 'undefined' ? mainClass : 'app-main';
+  const bp = typeof basePath !== 'undefined' ? basePath : '';
+  const pathU = typeof u === 'function' ? u : (p) => bp + p;
+  const actingAdmin = typeof user !== 'undefined' && user
+    && user.role === 'admin' && user.actingAsEmpresa && user.empresaId;
+  const brandHref = mode === 'admin' && !actingAdmin ? pathU('/admin/empresas') : pathU('/');
+  const brandTitle = typeof headerTitle !== 'undefined' && headerTitle
+    ? headerTitle
+    : (mode === 'admin' && !actingAdmin ? 'Administração' : 'Conciliação Bancária');
+  const brandEyebrow = typeof headerEyebrow !== 'undefined' && headerEyebrow
+    ? headerEyebrow
+    : 'Êxito Contabilidade';
+%>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('./head') %>
+</head>
+<body class="app-body">
+  <%- include('./hub-chrome') %>
+  <header class="app-header">
+    <div class="app-header-inner <%= mainCls.indexOf('wide') >= 0 || mainCls.indexOf('full') >= 0 ? 'app-header-inner--wide' : '' %>">
+      <a href="<%= brandHref %>" class="app-brand">
+        <img src="<%= pathU('/img/logo.png') %>" alt="Êxito Contabilidade" class="site-logo" />
+        <div class="app-brand-text">
+          <p class="app-eyebrow"><%= brandEyebrow %></p>
+          <h1 class="app-title"><%= brandTitle %></h1>
+        </div>
+      </a>
+
+      <nav class="app-nav" aria-label="Principal">
+        <% if (mode === 'admin' && !actingAdmin) { %>
+          <a href="<%= pathU('/admin/empresas') %>" class="nav-link <%= nav === 'empresas' ? 'nav-link-active' : '' %>">Empresas</a>
+          <a href="<%= pathU('/admin/bancos') %>" class="nav-link <%= nav === 'bancos' ? 'nav-link-active' : '' %>">Bancos</a>
+          <% if (typeof user !== 'undefined' && user) { %>
+            <span class="nav-user"><%= user.username %></span>
+          <% } %>
+          <form method="post" action="<%= typeof hubMode !== 'undefined' && hubMode ? '/logout' : pathU('/logout') %>" class="inline">
+            <button type="submit" class="nav-link">Sair</button>
+          </form>
+        <% } else { %>
+          <div class="nav-group nav-group--work">
+            <a href="<%= pathU('/') %>" class="nav-link <%= nav === 'upload' ? 'nav-link-active' : '' %>">Nova conciliação</a>
+            <a href="<%= pathU('/historico') %>" class="nav-link <%= nav === 'historico' ? 'nav-link-active' : '' %>">Histórico</a>
+            <a href="<%= pathU('/pre-cadastro') %><%= typeof preCadastroBancoQuery !== 'undefined' ? preCadastroBancoQuery : '' %>"
+              class="nav-link <%= nav === 'precadastro' ? 'nav-link-active' : '' %>">Pré-cadastro</a>
+            <% if (typeof session !== 'undefined' && session && session.id) { %>
+              <a href="<%= pathU('/revisao/' + session.id) %>" class="nav-link <%= nav === 'revisao' ? 'nav-link-active' : '' %>">Revisão</a>
+              <a href="<%= pathU('/resultado/' + session.id) %>" class="nav-link <%= nav === 'resultado' ? 'nav-link-active' : '' %>">Exportar</a>
+            <% } %>
+          </div>
+
+          <% if (actingAdmin) { %>
+            <span class="nav-sep" aria-hidden="true"></span>
+            <div class="empresa-chip" title="Empresa aberta">
+              <span class="empresa-chip-name"><%= user.empresaNome %></span>
+              <form method="post" action="<%= pathU('/admin/sair-empresa') %>" class="inline">
+                <button type="submit" class="empresa-chip-action">Trocar</button>
+              </form>
+            </div>
+            <span class="nav-sep" aria-hidden="true"></span>
+            <div class="nav-group nav-group--admin">
+              <a href="<%= pathU('/admin/empresas') %>" class="nav-link <%= nav === 'empresas' ? 'nav-link-active' : '' %>">Empresas</a>
+              <a href="<%= pathU('/admin/bancos') %>" class="nav-link <%= nav === 'bancos' ? 'nav-link-active' : '' %>">Bancos</a>
+            </div>
+          <% } else if (typeof user !== 'undefined' && user) { %>
+            <span class="nav-user"><%= user.empresaNome || user.username %></span>
+          <% } %>
+
+          <form method="post" action="<%= typeof hubMode !== 'undefined' && hubMode ? '/logout' : pathU('/logout') %>" class="inline">
+            <button type="submit" class="nav-link">Sair</button>
+          </form>
+        <% } %>
+      </nav>
+    </div>
+  </header>
+  <main class="<%= mainCls %>">

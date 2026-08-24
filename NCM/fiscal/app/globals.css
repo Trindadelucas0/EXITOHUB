@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100%;
+  overflow-x: hidden;
+  background: #ffffff;
+  color: #1a1f24;
+}
+
+*:focus-visible {
+  outline: 2px solid #2ea44f;
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.fiscal-grid-wrap {
+  overflow: auto;
+  max-width: 100%;
+  max-height: min(70vh, 44rem);
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #1a1f24;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.fiscal-grid {
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 100%;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.fiscal-grid th,
+.fiscal-grid td {
+  border-bottom: 1px solid #dce3de;
+  border-right: 1px solid #eaefec;
+  padding: 0.45rem 0.55rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.fiscal-grid th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #f1f5f2;
+  border-bottom: 2px solid #1a1f24;
+  font-weight: 500;
+  color: #1a1f24;
+  text-align: left;
+}
+
+.fiscal-grid tbody tr:hover td {
+  background: #f1f8f3;
+}
+
+.fiscal-grid tbody tr[data-selected="true"] td {
+  background: #dff0e4;
+}
+
+.fiscal-grid tbody tr[data-selected="true"] > *:first-child {
+  box-shadow: inset 3px 0 0 #2ea44f;
+}
+
+.fiscal-grid tbody tr.linha-destaque > * {
+  background: #dff0e4;
+  color: #1a1f24;
+  font-weight: 500;
+}
+
+.fiscal-grid tbody tr.linha-destaque > *:first-child {
+  box-shadow: inset 3px 0 0 #2ea44f;
+}
+
+.fiscal-grid tbody tr:focus-visible {
+  outline: 2px solid #2ea44f;
+  outline-offset: -2px;
+}
+
+.fiscal-grid .sticky-col {
+  position: sticky;
+  z-index: 1;
+  background: #ffffff;
+}
+
+.fiscal-grid th.sticky-col {
+  z-index: 3;
+  background: #f1f5f2;
+}
+
+.fiscal-grid tbody tr:hover .sticky-col {
+  background: #f1f8f3;
+}
+
+.fiscal-grid tbody tr[data-selected="true"] .sticky-col {
+  background: #dff0e4;
+}
+
+.fiscal-grid .sticky-col-1 {
+  left: 0;
+}
+
+.fiscal-grid .sticky-col-2 {
+  left: 6.75rem;
+}
+
+.fiscal-grid .sticky-col-3 {
+  left: 20.75rem;
+}
+
+@media (max-width: 1023px) {
+  .fiscal-grid .sticky-col-3 {
+    position: static;
+    left: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .fiscal-grid .sticky-col-2,
+  .fiscal-grid .sticky-col-3 {
+    position: static;
+    left: auto;
+  }
+}

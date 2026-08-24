@@ -1,0 +1,52 @@
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title><%= typeof title !== 'undefined' ? title : 'Conciliação Bancária' %></title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="<%= (typeof basePath !== 'undefined' ? basePath : '') %>/css/app.css" />
+<% if (typeof hubMode !== 'undefined' && hubMode) { %>
+<link rel="stylesheet" href="/hub-assets/hub.css" />
+<% } %>
+<script>
+window.__BASE_PATH__ = <%- JSON.stringify(typeof basePath !== 'undefined' ? basePath : '') %>;
+(function () {
+  var bp = window.__BASE_PATH__ || '';
+  if (!bp) return;
+  function shouldSkip(v) {
+    if (!v || v.charAt(0) !== '/') return true;
+    if (v.indexOf('//') === 0) return true;
+    if (v.indexOf(bp) === 0) return true;
+    if (v === '/login' || v.indexOf('/login?') === 0) return true;
+    if (v === '/logout' || v.indexOf('/logout?') === 0) return true;
+    if (v.indexOf('/hub-assets') === 0) return true;
+    if (v.indexOf('/folha') === 0 || v.indexOf('/ncm') === 0) return true;
+    if (v.indexOf('/admin/usuarios') === 0) return true;
+    return false;
+  }
+  function rewrite(el, attr) {
+    if (el.closest && el.closest('.hub-chrome')) return;
+    var v = el.getAttribute(attr);
+    if (shouldSkip(v)) return;
+    el.setAttribute(attr, bp + v);
+  }
+  function run() {
+    document.querySelectorAll('a[href^="/"]').forEach(function (el) { rewrite(el, 'href'); });
+    document.querySelectorAll('form[action^="/"]').forEach(function (el) { rewrite(el, 'action'); });
+    document.querySelectorAll('[formaction^="/"]').forEach(function (el) { rewrite(el, 'formaction'); });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else {
+    run();
+  }
+  var origFetch = window.fetch;
+  window.fetch = function (input, init) {
+    if (typeof input === 'string' && input.charAt(0) === '/' && !shouldSkip(input)) {
+      input = bp + input;
+    }
+    return origFetch.call(this, input, init);
+  };
+})();
+</script>

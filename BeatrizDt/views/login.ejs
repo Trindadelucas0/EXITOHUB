@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <%- include('partials/theme-head') %>
+  <link rel="stylesheet" href="<%= assetUrl('css/dauto-layout.css') %>" />
+</head>
+<body class="login-page">
+  <a href="#login-form" class="skip-link">Ir para o formulário de login</a>
+
+  <main class="login-page__main">
+    <div class="login-card">
+      <header class="login-card__header">
+        <div class="login-brand">
+          <img
+            class="login-brand__logo"
+            src="<%= loginLogoPath %>"
+            alt="Dauto Tintas"
+            width="340"
+            height="96"
+          />
+          <h2 class="login-brand__title">
+            <span class="login-brand__title-line" aria-hidden="true"></span>
+            Grupo Dauto
+            <span class="login-brand__title-line" aria-hidden="true"></span>
+          </h2>
+        </div>
+      </header>
+
+      <% if (error) { %>
+        <div class="login-alert" role="alert"><%= error %></div>
+      <% } %>
+
+      <form id="login-form" class="login-card__form" action="/login" method="post" novalidate>
+        <div class="login-field">
+          <label for="input-username">Nome de acesso</label>
+          <input
+            id="input-username"
+            type="text"
+            name="username"
+            value="<%= lastUsername %>"
+            placeholder="Digite seu nome de acesso"
+            autocomplete="username"
+            required
+          />
+        </div>
+
+        <div class="login-field">
+          <label for="input-password">Senha</label>
+          <div class="login-password-wrap">
+            <input
+              id="input-password"
+              type="password"
+              name="password"
+              placeholder="Digite sua senha"
+              autocomplete="current-password"
+              required
+            />
+            <button
+              type="button"
+              class="login-password-toggle"
+              aria-label="Mostrar senha"
+              aria-pressed="false"
+              data-password-toggle
+            >
+              Mostrar
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-dauto login-submit">
+          Entrar
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var toggle = document.querySelector('[data-password-toggle]');
+      var passwordInput = document.getElementById('input-password');
+      var form = document.getElementById('login-form');
+      var submitButton = form && form.querySelector('.login-submit');
+
+      if (toggle && passwordInput) {
+        toggle.addEventListener('click', function () {
+          var isHidden = passwordInput.type === 'password';
+          passwordInput.type = isHidden ? 'text' : 'password';
+          toggle.textContent = isHidden ? 'Ocultar' : 'Mostrar';
+          toggle.setAttribute('aria-label', isHidden ? 'Ocultar senha' : 'Mostrar senha');
+          toggle.setAttribute('aria-pressed', isHidden ? 'true' : 'false');
+        });
+      }
+
+      if (form && submitButton) {
+        form.addEventListener('submit', function () {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Entrando…';
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

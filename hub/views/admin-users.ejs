@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/hub-assets/hub.css" />
+</head>
+<body class="hub-body">
+  <%- include('partials/hub-chrome', { current: 'admin' }) %>
+
+  <main class="hub-main hub-main-wide">
+    <header class="hub-hero">
+      <h1>Usuários do HUB</h1>
+      <p class="hub-muted">Defina quem acessa Folha, Conciliação e NCM. Dentro de cada sistema, empresas e papéis continuam como hoje.</p>
+    </header>
+
+    <% if (flash) { %>
+      <div class="hub-alert hub-alert-ok">Salvo (<%= flash %>).</div>
+    <% } %>
+    <% if (error) { %>
+      <div class="hub-alert" role="alert"><%= error %></div>
+    <% } %>
+
+    <section class="hub-card">
+      <h2>Novo usuário</h2>
+      <form method="post" action="/admin/usuarios" class="hub-form hub-form-grid">
+        <label class="hub-field">
+          <span>Usuário</span>
+          <input name="username" required autocomplete="off" />
+        </label>
+        <label class="hub-field">
+          <span>E-mail (usado no NCM)</span>
+          <input name="email" type="email" required autocomplete="off" />
+        </label>
+        <label class="hub-field">
+          <span>Nome</span>
+          <input name="displayName" />
+        </label>
+        <label class="hub-field">
+          <span>Senha</span>
+          <input name="password" type="password" required minlength="6" autocomplete="new-password" />
+        </label>
+        <label class="hub-check">
+          <input type="checkbox" name="is_admin" value="1" />
+          <span>Admin do HUB</span>
+        </label>
+        <fieldset class="hub-fieldset">
+          <legend>Módulos</legend>
+          <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" /> Folha</label>
+          <label class="hub-check"><input type="checkbox" name="mod_conci" value="1" /> Conciliação</label>
+          <label class="hub-check"><input type="checkbox" name="mod_ncm" value="1" /> NCM</label>
+        </fieldset>
+        <button type="submit" class="hub-btn hub-btn-primary">Criar</button>
+      </form>
+    </section>
+
+    <section class="hub-card" style="margin-top: 1.5rem;">
+      <h2>Usuários cadastrados</h2>
+      <div class="hub-table-wrap">
+        <table class="hub-table">
+          <thead>
+            <tr>
+              <th>Usuário</th>
+              <th>E-mail</th>
+              <th>Admin</th>
+              <th>Ativo</th>
+              <th>Módulos</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% users.forEach(function(user) { %>
+              <tr>
+                <td>
+                  <strong><%= user.username %></strong>
+                  <div class="hub-muted"><%= user.displayName %></div>
+                </td>
+                <td><%= user.email %></td>
+                <td><%= user.isAdmin ? 'Sim' : 'Não' %></td>
+                <td><%= user.active ? 'Sim' : 'Não' %></td>
+                <td>
+                  <form method="post" action="/admin/usuarios/<%= user.id %>/modulos" class="hub-inline-mods">
+                    <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" <%= user.canFolha ? 'checked' : '' %> /> Folha</label>
+                    <label class="hub-check"><input type="checkbox" name="mod_conci" value="1" <%= user.canConci ? 'checked' : '' %> /> Conci</label>
+                    <label class="hub-check"><input type="checkbox" name="mod_ncm" value="1" <%= user.canNcm ? 'checked' : '' %> /> NCM</label>
+                    <input type="hidden" name="is_admin" value="<%= user.isAdmin ? '1' : '0' %>" />
+                    <input type="hidden" name="active" value="<%= user.active ? '1' : '0' %>" />
+                    <button type="submit" class="hub-btn hub-btn-sm">Salvar</button>
+                  </form>
+                </td>
+                <td>
+                  <form method="post" action="/admin/usuarios/<%= user.id %>/status" class="hub-inline">
+                    <input type="hidden" name="active" value="<%= user.active ? '0' : '1' %>" />
+                    <button type="submit" class="hub-btn hub-btn-sm hub-btn-ghost">
+                      <%= user.active ? 'Desativar' : 'Ativar' %>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

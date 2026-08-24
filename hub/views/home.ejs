@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/hub-assets/hub.css" />
+</head>
+<body class="hub-body">
+  <%- include('partials/hub-chrome', { current: 'home' }) %>
+
+  <main class="hub-main">
+    <header class="hub-hero">
+      <p class="hub-eyebrow">Bem-vindo</p>
+      <h1>Olá, <%= hubUser.displayName %></h1>
+      <p class="hub-muted">Escolha o sistema. Só aparecem os módulos liberados para você.</p>
+    </header>
+
+    <div class="hub-modules">
+      <% if (hubUser.canFolha) { %>
+        <a class="hub-module-card hub-module-folha" href="/folha/modulos">
+          <span class="hub-module-eyebrow">Módulo</span>
+          <strong>Folha &amp; Fiscal</strong>
+          <span>Controle de impostos da folha e resumo fiscal (Grupo Dauto).</span>
+          <span class="hub-module-cta">Abrir Folha</span>
+        </a>
+      <% } %>
+
+      <% if (hubUser.canConci) { %>
+        <a class="hub-module-card hub-module-conci" href="/conci/">
+          <span class="hub-module-eyebrow">Módulo</span>
+          <strong>Conciliação Bancária</strong>
+          <span>Upload de extrato, matching e exportação para o Domínio.</span>
+          <span class="hub-module-cta">Abrir Conciliação</span>
+        </a>
+      <% } %>
+
+      <% if (hubUser.canNcm) { %>
+        <a class="hub-module-card hub-module-ncm" href="/ncm/">
+          <span class="hub-module-eyebrow">Módulo</span>
+          <strong>Auditor NCM</strong>
+          <span>Conferência fiscal de produtos, regras NCM e divergências.</span>
+          <span class="hub-module-cta">Abrir NCM</span>
+        </a>
+      <% } %>
+    </div>
+
+    <% if (!hubUser.canFolha && !hubUser.canConci && !hubUser.canNcm) { %>
+      <div class="hub-alert">Nenhum módulo liberado. Peça ao administrador do HUB.</div>
+    <% } %>
+  </main>
+</body>
+</html>

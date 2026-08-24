@@ -1,0 +1,630 @@
+<%- include('partials/app-shell-start', {
+  title: 'Revisão — Extrato Domínio',
+  currentNav: 'revisao',
+  navMode: 'empresa',
+  headerEyebrow: 'Revisão',
+  headerTitle: 'Revisão',
+  mainClass: 'app-main app-main--wide',
+  preCadastroBancoQuery: session.bancoId ? ('?banco=' + session.bancoId) : ''
+}) %>
+
+<%
+  const readOnly = Boolean(session.enviado);
+  const motivosRevisao = Array.isArray(session.motivosEdicao) ? session.motivosEdicao : [];
+  const tooltipRevisao = motivosRevisao.length
+    ? motivosRevisao.map(function (m) {
+        const em = typeof formatDateTimeBr === 'function' ? formatDateTimeBr(m.em) : m.em;
+        return em + (m.username ? ' · ' + m.username : '') + ': ' + m.motivo;
+      }).join('\n')
+    : '';
+
+  const CHIP_SKIP = { sortCol: true, sortDir: true, fAprovado: true };
+  const CHIP_LABELS = {
+    fBusca: 'Busca',
+    fDataDe: 'Data de',
+    fDataAte: 'Data até',
+    fDebito: 'Débito',
+    fDebitoPreenchido: 'Débito',
+    fCredito: 'Crédito',
+    fCreditoPreenchido: 'Crédito',
+    fValor: 'Valor',
+    fValorSinal: 'Valor',
+    fHistorico: 'Histórico',
+    fNota: 'Nº nota',
+    fNotaPreenchido: 'Nº nota',
+    fClassificacao: 'Classificação',
+    fClassificacaoPreenchido: 'Classificação',
+  };
+  const PREENCHIDO_LABEL = { sim: 'preenchido', nao: 'vazio' };
+  const SINAL_LABEL = { positivo: 'positivo', negativo: 'negativo' };
+
+  function preservedFilterParams(overrides) {
+    const params = new URLSearchParams();
+    const status = overrides && Object.prototype.hasOwnProperty.call(overrides, 'filtro')
+      ? overrides.filtro
+      : filtro;
+    if (status && status !== 'todos') params.set('filtro', status);
+
+    Object.entries(colFilters).forEach(function (entry) {
+      const k = entry[0];
+      let v = entry[1];
+      if (overrides && Object.prototype.hasOwnProperty.call(overrides, k)) {
+        v = overrides[k];
+      }
+      if (k === 'sortCol' || k === 'sortDir') return;
+      if (!v || v === 'todos') return;
+      params.set(k, v);
+    });
+
+    if (overrides && Object.prototype.hasOwnProperty.call(overrides, 'sortCol')) {
+      if (overrides.sortCol) params.set('sortCol', overrides.sortCol);
+    } else if (colFilters.sortCol && colFilters.sortCol !== 'original') {
+      params.set('sortCol', colFilters.sortCol);
+      if (colFilters.sortDir === 'desc') params.set('sortDir', 'desc');
+    }
+
+    if (overrides && Object.prototype.hasOwnProperty.call(overrides, 'sortDir') && overrides.sortDir) {
+      params.set('sortDir', overrides.sortDir);
+    }
+
+    return params;
+  }
+
+  function statusHref(nome) {
+    const params = preservedFilterParams({ filtro: nome });
+    const s = params.toString();
+    return s ? '?' + s : '?';
+  }
+
+  function clearHref() {
+    return '/revisao/' + session.id;
+  }
+
+  function removeFilterHref(key) {
+    const overrides = {};
+    overrides[key] = '';
+    if (key === 'fDebitoPreenchido' || key === 'fCreditoPreenchido'
+      || key === 'fValorSinal' || key === 'fNotaPreenchido'
+      || key === 'fClassificacaoPreenchido') {
+      overrides[key] = 'todos';
+    }
+    const params = preservedFilterParams(overrides);
+    const s = params.toString();
+    return s ? '?' + s : '?';
+  }
+
+  function sortHref(col, dir) {
+    const params = preservedFilterParams({ sortCol: col, sortDir: dir });
+    return '?' + params.toString();
+  }
+
+  function originalHref() {
+    const params = preservedFilterParams({ sortCol: 'original', sortDir: '' });
+    params.delete('sortCol');
+    params.delete('sortDir');
+    const s = params.toString();
+    return s ? '?' + s : '?';
+  }
+
+  const sortAtivo = colFilters.sortCol && colFilters.sortCol !== 'original' ? colFilters.sortCol : 'original';
+  function sortArrows(col) {
+    const ativoAsc = sortAtivo === col && colFilters.sortDir === 'asc';
+    const ativoDesc = sortAtivo === col && colFilters.sortDir === 'desc';
+    return '<a href="' + sortHref(col, 'asc') + '" title="Ordenar crescente" class="sort-btn' + (ativoAsc ? ' sort-btn-active' : '') + '">▲</a>'
+      + '<a href="' + sortHref(col, 'desc') + '" title="Ordenar decrescente" class="sort-btn' + (ativoDesc ? ' sort-btn-active' : '') + '">▼</a>';
+  }
+
+  function chipValueLabel(k, v) {
+    if (k.indexOf('Preenchido') >= 0) return PREENCHIDO_LABEL[v] || v;
+    if (k === 'fValorSinal') return SINAL_LABEL[v] || v;
+    return v;
+  }
+
+  const chips = [];
+  Object.entries(colFilters).forEach(function (entry) {
+    const k = entry[0];
+    const v = entry[1];
+    if (CHIP_SKIP[k]) return;
+    if (!v || v === 'todos') return;
+    chips.push({
+      key: k,
+      label: (CHIP_LABELS[k] || k) + ': ' + chipValueLabel(k, v),
+      href: removeFilterHref(k),
+    });
+  });
+  const avancadosAtivos = chips.filter(function (c) { return c.key !== 'fBusca'; }).length;
+%>
+
+<div class="context-bar stack-gap">
+  <div class="context-meta">
+    <% if (session.bancoNome) { %>
+      Banco: <strong><%= session.bancoNome %></strong>
+      <% if (session.codigoCredito != null) { %>
+        — crédito padrão <%= session.codigoCredito %>
+      <% } %>
+      <% if (session.competencia) { %>
+        · Competência
+        <% if (tooltipRevisao) { %>
+          <strong title="<%= tooltipRevisao %>" class="help-dotted">
+            <%= typeof formatCompetencia === 'function' ? formatCompetencia(session.competencia) : session.competencia %>
+          </strong>
+        <% } else { %>
+          <strong><%= typeof formatCompetencia === 'function' ? formatCompetencia(session.competencia) : session.competencia %></strong>
+        <% } %>
+      <% } %>
+    <% } else { %>
+      Conciliação em revisão
+    <% } %>
+    <% if (readOnly) { %>
+      <span class="badge badge-enviado">Enviado</span>
+    <% } else { %>
+      <span class="badge badge-pendente">Em edição</span>
+    <% } %>
+  </div>
+  <div class="context-actions">
+    <a href="/resultado/<%= session.id %>" class="btn btn-primary btn-sm">Ir para exportar</a>
+    <a href="/export/<%= session.id %>/detalhado.xlsx" class="btn btn-ghost btn-sm" title="Relatório detalhado Excel">Gerar Excel</a>
+    <a href="/export/<%= session.id %>/detalhado.pdf" class="btn btn-ghost btn-sm" title="Relatório detalhado PDF">Gerar PDF</a>
+  </div>
+</div>
+
+<% if (readOnly) { %>
+  <div class="flash flash-warning flash-row">
+    <div>
+      <strong>Conciliação enviada</strong>
+      <% if (session.enviadoEm) { %>
+        em <%= typeof formatDateTimeBr === 'function' ? formatDateTimeBr(session.enviadoEm) : session.enviadoEm %>
+      <% } %>
+      — somente leitura. Desbloqueie para fazer alterações.
+    </div>
+    <button type="button" onclick="abrirDesbloquearModalRevisao()" class="btn btn-ghost btn-sm">
+      Desbloquear para editar
+    </button>
+  </div>
+<% } %>
+
+<div class="kpi-strip kpi-strip--revisao stack-gap">
+  <div class="kpi-group">
+    <div class="kpi-group-label">Volume</div>
+    <div class="kpi-row">
+      <div class="kpi"><p class="kpi-label">Total</p><p class="kpi-value"><%= resumo.total %></p></div>
+      <div class="kpi"><p class="kpi-label">Pagamentos</p><p class="kpi-value"><%= resumo.pagamentos %></p></div>
+      <div class="kpi"><p class="kpi-label">Recebimentos</p><p class="kpi-value kpi-value--sky"><%= resumo.recebimentos %></p></div>
+    </div>
+  </div>
+  <div class="kpi-group">
+    <div class="kpi-group-label">Status</div>
+    <div class="kpi-row">
+      <div class="kpi"><p class="kpi-label">Matched</p><p class="kpi-value kpi-value--green"><%= resumo.matched %></p></div>
+      <div class="kpi"><p class="kpi-label">Sugerido</p><p class="kpi-value kpi-value--amber"><%= resumo.sugerido %></p></div>
+      <div class="kpi"><p class="kpi-label">Regra</p><p class="kpi-value kpi-value--sky"><%= resumo.regra %></p></div>
+      <div class="kpi"><p class="kpi-label">Sem classificação</p><p class="kpi-value"><%= resumo.semMatch %></p></div>
+      <div class="kpi"><p class="kpi-label">Com Êxito</p><p class="kpi-value"><%= resumo.comClassificacao %></p></div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/flash') %>
+
+<form id="revisao-filtro" method="get" action="/revisao/<%= session.id %>" class="filter-bar">
+  <input type="hidden" name="filtro" id="filtro-status-hidden" value="<%= filtro %>" />
+  <% if (colFilters.sortCol && colFilters.sortCol !== 'original') { %>
+    <input type="hidden" name="sortCol" value="<%= colFilters.sortCol %>" />
+    <input type="hidden" name="sortDir" value="<%= colFilters.sortDir %>" />
+  <% } %>
+
+  <div class="filter-bar-row">
+    <div class="filter-bar-search">
+      <label class="field-label" for="fBusca">Buscar</label>
+      <input id="fBusca" name="fBusca" type="search" value="<%= colFilters.fBusca %>"
+        placeholder="Histórico ou classificação…"
+        class="field-input" autocomplete="off" />
+    </div>
+    <div class="filter-bar-meta">
+      <a href="<%= clearHref() %>" class="btn btn-ghost btn-sm">Limpar tudo</a>
+      <button type="submit" form="aprovar-altos-form" <%= readOnly ? 'disabled' : '' %> class="btn btn-primary btn-sm">
+        Aprovar MATCHED + REGRA
+      </button>
+    </div>
+  </div>
+
+  <div class="filter-bar-row">
+    <div class="segmented" role="tablist" aria-label="Filtros de status">
+      <a href="<%= statusHref('todos') %>" class="<%= filtro==='todos' ? 'is-active' : '' %>">Todos</a>
+      <a href="<%= statusHref('pagamentos') %>" class="<%= filtro==='pagamentos' ? 'is-active' : '' %>">Pagamentos</a>
+      <a href="<%= statusHref('recebimentos') %>" class="<%= filtro==='recebimentos' ? 'is-active' : '' %>">Recebimentos</a>
+      <a href="<%= statusHref('sem-classificacao') %>" class="<%= filtro==='sem-classificacao' ? 'is-active' : '' %>">Sem classificação</a>
+      <a href="<%= statusHref('sugerido') %>" class="<%= filtro==='sugerido' ? 'is-active' : '' %>">Sugeridos</a>
+      <a href="<%= statusHref('aprovados') %>" class="<%= filtro==='aprovados' ? 'is-active' : '' %>">Aprovados</a>
+    </div>
+  </div>
+
+  <% if (chips.length) { %>
+    <div class="filter-chips" aria-label="Filtros ativos">
+      <% chips.forEach(function (chip) { %>
+        <a href="<%= chip.href %>" class="filter-chip" title="Remover filtro">
+          <%= chip.label %>
+          <span class="filter-chip-remove" aria-hidden="true">×</span>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+
+  <details class="table-filters" <%= avancadosAtivos ? 'open' : '' %>>
+    <summary class="table-filters-summary">
+      <span>Mais filtros</span>
+      <% if (avancadosAtivos) { %>
+        <span class="filter-chip filter-chip-static"><%= avancadosAtivos %> ativo<%= avancadosAtivos > 1 ? 's' : '' %></span>
+      <% } else { %>
+        <span class="muted muted-sm">Data, débito, crédito, valor, nota…</span>
+      <% } %>
+    </summary>
+    <div class="table-filters-body">
+      <div class="filter-advanced-grid">
+        <div>
+          <label class="field-label">Data de</label>
+          <input type="date" name="fDataDe" value="<%= colFilters.fDataDe %>" class="field-input field-input--sm" data-filter-auto />
+          <label class="field-label" style="margin-top: 0.4rem;">Data até</label>
+          <input type="date" name="fDataAte" value="<%= colFilters.fDataAte %>" class="field-input field-input--sm" data-filter-auto />
+        </div>
+        <div>
+          <label class="field-label">Débito</label>
+          <input name="fDebito" value="<%= colFilters.fDebito %>" placeholder="código" class="field-input field-input--sm" />
+          <select name="fDebitoPreenchido" class="field-select field-select--sm" style="margin-top: 0.35rem;" data-filter-auto>
+            <option value="todos" <%= colFilters.fDebitoPreenchido==='todos' ? 'selected' : '' %>>Preenchimento: todos</option>
+            <option value="sim" <%= colFilters.fDebitoPreenchido==='sim' ? 'selected' : '' %>>Preenchido</option>
+            <option value="nao" <%= colFilters.fDebitoPreenchido==='nao' ? 'selected' : '' %>>Vazio</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Crédito</label>
+          <input name="fCredito" value="<%= colFilters.fCredito %>" placeholder="código" class="field-input field-input--sm" />
+          <select name="fCreditoPreenchido" class="field-select field-select--sm" style="margin-top: 0.35rem;" data-filter-auto>
+            <option value="todos" <%= colFilters.fCreditoPreenchido==='todos' ? 'selected' : '' %>>Preenchimento: todos</option>
+            <option value="sim" <%= colFilters.fCreditoPreenchido==='sim' ? 'selected' : '' %>>Preenchido</option>
+            <option value="nao" <%= colFilters.fCreditoPreenchido==='nao' ? 'selected' : '' %>>Vazio</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Valor</label>
+          <input name="fValor" value="<%= colFilters.fValor %>" placeholder="valor" class="field-input field-input--sm" />
+          <select name="fValorSinal" class="field-select field-select--sm" style="margin-top: 0.35rem;" data-filter-auto>
+            <option value="todos" <%= colFilters.fValorSinal==='todos' ? 'selected' : '' %>>Sinal: todos</option>
+            <option value="positivo" <%= colFilters.fValorSinal==='positivo' ? 'selected' : '' %>>Positivo</option>
+            <option value="negativo" <%= colFilters.fValorSinal==='negativo' ? 'selected' : '' %>>Negativo</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Histórico (exato)</label>
+          <input name="fHistorico" value="<%= colFilters.fHistorico %>" placeholder="texto" class="field-input field-input--sm" />
+        </div>
+        <div>
+          <label class="field-label">Nº nota</label>
+          <input name="fNota" value="<%= colFilters.fNota %>" placeholder="número" class="field-input field-input--sm" />
+          <select name="fNotaPreenchido" class="field-select field-select--sm" style="margin-top: 0.35rem;" data-filter-auto>
+            <option value="todos" <%= colFilters.fNotaPreenchido==='todos' ? 'selected' : '' %>>Preenchimento: todos</option>
+            <option value="sim" <%= colFilters.fNotaPreenchido==='sim' ? 'selected' : '' %>>Preenchido</option>
+            <option value="nao" <%= colFilters.fNotaPreenchido==='nao' ? 'selected' : '' %>>Vazio</option>
+          </select>
+        </div>
+        <div>
+          <label class="field-label">Classificação Êxito</label>
+          <input name="fClassificacao" value="<%= colFilters.fClassificacao %>" placeholder="FORNECEDORES" class="field-input field-input--sm" />
+          <select name="fClassificacaoPreenchido" class="field-select field-select--sm" style="margin-top: 0.35rem;" data-filter-auto>
+            <option value="todos" <%= colFilters.fClassificacaoPreenchido==='todos' ? 'selected' : '' %>>Preenchimento: todos</option>
+            <option value="sim" <%= colFilters.fClassificacaoPreenchido==='sim' ? 'selected' : '' %>>Preenchido</option>
+            <option value="nao" <%= colFilters.fClassificacaoPreenchido==='nao' ? 'selected' : '' %>>Vazio</option>
+          </select>
+        </div>
+        <div class="filter-bar-actions" style="align-items: flex-end;">
+          <button type="submit" class="btn btn-secondary btn-sm">Aplicar</button>
+          <a href="<%= originalHref() %>" title="Restaurar ordem original do extrato"
+            class="btn btn-ghost btn-sm <%= sortAtivo === 'original' ? 'sort-btn-active' : '' %>">↺ Original</a>
+        </div>
+      </div>
+    </div>
+  </details>
+</form>
+
+<form id="aprovar-altos-form" method="post" action="/revisao/<%= session.id %>/aprovar-altos" hidden>
+  <input type="hidden" name="filtro" value="<%= filtro %>" />
+  <% Object.entries(colFilters).forEach(function (entry) { %>
+    <input type="hidden" name="<%= entry[0] %>" value="<%= entry[1] %>" />
+  <% }) %>
+</form>
+
+<form id="lote-acoes" method="post" class="toolbar toolbar-sticky stack-gap">
+  <input type="hidden" name="filtro" value="<%= filtro %>" />
+  <% Object.entries(colFilters).forEach(function (entry) { %>
+    <input type="hidden" name="<%= entry[0] %>" value="<%= entry[1] %>" />
+  <% }) %>
+
+  <button type="submit" formaction="/revisao/<%= session.id %>/excluir-selecionados"
+    <%= readOnly ? 'disabled' : '' %>
+    class="btn btn-danger btn-sm"
+    onclick="return confirm('Excluir os lançamentos selecionados da conciliação? Eles não entrarão no export.');">
+    Excluir selecionados
+  </button>
+  <button type="submit" formaction="/revisao/<%= session.id %>/reaplicar-precadastro"
+    <%= readOnly ? 'disabled' : '' %>
+    class="btn btn-secondary btn-sm"
+    title="Se nenhum estiver marcado, atualiza todos">
+    Atualizar pré-cadastro
+  </button>
+  <div class="lote-cap-field">
+    <label class="field-label" for="cap-lote">Classificação Êxito (lote)</label>
+    <input id="cap-lote" name="classificacaoCap" type="text" autocomplete="off"
+      data-cap-autocomplete <%= readOnly ? 'disabled' : '' %>
+      placeholder="ex.: FRETES SOBRE COMPRAS"
+      class="field-input field-input--sm" />
+  </div>
+  <button type="submit" formaction="/revisao/<%= session.id %>/aplicar-cap-lote"
+    <%= readOnly ? 'disabled' : '' %>
+    class="btn btn-info btn-sm">
+    Aplicar Êxito nos selecionados
+  </button>
+</form>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr class="sticky-head">
+        <th style="width: 2rem;">
+          <input type="checkbox" id="selecionar-todos" title="Selecionar todos visíveis" <%= readOnly ? 'disabled' : '' %> />
+        </th>
+        <th><div class="th-sort">Data <%- sortArrows('data') %></div></th>
+        <th><div class="th-sort">Débito <%- sortArrows('debito') %></div></th>
+        <th><div class="th-sort">Crédito <%- sortArrows('credito') %></div></th>
+        <th><div class="th-sort">Valor <%- sortArrows('valor') %></div></th>
+        <th><div class="th-sort">Histórico <%- sortArrows('historico') %></div></th>
+        <th><div class="th-sort">Nº nota <%- sortArrows('nota') %></div></th>
+        <th><div class="th-sort">Classificação Êxito <%- sortArrows('classificacao') %></div></th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% itens.forEach(function(item) {
+        const formId = 'f-' + item.rowId;
+        const rowKey = item.rowId || item.id;
+        let rowClass = '';
+        if (item.aprovado) rowClass = 'row-aprovado';
+        else if (item.tipo === 'recebimento') rowClass = 'row-recebimento';
+      %>
+        <tr class="<%= rowClass %>">
+          <td>
+            <input form="lote-acoes" type="checkbox" name="rowIds" value="<%= rowKey %>"
+              <%= readOnly ? 'disabled' : '' %>
+              class="row-check" />
+          </td>
+          <td class="cell-nowrap"><%= formatDate(item.data) %></td>
+          <td>
+            <input form="<%= formId %>" name="debito" value="<%= item.debito ?? '' %>" <%= readOnly ? 'disabled' : '' %>
+              class="field-input field-input--table field-input--debito" />
+          </td>
+          <td>
+            <input form="<%= formId %>" name="credito" value="<%= item.credito ?? '' %>" <%= readOnly ? 'disabled' : '' %>
+              class="field-input field-input--table field-input--credito" />
+          </td>
+          <td class="cell-nowrap <%= item.valor < 0 ? 'text-money-neg' : 'text-money-pos' %>">
+            <%= formatMoney(item.valor) %>
+          </td>
+          <td class="cell-historico">
+            <div class="cell-historico-title"><%= item.historico %></div>
+            <% if (item.motivo) { %>
+              <div class="muted muted-sm"><%= item.motivo %></div>
+            <% } %>
+          </td>
+          <td>
+            <input form="<%= formId %>" name="numeroNota" value="<%= item.numeroNota || '' %>" <%= readOnly ? 'disabled' : '' %>
+              class="field-input field-input--table field-input--nota" />
+          </td>
+          <td class="cell-cap">
+            <%
+              const capValue = item.classificacaoCap || '';
+              let capExtraClass = 'field-input field-input--table field-input--cap';
+              if (item.tipo === 'pagamento') {
+                const fromCap = !!(item.contaPagarId || item.status === 'MATCHED' || item.status === 'SUGERIDO');
+                if (item.status === 'REGRA' && capValue) {
+                  capExtraClass += ' cap-regra';
+                } else if (fromCap && capValue) {
+                  if (item.status === 'MATCHED') {
+                    capExtraClass += ' cap-matched';
+                  } else {
+                    capExtraClass += ' cap-sugerido';
+                  }
+                }
+              }
+            %>
+            <input form="<%= formId %>" name="classificacaoCap" value="<%= capValue %>"
+              type="text" autocomplete="off" data-cap-autocomplete <%= readOnly ? 'disabled' : '' %>
+              placeholder="preencher" class="<%= capExtraClass %>" />
+          </td>
+          <td>
+            <form id="<%= formId %>" method="post" action="/revisao/<%= session.id %>/item/<%= item.rowId %>" class="row-actions">
+              <input type="hidden" name="filtro" value="<%= filtro %>" />
+              <% Object.entries(colFilters).forEach(function (entry) { %>
+                <input type="hidden" name="<%= entry[0] %>" value="<%= entry[1] %>" />
+              <% }) %>
+              <span class="badge
+                <%= item.status==='MATCHED' ? 'badge-matched' :
+                    item.status==='SUGERIDO' ? 'badge-sugerido' :
+                    item.status==='REGRA' ? 'badge-regra' :
+                    item.status==='RECEBIMENTO' ? 'badge-recebimento' :
+                    'badge-neutral' %>">
+                <%= item.status %><%= item.aprovado ? ' ✓' : '' %>
+              </span>
+              <button name="action" value="salvar" <%= readOnly ? 'disabled' : '' %> class="btn btn-ghost btn-sm">Salvar</button>
+              <button name="action" value="aprovar" <%= readOnly ? 'disabled' : '' %> class="btn btn-primary btn-sm">Aprovar</button>
+              <button name="action" value="rejeitar" <%= readOnly ? 'disabled' : '' %> class="btn btn-ghost btn-sm">Limpar</button>
+            </form>
+            <% if (item.error) { %>
+              <p class="row-error"><%= item.error %></p>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+      <% if (!itens.length) { %>
+        <tr><td colspan="9" class="empty-state">Nenhum lançamento neste filtro.</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<% if (readOnly) { %>
+  <div id="desbloquear-modal-revisao" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-panel" role="dialog" aria-labelledby="desbloquear-revisao-title">
+      <h2 id="desbloquear-revisao-title">Desbloquear conciliação enviada</h2>
+      <p class="muted muted-sm" style="margin: 0 0 0.75rem;">
+        Esta conciliação foi marcada como enviada. Informe o motivo para poder editá-la novamente.
+      </p>
+      <form method="post" action="/historico/<%= session.id %>/desbloquear">
+        <input type="hidden" name="origem" value="revisao" />
+        <label class="field-label" for="motivo-revisao">Motivo</label>
+        <textarea id="motivo-revisao" name="motivo" required minlength="3" rows="3"
+          placeholder="Explique por que precisa editar novamente"
+          class="field-textarea"></textarea>
+        <div class="row-actions" style="justify-content: flex-end; margin-top: 0.85rem;">
+          <button type="button" onclick="fecharDesbloquearModalRevisao()" class="btn btn-ghost">Cancelar</button>
+          <button type="submit" class="btn btn-secondary">Confirmar e desbloquear</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    function abrirDesbloquearModalRevisao() {
+      const modal = document.getElementById('desbloquear-modal-revisao');
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+    function fecharDesbloquearModalRevisao() {
+      const modal = document.getElementById('desbloquear-modal-revisao');
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+  </script>
+<% } %>
+
+<script>
+  window.__CAP_SUGESTOES__ = <%- JSON.stringify(typeof capSugestoes !== 'undefined' && capSugestoes ? capSugestoes : []) %>;
+</script>
+<script>
+  (function () {
+    const filtroForm = document.getElementById('revisao-filtro');
+    if (filtroForm) {
+      const busca = document.getElementById('fBusca');
+      let buscaTimer = null;
+      if (busca) {
+        busca.addEventListener('input', function () {
+          clearTimeout(buscaTimer);
+          buscaTimer = setTimeout(function () {
+            filtroForm.requestSubmit ? filtroForm.requestSubmit() : filtroForm.submit();
+          }, 300);
+        });
+        busca.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            clearTimeout(buscaTimer);
+            filtroForm.requestSubmit ? filtroForm.requestSubmit() : filtroForm.submit();
+          }
+        });
+      }
+      filtroForm.querySelectorAll('[data-filter-auto]').forEach(function (el) {
+        el.addEventListener('change', function () {
+          filtroForm.requestSubmit ? filtroForm.requestSubmit() : filtroForm.submit();
+        });
+      });
+    }
+
+    const master = document.getElementById('selecionar-todos');
+    if (master) {
+      master.addEventListener('change', function () {
+        document.querySelectorAll('.row-check').forEach(function (el) {
+          el.checked = master.checked;
+        });
+      });
+    }
+
+    const sugestoes = Array.isArray(window.__CAP_SUGESTOES__) ? window.__CAP_SUGESTOES__ : [];
+    let activeList = null;
+    let blurTimer = null;
+
+    function normalize(s) {
+      return String(s || '').trim().toUpperCase();
+    }
+
+    function closeActive() {
+      if (activeList) {
+        activeList.remove();
+        activeList = null;
+      }
+    }
+
+    function filterSugestoes(query) {
+      const q = normalize(query);
+      if (!q) return sugestoes.slice();
+      return sugestoes.filter(function (item) {
+        return normalize(item).includes(q);
+      });
+    }
+
+    function openList(input) {
+      closeActive();
+      if (!sugestoes.length) return;
+
+      const matches = filterSugestoes(input.value);
+      if (!matches.length) return;
+
+      const rect = input.getBoundingClientRect();
+      const list = document.createElement('ul');
+      list.className = 'cap-autocomplete-list';
+      list.setAttribute('role', 'listbox');
+      list.style.left = Math.round(rect.left) + 'px';
+      list.style.top = Math.round(rect.bottom + 2) + 'px';
+      list.style.width = Math.max(Math.round(rect.width), 180) + 'px';
+
+      matches.forEach(function (desc) {
+        const li = document.createElement('li');
+        li.textContent = desc;
+        li.setAttribute('role', 'option');
+        li.addEventListener('mousedown', function (e) {
+          e.preventDefault();
+          input.value = desc;
+          closeActive();
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+        list.appendChild(li);
+      });
+
+      document.body.appendChild(list);
+      activeList = list;
+    }
+
+    document.querySelectorAll('[data-cap-autocomplete]').forEach(function (input) {
+      input.addEventListener('focus', function () {
+        clearTimeout(blurTimer);
+        openList(input);
+      });
+      input.addEventListener('click', function () {
+        clearTimeout(blurTimer);
+        openList(input);
+      });
+      input.addEventListener('input', function () {
+        openList(input);
+      });
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeActive();
+      });
+      input.addEventListener('blur', function () {
+        blurTimer = setTimeout(closeActive, 150);
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('[data-cap-autocomplete]') && !e.target.closest('.cap-autocomplete-list')) {
+        closeActive();
+      }
+    });
+  })();
+</script>
+
+<%- include('partials/app-shell-end') %>

@@ -1,0 +1,128 @@
+<%- include('partials/app-shell-start', {
+  title: 'Pré-cadastro de contas',
+  currentNav: 'precadastro',
+  navMode: 'empresa',
+  headerEyebrow: 'Configuração',
+  headerTitle: 'Pré-cadastro Débito / Crédito',
+  mainClass: 'app-main',
+  preCadastroBancoQuery: (typeof banco !== 'undefined' && banco) ? ('?banco=' + banco.id) : ''
+}) %>
+
+<div class="page-header">
+  <h2>Pré-cadastro</h2>
+  <p>Cadastre descrições (Classificação Êxito) e códigos Débito/Crédito por banco. Sem cadastro, Débito/Crédito ficam em branco na revisão.</p>
+</div>
+
+<%- include('partials/flash') %>
+
+<details class="help-details" style="margin-bottom: 1rem;">
+  <summary>Como cadastrar</summary>
+  <div class="help-body">
+    <p><strong>Pagamentos:</strong> descrição = Classificação Êxito (ex.: <code>ENERGIA</code>).</p>
+    <p><strong>Tarifas:</strong> <code>TARIFAS BANCARIAS</code>.</p>
+    <p><strong>Recebimentos:</strong> valor positivo começa com Classificação Êxito = <code>RECEBIMENTO</code>.
+      Cadastre <code>RECEBIMENTO DE CLIENTES</code> ou <code>RECEBIMENTO</code> para preencher Débito/Crédito no upload.</p>
+    <p>Na revisão dá para editar a Classificação Êxito manualmente e o Débito/Crédito vêm do pré-cadastro com a mesma descrição.</p>
+  </div>
+</details>
+
+<% if (banco) { %>
+  <form method="get" action="/pre-cadastro" class="toolbar" style="margin-bottom: 1rem;">
+    <div style="flex: 1; min-width: 220px;">
+      <label class="field-label" for="banco-select">Banco</label>
+      <select id="banco-select" name="banco" required class="field-select" onchange="this.form.submit()">
+        <% bancos.forEach(function(b) { %>
+          <option value="<%= b.id %>" <%= b.id === banco.id ? 'selected' : '' %>>
+            <%= b.nome %> — crédito <%= b.codigoCredito %>
+          </option>
+        <% }) %>
+      </select>
+    </div>
+    <p class="muted" style="font-size: 0.8rem; margin: 0 0 0.35rem;">
+      Crédito padrão: <strong><%= banco.codigoCredito %></strong>
+    </p>
+  </form>
+
+  <form method="post" action="/pre-cadastro" class="card card-pad" style="margin-bottom: 1rem;">
+    <input type="hidden" name="bancoId" value="<%= banco.id %>" />
+    <h3 class="card-title">Novo item</h3>
+    <div style="display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); align-items: end;">
+      <div style="grid-column: span 2;">
+        <label class="field-label" for="descricao">Descrição</label>
+        <input id="descricao" name="descricao" required placeholder="FORNECEDORES / TARIFAS BANCARIAS / RECEBIMENTO DE CLIENTES" class="field-input" />
+      </div>
+      <div>
+        <label class="field-label" for="debito">Débito (opcional)</label>
+        <input id="debito" name="debito" type="number" placeholder="vazio = em branco" class="field-input" />
+      </div>
+      <div>
+        <label class="field-label" for="credito">Crédito (opcional)</label>
+        <input id="credito" name="credito" type="number" value="<%= defaultCredito %>" placeholder="vazio = crédito do banco" class="field-input" />
+      </div>
+      <div>
+        <button type="submit" class="btn btn-primary">Cadastrar</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Descrição</th>
+          <th>Débito</th>
+          <th>Crédito</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% itens.forEach(function(item) { %>
+          <tr>
+            <% if (editId === item.id) { %>
+              <td colspan="4">
+                <form method="post" action="/pre-cadastro/<%= item.id %>" style="display: grid; gap: 0.65rem; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); align-items: end;">
+                  <input type="hidden" name="bancoId" value="<%= banco.id %>" />
+                  <div style="grid-column: span 2;">
+                    <label class="field-label">Descrição</label>
+                    <input name="descricao" value="<%= item.descricao %>" required class="field-input" />
+                  </div>
+                  <div>
+                    <label class="field-label">Débito</label>
+                    <input name="debito" type="number" value="<%= item.debito ?? '' %>" class="field-input" />
+                  </div>
+                  <div>
+                    <label class="field-label">Crédito</label>
+                    <input name="credito" type="number" value="<%= item.credito ?? '' %>" class="field-input" />
+                  </div>
+                  <div class="row-actions">
+                    <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+                    <a href="/pre-cadastro?banco=<%= banco.id %>" class="btn btn-ghost btn-sm">Cancelar</a>
+                  </div>
+                </form>
+              </td>
+            <% } else { %>
+              <td class="font-semibold"><%= item.descricao %></td>
+              <td><%= item.debito ?? '' %></td>
+              <td><%= item.credito ?? '' %></td>
+              <td>
+                <div class="row-actions">
+                  <a href="/pre-cadastro?banco=<%= banco.id %>&edit=<%= item.id %>" class="btn btn-ghost btn-sm">Editar</a>
+                  <form method="post" action="/pre-cadastro/<%= item.id %>" onsubmit="return confirm('Excluir este cadastro?')" class="inline">
+                    <input type="hidden" name="bancoId" value="<%= banco.id %>" />
+                    <input type="hidden" name="_method" value="DELETE" />
+                    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                  </form>
+                </div>
+              </td>
+            <% } %>
+          </tr>
+        <% }) %>
+        <% if (!itens.length) { %>
+          <tr><td colspan="4" class="empty-state">Nenhum pré-cadastro neste banco ainda.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include('partials/app-shell-end') %>

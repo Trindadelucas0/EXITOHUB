@@ -1,0 +1,5 @@
+codigo,descricao,ncm,nao contr,contrib,revenda,construt,hosp/clinica,orgao pub,prod.rural,atacado,cst compra,iva
+TINTA-ST,Tinta ST interno errada,32141010,0,10,00,0,0,0,0,10,0,30%
+TINTA-OK,Tinta ST interno correta,32141010,0,10,10,0,0,0,0,10,0,30%
+OLEO-60,Produto ST nacional,27101229,60,60,60,60,60,60,60,60,,
+NCM-FORA,Produto sem regra,00000000,0,0,0,0,0,0,0,0,0,

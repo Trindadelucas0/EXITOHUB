@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('partials/head', { title: title || 'EXITO HUB' }) %>
+</head>
+<body class="app-body">
+  <%- include('partials/hub-chrome') %>
+  <main class="app-main">
+    <div class="card card-pad">
+      <h1>Usuário sem cadastro na Conciliação</h1>
+      <p class="muted">
+        O HUB liberou o módulo, mas não existe usuário
+        <strong><%= hubUser && hubUser.username %></strong>
+        no banco da Conciliação.
+      </p>
+      <p class="muted">
+        Cadastre o mesmo username em CONCI (admin ou empresa) e tente de novo.
+      </p>
+      <p><a class="btn btn-primary" href="/">Voltar ao HUB</a></p>
+    </div>
+  </main>
+</body>
+</html>

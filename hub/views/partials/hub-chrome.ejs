@@ -1,0 +1,40 @@
+<%
+  const u = hubUser || (typeof locals !== 'undefined' ? locals.hubUser : null);
+  const cur = typeof current !== 'undefined' ? current : '';
+%>
+<header class="hub-chrome">
+  <div class="hub-chrome-inner">
+    <a href="/" class="hub-chrome-brand">
+      <img src="/hub-assets/logo-exito.png" alt="" class="hub-chrome-logo" width="36" height="36" onerror="this.style.display='none'" />
+      <div>
+        <p class="hub-eyebrow">Êxito Contabilidade</p>
+        <strong>EXITO HUB</strong>
+      </div>
+    </a>
+
+    <nav class="hub-chrome-nav" aria-label="Módulos">
+      <a href="/" class="hub-nav-link <%= cur === 'home' ? 'is-active' : '' %>">Início</a>
+      <% if (u && u.canFolha) { %>
+        <a href="/folha/modulos" class="hub-nav-link <%= cur === 'folha' ? 'is-active' : '' %>">Folha</a>
+      <% } %>
+      <% if (u && u.canConci) { %>
+        <a href="/conci/" class="hub-nav-link <%= cur === 'conci' ? 'is-active' : '' %>">Conciliação</a>
+      <% } %>
+      <% if (u && u.canNcm) { %>
+        <a href="/ncm/" class="hub-nav-link <%= cur === 'ncm' ? 'is-active' : '' %>">NCM</a>
+      <% } %>
+      <% if (u && u.isAdmin) { %>
+        <a href="/admin/usuarios" class="hub-nav-link <%= cur === 'admin' ? 'is-active' : '' %>">Usuários</a>
+      <% } %>
+    </nav>
+
+    <div class="hub-chrome-user">
+      <% if (u) { %>
+        <span class="hub-user-name"><%= u.displayName || u.username %></span>
+        <form method="post" action="/logout" class="hub-inline">
+          <button type="submit" class="hub-nav-link hub-nav-btn">Sair</button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</header>

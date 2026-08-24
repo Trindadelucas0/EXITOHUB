@@ -1,0 +1,29 @@
+<%
+  const hu = typeof hubUser !== 'undefined' ? hubUser : null;
+%>
+<% if (typeof hubMode !== 'undefined' && hubMode && hu) { %>
+<header class="hub-chrome">
+  <div class="hub-chrome-inner">
+    <a href="/" class="hub-chrome-brand">
+      <img src="/hub-assets/logo-exito.png" alt="" class="hub-chrome-logo" width="36" height="36" onerror="this.style.display='none'" />
+      <div>
+        <p class="hub-eyebrow">Êxito Contabilidade</p>
+        <strong>EXITO HUB</strong>
+      </div>
+    </a>
+    <nav class="hub-chrome-nav" aria-label="Módulos">
+      <a href="/" class="hub-nav-link">Início</a>
+      <% if (hu.canFolha) { %><a href="/folha/modulos" class="hub-nav-link">Folha</a><% } %>
+      <% if (hu.canConci) { %><a href="/conci/" class="hub-nav-link is-active">Conciliação</a><% } %>
+      <% if (hu.canNcm) { %><a href="/ncm/" class="hub-nav-link">NCM</a><% } %>
+      <% if (hu.isAdmin) { %><a href="/admin/usuarios" class="hub-nav-link">Usuários</a><% } %>
+    </nav>
+    <div class="hub-chrome-user">
+      <span class="hub-user-name"><%= hu.displayName || hu.username %></span>
+      <form method="post" action="/logout" class="hub-inline">
+        <button type="submit" class="hub-nav-link hub-nav-btn">Sair</button>
+      </form>
+    </div>
+  </div>
+</header>
+<% } %>

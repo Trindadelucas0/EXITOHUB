@@ -1,0 +1,8 @@
+node_modules/
+uploads/*
+!uploads/.gitkeep
+data/precadastro/*
+!data/precadastro/.gitkeep
+.env
+*.log
+.DS_Store

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('partials/head', { title: 'Login — Conciliação' }) %>
+</head>
+<body class="login-page">
+  <main class="login-card">
+    <div class="login-brand">
+      <img src="/img/logo.png" alt="Êxito Contabilidade" class="site-logo" />
+      <div>
+        <p class="app-eyebrow">Acesso</p>
+        <h1>Conciliação Bancária</h1>
+      </div>
+    </div>
+    <p class="muted" style="margin: 0 0 1.25rem; font-size: 0.9rem;">
+      Use o <strong>admin</strong> para abrir qualquer empresa, ou o login da empresa (se houver).
+    </p>
+
+    <%- include('partials/flash') %>
+
+    <form method="post" action="/login" class="space-y-3">
+      <div>
+        <label class="field-label" for="username">Usuário</label>
+        <input id="username" name="username" required autocomplete="username" class="field-input" />
+      </div>
+      <div>
+        <label class="field-label" for="password">Senha</label>
+        <input id="password" name="password" type="password" required autocomplete="current-password" class="field-input" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" style="margin-top: 0.5rem; padding: 0.7rem;">
+        Entrar
+      </button>
+    </form>
+  </main>
+</body>
+</html>

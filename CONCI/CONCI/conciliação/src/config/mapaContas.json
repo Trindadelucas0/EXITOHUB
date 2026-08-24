@@ -1,0 +1,9 @@
+{
+  "regrasHistorico": [
+    {
+      "pattern": "^TAR",
+      "label": "TARIFAS BANCARIAS",
+      "preCadastroDescricao": "TARIFAS BANCARIAS"
+    }
+  ]
+}

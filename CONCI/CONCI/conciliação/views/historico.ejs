@@ -1,0 +1,181 @@
+<%- include('partials/app-shell-start', {
+  title: 'Histórico — Conciliações',
+  currentNav: 'historico',
+  navMode: 'empresa',
+  headerEyebrow: 'Histórico',
+  headerTitle: 'Conciliações salvas',
+  mainClass: 'app-main'
+}) %>
+
+<div class="page-header">
+  <h2>Histórico</h2>
+  <p>Localize conciliações pela competência (mês/ano) ou pela data/hora em que foram geradas.</p>
+</div>
+
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="flash flash-error" role="alert"><%= error %></div>
+<% } %>
+<% if (typeof success !== 'undefined' && success) { %>
+  <div class="flash flash-success" role="status">
+    <% if (success === 'enviado') { %>
+      Conciliação marcada como enviada. Ela ficará somente leitura até ser desbloqueada.
+    <% } else if (success === 'desbloqueado') { %>
+      Conciliação desbloqueada para edição.
+    <% } else { %>
+      Conciliação excluída do histórico.
+    <% } %>
+  </div>
+<% } %>
+
+<% if (typeof queryErro !== 'undefined' && queryErro === 'nao-encontrada') { %>
+  <div class="flash flash-warning">Conciliação não encontrada ou já excluída.</div>
+<% } else if (typeof queryErro !== 'undefined' && queryErro === 'enviado') { %>
+  <div class="flash flash-warning">Esta conciliação está marcada como enviada. Desbloqueie antes de excluir.</div>
+<% } else if (typeof queryErro !== 'undefined' && queryErro === 'motivo-obrigatorio') { %>
+  <div class="flash flash-warning">Informe um motivo com pelo menos 3 caracteres para desbloquear.</div>
+<% } else if (typeof queryErro !== 'undefined' && queryErro === 'falha') { %>
+  <div class="flash flash-error">Não foi possível concluir a ação. Tente novamente.</div>
+<% } %>
+
+<form method="get" action="/historico" class="toolbar historico-filters">
+  <div>
+    <label class="field-label" for="filtro-competencia">Competência</label>
+    <input id="filtro-competencia" type="month" name="competencia" value="<%= filters.competencia || '' %>" class="field-input" />
+  </div>
+  <div>
+    <label class="field-label" for="filtro-de">De (data)</label>
+    <input id="filtro-de" type="date" name="de" value="<%= filters.de || '' %>" class="field-input" />
+  </div>
+  <div>
+    <label class="field-label" for="filtro-ate">Até (data)</label>
+    <input id="filtro-ate" type="date" name="ate" value="<%= filters.ate || '' %>" class="field-input" />
+  </div>
+  <div class="historico-filters-actions">
+    <button type="submit" class="btn btn-secondary">Filtrar</button>
+    <a href="/historico" class="btn btn-ghost">Limpar</a>
+  </div>
+</form>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Competência</th>
+        <th>Data / hora</th>
+        <th>Banco</th>
+        <th>Arquivos</th>
+        <th>Total</th>
+        <th>Aprovados</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (!lista.length) { %>
+        <tr>
+          <td colspan="8" class="empty-state">Nenhuma conciliação encontrada.</td>
+        </tr>
+      <% } %>
+      <% lista.forEach(function(row) {
+        const resumo = row.resumo || {};
+        const arq = row.arquivos || {};
+        const motivos = Array.isArray(row.motivosEdicao) ? row.motivosEdicao : [];
+        const tooltip = motivos.length
+          ? motivos.map(function (m) {
+              return formatDateTimeBr(m.em) + (m.username ? ' · ' + m.username : '') + ': ' + m.motivo;
+            }).join('\n')
+          : '';
+      %>
+        <tr>
+          <td class="whitespace-nowrap font-semibold">
+            <% if (tooltip) { %>
+              <span title="<%= tooltip %>" style="border-bottom: 1px dotted var(--border-strong); cursor: help;"><%= row.competenciaLabel %></span>
+            <% } else { %>
+              <%= row.competenciaLabel %>
+            <% } %>
+          </td>
+          <td class="whitespace-nowrap"><%= formatDateTimeBr(row.createdAt) %></td>
+          <td><%= row.bancoNome || '—' %></td>
+          <td style="max-width: 14rem;">
+            <div class="truncate" title="<%= arq.extrato || '' %>"><%= arq.extrato || '—' %></div>
+            <div class="truncate muted" style="font-size: 0.75rem;" title="<%= arq.contasPagar || '' %>"><%= arq.contasPagar || '' %></div>
+          </td>
+          <td><%= resumo.total != null ? resumo.total : '—' %></td>
+          <td><%= resumo.aprovados != null ? resumo.aprovados : '—' %></td>
+          <td class="whitespace-nowrap">
+            <% if (row.enviado) { %>
+              <span class="badge badge-enviado" title="Enviado em <%= formatDateTimeBr(row.enviadoEm) %>">Enviado</span>
+            <% } else { %>
+              <span class="badge badge-pendente">Pendente</span>
+            <% } %>
+          </td>
+          <td>
+            <div class="row-actions">
+              <a href="/revisao/<%= row.id %>" class="btn btn-primary btn-sm">Abrir</a>
+              <% if (row.enviado) { %>
+                <button type="button" onclick="abrirDesbloquearModal('<%= row.id %>')" class="btn btn-ghost btn-sm">Desbloquear</button>
+                <button type="button" disabled title="Desbloqueie antes de excluir" class="btn btn-ghost btn-sm" style="opacity: 0.45;">Excluir</button>
+              <% } else { %>
+                <form method="post" action="/historico/<%= row.id %>/marcar-enviado" class="inline">
+                  <input type="hidden" name="competencia" value="<%= filters.competencia || '' %>" />
+                  <input type="hidden" name="de" value="<%= filters.de || '' %>" />
+                  <input type="hidden" name="ate" value="<%= filters.ate || '' %>" />
+                  <button type="submit"
+                    onclick="return confirm('Marcar esta conciliação como enviada? Ela ficará somente leitura até ser desbloqueada.');"
+                    class="btn btn-ghost btn-sm">Marcar enviado</button>
+                </form>
+                <form method="post" action="/historico/<%= row.id %>/excluir" class="inline"
+                  onsubmit="return confirm('Excluir esta conciliação do histórico? Esta ação não pode ser desfeita.');">
+                  <input type="hidden" name="competencia" value="<%= filters.competencia || '' %>" />
+                  <input type="hidden" name="de" value="<%= filters.de || '' %>" />
+                  <input type="hidden" name="ate" value="<%= filters.ate || '' %>" />
+                  <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                </form>
+              <% } %>
+            </div>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<div id="desbloquear-modal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal-panel" role="dialog" aria-labelledby="desbloquear-title">
+    <h2 id="desbloquear-title">Desbloquear conciliação enviada</h2>
+    <p class="muted" style="margin: 0 0 0.75rem; font-size: 0.875rem;">
+      Esta conciliação foi marcada como enviada. Informe o motivo para poder editá-la novamente.
+    </p>
+    <form id="desbloquear-form" method="post" action="">
+      <input type="hidden" name="origem" value="historico" />
+      <input type="hidden" name="competencia" value="<%= filters.competencia || '' %>" />
+      <input type="hidden" name="de" value="<%= filters.de || '' %>" />
+      <input type="hidden" name="ate" value="<%= filters.ate || '' %>" />
+      <label class="field-label" for="motivo-desbloquear">Motivo</label>
+      <textarea id="motivo-desbloquear" name="motivo" required minlength="3" rows="3"
+        placeholder="Explique por que precisa editar novamente"
+        class="field-textarea"></textarea>
+      <div class="row-actions" style="justify-content: flex-end; margin-top: 0.85rem;">
+        <button type="button" onclick="fecharDesbloquearModal()" class="btn btn-ghost">Cancelar</button>
+        <button type="submit" class="btn btn-secondary">Confirmar e desbloquear</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function abrirDesbloquearModal(id) {
+    const form = document.getElementById('desbloquear-form');
+    form.action = '/historico/' + id + '/desbloquear';
+    const modal = document.getElementById('desbloquear-modal');
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+  function fecharDesbloquearModal() {
+    const modal = document.getElementById('desbloquear-modal');
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+</script>
+
+<%- include('partials/app-shell-end') %>

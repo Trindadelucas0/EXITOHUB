@@ -1,0 +1,57 @@
+{
+  "name": "auditor-fiscal-baifer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/keep-next.mjs",
+    "dev:sempre": "node scripts/keep-next.mjs 3000",
+    "dev:once": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:init": "tsx prisma/init-db.ts",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:generate": "prisma generate",
+    "postinstall": "prisma generate",
+    "extract": "python tools/extract_rules.py",
+    "import:cadastro": "tsx prisma/import-cadastro.ts",
+    "db:backfill-audit": "tsx prisma/backfill-audit.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.13.0",
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.6.1",
+    "exceljs": "^4.4.0",
+    "next": "^15.4.6",
+    "pdfkit": "^0.17.1",
+    "pg": "^8.16.3",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "server-only": "^0.0.1",
+    "xlsx": "^0.18.5",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^24.2.1",
+    "@types/pdfkit": "^0.13.9",
+    "@types/pg": "^8.15.5",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "autoprefixer": "^10.4.21",
+    "eslint": "^9.32.0",
+    "eslint-config-next": "^15.4.6",
+    "postcss": "^8.5.6",
+    "prisma": "^6.13.0",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

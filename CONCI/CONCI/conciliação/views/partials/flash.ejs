@@ -1,0 +1,18 @@
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="flash flash-error" role="alert"><%= error %></div>
+<% } %>
+<% if (typeof success !== 'undefined' && success) { %>
+  <div class="flash flash-success" role="status">
+    <% if (typeof successMessage !== 'undefined' && successMessage) { %>
+      <%= successMessage %>
+    <% } else { %>
+      Operação concluída: <%= success %>.
+    <% } %>
+  </div>
+<% } %>
+<% if (typeof warning !== 'undefined' && warning) { %>
+  <div class="flash flash-warning" role="status"><%= warning %></div>
+<% } %>
+<% if (typeof info !== 'undefined' && info) { %>
+  <div class="flash flash-info" role="status"><%= info %></div>
+<% } %>

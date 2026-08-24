@@ -1,0 +1,73 @@
+{
+  "layouts": [
+    {
+      "tipo": "contasPagar",
+      "bancoOuOrigem": "BAIFER Santri 04-2026",
+      "cabecalhosChave": [
+        "nome do cliente/fornecedor",
+        "cpf/cnpj",
+        "vlr liquido",
+        "data pagto",
+        "categoria / plano de contas (linha de grupo)"
+      ],
+      "ajustes": [
+        "detectGroupLabel + CATEGORIA_SYNONYMS",
+        "pass2: valor+nome priorizado; valor_unico so para boleto; PIX/APL/SISPAG nao casam por valor+data"
+      ],
+      "fixture": "fixtures/calibracao/contas-pagar-baifer-04-2026.ods",
+      "aprendidoEm": "2026-07-16"
+    },
+    {
+      "tipo": "contasPagar",
+      "bancoOuOrigem": "Lojao das Maquinas Santri 04-2026",
+      "cabecalhosChave": [
+        "nome do cliente/fornecedor",
+        "cpf/cnpj",
+        "vlr liquido",
+        "categoria / plano de contas"
+      ],
+      "ajustes": ["mesmo parser Santri/BAIFER"],
+      "fixture": "fixtures/calibracao/contas-pagar-lojao-04-2026.ods",
+      "aprendidoEm": "2026-07-16"
+    },
+    {
+      "tipo": "extrato",
+      "bancoOuOrigem": "Itau BAIFER 04-2026",
+      "cabecalhosChave": ["data", "lancamento", "valor", "historico"],
+      "ajustes": ["parser Itau; TAR* via mapaContas.json"],
+      "fixture": "fixtures/calibracao/extrato-itau-baifer-04-2026.xlsx",
+      "aprendidoEm": "2026-07-16"
+    },
+    {
+      "tipo": "extrato",
+      "bancoOuOrigem": "Stone BAIFER 04-2026",
+      "cabecalhosChave": ["data", "movimentacao", "valor", "destino", "origem"],
+      "ajustes": ["tryStoneMap em extrato.js"],
+      "fixture": "fixtures/calibracao/extrato-stone-baifer-04-2026.xls",
+      "aprendidoEm": "2026-07-16"
+    },
+    {
+      "tipo": "extrato",
+      "bancoOuOrigem": "Mercado Pago Lojao 04-2026",
+      "cabecalhosChave": ["release_date", "transaction_type", "transaction_net_amount"],
+      "ajustes": ["tryMercadoPagoMap"],
+      "fixture": "fixtures/calibracao/extrato-mercado-pago-lojao-04-2026.xlsx",
+      "aprendidoEm": "2026-07-16"
+    },
+    {
+      "tipo": "extrato",
+      "bancoOuOrigem": "Banco do Brasil Lojao 04-2026",
+      "cabecalhosChave": ["data", "historico", "valor r$", "inf.", "detalhamento hist."],
+      "ajustes": [
+        "TIPO_DC_SYNONYMS inclui inf / inf. — coluna Inf. C/D prevalece sobre historico com palavra Debito",
+        "DETALHAMENTO_SYNONYMS: Historico + Detalhamento Hist. concatena no campo historico com separador ' - ' (vazio = so Historico)"
+      ],
+      "fixture": "fixtures/calibracao/extrato-bb-lojao-04-2026.xlsx",
+      "aprendidoEm": "2026-07-16"
+    }
+  ],
+  "precadastro": {
+    "regra": "Vazio por padrao. So usa o que o usuario cadastrou manualmente. Conciliação nunca adiciona itens sozinha.",
+    "arquivoReferenciaVazio": "src/config/preCadastroContas.json"
+  }
+}

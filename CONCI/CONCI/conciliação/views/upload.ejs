@@ -1,0 +1,160 @@
+<%- include('partials/app-shell-start', {
+  title: 'Upload — Conciliação Bancária',
+  currentNav: 'upload',
+  navMode: 'empresa',
+  headerEyebrow: 'Êxito Contabilidade',
+  headerTitle: 'Conciliação Bancária',
+  mainClass: 'app-main app-main--narrow'
+}) %>
+
+<div class="page-header">
+  <h2>Enviar planilhas</h2>
+</div>
+
+<%- include('partials/flash') %>
+
+<form id="form-conciliar" action="/conciliar" method="post" enctype="multipart/form-data" class="card card-pad space-y-5">
+  <div>
+    <label class="field-label" for="bancoId">Banco do extrato</label>
+    <p class="field-hint">Obrigatório. A conciliação usa o pré-cadastro e o código de crédito deste banco.</p>
+    <select id="bancoId" name="bancoId" required class="field-select">
+      <option value="">Selecione o banco…</option>
+      <% (typeof bancos !== 'undefined' ? bancos : []).forEach(function(b) { %>
+        <option value="<%= b.id %>"><%= b.nome %> — crédito <%= b.codigoCredito %></option>
+      <% }) %>
+    </select>
+    <% if (typeof bancos !== 'undefined' && !bancos.length) { %>
+      <p class="field-hint" style="color: var(--warning); margin-top: 0.4rem;">
+        Nenhum banco ativo. Peça ao admin para cadastrar em /admin/bancos.
+      </p>
+    <% } %>
+  </div>
+
+  <div>
+    <label class="field-label" for="competencia">Competência</label>
+    <p class="field-hint">Mês/ano desta conciliação (obrigatório). Usado para localizar no histórico.</p>
+    <input id="competencia" type="month" name="competencia" required class="field-input" />
+  </div>
+
+  <div>
+    <label class="field-label" for="extrato">1. Extrato bancário (.xlsx / .xls)</label>
+    <p class="field-hint">
+      Precisa ter <strong>Data</strong>, <strong>Histórico</strong> e <strong>Valor</strong>
+      (ou Débito/Crédito). Sem esses dados, o processamento é interrompido com aviso.
+    </p>
+    <input id="extrato" type="file" name="extrato" accept=".xlsx,.xls" required class="file-input" />
+  </div>
+
+  <div>
+    <label class="field-label" for="contasPagar">2. Contas a Pagar (.ods ou .xlsx)</label>
+    <input id="contasPagar" type="file" name="contasPagar" accept=".ods,.xlsx,.xls" required class="file-input" />
+  </div>
+
+  <button type="submit" id="btn-submit" class="btn btn-primary btn-block" style="padding: 0.7rem;">
+    Conciliar
+  </button>
+</form>
+
+<div id="progress-overlay" class="modal-backdrop" aria-hidden="true">
+  <div class="modal-panel" role="dialog" aria-labelledby="progress-title">
+    <h2 id="progress-title">Processando conciliação</h2>
+    <p id="progress-step" class="muted" style="margin: 0 0 1rem; font-size: 0.875rem;">Enviando arquivos…</p>
+    <div class="progress-bar-track">
+      <div id="progress-bar" class="progress-bar-fill" style="width: 5%"></div>
+    </div>
+    <p id="progress-pct" class="muted" style="margin: 0.5rem 0 0; font-size: 0.75rem;">5%</p>
+    <p id="progress-error" class="flash flash-error" style="display: none; margin-top: 0.75rem;"></p>
+    <button id="progress-close" type="button" class="btn btn-ghost btn-block" style="display: none; margin-top: 0.75rem;">Fechar</button>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const form = document.getElementById('form-conciliar');
+    const overlay = document.getElementById('progress-overlay');
+    const bar = document.getElementById('progress-bar');
+    const stepEl = document.getElementById('progress-step');
+    const pctEl = document.getElementById('progress-pct');
+    const errEl = document.getElementById('progress-error');
+    const closeBtn = document.getElementById('progress-close');
+    const btn = document.getElementById('btn-submit');
+
+    function setProgress(percent, step) {
+      const p = Math.max(0, Math.min(100, Number(percent) || 0));
+      bar.style.width = p + '%';
+      pctEl.textContent = p + '%';
+      if (step) stepEl.textContent = step;
+    }
+
+    function showError(msg) {
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+      closeBtn.style.display = 'flex';
+      btn.disabled = false;
+    }
+
+    closeBtn.addEventListener('click', function () {
+      overlay.classList.remove('is-open');
+      overlay.setAttribute('aria-hidden', 'true');
+      errEl.style.display = 'none';
+      closeBtn.style.display = 'none';
+    });
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      btn.disabled = true;
+      errEl.style.display = 'none';
+      closeBtn.style.display = 'none';
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      setProgress(8, 'Enviando arquivos…');
+
+      try {
+        const fd = new FormData(form);
+        const res = await fetch('/conciliar?async=1', {
+          method: 'POST',
+          body: fd,
+          headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+          credentials: 'same-origin',
+        });
+        const data = await res.json().catch(function () { return {}; });
+        if (!res.ok) {
+          showError(data.error || 'Falha no envio');
+          return;
+        }
+        const jobId = data.jobId;
+        if (!jobId) {
+          showError('Resposta sem jobId');
+          return;
+        }
+
+        const poll = async function () {
+          const st = await fetch('/conciliar/status/' + jobId, {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin',
+          });
+          const j = await st.json();
+          if (!st.ok) {
+            showError(j.error || 'Job nao encontrado');
+            return;
+          }
+          setProgress(j.percent, j.step);
+          if (j.done) {
+            if (j.error) {
+              showError(j.error);
+              return;
+            }
+            window.location.href = j.revisaoUrl;
+            return;
+          }
+          setTimeout(poll, 600);
+        };
+        poll();
+      } catch (err) {
+        showError(err.message || 'Erro de rede');
+      }
+    });
+  })();
+</script>
+
+<%- include('partials/app-shell-end') %>

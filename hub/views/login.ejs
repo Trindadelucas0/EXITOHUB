@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/hub-assets/hub.css" />
+</head>
+<body class="hub-login-page">
+  <main class="hub-login-card">
+    <header class="hub-login-brand">
+      <img src="/hub-assets/logo-exito.png" alt="Êxito Contabilidade" class="hub-logo" width="180" height="56" onerror="this.style.display='none'" />
+      <p class="hub-eyebrow">Êxito Contabilidade</p>
+      <h1>EXITO HUB</h1>
+      <p class="hub-muted">Acesse Folha, Conciliação e NCM com um único login.</p>
+    </header>
+
+    <% if (error) { %>
+      <div class="hub-alert" role="alert"><%= error %></div>
+    <% } %>
+
+    <form method="post" action="/login" class="hub-form" autocomplete="on">
+      <label class="hub-field">
+        <span>Usuário</span>
+        <input name="username" required autocomplete="username" value="<%= lastUsername || '' %>" />
+      </label>
+      <label class="hub-field">
+        <span>Senha</span>
+        <input name="password" type="password" required autocomplete="current-password" />
+      </label>
+      <button type="submit" class="hub-btn hub-btn-primary">Entrar</button>
+    </form>
+  </main>
+</body>
+</html>

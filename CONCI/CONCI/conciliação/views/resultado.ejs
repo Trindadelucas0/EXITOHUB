@@ -1,0 +1,66 @@
+<%- include('partials/app-shell-start', {
+  title: 'Resultado — Domínio',
+  currentNav: 'resultado',
+  navMode: 'empresa',
+  headerEyebrow: 'Export',
+  headerTitle: 'Planilha Padrão Domínio',
+  mainClass: 'app-main app-main--narrow',
+  preCadastroBancoQuery: session.bancoId ? ('?banco=' + session.bancoId) : ''
+}) %>
+
+<div class="page-header">
+  <h2>Exportação</h2>
+  <p>
+    Banco <strong><%= session.bancoNome || 'Não informado' %></strong>
+    · Competência <strong><%= session.competencia ? formatCompetencia(session.competencia) : 'Não informada' %></strong>
+  </p>
+</div>
+
+<div class="card card-pad" style="margin-bottom: 1rem;">
+  <h3 class="card-title">Resumo</h3>
+  <div class="kpi-grid-export">
+    <div class="kpi"><p class="kpi-label">Total</p><p class="kpi-value"><%= resumo.total %></p></div>
+    <div class="kpi"><p class="kpi-label">Pagamentos</p><p class="kpi-value"><%= resumo.pagamentos %></p></div>
+    <div class="kpi"><p class="kpi-label">Recebimentos</p><p class="kpi-value kpi-value--sky"><%= resumo.recebimentos %></p></div>
+    <div class="kpi"><p class="kpi-label">Matched</p><p class="kpi-value kpi-value--green"><%= resumo.matched %></p></div>
+    <div class="kpi"><p class="kpi-label">Sugerido</p><p class="kpi-value kpi-value--amber"><%= resumo.sugerido %></p></div>
+    <div class="kpi"><p class="kpi-label">Regra</p><p class="kpi-value kpi-value--sky"><%= resumo.regra %></p></div>
+    <div class="kpi"><p class="kpi-label">Sem classificação</p><p class="kpi-value"><%= resumo.semMatch %></p></div>
+    <div class="kpi"><p class="kpi-label">Com Êxito</p><p class="kpi-value"><%= resumo.comClassificacao %></p></div>
+    <div class="kpi"><p class="kpi-label">Com nota</p><p class="kpi-value"><%= resumo.comNota %></p></div>
+    <div class="kpi"><p class="kpi-label">Aprovados</p><p class="kpi-value"><%= resumo.aprovados %></p></div>
+    <div class="kpi"><p class="kpi-label">Pendentes</p><p class="kpi-value"><%= resumo.pendentes %></p></div>
+    <div class="kpi"><p class="kpi-label">Linhas no export</p><p class="kpi-value"><%= itensExport.length %></p></div>
+  </div>
+</div>
+
+<% if (itensExport.length) { %>
+  <div class="export-grid" style="margin-bottom: 1rem;">
+    <div class="card card-pad">
+      <h3 class="card-title">Export Domínio</h3>
+      <p class="muted" style="font-size: 0.8rem; margin: 0 0 0.85rem;">
+        Exporta todos os lançamentos (aprovação não é obrigatória).
+      </p>
+      <div style="display: grid; gap: 0.5rem;">
+        <a href="/export/<%= session.id %>.txt" class="btn btn-primary btn-block">Baixar .txt Domínio</a>
+        <a href="/export/<%= session.id %>" class="btn btn-ghost btn-block">Baixar .xlsx Domínio</a>
+      </div>
+    </div>
+    <div class="card card-pad">
+      <h3 class="card-title">Relatório detalhado</h3>
+      <p class="muted" style="font-size: 0.8rem; margin: 0 0 0.85rem;">
+        Mesma tabela da Revisão, com Banco e Competência no cabeçalho.
+      </p>
+      <div style="display: grid; gap: 0.5rem;">
+        <a href="/export/<%= session.id %>/detalhado.xlsx" class="btn btn-primary btn-block">Gerar Excel detalhado</a>
+        <a href="/export/<%= session.id %>/detalhado.pdf" class="btn btn-ghost btn-block">Gerar PDF detalhado</a>
+      </div>
+    </div>
+  </div>
+<% } else { %>
+  <div class="flash flash-warning">Nenhum lançamento nesta conciliação.</div>
+<% } %>
+
+<a href="/revisao/<%= session.id %>" class="btn btn-ghost">Voltar à revisão</a>
+
+<%- include('partials/app-shell-end') %>

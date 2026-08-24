@@ -1,0 +1,22 @@
+{
+  "name": "exito-hub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EXITO HUB — Folha, Conciliação e NCM em um único servidor",
+  "main": "hub/server.js",
+  "scripts": {
+    "dev": "node hub/server.js",
+    "start": "node hub/server.js",
+    "postinstall": "npm install --prefix BeatrizDt && npm install --prefix \"CONCI/CONCI/conciliação\" && npm install --prefix NCM/fiscal"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "pg": "^8.13.3"
+  }
+}

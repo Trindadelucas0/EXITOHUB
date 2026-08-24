@@ -1,0 +1,27 @@
+{
+  "name": "conciliacao-bancaria",
+  "version": "1.0.0",
+  "description": "MVP de conciliacao bancaria - Express + EJS + Tailwind",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js",
+    "test": "node --test tests/**/*.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "ejs": "^3.1.10",
+    "exceljs": "^4.4.0",
+    "express": "^4.21.2",
+    "fast-xml-parser": "^4.5.1",
+    "jszip": "^3.10.1",
+    "multer": "^1.4.5-lts.2",
+    "pdfkit": "^0.19.1",
+    "pg": "^8.22.0",
+    "xlsx": "^0.18.5"
+  }
+}

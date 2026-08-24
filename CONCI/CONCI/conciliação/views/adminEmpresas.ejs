@@ -1,0 +1,166 @@
+<%- include('partials/app-shell-start', {
+  title: 'Empresas — Admin',
+  currentNav: 'empresas',
+  navMode: 'admin',
+  headerEyebrow: 'Administrador',
+  headerTitle: 'Contas / Empresas',
+  mainClass: 'app-main'
+}) %>
+
+<div class="page-header">
+  <h2>Empresas</h2>
+  <p>Escolha uma empresa para conciliar ou cadastre uma nova.</p>
+</div>
+
+<%- include('partials/flash') %>
+
+<% if (typeof user !== 'undefined' && user && user.actingAsEmpresa) { %>
+  <div class="flash flash-info flash-row">
+    <div>
+      Empresa em uso: <strong><%= user.empresaNome %></strong>
+    </div>
+    <div class="row-actions">
+      <a href="/" class="btn btn-primary btn-sm">Ir para conciliação</a>
+      <form method="post" action="/admin/sair-empresa" class="inline">
+        <button type="submit" class="btn btn-ghost btn-sm">Trocar empresa</button>
+      </form>
+    </div>
+  </div>
+<% } %>
+
+<form method="post" action="/admin/empresas" class="card card-pad empresa-create">
+  <h3 class="card-title">Nova empresa</h3>
+  <div class="empresa-create-grid">
+    <div>
+      <label class="field-label" for="nome">Nome</label>
+      <input id="nome" name="nome" required placeholder="Ex.: LOJAO" class="field-input" />
+    </div>
+    <div>
+      <label class="field-label" for="username">Usuário</label>
+      <input id="username" name="username" required placeholder="login" class="field-input" />
+    </div>
+    <div>
+      <label class="field-label" for="password">Senha</label>
+      <input id="password" name="password" type="password" required minlength="4" placeholder="mín. 4 caracteres" class="field-input" />
+    </div>
+    <div class="empresa-create-submit">
+      <button type="submit" class="btn btn-primary">Criar</button>
+    </div>
+  </div>
+</form>
+
+<div class="card empresa-list-card">
+  <div class="empresa-list-head">
+    <h3 class="card-title">Empresas cadastradas</h3>
+    <p class="muted muted-sm"><%= empresas.length %> cadastrada<%= empresas.length === 1 ? '' : 's' %></p>
+  </div>
+
+  <% if (!empresas.length) { %>
+    <div class="empty-state">Nenhuma empresa ainda. Crie a primeira acima.</div>
+  <% } else { %>
+    <ul class="empresa-list">
+      <% empresas.forEach(function(e) {
+        const isOpen = typeof user !== 'undefined' && user && user.actingAsEmpresa && String(user.empresaId) === String(e.id);
+        const itemClass = 'empresa-item'
+          + (isOpen ? ' empresa-item--open' : '')
+          + (!e.ativo ? ' empresa-item--inactive' : '');
+      %>
+        <li class="<%= itemClass %>">
+          <div class="empresa-meta">
+            <p class="empresa-name"><%= e.nome %></p>
+            <p class="empresa-user">Usuário: <strong><%= e.username || '—' %></strong></p>
+            <div class="empresa-badges">
+              <span class="badge <%= e.ativo ? 'badge-enviado' : 'badge-pendente' %>"><%= e.ativo ? 'Ativa' : 'Inativa' %></span>
+              <% if (isOpen) { %>
+                <span class="badge badge-regra">Em uso</span>
+              <% } %>
+            </div>
+          </div>
+          <div class="empresa-actions">
+            <% if (e.ativo) { %>
+              <form method="post" action="/admin/empresas/<%= e.id %>" class="inline">
+                <input type="hidden" name="action" value="abrir" />
+                <button type="submit" class="btn <%= isOpen ? 'btn-ghost' : 'btn-primary' %> btn-sm">
+                  <%= isOpen ? 'Continuar' : 'Abrir' %>
+                </button>
+              </form>
+            <% } %>
+            <button type="button"
+              class="btn btn-ghost btn-sm"
+              data-edit-empresa
+              data-id="<%= e.id %>"
+              data-nome="<%= e.nome %>">
+              Editar
+            </button>
+            <form method="post" action="/admin/empresas/<%= e.id %>" class="inline">
+              <input type="hidden" name="action" value="toggle" />
+              <input type="hidden" name="ativo" value="<%= e.ativo ? 'true' : 'false' %>" />
+              <button type="submit" class="btn btn-ghost btn-sm">
+                <%= e.ativo ? 'Desativar' : 'Ativar' %>
+              </button>
+            </form>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</div>
+
+<div id="empresa-edit-modal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal-panel" role="dialog" aria-labelledby="empresa-edit-title">
+    <h2 id="empresa-edit-title">Editar empresa</h2>
+    <p class="muted muted-sm" style="margin: 0 0 0.85rem;">Altere o nome ou defina uma nova senha. Deixe a senha em branco para manter a atual.</p>
+    <form id="empresa-edit-form" method="post" action="">
+      <label class="field-label" for="edit-nome">Nome</label>
+      <input id="edit-nome" name="nome" required class="field-input" />
+      <label class="field-label" for="edit-password" style="margin-top: 0.75rem;">Nova senha</label>
+      <input id="edit-password" name="password" type="password" minlength="4" placeholder="Deixe em branco para manter" class="field-input" />
+      <div class="row-actions" style="justify-content: flex-end; margin-top: 1rem;">
+        <button type="button" id="empresa-edit-cancel" class="btn btn-ghost">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const modal = document.getElementById('empresa-edit-modal');
+    const form = document.getElementById('empresa-edit-form');
+    const nomeInput = document.getElementById('edit-nome');
+    const passInput = document.getElementById('edit-password');
+    const cancelBtn = document.getElementById('empresa-edit-cancel');
+    if (!modal || !form) return;
+
+    function openModal(id, nome) {
+      form.action = '/admin/empresas/' + id;
+      nomeInput.value = nome || '';
+      passInput.value = '';
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      nomeInput.focus();
+    }
+
+    function closeModal() {
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      passInput.value = '';
+    }
+
+    document.querySelectorAll('[data-edit-empresa]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        openModal(btn.getAttribute('data-id'), btn.getAttribute('data-nome'));
+      });
+    });
+
+    cancelBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+    });
+  })();
+</script>
+
+<%- include('partials/app-shell-end') %>
