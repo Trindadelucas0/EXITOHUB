@@ -98,7 +98,7 @@ export default function ImportarPage() {
         title="Importar produtos"
         description="Cada planilha vira um lote separado. A conferência (como está × como deve ficar) usa só o lote escolhido. A base fiscal da empresa não é substituída."
       />
-      <form onSubmit={onSubmit} className="w-full max-w-xl rounded-lg border border-line bg-white p-4 sm:p-6">
+      <form onSubmit={onSubmit} className="w-full max-w-xl rounded-lg bg-white p-4 shadow-panel sm:p-6">
         <label htmlFor="arquivo" className="text-sm font-medium text-ink">
           Arquivo (XLSX, CSV ou ODS, até 8 MB)
         </label>
@@ -139,7 +139,7 @@ export default function ImportarPage() {
       </form>
 
       <section className="grid gap-3">
-        <h2 className="font-display text-xl text-ink">Histórico de planilhas</h2>
+        <h2 className="font-display text-xl font-extrabold text-white">Histórico de planilhas</h2>
         {batches[0] ? <BatchDiffPanel lote={batches[0].id} /> : null}
         {batches.length === 0 ? (
           <p className="text-sm text-ink-muted">Ainda não há lote importado nesta empresa.</p>
@@ -148,7 +148,7 @@ export default function ImportarPage() {
             {batches.map((batch) => (
               <li
                 key={batch.id}
-                className="flex flex-col gap-3 rounded-lg border border-line bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-3 rounded-lg bg-white p-4 shadow-panel sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
                   <p className="font-medium text-ink">{batch.fileName}</p>

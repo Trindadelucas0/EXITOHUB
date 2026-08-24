@@ -225,7 +225,7 @@ export default function BaseFiscalPage() {
         }
       />
       {isAdmin ? (
-        <form className="rounded-lg border border-line bg-white p-4 sm:p-6">
+        <form className="rounded-lg bg-white p-4 shadow-panel sm:p-6">
           <label htmlFor="arquivo-regras" className="text-sm font-medium text-ink">
             Importar planilha de regras (XLSX, CSV ou ODS, até 8 MB)
           </label>
@@ -283,7 +283,7 @@ export default function BaseFiscalPage() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Ex.: 32141010 ou Tintas"
-              className="min-h-11 rounded-md border border-line-strong bg-white px-3 text-base md:text-sm"
+              className="min-h-11 rounded-[10px] border-0 bg-paper-sunken px-3 text-base md:text-sm"
             />
           </div>
           <div className="grid gap-1.5">
@@ -294,7 +294,7 @@ export default function BaseFiscalPage() {
               id="filtro-sit"
               value={situacao}
               onChange={(e) => setSituacao(e.target.value)}
-              className="min-h-11 rounded-md border border-line-strong bg-white px-3 text-base md:text-sm"
+              className="min-h-11 rounded-[10px] border-0 bg-paper-sunken px-3 text-base md:text-sm"
             >
               {SITUACOES.map((s) => (
                 <option key={s.value} value={s.value}>
@@ -347,7 +347,7 @@ export default function BaseFiscalPage() {
           </div>
         </div>
         {highlight ? (
-          <aside className="hidden rounded-lg border border-brand bg-white p-4 shadow-brand xl:block">
+          <aside className="hidden rounded-lg bg-white p-4 shadow-panel xl:block">
             <p className="text-xs font-medium uppercase tracking-wide text-status-ok">Linha selecionada</p>
             <h2 className="mt-1 font-display text-2xl tabular text-brand">{highlight.ncm}</h2>
             <p className="text-sm text-ink-muted">

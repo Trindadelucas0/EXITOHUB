@@ -25,7 +25,7 @@ export function UserManual() {
         description="Este guia explica o dia a dia da conferência: o que o sistema compara, o que muda quando você marca tratado, e o que dá para editar no NCM."
       />
 
-      <nav aria-label="Assuntos deste guia" className="rounded-lg border border-line bg-white p-5 sm:p-6">
+      <nav aria-label="Assuntos deste guia" className="rounded-lg bg-white p-5 shadow-panel sm:p-6">
         <p className="text-xs font-medium uppercase tracking-[0.14em] text-ink-muted">Ir para</p>
         <ul className="mt-3 grid gap-2 sm:grid-cols-2">
           {SECTIONS.map((item) => (
@@ -295,7 +295,6 @@ export function UserManual() {
 function ManualCard({
   id,
   title,
-  highlight = false,
   children,
 }: {
   id: string;
@@ -306,9 +305,7 @@ function ManualCard({
   return (
     <section
       id={id}
-      className={`scroll-mt-20 rounded-lg border bg-white p-5 sm:p-8 ${
-        highlight ? "border-brand/40" : "border-line"
-      }`}
+      className={`scroll-mt-20 rounded-lg bg-white p-5 shadow-panel sm:p-8`}
     >
       <h2 className="font-display text-xl text-ink sm:text-2xl">{title}</h2>
       <div className="mt-4 grid gap-4 text-sm leading-relaxed text-ink">{children}</div>

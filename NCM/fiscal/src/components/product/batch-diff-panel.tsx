@@ -57,7 +57,7 @@ export function BatchDiffPanel({ lote, summaryOnly = false }: { lote: string | n
   const changed = summary.added + summary.removed + summary.ncmChanged + summary.statusChanged;
 
   return (
-    <section className="grid gap-3 rounded-lg border border-line bg-white p-4">
+    <section className="grid gap-3 rounded-lg bg-white p-4 shadow-panel">
       <div>
         <h2 className="font-display text-lg text-ink">O que mudou vs lote anterior</h2>
         <p className="text-sm text-ink-muted">

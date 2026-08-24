@@ -4,6 +4,7 @@
 
 :root {
   color-scheme: light;
+  --font-display: var(--font-sans);
 }
 
 html {
@@ -15,8 +16,11 @@ html {
 body {
   min-height: 100%;
   overflow-x: hidden;
-  background: #ffffff;
-  color: #1a1f24;
+  background:
+    radial-gradient(ellipse 70% 55% at 78% 8%, rgba(255, 255, 255, 0.22), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 12% 92%, rgba(0, 0, 0, 0.08), transparent 50%),
+    #2ea44f;
+  color: #1a1a1a;
 }
 
 *:focus-visible {
@@ -33,9 +37,10 @@ body {
   max-width: 100%;
   max-height: min(70vh, 44rem);
   -webkit-overflow-scrolling: touch;
-  border: 1px solid #1a1f24;
-  border-radius: 8px;
+  border: 0;
+  border-radius: 20px;
   background: #ffffff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 .fiscal-grid {
@@ -60,7 +65,7 @@ body {
   top: 0;
   z-index: 2;
   background: #f1f5f2;
-  border-bottom: 2px solid #1a1f24;
+  border-bottom: 2px solid #e5e7eb;
   font-weight: 500;
   color: #1a1f24;
   text-align: left;

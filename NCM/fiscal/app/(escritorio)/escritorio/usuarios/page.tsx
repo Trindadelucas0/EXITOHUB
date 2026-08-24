@@ -116,7 +116,7 @@ export default function EscritorioUsuariosPage() {
       />
       <form
         onSubmit={onSubmit}
-        className="grid w-full max-w-xl gap-4 rounded-lg border border-line bg-white p-4 sm:p-6"
+        className="grid w-full max-w-xl gap-4 rounded-lg bg-white p-4 shadow-panel sm:p-6"
       >
         <label className="grid gap-1.5 text-sm">
           <span className="font-medium text-ink">Empresa</span>
@@ -124,7 +124,7 @@ export default function EscritorioUsuariosPage() {
             name="companyId"
             required
             disabled={companies.length === 0}
-            className="min-h-11 rounded-md border border-line-strong bg-white px-3"
+            className="min-h-11 rounded-[10px] border-0 bg-paper-sunken px-3"
             value={companyId}
             onChange={(e) => setCompanyId(e.target.value)}
           >
@@ -162,7 +162,7 @@ export default function EscritorioUsuariosPage() {
           <span className="font-medium text-ink">Perfil</span>
           <select
             name="role"
-            className="min-h-11 rounded-md border border-line-strong bg-white px-3"
+            className="min-h-11 rounded-[10px] border-0 bg-paper-sunken px-3"
             value={role}
             onChange={(e) => setRole(e.target.value as "admin" | "consulta")}
           >
@@ -177,12 +177,12 @@ export default function EscritorioUsuariosPage() {
         </Button>
       </form>
       <section>
-        <h2 className="font-display text-xl text-ink">Usuários da empresa</h2>
+        <h2 className="font-display text-xl font-extrabold text-white">Usuários da empresa</h2>
         {loading ? <p className="mt-2 text-sm text-ink-muted">Carregando…</p> : null}
         {!loading && users.length === 0 ? (
           <p className="mt-2 text-sm text-ink-muted">Nenhum usuário nesta empresa.</p>
         ) : (
-          <ul className="mt-3 divide-y divide-line rounded-lg border border-line bg-white">
+          <ul className="mt-3 divide-y divide-line rounded-lg bg-white shadow-panel">
             {users.map((item) => (
               <li key={item.id} className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>

@@ -55,7 +55,7 @@ export function CstMatrix({
     ];
 
     return (
-      <dl className="overflow-hidden rounded-lg border border-line">
+      <dl className="overflow-hidden rounded-lg bg-white shadow-panel">
         {items.map((item, index) => {
           const mismatch = includeAtual && cstCellsDiverge(item.atual, item.ideal);
           return (
@@ -90,7 +90,7 @@ export function CstMatrix({
   }
 
   return (
-    <div className="overflow-auto rounded-lg border border-line">
+    <div className="overflow-auto rounded-lg bg-white shadow-panel">
       <table className="fiscal-grid w-full text-left">
         <caption className="sr-only">Matriz CST por destinatário</caption>
         <thead>

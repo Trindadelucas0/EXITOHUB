@@ -85,18 +85,21 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen min-w-0 bg-paper">
+    <div className="min-h-screen min-w-0">
       {(process.env.NEXT_PUBLIC_BASE_PATH === "/ncm") ? (
-        <div className="border-b border-line-strong bg-[#0f1b2d] text-white">
-          <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center gap-3 px-3 py-2 sm:px-4">
-            <a href="/" className="text-sm font-semibold tracking-wide">EXITO HUB</a>
+        <div className="px-3 pt-3 sm:px-4">
+          <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center gap-3 rounded-[20px] bg-white px-4 py-3 shadow-panel">
+            <a href="/" className="leading-tight">
+              <span className="block text-base font-extrabold tracking-tight text-ink">Êxito</span>
+              <span className="block text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand">HUB</span>
+            </a>
             <nav className="flex flex-wrap gap-2 text-sm">
-              <a className="rounded-full px-2.5 py-1 hover:bg-white/10" href="/">Início</a>
-              <a className="rounded-full px-2.5 py-1 hover:bg-white/10" href="/folha/modulos">Folha</a>
-              <a className="rounded-full px-2.5 py-1 hover:bg-white/10" href="/conci/">Conciliação</a>
-              <a className="rounded-full bg-white/15 px-2.5 py-1" href="/ncm/">NCM</a>
+              <a className="inline-flex min-h-10 items-center rounded-[10px] border border-line-strong px-3 hover:bg-paper-sunken" href="/">Início</a>
+              <a className="inline-flex min-h-10 items-center rounded-[10px] border border-line-strong px-3 hover:bg-paper-sunken" href="/folha/modulos">Folha</a>
+              <a className="inline-flex min-h-10 items-center rounded-[10px] border border-line-strong px-3 hover:bg-paper-sunken" href="/conci/">Conciliação</a>
+              <a className="inline-flex min-h-10 items-center rounded-[10px] border border-brand bg-brand-soft px-3 font-medium text-brand" href="/ncm/">NCM</a>
             </nav>
-            <a className="ml-auto rounded-full px-2.5 py-1 text-sm hover:bg-white/10" href="/logout">Sair do HUB</a>
+            <a className="ml-auto inline-flex min-h-10 items-center rounded-[10px] border border-line-strong px-3 text-sm hover:bg-paper-sunken" href="/logout">Sair</a>
           </div>
         </div>
       ) : null}
@@ -106,8 +109,8 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
       >
         Ir para o conteúdo
       </a>
-      <header className="sticky top-0 z-50 border-b-2 border-line-strong bg-paper-raised/95 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3 px-3 py-2 sm:px-4">
+      <header className="sticky top-0 z-50 bg-transparent px-3 pt-3 sm:px-4">
+        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3 rounded-[20px] bg-white px-4 py-3 shadow-panel">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -126,10 +129,10 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
             <Link href="/escritorio/empresas" className="flex min-w-0 items-center gap-2.5 leading-tight">
               <ExitoMark size={34} priority />
               <span className="min-w-0">
-                <span className="block text-[11px] font-medium uppercase tracking-[0.16em] text-ink-muted">
+                <span className="block text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand">
                   Escritório
                 </span>
-                <span className="block truncate font-display text-base text-brand sm:text-lg">
+                <span className="block truncate font-display text-base font-extrabold tracking-tight text-ink sm:text-lg">
                   Administrador
                 </span>
               </span>
@@ -164,7 +167,7 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
             open
               ? "fixed left-0 top-14 z-50 flex max-h-[calc(100dvh-3.5rem)] w-[min(18rem,88vw)]"
               : "hidden"
-          } flex-col overflow-y-auto border-r border-line-strong bg-paper-raised px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-panel md:sticky md:top-14 md:z-auto md:flex md:h-[calc(100dvh-3.5rem)] md:w-60 md:max-h-none md:shrink-0 md:self-start md:shadow-none`}
+          } flex-col overflow-y-auto rounded-[20px] bg-white px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-panel md:sticky md:top-20 md:z-auto md:m-3 md:flex md:h-[calc(100dvh-6rem)] md:w-60 md:max-h-none md:shrink-0 md:self-start`}
         >
           <p className="px-3 pb-2 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-muted">Cadastro</p>
           <ul className="grid content-start gap-1">

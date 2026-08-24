@@ -237,7 +237,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
           </div>
         </section>
       ) : (
-        <section className="grid gap-4 rounded-lg border border-line bg-white p-5">
+        <section className="grid gap-4 rounded-lg bg-white p-5 shadow-panel">
           {data.guide?.alertaDivergencia ? (
             <p className="rounded-md bg-status-bad-bg px-3 py-2 text-sm text-status-bad">
               {data.guide.alertaDivergencia}

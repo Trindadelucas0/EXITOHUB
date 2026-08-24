@@ -40,7 +40,7 @@ export type DivergenceItem = {
 
 export function DivergenceCard({ item }: { item: DivergenceItem }) {
   return (
-    <article className="rounded-lg border border-line bg-white shadow-panel">
+    <article className="rounded-lg bg-white shadow-panel">
       <header className="flex flex-col gap-3 border-b border-line px-4 py-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-medium uppercase tracking-[0.14em] text-ink-muted">

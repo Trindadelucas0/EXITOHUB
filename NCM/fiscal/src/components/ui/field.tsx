@@ -15,7 +15,7 @@ export function Field({ label, error, id, className = "", compact = false, ...pr
       </label>
       <input
         id={fieldId}
-        className={`min-h-11 w-full rounded-md border border-line-strong bg-white px-3 text-base text-ink placeholder:text-ink-muted md:text-sm ${className}`}
+        className={`min-h-11 w-full rounded-[10px] border-0 bg-paper-sunken px-3 text-base text-ink placeholder:text-ink-muted md:text-sm ${className}`}
         {...props}
       />
       {error ? <p className="text-sm text-status-bad">{error}</p> : null}

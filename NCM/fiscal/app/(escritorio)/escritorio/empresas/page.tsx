@@ -111,7 +111,7 @@ export default function EscritorioEmpresasPage() {
       />
       <form
         onSubmit={onSubmit}
-        className="grid w-full max-w-xl gap-4 rounded-lg border border-line bg-white p-4 sm:p-6"
+        className="grid w-full max-w-xl gap-4 rounded-lg bg-white p-4 shadow-panel sm:p-6"
       >
         <Field label="Nome da empresa" name="name" required value={name} onChange={(e) => setName(e.target.value)} />
         <Field
@@ -155,12 +155,12 @@ export default function EscritorioEmpresasPage() {
         </Button>
       </form>
       <section>
-        <h2 className="font-display text-xl text-ink">Empresas cadastradas</h2>
+        <h2 className="font-display text-xl font-extrabold text-white">Empresas cadastradas</h2>
         {loading ? <p className="mt-2 text-sm text-ink-muted">Carregando…</p> : null}
         {!loading && companies.length === 0 ? (
           <p className="mt-2 text-sm text-ink-muted">Nenhuma empresa listada.</p>
         ) : (
-          <ul className="mt-3 divide-y divide-line rounded-lg border border-line bg-white">
+          <ul className="mt-3 divide-y divide-line rounded-lg bg-white shadow-panel">
             {companies.map((item) => (
               <li
                 key={item.id}

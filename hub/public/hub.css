@@ -13,6 +13,17 @@
   --hub-ncm: #7a3e9d;
   --hub-radius: 14px;
   --hub-shadow: 0 10px 30px rgba(20, 32, 51, 0.08);
+  --exito-green: #2ea44f;
+  --exito-green-hover: #248a41;
+  --exito-green-soft: #dff0e4;
+  --exito-ink: #1a1a1a;
+  --exito-muted: #6b7280;
+  --exito-input: #f8f9fa;
+  --exito-line: #e5e7eb;
+  --exito-card: #ffffff;
+  --exito-radius-card: 20px;
+  --exito-radius-ctl: 10px;
+  --exito-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
@@ -52,6 +63,7 @@ body.hub-login-page {
 .hub-login-brand h1 { margin: 0.35rem 0; font-size: 1.6rem; }
 .hub-logo { max-width: 180px; height: auto; margin-bottom: 0.5rem; }
 
+/* ===== LEGADO: barra navy usada pela Folha (/folha). Não alterar. ===== */
 .hub-chrome {
   display: block;
   width: 100%;
@@ -192,4 +204,368 @@ body.hub-login-page {
 
 @media (max-width: 720px) {
   .hub-chrome-user { width: 100%; justify-content: space-between; margin-left: 0; }
+}
+
+/* ===== Visual Êxito: só Hub (body.hub-body / hub-login-page). Folha não usa essas classes de body. ===== */
+body.hub-body,
+body.hub-login-page {
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--exito-ink);
+  background:
+    radial-gradient(ellipse 70% 55% at 78% 8%, rgba(255, 255, 255, 0.22), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 12% 92%, rgba(0, 0, 0, 0.08), transparent 50%),
+    var(--exito-green);
+}
+
+body.hub-login-page {
+  display: grid;
+  place-items: center;
+  padding: 1.5rem 1.25rem 4.5rem;
+  position: relative;
+}
+
+body.hub-login-page::after {
+  content: "© 2026 Êxito - Todos os direitos reservados";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 1.25rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+body.hub-body .hub-login-card,
+body.hub-login-page .hub-login-card {
+  width: min(400px, 100%);
+  background: var(--exito-card);
+  border: 0;
+  border-radius: var(--exito-radius-card);
+  box-shadow: var(--exito-shadow);
+  padding: 2.25rem 1.85rem 1.85rem;
+}
+
+body.hub-login-page .hub-login-brand {
+  text-align: center;
+  margin-bottom: 1.6rem;
+}
+
+body.hub-login-page .hub-logo { display: none; }
+
+body.hub-login-page .hub-wordmark {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--exito-ink);
+  line-height: 1.1;
+}
+
+body.hub-login-page .hub-kicker {
+  margin: 0.35rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--exito-green);
+}
+
+body.hub-login-page .hub-field span {
+  color: var(--exito-muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+body.hub-body .hub-field input,
+body.hub-login-page .hub-field input,
+body.hub-body .hub-field select {
+  border: 0;
+  background: var(--exito-input);
+  border-radius: var(--exito-radius-ctl);
+  padding: 0.85rem 0.95rem;
+  min-height: 48px;
+  color: var(--exito-ink);
+}
+
+body.hub-body .hub-field input::placeholder,
+body.hub-login-page .hub-field input::placeholder {
+  color: #9ca3af;
+}
+
+body.hub-body .hub-field input:focus,
+body.hub-login-page .hub-field input:focus {
+  outline: 2px solid var(--exito-green);
+  outline-offset: 2px;
+}
+
+body.hub-body .hub-btn,
+body.hub-login-page .hub-btn {
+  min-height: 48px;
+  border-radius: var(--exito-radius-ctl);
+  gap: 0.5rem;
+}
+
+body.hub-body .hub-btn-primary,
+body.hub-login-page .hub-btn-primary {
+  background: var(--exito-green);
+  color: #fff;
+}
+
+body.hub-body .hub-btn-primary:hover,
+body.hub-login-page .hub-btn-primary:hover {
+  background: var(--exito-green-hover);
+}
+
+body.hub-body .hub-btn-ghost,
+body.hub-login-page .hub-btn-ghost {
+  background: #fff;
+  color: var(--exito-ink);
+  border: 1px solid #d1d5db;
+}
+
+body.hub-body .hub-btn-ghost:hover {
+  background: var(--exito-input);
+}
+
+body.hub-body .hub-alert {
+  border-radius: var(--exito-radius-ctl);
+}
+
+body.hub-body .hub-card {
+  background: var(--exito-card);
+  border: 0;
+  border-radius: var(--exito-radius-card);
+  box-shadow: var(--exito-shadow);
+  padding: 1.5rem 1.4rem;
+}
+
+body.hub-body .hub-fieldset {
+  border: 1px solid var(--exito-line);
+  border-radius: var(--exito-radius-ctl);
+}
+
+/* Chrome claro — só quando a view do Hub pede. Folha não inclui esta classe. */
+.hub-chrome.hub-chrome--exito {
+  background: transparent;
+  color: var(--exito-ink);
+  border: 0;
+  padding: 1.25rem 1.25rem 0;
+}
+
+.hub-chrome.hub-chrome--exito .hub-chrome-inner {
+  max-width: 1080px;
+  background: var(--exito-card);
+  border-radius: var(--exito-radius-card);
+  box-shadow: var(--exito-shadow);
+  padding: 0.85rem 1.15rem;
+}
+
+.hub-chrome.hub-chrome--exito .hub-chrome-logo {
+  background: transparent;
+  border-radius: 8px;
+}
+
+.hub-chrome.hub-chrome--exito .hub-eyebrow {
+  color: var(--exito-green);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.hub-chrome.hub-chrome--exito .hub-chrome-brand strong {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.hub-chrome.hub-chrome--exito .hub-nav-link {
+  color: var(--exito-ink);
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #fff;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.85rem;
+}
+
+.hub-chrome.hub-chrome--exito .hub-nav-link:hover,
+.hub-chrome.hub-chrome--exito .hub-nav-link.is-active {
+  background: var(--exito-input);
+  color: var(--exito-ink);
+  border-color: #c5cbd3;
+}
+
+.hub-chrome.hub-chrome--exito .hub-user-name {
+  color: var(--exito-muted);
+  opacity: 1;
+}
+
+body.hub-body .hub-main {
+  max-width: 1080px;
+  padding: 1.25rem 1.25rem 3rem;
+}
+
+body.hub-body .hub-hero h1 {
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+body.hub-body .hub-hero .hub-muted,
+body.hub-body .hub-hero .hub-eyebrow {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+body.hub-body .hub-table th,
+body.hub-body .hub-table td {
+  border-bottom-color: var(--exito-line);
+}
+
+/* Home no layout da referência */
+.hub-home {
+  width: min(1080px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.5rem 0 3rem;
+}
+
+.hub-home-top {
+  background: var(--exito-card);
+  border-radius: var(--exito-radius-card);
+  box-shadow: var(--exito-shadow);
+  padding: 1.1rem 1.35rem 1.35rem;
+}
+
+.hub-home-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.hub-home-brand {
+  text-decoration: none;
+  color: inherit;
+}
+
+.hub-home-brand .hub-wordmark {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--exito-ink);
+  line-height: 1.05;
+}
+
+.hub-home-brand .hub-kicker {
+  margin: 0.15rem 0 0;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--exito-green);
+}
+
+.hub-home-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.hub-home-welcome {
+  text-align: center;
+  margin: 1.75rem 0 0.35rem;
+}
+
+.hub-home-welcome h1 {
+  margin: 0;
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--exito-ink);
+}
+
+.hub-home-welcome p {
+  margin: 0.45rem 0 0;
+  color: var(--exito-muted);
+  font-size: 0.98rem;
+}
+
+body.hub-body .hub-modules {
+  gap: 1.1rem;
+  margin-top: 1.35rem;
+}
+
+body.hub-body .hub-module-card {
+  align-items: center;
+  text-align: center;
+  border: 0;
+  border-radius: var(--exito-radius-card);
+  box-shadow: var(--exito-shadow);
+  padding: 1.6rem 1.2rem 1.25rem;
+  min-height: 220px;
+  background: var(--exito-card);
+}
+
+body.hub-body .hub-module-card:hover {
+  transform: translateY(-3px);
+}
+
+body.hub-body .hub-module-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  color: var(--exito-green);
+  margin-bottom: 0.35rem;
+}
+
+body.hub-body .hub-module-icon svg {
+  width: 36px;
+  height: 36px;
+}
+
+body.hub-body .hub-module-folha,
+body.hub-body .hub-module-conci,
+body.hub-body .hub-module-ncm {
+  border-top: 0;
+}
+
+body.hub-body .hub-module-card strong {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--exito-ink);
+}
+
+body.hub-body .hub-module-card .hub-module-desc {
+  color: var(--exito-muted);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+body.hub-body .hub-module-cta {
+  color: var(--exito-muted);
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+body.hub-body .hub-module-folha .hub-module-cta,
+body.hub-body .hub-module-conci .hub-module-cta,
+body.hub-body .hub-module-ncm .hub-module-cta {
+  color: var(--exito-muted);
+}
+
+.hub-icon-login {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+@media (max-width: 720px) {
+  .hub-chrome.hub-chrome--exito .hub-chrome-user {
+    width: 100%;
+  }
+  .hub-home-welcome h1 { font-size: 1.45rem; }
 }

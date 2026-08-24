@@ -4,7 +4,7 @@ export function DiffTable({ diffs }: { diffs: FieldDiff[] }) {
   if (diffs.length === 0) return null;
 
   return (
-    <div className="overflow-hidden rounded-lg border border-line">
+    <div className="overflow-hidden rounded-lg bg-white shadow-panel">
       <table className="hidden w-full text-left text-sm md:table">
         <caption className="sr-only">
           Campos errados no cadastro importado e valor correto da regra fiscal

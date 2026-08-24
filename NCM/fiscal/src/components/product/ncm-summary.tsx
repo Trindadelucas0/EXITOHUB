@@ -69,7 +69,7 @@ export function NcmSummary({
   }
 
   return (
-    <section className="grid gap-2 rounded-lg border border-line bg-white p-4">
+    <section className="grid gap-2 rounded-lg bg-white p-4 shadow-panel">
       <p className="text-sm text-ink">
         <span className="font-medium tabular">{ncmCount}</span> NCMs ·{" "}
         <span className="font-medium tabular">{productCount}</span> produtos nesta fila

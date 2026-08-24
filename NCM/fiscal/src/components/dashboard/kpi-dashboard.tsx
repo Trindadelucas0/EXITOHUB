@@ -23,7 +23,7 @@ export function KpiDashboard({ companyName }: { companyName: string }) {
       {!batchBooted ? (
         <dl className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {["Analisados", "Corretos", "Divergentes", "Análise"].map((label) => (
-            <div key={label} className="rounded-lg border border-line bg-white p-4">
+            <div key={label} className="rounded-lg bg-white p-4 shadow-panel">
               <dt className="text-[11px] font-medium uppercase tracking-wide text-ink-muted">{label}</dt>
               <dd className="mt-1 h-8 w-16 animate-pulse rounded bg-line" />
             </div>
@@ -72,7 +72,7 @@ export function KpiDashboard({ companyName }: { companyName: string }) {
 }
 
 const KPI_TONES = {
-  neutral: { card: "border-line bg-white hover:border-brand hover:shadow-brand-sm", value: "text-ink" },
+  neutral: { card: "border-line bg-white shadow-panel hover:border-brand", value: "text-ink" },
   ok: {
     card: "border-brand border-l-4 bg-brand-soft shadow-brand-sm hover:shadow-brand",
     value: "text-status-ok",

@@ -13,17 +13,17 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          DEFAULT: "#1A1F24",
-          muted: "#5C6570",
+          DEFAULT: "#1A1A1A",
+          muted: "#6B7280",
         },
         paper: {
           DEFAULT: "#FFFFFF",
           raised: "#FFFFFF",
-          sunken: "#F1F5F2",
+          sunken: "#F8F9FA",
         },
         line: {
-          DEFAULT: "#C3CEC7",
-          strong: "#1A1F24",
+          DEFAULT: "#E5E7EB",
+          strong: "#D1D5DB",
         },
         brand: {
           DEFAULT: "#2EA44F",
@@ -42,17 +42,17 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-sans)", "Segoe UI", "sans-serif"],
-        display: ["var(--font-display)", "Georgia", "serif"],
+        display: ["var(--font-sans)", "Segoe UI", "sans-serif"],
       },
       boxShadow: {
-        panel: "0 1px 2px rgba(26, 31, 36, 0.06)",
-        brand: "0 0 0 1px rgba(46, 164, 79, 0.45), 0 12px 28px -14px rgba(46, 164, 79, 0.65)",
-        "brand-sm": "0 1px 8px -2px rgba(46, 164, 79, 0.45)",
+        panel: "0 8px 32px rgba(0, 0, 0, 0.12)",
+        brand: "0 8px 32px rgba(0, 0, 0, 0.12)",
+        "brand-sm": "0 8px 24px rgba(0, 0, 0, 0.10)",
       },
       borderRadius: {
-        sm: "4px",
-        md: "8px",
-        lg: "12px",
+        sm: "10px",
+        md: "10px",
+        lg: "20px",
       },
     },
   },

@@ -69,7 +69,7 @@ export function RuleEditor({
 
   return (
     <form
-      className="grid gap-4 rounded-lg border border-line bg-white p-4 sm:p-6"
+      className="grid gap-4 rounded-lg bg-white p-4 shadow-panel sm:p-6"
       onSubmit={(event) => {
         event.preventDefault();
         onSubmit();

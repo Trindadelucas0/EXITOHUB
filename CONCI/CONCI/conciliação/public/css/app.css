@@ -1,16 +1,16 @@
 /* Design system — Êxito Contabilidade / Conciliação */
 :root {
-  --brand-green: #39b54a;
-  --brand-green-dark: #2e9a3c;
-  --brand-green-soft: #e8f8eb;
-  --brand-black: #0a0a0a;
+  --brand-green: #2ea44f;
+  --brand-green-dark: #248a41;
+  --brand-green-soft: #dff0e4;
+  --brand-black: #1a1a1a;
   --surface: #ffffff;
-  --surface-muted: #f4f6f5;
-  --surface-tint: #eef3ef;
-  --border: #d8e0db;
-  --border-strong: #b8c5bc;
-  --text: #152018;
-  --muted: #5a6b60;
+  --surface-muted: #f8f9fa;
+  --surface-tint: #f3f6f4;
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+  --text: #1a1a1a;
+  --muted: #6b7280;
   --danger: #b42318;
   --danger-bg: #fef3f2;
   --danger-border: #fecdca;
@@ -23,11 +23,11 @@
   --success: #027a48;
   --success-bg: #ecfdf3;
   --success-border: #a6f4c5;
-  --shadow-sm: 0 1px 2px rgba(10, 10, 10, 0.05);
-  --shadow-md: 0 4px 16px rgba(10, 10, 10, 0.08);
-  --radius: 10px;
-  --radius-sm: 6px;
-  --font: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --shadow-sm: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --radius: 20px;
+  --radius-sm: 10px;
+  --font: Inter, "Segoe UI", system-ui, sans-serif;
 }
 
 *,
@@ -42,21 +42,22 @@ body,
   font-family: var(--font);
   color: var(--text);
   background:
-    radial-gradient(ellipse 80% 50% at 100% -20%, rgba(57, 181, 74, 0.12), transparent 55%),
-    radial-gradient(ellipse 60% 40% at -10% 100%, rgba(10, 10, 10, 0.04), transparent 50%),
-    var(--surface-muted);
+    radial-gradient(ellipse 70% 55% at 78% 8%, rgba(255, 255, 255, 0.22), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 12% 92%, rgba(0, 0, 0, 0.08), transparent 50%),
+    var(--brand-green);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
 /* ——— Header / Nav ——— */
 .app-header {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  background: transparent;
+  border-bottom: 0;
+  box-shadow: none;
   position: sticky;
   top: 0;
   z-index: 40;
+  padding: 1rem 1.25rem 0;
 }
 
 .app-header-inner {
@@ -64,9 +65,12 @@ body,
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 1.25rem;
+  padding: 0.85rem 1.15rem;
   max-width: 1400px;
   margin: 0 auto;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
 }
 
 .app-header-inner--wide {
@@ -96,10 +100,10 @@ body,
 .app-eyebrow {
   margin: 0;
   font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
+  font-weight: 800;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--brand-green);
 }
 
 .app-title {
@@ -125,14 +129,15 @@ body,
   display: inline-flex;
   align-items: center;
   padding: 0.4rem 0.75rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--text);
   text-decoration: none;
-  border: 1px solid transparent;
-  background: transparent;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
   cursor: pointer;
+  min-height: 40px;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 
@@ -144,7 +149,7 @@ body,
 .nav-link-active {
   background: var(--brand-green-soft);
   color: var(--brand-green-dark);
-  border-color: rgba(57, 181, 74, 0.35);
+  border-color: var(--brand-green);
 }
 
 .nav-user {
@@ -182,14 +187,14 @@ body,
 .page-header h2 {
   margin: 0 0 0.35rem;
   font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--brand-black);
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.03em;
 }
 
 .page-header p {
   margin: 0;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.92);
   font-size: 0.9375rem;
   line-height: 1.5;
   max-width: 42rem;
@@ -235,14 +240,14 @@ body,
 }
 
 .btn-secondary {
-  background: var(--brand-black);
-  color: #fff;
-  border-color: var(--brand-black);
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-strong);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: #222;
-  color: #fff;
+  background: var(--surface-muted);
+  color: var(--text);
 }
 
 .btn-ghost {
@@ -306,7 +311,7 @@ body,
 /* ——— Cards / surfaces ——— */
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
@@ -377,22 +382,23 @@ body,
 .field-select,
 .field-textarea {
   width: 100%;
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: var(--radius-sm);
-  padding: 0.55rem 0.75rem;
+  padding: 0.7rem 0.85rem;
+  min-height: 44px;
   font-family: inherit;
   font-size: 0.875rem;
   color: var(--text);
-  background: var(--surface);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  background: var(--surface-muted);
+  transition: box-shadow 0.15s;
 }
 
 .field-input:focus,
 .field-select:focus,
 .field-textarea:focus {
-  outline: none;
-  border-color: var(--brand-green);
-  box-shadow: 0 0 0 3px rgba(57, 181, 74, 0.2);
+  outline: 2px solid var(--brand-green);
+  outline-offset: 2px;
+  box-shadow: none;
 }
 
 .field-input:disabled,
@@ -412,7 +418,7 @@ body,
   padding: 0.45rem 0.85rem;
   border: 0;
   border-radius: var(--radius-sm);
-  background: var(--brand-black);
+  background: var(--brand-green);
   color: #fff;
   font-family: inherit;
   font-weight: 600;
@@ -427,7 +433,7 @@ body,
 
 .kpi-group {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: var(--radius);
   padding: 0.65rem 0.85rem;
   box-shadow: var(--shadow-sm);
@@ -500,7 +506,7 @@ body,
 }
 
 .segmented a.is-active {
-  background: var(--brand-black);
+  background: var(--brand-green);
   color: #fff;
 }
 
@@ -512,7 +518,7 @@ body,
   gap: 0.65rem;
   padding: 0.85rem 1rem;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
@@ -539,8 +545,9 @@ body,
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
 }
 
 .context-meta {
@@ -602,7 +609,7 @@ body,
 .table-wrap {
   overflow-x: auto;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
 }
@@ -780,11 +787,13 @@ body,
 .field-select--sm {
   padding: 0.35rem 0.5rem;
   font-size: 0.8rem;
+  min-height: 0;
 }
 
 .field-input--table {
   padding: 0.3rem 0.45rem;
   font-size: 0.8rem;
+  min-height: 0;
 }
 
 .field-input--debito,
@@ -1137,36 +1146,59 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1.5rem 1.25rem 4.5rem;
+  position: relative;
   background:
-    linear-gradient(145deg, #0a0a0a 0%, #1a2e1d 42%, #245c32 78%, #39b54a 100%);
+    radial-gradient(ellipse 70% 55% at 78% 8%, rgba(255, 255, 255, 0.22), transparent 55%),
+    radial-gradient(ellipse 55% 45% at 12% 92%, rgba(0, 0, 0, 0.08), transparent 50%),
+    var(--brand-green);
+}
+
+.login-page::after {
+  content: "© 2026 Êxito - Todos os direitos reservados";
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 1.25rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.75rem;
+  pointer-events: none;
 }
 
 .login-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
   background: var(--surface);
-  border-radius: 14px;
-  padding: 2rem 1.75rem;
+  border-radius: var(--radius);
+  padding: 2.25rem 1.85rem 1.85rem;
   box-shadow: var(--shadow-md);
 }
 
 .login-brand {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.85rem;
-  margin-bottom: 0.5rem;
+  text-align: center;
+  gap: 0.2rem;
+  margin-bottom: 1.5rem;
 }
 
 .login-brand .site-logo {
-  height: 48px;
+  display: none;
 }
 
 .login-brand h1 {
   margin: 0;
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.login-brand .app-eyebrow {
+  order: 2;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
 }
 
 /* ——— Modal ——— */
@@ -1224,10 +1256,11 @@ body,
 .text-money-neg { color: var(--danger); font-weight: 700; }
 
 .help-details {
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: var(--radius);
   background: var(--surface);
   padding: 0.15rem 0;
+  box-shadow: var(--shadow-sm);
 }
 
 .help-details summary {

@@ -4,15 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/hub-assets/hub.css" />
 </head>
 <body class="hub-login-page">
   <main class="hub-login-card">
     <header class="hub-login-brand">
-      <img src="/hub-assets/logo-exito.png" alt="Êxito Contabilidade" class="hub-logo" width="180" height="56" onerror="this.style.display='none'" />
-      <p class="hub-eyebrow">Êxito Contabilidade</p>
-      <h1>EXITO HUB</h1>
-      <p class="hub-muted">Acesse Folha, Conciliação e NCM com um único login.</p>
+      <p class="hub-wordmark">Êxito</p>
+      <p class="hub-kicker">HUB</p>
     </header>
 
     <% if (error) { %>
@@ -22,13 +23,19 @@
     <form method="post" action="/login" class="hub-form" autocomplete="on">
       <label class="hub-field">
         <span>Usuário</span>
-        <input name="username" required autocomplete="username" value="<%= lastUsername || '' %>" />
+        <input name="username" required autocomplete="username" placeholder="Digite seu usuário" value="<%= lastUsername || '' %>" />
       </label>
       <label class="hub-field">
         <span>Senha</span>
-        <input name="password" type="password" required autocomplete="current-password" />
+        <input name="password" type="password" required autocomplete="current-password" placeholder="••••••••" />
       </label>
-      <button type="submit" class="hub-btn hub-btn-primary">Entrar</button>
+      <button type="submit" class="hub-btn hub-btn-primary">
+        <svg class="hub-icon-login" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="3" y="4" width="10" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M13 12h8m0 0-3-3m3 3-3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Entrar
+      </button>
     </form>
   </main>
 </body>

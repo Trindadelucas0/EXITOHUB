@@ -13,7 +13,7 @@ export default async function OfficeLayout({ children }: { children: React.React
   }
   return (
     <AppShell>
-      <Suspense fallback={<p className="text-sm text-ink-muted">Carregando…</p>}>{children}</Suspense>
+      <Suspense fallback={<p className="text-sm text-white">Carregando…</p>}>{children}</Suspense>
     </AppShell>
   );
 }

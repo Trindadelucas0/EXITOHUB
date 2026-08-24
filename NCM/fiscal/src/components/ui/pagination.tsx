@@ -49,7 +49,7 @@ export function Pagination({
         <label className="flex w-full items-center gap-2 text-sm text-ink-muted sm:ml-auto sm:w-auto">
           Linhas
           <select
-            className="min-h-11 flex-1 rounded-md border border-line-strong bg-white px-2 text-base text-ink sm:flex-none md:text-sm"
+            className="min-h-11 flex-1 rounded-[10px] border-0 bg-paper-sunken px-2 text-base text-ink sm:flex-none md:text-sm"
             value={pageSize}
             onChange={(event) => onPageSize(Number(event.target.value))}
           >

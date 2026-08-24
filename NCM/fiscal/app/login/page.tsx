@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { postLoginPath } from "@/src/lib/auth-home";
-import { ExitoMark } from "@/src/components/brand/exito-mark";
 import { Button } from "@/src/components/ui/button";
 import { Field } from "@/src/components/ui/field";
 
@@ -40,11 +39,13 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-[#2EA44F] px-4 py-10">
-      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-[0_8px_32px_rgba(0,0,0,0.18)] sm:p-10">
+    <main className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
+      <div className="w-full max-w-[400px] rounded-[20px] bg-white p-8 shadow-panel sm:p-10">
         <div className="flex flex-col items-center text-center">
-          <ExitoMark size={96} priority />
-          <h1 className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-brand">Auditor Fiscal</h1>
+          <p className="text-[2rem] font-extrabold leading-none tracking-tight text-ink">Êxito</p>
+          <h1 className="mt-2 text-[0.72rem] font-extrabold uppercase tracking-[0.18em] text-brand">
+            Auditor Fiscal
+          </h1>
         </div>
 
         <form onSubmit={onSubmit} className="mt-8 grid gap-4">
@@ -64,7 +65,7 @@ export default function LoginPage() {
             type="password"
             autoComplete="current-password"
             required
-            placeholder="Digite sua senha"
+            placeholder="••••••••"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -73,13 +74,13 @@ export default function LoginPage() {
               {error}
             </p>
           ) : null}
-          <Button type="submit" disabled={loading} className="w-full">
+          <Button type="submit" disabled={loading} className="w-full min-h-12">
             {loading ? "Entrando…" : "Entrar"}
           </Button>
         </form>
       </div>
 
-      <p className="mt-8 text-center text-xs text-white/80">© 2026 · Todos os direitos reservados</p>
+      <p className="mt-8 text-center text-xs text-white/90">© 2026 Êxito - Todos os direitos reservados</p>
     </main>
   );
 }
