@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ncmApiUrl } from "@/src/lib/base-path";
 import type { ProductFilterSummary, ProductFilterValues } from "./product-filters";
 import type { ProductSheetItem } from "./product-sheet-types";
 
@@ -63,7 +64,7 @@ export function useProductQuery(
     const timer = setTimeout(() => {
       setLoading(true);
       setError("");
-      fetch(buildProductsUrl({ q, ncm, status, tratado }, lote, page, pageSize), {
+      fetch(ncmApiUrl(buildProductsUrl({ q, ncm, status, tratado }, lote, page, pageSize)), {
         signal: controller.signal,
       })
         .then(async (res) => {

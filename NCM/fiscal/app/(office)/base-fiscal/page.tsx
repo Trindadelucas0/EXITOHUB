@@ -10,6 +10,8 @@ import { Notice } from "@/src/components/ui/notice";
 import { Pagination } from "@/src/components/ui/pagination";
 import { SheetToolbar } from "@/src/components/ui/sheet-toolbar";
 import { Button } from "@/src/components/ui/button";
+import { clearImportListCache } from "@/src/components/product/batch-selector";
+import { ncmApiUrl } from "@/src/lib/base-path";
 
 const SITUACOES = [
   { value: "", label: "Todas as situações" },
@@ -69,7 +71,7 @@ export default function BaseFiscalPage() {
   const [reload, setReload] = useState(0);
 
   useEffect(() => {
-    fetch("/api/auth/me")
+    fetch(ncmApiUrl("/api/auth/me"))
       .then((r) => r.json())
       .then((json) => setIsAdmin(Boolean(json.data?.canWrite)))
       .catch(() => setIsAdmin(false));
@@ -83,7 +85,7 @@ export default function BaseFiscalPage() {
       const params = new URLSearchParams();
       if (q) params.set("q", q);
       if (situacao) params.set("situacao", situacao);
-      fetch(`/api/rules?${params}`, { signal: ctrl.signal })
+      fetch(ncmApiUrl(`/api/rules?${params}`), { signal: ctrl.signal })
         .then(async (res) => {
           const json = await res.json();
           if (!res.ok) throw new Error(json.error?.message ?? "Falha");
@@ -118,7 +120,8 @@ export default function BaseFiscalPage() {
     setError("");
     setSuccess("");
     try {
-      const url = mode === "edit" && selected ? `/api/rules/${selected.id}` : "/api/rules";
+      const url =
+        mode === "edit" && selected ? ncmApiUrl(`/api/rules/${selected.id}`) : ncmApiUrl("/api/rules");
       const method = mode === "edit" && selected ? "PATCH" : "POST";
       const res = await fetch(url, {
         method,
@@ -127,8 +130,9 @@ export default function BaseFiscalPage() {
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message ?? "Não foi possível salvar.");
-      setSuccess("Regra salva.");
+      setSuccess("Regra salva. Conferência dos lotes atualizada.");
       setMode("idle");
+      clearImportListCache();
       setReload((n) => n + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível salvar.");
@@ -142,11 +146,12 @@ export default function BaseFiscalPage() {
     setSaving(true);
     setError("");
     try {
-      const res = await fetch(`/api/rules/${rule.id}`, { method: "DELETE" });
+      const res = await fetch(ncmApiUrl(`/api/rules/${rule.id}`), { method: "DELETE" });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message ?? "Não foi possível excluir.");
       setSelected(null);
-      setSuccess("Regra excluída.");
+      setSuccess("Regra excluída. Conferência dos lotes atualizada.");
+      clearImportListCache();
       setReload((n) => n + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível excluir.");
@@ -162,12 +167,15 @@ export default function BaseFiscalPage() {
     const body = new FormData();
     body.append("file", file);
     try {
-      const res = await fetch("/api/rules/import", { method: "POST", body });
+      const res = await fetch(ncmApiUrl("/api/rules/import"), { method: "POST", body });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message ?? "Falha na importação.");
+      const resynced = Number(json.data.batchesResynced ?? 0);
       setSuccess(
-        `${json.data.inserted} regras novas e ${json.data.updated} atualizadas nesta empresa.`,
+        `${json.data.inserted} regras novas e ${json.data.updated} atualizadas nesta empresa.` +
+          (resynced > 0 ? ` ${resynced} lote${resynced === 1 ? "" : "s"} reprocessado${resynced === 1 ? "" : "s"}.` : ""),
       );
+      clearImportListCache();
       setReload((n) => n + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Falha na importação.");
@@ -188,7 +196,7 @@ export default function BaseFiscalPage() {
     setError("");
     setSuccess("");
     try {
-      const res = await fetch("/api/rules", { method: "DELETE" });
+      const res = await fetch(ncmApiUrl("/api/rules"), { method: "DELETE" });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message ?? "Não foi possível excluir a base fiscal.");
       setSelected(null);
@@ -196,6 +204,7 @@ export default function BaseFiscalPage() {
       setSuccess(
         `${json.data.deleted} regra${json.data.deleted === 1 ? "" : "s"} excluída${json.data.deleted === 1 ? "" : "s"}. Lotes de produtos mantidos.`,
       );
+      clearImportListCache();
       setReload((n) => n + 1);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível excluir a base fiscal.");

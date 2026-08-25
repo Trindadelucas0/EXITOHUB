@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { persistBatchSummary } from "@/src/server/audit";
+import { rescoreCompanyBatches } from "@/src/server/audit";
 import { LONG_TX, withTenant } from "@/src/server/db";
 import { jsonError, jsonOk } from "@/src/server/http";
 import { HttpError, requireCompanyAdmin, requireCompanySession } from "@/src/server/tenant";
@@ -43,7 +43,8 @@ export async function POST(request: Request) {
     const body = ruleBodySchema.parse(await request.json());
     const data = ruleWriteData(user.companyId, body);
     const rule = await withTenant(user.companyId, (db) => db.fiscalNcmRule.create({ data }));
-    return jsonOk({ rule }, 201);
+    const rescored = await rescoreCompanyBatches(user.companyId);
+    return jsonOk({ rule, batchesResynced: rescored.batchesResynced }, 201);
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return jsonError(new HttpError(409, "CONFLICT", "Já existe regra com este NCM e situação."));
@@ -62,21 +63,14 @@ export async function DELETE() {
       async (db) => {
         await db.productRuleLink.deleteMany({ where: { companyId: user.companyId } });
         const deleted = await db.fiscalNcmRule.deleteMany({ where: { companyId: user.companyId } });
-        const batches = await db.importBatch.findMany({
-          where: { companyId: user.companyId },
-          select: { id: true },
-          orderBy: { createdAt: "desc" },
-        });
-        return { deletedRules: deleted.count, batchIds: batches.map((batch) => batch.id) };
+        return { deletedRules: deleted.count };
       },
       LONG_TX,
     );
-    for (const batchId of cleared.batchIds) {
-      await persistBatchSummary(user.companyId, batchId);
-    }
+    const rescored = await rescoreCompanyBatches(user.companyId);
     return jsonOk({
       deleted: cleared.deletedRules,
-      batchesResynced: cleared.batchIds.length,
+      batchesResynced: rescored.batchesResynced,
     });
   } catch (error) {
     return jsonError(error);

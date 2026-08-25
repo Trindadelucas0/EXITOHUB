@@ -20,6 +20,7 @@ import { Button } from "@/src/components/ui/button";
 import { EmptyState } from "@/src/components/ui/empty-state";
 import { PageHeader } from "@/src/components/ui/page-header";
 import { Pagination } from "@/src/components/ui/pagination";
+import { ncmApiUrl } from "@/src/lib/base-path";
 import type { FieldDiff } from "@/src/lib/fiscal";
 
 type CatalogSlot =
@@ -199,7 +200,7 @@ function ExpandedProduct({
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(`/api/products/${item.id}`, { signal: controller.signal })
+    fetch(ncmApiUrl(`/api/products/${item.id}`), { signal: controller.signal })
       .then(async (res) => {
         const json = await res.json();
         if (!res.ok) throw new Error(json.error?.message ?? "Falha");

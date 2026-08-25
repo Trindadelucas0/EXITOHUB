@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ncmApiUrl } from "@/src/lib/base-path";
 
 type DiffPayload = {
   previous: { id: string; fileName: string; createdAt: string } | null;
@@ -38,7 +39,7 @@ export function BatchDiffPanel({ lote, summaryOnly = false }: { lote: string | n
       return;
     }
     const controller = new AbortController();
-    fetch(`/api/import/diff?lote=${encodeURIComponent(lote)}&pageSize=8`, {
+    fetch(ncmApiUrl(`/api/import/diff?lote=${encodeURIComponent(lote)}&pageSize=8`), {
       signal: controller.signal,
     })
       .then(async (res) => {

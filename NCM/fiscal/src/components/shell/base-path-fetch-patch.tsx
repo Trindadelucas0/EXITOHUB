@@ -1,13 +1,22 @@
+/**
+ * Prefixa fetch("/") com basePath do Next quando o NCM roda sob /ncm no HUB.
+ * Preferir o script síncrono no layout (antes do React). Este componente
+ * só reforça o patch se o script ainda não tiver rodado.
+ */
 "use client";
 
 import { useEffect } from "react";
 
-/**
- * Prefixa fetch("/") com basePath do Next quando o NCM roda sob /ncm no HUB.
- */
+declare global {
+  interface Window {
+    __NCM_FETCH_PATCHED__?: string;
+  }
+}
+
 export function BasePathFetchPatch({ basePath }: { basePath: string }) {
   useEffect(() => {
     if (!basePath) return;
+    if (window.__NCM_FETCH_PATCHED__ === basePath) return;
     const orig = window.fetch.bind(window);
     window.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
       if (typeof input === "string" && input.startsWith("/") && !input.startsWith(basePath)) {
@@ -27,9 +36,7 @@ export function BasePathFetchPatch({ basePath }: { basePath: string }) {
       }
       return orig(input, init);
     }) as typeof fetch;
-    return () => {
-      window.fetch = orig;
-    };
+    window.__NCM_FETCH_PATCHED__ = basePath;
   }, [basePath]);
 
   return null;

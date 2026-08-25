@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { rescoreCompanyBatches } from "@/src/server/audit";
 import { jsonError, jsonOk } from "@/src/server/http";
 import { HttpError, ownedWhere, requireCompanyAdmin, requireCompanySession } from "@/src/server/tenant";
 import { withTenant } from "@/src/server/db";
@@ -71,7 +72,8 @@ export async function PATCH(
       return db.fiscalNcmRule.findFirst({ where: ownedWhere(id, user.companyId) });
     });
     if (!updated) throw new HttpError(404, "NOT_FOUND", "Regra não encontrada.");
-    return jsonOk({ rule: updated });
+    const rescored = await rescoreCompanyBatches(user.companyId);
+    return jsonOk({ rule: updated, batchesResynced: rescored.batchesResynced });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return jsonError(new HttpError(409, "CONFLICT", "Já existe regra com este NCM e situação."));
@@ -105,7 +107,8 @@ export async function DELETE(
         where: { id: existing.id, companyId: user.companyId },
       });
     });
-    return jsonOk({ ok: true });
+    const rescored = await rescoreCompanyBatches(user.companyId);
+    return jsonOk({ ok: true, batchesResynced: rescored.batchesResynced });
   } catch (error) {
     return jsonError(error);
   }

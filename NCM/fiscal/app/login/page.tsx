@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { postLoginPath } from "@/src/lib/auth-home";
+import { ncmApiUrl } from "@/src/lib/base-path";
 import { Button } from "@/src/components/ui/button";
 import { Field } from "@/src/components/ui/field";
 
@@ -18,7 +19,7 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await fetch(ncmApiUrl("/api/auth/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

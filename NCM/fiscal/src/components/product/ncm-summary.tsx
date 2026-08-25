@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ncmApiUrl } from "@/src/lib/base-path";
 
 type Group = {
   ncm: string;
@@ -42,7 +43,7 @@ export function NcmSummary({
     if (status) params.set("status", status);
     if (tratado) params.set("tratado", tratado);
     const controller = new AbortController();
-    fetch(`/api/products/ncm-summary?${params}`, { signal: controller.signal })
+    fetch(ncmApiUrl(`/api/products/ncm-summary?${params}`), { signal: controller.signal })
       .then(async (res) => {
         const json = await res.json();
         if (!res.ok) throw new Error(json.error?.message ?? "Falha");
@@ -60,7 +61,7 @@ export function NcmSummary({
 
   async function treatNcm(ncm: string) {
     if (!lote) return;
-    await fetch("/api/products/treated-ncm", {
+    await fetch(ncmApiUrl("/api/products/treated-ncm"), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ lote, ncm, treated: true }),

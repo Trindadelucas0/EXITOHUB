@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ProductFilterValues } from "@/src/components/product/product-filters";
 import { ExportFileButton } from "@/src/components/ui/export-file-button";
+import { withBasePath } from "@/src/lib/base-path";
 
 type ExportScope = ProductFilterValues["status"];
 
@@ -19,7 +20,7 @@ function exportHref(format: "excel" | "pdf", batchId: string | null, tratado: st
   if (batchId) params.set("lote", batchId);
   if (tratado) params.set("tratado", tratado);
   const query = params.toString();
-  return `/api/export/${format}${query ? `?${query}` : ""}`;
+  return withBasePath(`/api/export/${format}${query ? `?${query}` : ""}`);
 }
 
 export function ExportActions({

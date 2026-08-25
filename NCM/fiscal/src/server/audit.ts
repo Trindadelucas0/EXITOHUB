@@ -275,6 +275,21 @@ export async function persistBatchSummary(companyId: string, batchId: string) {
   return totals;
 }
 
+/** Religa todos os lotes da empresa à base fiscal atual (após importar/editar regra). */
+export async function rescoreCompanyBatches(companyId: string) {
+  const batches = await withTenant(companyId, (db) =>
+    db.importBatch.findMany({
+      where: { companyId },
+      select: { id: true },
+      orderBy: { createdAt: "desc" },
+    }),
+  );
+  for (const batch of batches) {
+    await persistBatchSummary(companyId, batch.id);
+  }
+  return { batchesResynced: batches.length };
+}
+
 export async function syncProductAudit(companyId: string, productId: string) {
   return withTenant(
     companyId,

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { resolveDisplayedBatchId } from "@/src/lib/batch-scope";
+import { ncmApiUrl } from "@/src/lib/base-path";
 
 export type BatchOption = {
   id: string;
@@ -39,7 +40,7 @@ export function clearImportListCache() {
 }
 
 async function persistSelection(batchId: string) {
-  const selectRes = await fetch("/api/import/select", {
+  const selectRes = await fetch(ncmApiUrl("/api/import/select"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ batchId }),
@@ -98,7 +99,7 @@ export function BatchSelector({
 
     const controller = new AbortController();
     const boot = async () => {
-      const res = await fetch("/api/import", { signal: controller.signal });
+      const res = await fetch(ncmApiUrl("/api/import"), { signal: controller.signal });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message ?? "Falha ao listar lotes");
       const list = (json.data.batches ?? []) as BatchOption[];

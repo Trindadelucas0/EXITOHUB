@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { rescoreCompanyBatches } from "@/src/server/audit";
 import { LONG_TX, withTenant } from "@/src/server/db";
 import { jsonError, jsonOk } from "@/src/server/http";
 import { assertSafeUpload } from "@/src/server/import-cadastro";
@@ -83,7 +84,8 @@ export async function POST(request: Request) {
       LONG_TX,
     );
 
-    return jsonOk(result);
+    const rescored = await rescoreCompanyBatches(user.companyId);
+    return jsonOk({ ...result, batchesResynced: rescored.batchesResynced });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return jsonError(new HttpError(409, "CONFLICT", "Regra duplicada na importação."));

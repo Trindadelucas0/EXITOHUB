@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ComponentType } from "react";
 import { ExitoMark } from "@/src/components/brand/exito-mark";
 import { Button } from "@/src/components/ui/button";
+import { ncmApiUrl } from "@/src/lib/base-path";
 import { HubSystemsMenu } from "./hub-systems-menu";
 import { IconEmpresas, IconUsuarios } from "./nav-icons";
 
@@ -38,7 +39,7 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/auth/me", { signal: controller.signal })
+    fetch(ncmApiUrl("/api/auth/me"), { signal: controller.signal })
       .then(async (res) => {
         const json = await res.json().catch(() => ({}));
         if (res.status === 401) {
@@ -76,7 +77,7 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
   }, [open]);
 
   async function logout() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch(ncmApiUrl("/api/auth/logout"), { method: "POST" });
     if (process.env.NEXT_PUBLIC_BASE_PATH === "/ncm" || window.location.pathname.startsWith("/ncm")) {
       window.location.href = "/logout";
       return;

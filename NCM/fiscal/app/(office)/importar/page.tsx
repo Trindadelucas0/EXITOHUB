@@ -6,6 +6,7 @@ import { Button } from "@/src/components/ui/button";
 import { Notice } from "@/src/components/ui/notice";
 import { PageHeader } from "@/src/components/ui/page-header";
 import { clearImportListCache, type BatchOption } from "@/src/components/product/batch-selector";
+import { ncmApiUrl } from "@/src/lib/base-path";
 
 export default function ImportarPage() {
   const [file, setFile] = useState<File | null>(null);
@@ -17,13 +18,13 @@ export default function ImportarPage() {
   const [keepTreated, setKeepTreated] = useState(true);
 
   async function loadBatches() {
-    const res = await fetch("/api/import");
+    const res = await fetch(ncmApiUrl("/api/import"));
     const json = await res.json();
     if (res.ok) setBatches(json.data.batches ?? []);
   }
 
   useEffect(() => {
-    fetch("/api/auth/me")
+    fetch(ncmApiUrl("/api/auth/me"))
       .then((r) => r.json())
       .then((json) => {
         if (!json.data?.canWrite) setForbidden(true);
@@ -43,7 +44,7 @@ export default function ImportarPage() {
     body.append("file", file);
     body.append("manterTratados", keepTreated ? "1" : "0");
     try {
-      const res = await fetch("/api/import", { method: "POST", body });
+      const res = await fetch(ncmApiUrl("/api/import"), { method: "POST", body });
       const json = await res.json();
       if (!res.ok) {
         setStatus("error");
@@ -69,7 +70,7 @@ export default function ImportarPage() {
     }
     setDeleting(id);
     try {
-      const res = await fetch(`/api/import/${id}`, { method: "DELETE" });
+      const res = await fetch(ncmApiUrl(`/api/import/${id}`), { method: "DELETE" });
       const json = await res.json();
       if (!res.ok) {
         setStatus("error");

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ComponentType } from "react";
 import { ACTIVE_LOTE_EVENT, hrefWithLote, readActiveLote } from "@/src/lib/active-lote";
+import { ncmApiUrl } from "@/src/lib/base-path";
 import { ExitoMark } from "@/src/components/brand/exito-mark";
 import { Button } from "@/src/components/ui/button";
 import { HubSystemsMenu } from "./hub-systems-menu";
@@ -54,16 +55,6 @@ type Me = {
   hubMode?: boolean;
 };
 
-function apiUrl(path: string) {
-  const base =
-    (typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_PATH) ||
-    (typeof window !== "undefined" && (window as unknown as { __NEXT_DATA__?: { runtimeConfig?: { basePath?: string } } }).__NEXT_DATA__?.runtimeConfig?.basePath) ||
-    "";
-  // basePath do Next: quando a página está em /ncm/*, preferir prefixo conhecido em hub
-  const prefix = base || (typeof window !== "undefined" && window.location.pathname.startsWith("/ncm") ? "/ncm" : "");
-  return `${prefix}${path}`;
-}
-
 function isActivePath(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -86,7 +77,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(apiUrl("/api/auth/me"), { signal: controller.signal })
+    fetch(ncmApiUrl("/api/auth/me"), { signal: controller.signal })
       .then(async (res) => {
         const json = await res.json().catch(() => ({}));
         if (res.status === 401) {
@@ -124,7 +115,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }, [open]);
 
   async function logout() {
-    await fetch(apiUrl("/api/auth/logout"), { method: "POST" });
+    await fetch(ncmApiUrl("/api/auth/logout"), { method: "POST" });
     if (me?.hubMode || (typeof window !== "undefined" && window.location.pathname.startsWith("/ncm"))) {
       window.location.href = "/logout";
       return;
@@ -135,7 +126,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   async function backToOffice() {
     setLeaving(true);
-    const res = await fetch(apiUrl("/api/auth/clear-company"), { method: "POST" });
+    const res = await fetch(ncmApiUrl("/api/auth/clear-company"), { method: "POST" });
     if (!res.ok) {
       setLeaving(false);
       setError("Não foi possível voltar ao escritório.");

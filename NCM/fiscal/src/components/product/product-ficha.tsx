@@ -8,6 +8,7 @@ import { DiffTable } from "@/src/components/product/diff-table";
 import { Button } from "@/src/components/ui/button";
 import { PageHeader } from "@/src/components/ui/page-header";
 import { StatusBadge } from "@/src/components/ui/status-badge";
+import { ncmApiUrl } from "@/src/lib/base-path";
 import { DESTINO_KEYS, type DestinosCst, type FieldDiff, type StatusFiscal } from "@/src/lib/fiscal";
 
 type Payload = {
@@ -63,7 +64,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
   const [saving, setSaving] = useState(false);
 
   async function load(signal?: AbortSignal) {
-    const res = await fetch(`/api/products/${params.id}`, { signal });
+    const res = await fetch(ncmApiUrl(`/api/products/${params.id}`), { signal });
     const json = await res.json();
     if (signal?.aborted) return;
     if (!res.ok) throw new Error(json.error?.message ?? "Não encontrado");
@@ -74,7 +75,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
     const controller = new AbortController();
     setError("");
     setData(null);
-    fetch("/api/auth/me", { signal: controller.signal })
+    fetch(ncmApiUrl("/api/auth/me"), { signal: controller.signal })
       .then((r) => r.json())
       .then((json) => setRole(json.data?.canWrite ? "admin" : "consulta"))
       .catch((err: Error) => {
@@ -90,7 +91,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
   async function marcarTratado(treated: boolean) {
     setSaving(true);
     try {
-      const res = await fetch(`/api/products/${params.id}/treated`, {
+      const res = await fetch(ncmApiUrl(`/api/products/${params.id}/treated`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ treated }),
@@ -108,7 +109,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
   async function vincular(ruleId: string) {
     setSaving(true);
     try {
-      const res = await fetch(`/api/products/${params.id}`, {
+      const res = await fetch(ncmApiUrl(`/api/products/${params.id}`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ruleId }),
