@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   auditCounterDeltas,
   dashboardTotalsFromBatch,
+  ncmSearchDigits,
   parseExportStatuses,
   parseProductListParams,
 } from "./product-query";
@@ -33,6 +34,23 @@ describe("consulta paginada de produtos", () => {
       new URL("http://local/api/products?tratado=nao&status=DIVERGENTE"),
     );
     expect(params.tratado).toBe("nao");
+  });
+
+  it("corta sufixo TIPI no filtro NCM sem zerar parcial", () => {
+    const comSufixo = parseProductListParams(
+      new URL("http://local/api/products?ncm=73269090-1"),
+    );
+    expect(comSufixo.ncm).toBe("73269090");
+    const parcial = parseProductListParams(new URL("http://local/api/products?ncm=7326"));
+    expect(parcial.ncm).toBe("7326");
+  });
+});
+
+describe("ncmSearchDigits", () => {
+  it("remove máscara e sufixo TIPI sem pad à esquerda", () => {
+    expect(ncmSearchDigits("73269090-1")).toBe("73269090");
+    expect(ncmSearchDigits("82.03.20.10")).toBe("82032010");
+    expect(ncmSearchDigits("7326")).toBe("7326");
   });
 });
 

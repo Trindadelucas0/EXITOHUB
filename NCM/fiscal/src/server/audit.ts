@@ -11,7 +11,12 @@ import {
 import { productFromDb, ruleFromDb } from "./audit-map";
 import { LONG_TX, withTenant } from "./db";
 import { isJunkRow } from "./import-cadastro";
-import { parseProductListParams, auditCounterDeltas, digitsOnly, treatedWhere } from "./product-query";
+import {
+  parseProductListParams,
+  auditCounterDeltas,
+  ncmSearchDigits,
+  treatedWhere,
+} from "./product-query";
 import type { StatusFiscal } from "@/src/lib/fiscal";
 import { HttpError } from "./tenant";
 
@@ -343,7 +348,7 @@ function searchWhere(
   tratado: ReturnType<typeof parseProductListParams>["tratado"],
 ): Prisma.ProductWhereInput {
   const qLower = q.toLowerCase();
-  const ncmDigits = digitsOnly(q);
+  const ncmDigits = ncmSearchDigits(q);
   return {
     companyId,
     importBatchId: batchId,

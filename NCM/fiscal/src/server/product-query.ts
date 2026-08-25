@@ -18,9 +18,15 @@ export function digitsOnly(value: string): string {
   return value.replace(/\D/g, "");
 }
 
+/** Digits for NCM search: strip non-digits, keep at most 8 (TIPI suffix like -1). */
+export function ncmSearchDigits(value: string): string {
+  const digits = value.replace(/\D/g, "");
+  return digits.length > 8 ? digits.slice(0, 8) : digits;
+}
+
 export function parseProductListParams(url: URL): ProductListParams {
   const q = (url.searchParams.get("q") ?? "").trim();
-  const ncm = digitsOnly(url.searchParams.get("ncm") ?? "");
+  const ncm = ncmSearchDigits(url.searchParams.get("ncm") ?? "");
   const rawStatus = (url.searchParams.get("status") ?? "").trim();
   const status: ProductListParams["status"] =
     rawStatus === "DIVERGENTE" || rawStatus === "NECESSITA_ANALISE" || rawStatus === "CORRETO"
