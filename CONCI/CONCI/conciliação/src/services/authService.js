@@ -1,7 +1,27 @@
 'use strict';
 
+const path = require('path');
 const bcrypt = require('bcryptjs');
 const { query, getPool } = require('../db/pool');
+
+function loadHubProvision() {
+  if (process.env.HUB_MODE !== '1') return null;
+  return require(path.join(__dirname, '..', '..', '..', '..', '..', 'hub', 'provision.js'));
+}
+
+async function syncConciUserToHub({ username, password, displayName, updatePassword = true }) {
+  const provision = loadHubProvision();
+  if (!provision) return;
+  await provision.upsertHubUser({
+    username,
+    email: provision.conciHubEmail(username),
+    password,
+    displayName,
+    modules: ['conci'],
+    updatePassword,
+    landingPath: '/conci/',
+  });
+}
 
 async function findUserByUsername(username) {
   const result = await query(
@@ -156,13 +176,15 @@ async function createEmpresa({ nome, username, password }) {
   if (conflict) throw new Error(`Usuario "${userTrim}" ja existe`);
 
   const client = await getPool().connect();
+  let empresa;
+  let createdUser;
   try {
     await client.query('BEGIN');
     const emp = await client.query(
       `INSERT INTO empresas (nome, ativo) VALUES ($1, true) RETURNING id, nome, ativo, created_at`,
       [nomeTrim],
     );
-    const empresa = emp.rows[0];
+    empresa = emp.rows[0];
     const hash = await bcrypt.hash(pass, 10);
     const usr = await client.query(
       `INSERT INTO users (username, password_hash, role, empresa_id, ativo)
@@ -170,22 +192,33 @@ async function createEmpresa({ nome, username, password }) {
        RETURNING id, username`,
       [userTrim, hash, empresa.id],
     );
+    createdUser = usr.rows[0];
     await client.query('COMMIT');
-    return {
-      ...empresa,
-      user_id: usr.rows[0].id,
-      username: usr.rows[0].username,
-    };
   } catch (err) {
-    await client.query('ROLLBACK');
+    try { await client.query('ROLLBACK'); } catch { /* transacao ja encerrada */ }
     throw err;
   } finally {
     client.release();
   }
+  try {
+    await syncConciUserToHub({
+      username: userTrim,
+      password: pass,
+      displayName: nomeTrim,
+    });
+  } catch (hubErr) {
+    throw new Error(`Empresa criada, mas o login do HUB falhou: ${hubErr.message}`);
+  }
+  return {
+    ...empresa,
+    user_id: createdUser.id,
+    username: createdUser.username,
+  };
 }
 
 async function updateEmpresa(empresaId, { nome, password, ativo }) {
   const client = await getPool().connect();
+  let pendingHubPassword = null;
   try {
     await client.query('BEGIN');
     if (nome !== undefined) {
@@ -209,13 +242,27 @@ async function updateEmpresa(empresaId, { nome, password, ativo }) {
         `UPDATE users SET password_hash = $1 WHERE empresa_id = $2 AND role = 'empresa'`,
         [hash, empresaId],
       );
+      const userRow = await client.query(
+        `SELECT username FROM users WHERE empresa_id = $1 AND role = 'empresa' LIMIT 1`,
+        [empresaId],
+      );
+      if (userRow.rows[0]) {
+        pendingHubPassword = { username: userRow.rows[0].username, password: pass };
+      }
     }
     await client.query('COMMIT');
   } catch (err) {
-    await client.query('ROLLBACK');
+    try { await client.query('ROLLBACK'); } catch { /* transacao ja encerrada */ }
     throw err;
   } finally {
     client.release();
+  }
+  if (pendingHubPassword) {
+    await syncConciUserToHub({
+      username: pendingHubPassword.username,
+      password: pendingHubPassword.password,
+      displayName: pendingHubPassword.username,
+    });
   }
 }
 

@@ -16,3 +16,13 @@ export function withBasePath(path: string): string {
   if (path === base || path.startsWith(`${base}/`)) return path;
   return `${base}${path}`;
 }
+
+/** Prefixa fetch do NCM no HUB, sem depender do patch global de window.fetch. */
+export function ncmApiUrl(path: string): string {
+  const raw = path.startsWith("/") ? path : `/${path}`;
+  const fromWindow =
+    typeof window !== "undefined" && window.location.pathname.startsWith("/ncm") ? "/ncm" : "";
+  const prefix = fromWindow || appBasePath();
+  if (prefix && (raw === prefix || raw.startsWith(`${prefix}/`))) return raw;
+  return `${prefix}${raw}`;
+}

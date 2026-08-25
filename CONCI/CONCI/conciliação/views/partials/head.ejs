@@ -21,8 +21,9 @@ window.__BASE_PATH__ = <%- JSON.stringify(typeof basePath !== 'undefined' ? base
     if (v === '/login' || v.indexOf('/login?') === 0) return true;
     if (v === '/logout' || v.indexOf('/logout?') === 0) return true;
     if (v.indexOf('/hub-assets') === 0) return true;
-    if (v.indexOf('/folha') === 0 || v.indexOf('/ncm') === 0) return true;
+    if (v.indexOf('/folha') === 0 || v.indexOf('/ncm') === 0 || v.indexOf('/conci') === 0) return true;
     if (v.indexOf('/admin/usuarios') === 0) return true;
+    if (v === '/' || v.indexOf('/?') === 0) return true;
     return false;
   }
   function rewrite(el, attr) {

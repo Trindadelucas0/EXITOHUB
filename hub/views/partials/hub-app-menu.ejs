@@ -1,0 +1,82 @@
+<%
+  const userForMenu = (typeof menuUser !== 'undefined' && menuUser)
+    ? menuUser
+    : (typeof hubUser !== 'undefined' ? hubUser : null);
+  const menuCurrent = typeof current !== 'undefined' ? current : '';
+  const showHome = typeof showHomeLink === 'undefined' ? true : Boolean(showHomeLink);
+  const canFolha = Boolean(userForMenu && userForMenu.canFolha);
+  const canConci = Boolean(userForMenu && userForMenu.canConci);
+  const canNcm = Boolean(userForMenu && userForMenu.canNcm);
+  const isAdmin = Boolean(userForMenu && userForMenu.isAdmin);
+  const showFiscalGroup = canConci || canNcm;
+%>
+<button
+  type="button"
+  class="hub-menu-btn"
+  id="hub-menu-btn"
+  aria-expanded="false"
+  aria-controls="hub-app-menu"
+  aria-label="Abrir menu de sistemas"
+>
+  <span class="hub-menu-btn__bars" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+  </span>
+</button>
+
+<div class="hub-menu-overlay" id="hub-menu-overlay" hidden></div>
+
+<aside
+  class="hub-menu-drawer"
+  id="hub-app-menu"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Sistemas do HUB"
+  hidden
+>
+  <div class="hub-menu-drawer__head">
+    <div>
+      <p class="hub-menu-drawer__eyebrow">Êxito</p>
+      <strong class="hub-menu-drawer__title">Menu</strong>
+    </div>
+    <button type="button" class="hub-menu-close" id="hub-menu-close" aria-label="Fechar menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="hub-menu-nav" aria-label="Sistemas">
+    <% if (showHome) { %>
+      <a href="/" class="hub-menu-link <%= menuCurrent === 'home' ? 'is-active' : '' %>">Início</a>
+    <% } %>
+
+    <% if (canFolha) { %>
+      <div class="hub-menu-group">
+        <p class="hub-menu-group__label">Folha</p>
+        <a href="/folha/dashboard" class="hub-menu-link <%= menuCurrent === 'folha-dashboard' ? 'is-active' : '' %>">Controle de Folha</a>
+        <a href="/folha/fiscal" class="hub-menu-link <%= menuCurrent === 'folha-fiscal' ? 'is-active' : '' %>">Fiscal</a>
+      </div>
+    <% } %>
+
+    <% if (showFiscalGroup) { %>
+      <div class="hub-menu-group">
+        <p class="hub-menu-group__label">Fiscal</p>
+        <% if (canConci) { %>
+          <a href="/conci/" class="hub-menu-link <%= menuCurrent === 'conci' ? 'is-active' : '' %>">Conciliação</a>
+        <% } %>
+        <% if (canNcm) { %>
+          <a href="/ncm/" class="hub-menu-link <%= menuCurrent === 'ncm' ? 'is-active' : '' %>">Auditor NCM</a>
+        <% } %>
+      </div>
+    <% } %>
+
+    <% if (isAdmin) { %>
+      <div class="hub-menu-group">
+        <p class="hub-menu-group__label">Administração</p>
+        <a href="/admin/usuarios" class="hub-menu-link <%= menuCurrent === 'admin' ? 'is-active' : '' %>">Gerenciar usuários</a>
+      </div>
+    <% } %>
+  </nav>
+</aside>

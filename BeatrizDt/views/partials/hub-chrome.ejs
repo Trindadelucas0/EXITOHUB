@@ -11,13 +11,9 @@
         <strong>EXITO HUB</strong>
       </div>
     </a>
-    <nav class="hub-chrome-nav" aria-label="Módulos">
-      <a href="/" class="hub-nav-link">Início</a>
-      <% if (u.canFolha) { %><a href="/folha/modulos" class="hub-nav-link is-active">Folha</a><% } %>
-      <% if (u.canConci) { %><a href="/conci/" class="hub-nav-link">Conciliação</a><% } %>
-      <% if (u.canNcm) { %><a href="/ncm/" class="hub-nav-link">NCM</a><% } %>
-      <% if (u.isAdmin) { %><a href="/admin/usuarios" class="hub-nav-link">Usuários</a><% } %>
-    </nav>
+    <div class="hub-chrome-nav hub-chrome-nav--menu">
+      <%- include('hub-app-menu', { menuUser: u, current: 'folha', showHomeLink: true }) %>
+    </div>
     <div class="hub-chrome-user">
       <span class="hub-user-name"><%= u.displayName || u.username %></span>
       <form method="post" action="/logout" class="hub-inline">
@@ -26,4 +22,5 @@
     </div>
   </div>
 </header>
+<script src="/hub-assets/hub-menu.js"></script>
 <% } %>

@@ -67,6 +67,7 @@ function toPublicUser(row, modules) {
     canFolha: list.includes('folha'),
     canConci: list.includes('conci'),
     canNcm: list.includes('ncm'),
+    landingPath: row.landing_path || null,
   };
 }
 
@@ -80,7 +81,7 @@ async function loadModules(userId) {
 
 async function findUserByUsername(username) {
   const result = await query(
-    `SELECT id, username, email, password_hash, display_name, is_admin, active
+    `SELECT id, username, email, password_hash, display_name, is_admin, active, landing_path
      FROM hub_users
      WHERE LOWER(username) = LOWER($1)
      LIMIT 1`,
@@ -89,9 +90,24 @@ async function findUserByUsername(username) {
   return result.rows[0] || null;
 }
 
+async function findUserByLogin(login) {
+  const value = String(login || '').trim();
+  if (!value) return null;
+  const byUsername = await findUserByUsername(value);
+  if (byUsername) return byUsername;
+  const byEmail = await query(
+    `SELECT id, username, email, password_hash, display_name, is_admin, active, landing_path
+     FROM hub_users
+     WHERE LOWER(email) = LOWER($1)
+     LIMIT 1`,
+    [value],
+  );
+  return byEmail.rows[0] || null;
+}
+
 async function findUserById(id) {
   const result = await query(
-    `SELECT id, username, email, display_name, is_admin, active
+    `SELECT id, username, email, display_name, is_admin, active, landing_path
      FROM hub_users WHERE id = $1 LIMIT 1`,
     [id],
   );
@@ -99,7 +115,7 @@ async function findUserById(id) {
 }
 
 async function authenticate(username, password) {
-  const user = await findUserByUsername(username);
+  const user = await findUserByLogin(username);
   if (!user || !user.active) {
     await bcrypt.hash(String(password || ''), 10);
     return null;
@@ -108,6 +124,24 @@ async function authenticate(username, password) {
   if (!ok) return null;
   const modules = await loadModules(user.id);
   return toPublicUser(user, modules);
+}
+
+function postLoginPath(user) {
+  const mods = Array.isArray(user?.modules) ? user.modules : [];
+  if (mods.length !== 1) return '/';
+  const landing = String(user?.landingPath || '').trim();
+  const allowed = [
+    '/folha/modulos',
+    '/conci/',
+    '/ncm/',
+    '/ncm/dashboard',
+    '/ncm/escritorio/empresas',
+  ];
+  if (allowed.includes(landing)) return landing;
+  if (mods[0] === 'folha') return '/folha/modulos';
+  if (mods[0] === 'conci') return '/conci/';
+  if (mods[0] === 'ncm') return '/ncm/';
+  return '/';
 }
 
 async function createSession(userId) {
@@ -129,7 +163,7 @@ async function getSessionUser(sessionId) {
   if (!sessionId || !/^[a-zA-Z0-9_-]+$/.test(sessionId)) return null;
   const result = await query(
     `SELECT s.id AS session_id, s.expires_at,
-            u.id, u.username, u.email, u.display_name, u.is_admin, u.active
+            u.id, u.username, u.email, u.display_name, u.is_admin, u.active, u.landing_path
      FROM hub_sessions s
      JOIN hub_users u ON u.id = s.user_id
      WHERE s.id = $1
@@ -155,7 +189,7 @@ async function getUserFromRequest(req) {
 
 async function listUsers() {
   const users = await query(
-    `SELECT id, username, email, display_name, is_admin, active, created_at
+    `SELECT id, username, email, display_name, is_admin, active, landing_path, created_at
      FROM hub_users
      ORDER BY username`,
   );
@@ -231,7 +265,9 @@ module.exports = {
   setUserActive,
   setUserAdmin,
   findUserByUsername,
+  findUserByLogin,
   findUserById,
   loadModules,
   toPublicUser,
+  postLoginPath,
 };

@@ -3,11 +3,11 @@ import { jsonError, jsonOk } from "@/src/server/http";
 import { requireUser } from "@/src/server/tenant";
 import {
   createSession,
+  getUserFromToken,
   readSessionCookie,
   SESSION_COOKIE,
   sessionCookieOptions,
 } from "@/src/server/auth";
-import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
@@ -30,12 +30,13 @@ export async function GET() {
       },
     };
 
-    // Em modo HUB, garante cookie fiscal para rotas que dependem de sessão NCM.
+    // Em modo HUB, garante cookie fiscal válido (cookie velho/expirado não serve).
     if (process.env.HUB_MODE === "1") {
       const existing = await readSessionCookie();
-      if (!existing) {
+      const valid = await getUserFromToken(existing);
+      if (!valid) {
         const token = await createSession(user);
-        const response = NextResponse.json({ ok: true, data: payload });
+        const response = jsonOk(payload);
         response.cookies.set(SESSION_COOKIE, token, sessionCookieOptions());
         return response;
       }

@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/src/components/ui/button";
 import { Field } from "@/src/components/ui/field";
@@ -9,8 +8,20 @@ import { PageHeader } from "@/src/components/ui/page-header";
 
 type CompanyRow = { id: string; name: string; slug: string; createdAt: string };
 
+function ncmPrefix() {
+  if (typeof window !== "undefined" && window.location.pathname.startsWith("/ncm")) {
+    return "/ncm";
+  }
+  return process.env.NEXT_PUBLIC_BASE_PATH || "";
+}
+
+function apiUrl(path: string) {
+  const prefix = ncmPrefix();
+  if (prefix && (path === prefix || path.startsWith(`${prefix}/`))) return path;
+  return `${prefix}${path}`;
+}
+
 export default function EscritorioEmpresasPage() {
-  const router = useRouter();
   const [forbidden, setForbidden] = useState(false);
   const [companies, setCompanies] = useState<CompanyRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,12 +39,16 @@ export default function EscritorioEmpresasPage() {
     setLoading(true);
     setError("");
     try {
-      const me = await fetch("/api/auth/me").then((r) => r.json());
+      const params = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+      const fromQuery = params.get("erro");
+      if (fromQuery) setError(fromQuery);
+
+      const me = await fetch(apiUrl("/api/auth/me"), { credentials: "same-origin" }).then((r) => r.json());
       if (me.data?.role !== "superadmin") {
         setForbidden(true);
         return;
       }
-      const res = await fetch("/api/companies");
+      const res = await fetch(apiUrl("/api/companies"), { credentials: "same-origin" });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message ?? "Falha ao listar empresas.");
       setCompanies(json.data.companies ?? []);
@@ -48,40 +63,23 @@ export default function EscritorioEmpresasPage() {
     void load();
   }, []);
 
-  async function enterCompany(company: CompanyRow) {
-    setEntering(company.id);
-    setError("");
-    try {
-      const res = await fetch("/api/auth/select-company", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ companyId: company.id }),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error?.message ?? "Não foi possível abrir a empresa.");
-      router.push(typeof json.data.redirectTo === "string" ? json.data.redirectTo : "/dashboard");
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Não foi possível abrir a empresa.");
-      setEntering("");
-    }
-  }
-
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setSaving(true);
     setError("");
     setSuccess("");
     try {
-      const res = await fetch("/api/companies", {
+      const res = await fetch(apiUrl("/api/companies"), {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, slug, adminName, adminEmail, adminPassword }),
+        signal: AbortSignal.timeout(20000),
       });
-      const json = await res.json();
+      const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error?.message ?? "Não foi possível cadastrar.");
       setSuccess(
-        `Empresa “${json.data.company.name}” criada. Entre com ${json.data.admin.email} para abrir o painel fiscal dela.`,
+        `Empresa “${json.data.company.name}” criada. O login é o do HUB (${json.data.admin.email}): ao entrar, cai direto nesta empresa no NCM.`,
       );
       setName("");
       setSlug("");
@@ -96,6 +94,30 @@ export default function EscritorioEmpresasPage() {
     }
   }
 
+  async function enterCompany(companyId: string) {
+    if (entering) return;
+    setEntering(companyId);
+    setError("");
+    try {
+      const res = await fetch(apiUrl("/api/auth/select-company"), {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ companyId }),
+        signal: AbortSignal.timeout(20000),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(json.error?.message ?? "Não foi possível abrir a empresa.");
+      }
+      const dest = typeof json.data?.redirectTo === "string" ? json.data.redirectTo : "/dashboard";
+      window.location.assign(apiUrl(dest));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Não foi possível abrir a empresa.");
+      setEntering("");
+    }
+  }
+
   if (forbidden) {
     return (
       <p className="text-sm text-status-bad">Somente o administrador do escritório cadastra empresas.</p>
@@ -107,7 +129,7 @@ export default function EscritorioEmpresasPage() {
       <PageHeader
         kicker="Escritório"
         title="Empresas"
-        description="Cadastre a empresa e o primeiro administrador. Cada empresa fica isolada: “Entrar” abre a conferência dela sem misturar dados."
+        description="Cadastre a empresa. O e-mail e a senha são o login do HUB: quem entrar em /login cai direto nesta empresa no NCM, sem login separado."
       />
       <form
         onSubmit={onSubmit}
@@ -124,14 +146,14 @@ export default function EscritorioEmpresasPage() {
         />
         <p className="text-xs text-ink-muted">Letras minúsculas, números e hífen.</p>
         <Field
-          label="Nome do administrador"
+          label="Nome de quem vai acessar"
           name="adminName"
           required
           value={adminName}
           onChange={(e) => setAdminName(e.target.value)}
         />
         <Field
-          label="E-mail do administrador"
+          label="E-mail (login do HUB)"
           name="adminEmail"
           type="email"
           required
@@ -139,7 +161,7 @@ export default function EscritorioEmpresasPage() {
           onChange={(e) => setAdminEmail(e.target.value)}
         />
         <Field
-          label="Senha do administrador"
+          label="Senha (login do HUB)"
           name="adminPassword"
           type="password"
           required
@@ -148,6 +170,9 @@ export default function EscritorioEmpresasPage() {
           value={adminPassword}
           onChange={(e) => setAdminPassword(e.target.value)}
         />
+        <p className="text-xs text-ink-muted">
+          Este e-mail e senha entram em http://localhost:3000/login. Depois do login, a pessoa vai direto para esta empresa no NCM.
+        </p>
         {error ? <Notice variant="error">{error}</Notice> : null}
         {success ? <Notice variant="success">{success}</Notice> : null}
         <Button type="submit" disabled={saving}>
@@ -156,6 +181,11 @@ export default function EscritorioEmpresasPage() {
       </form>
       <section>
         <h2 className="font-display text-xl font-extrabold text-white">Empresas cadastradas</h2>
+        {error ? (
+          <div className="mt-2">
+            <Notice variant="error">{error}</Notice>
+          </div>
+        ) : null}
         {loading ? <p className="mt-2 text-sm text-ink-muted">Carregando…</p> : null}
         {!loading && companies.length === 0 ? (
           <p className="mt-2 text-sm text-ink-muted">Nenhuma empresa listada.</p>
@@ -171,10 +201,11 @@ export default function EscritorioEmpresasPage() {
                   <p className="text-sm text-ink-muted">{item.slug}</p>
                 </div>
                 <Button
+                  type="button"
                   variant="secondary"
                   className="sm:w-auto"
                   disabled={entering !== ""}
-                  onClick={() => void enterCompany(item)}
+                  onClick={() => void enterCompany(item.id)}
                 >
                   {entering === item.id ? "Abrindo…" : "Entrar"}
                 </Button>

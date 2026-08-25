@@ -82,6 +82,7 @@ async function ensureTables() {
     CREATE INDEX IF NOT EXISTS idx_hub_sessions_user ON hub_sessions(user_id);
     CREATE INDEX IF NOT EXISTS idx_hub_sessions_expires ON hub_sessions(expires_at);
   `);
+  await query(`ALTER TABLE hub_users ADD COLUMN IF NOT EXISTS landing_path TEXT`);
 }
 
 async function seedAdmin() {
@@ -118,6 +119,12 @@ async function bootstrapHubDatabase() {
   await ensureDatabase();
   await ensureTables();
   await seedAdmin();
+  try {
+    const { syncModuleUsers } = require('./sync-module-users');
+    await syncModuleUsers();
+  } catch (err) {
+    console.warn('[hub] sync usuários dos módulos falhou:', err.message);
+  }
 }
 
 async function closePool() {

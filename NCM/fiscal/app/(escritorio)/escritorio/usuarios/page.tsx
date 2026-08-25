@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ncmApiUrl } from "@/src/lib/base-path";
 import { Button } from "@/src/components/ui/button";
 import { Field } from "@/src/components/ui/field";
 import { Notice } from "@/src/components/ui/notice";
@@ -24,12 +25,12 @@ export default function EscritorioUsuariosPage() {
   const [role, setRole] = useState<"admin" | "consulta">("consulta");
 
   async function loadCompanies() {
-    const me = await fetch("/api/auth/me").then((r) => r.json());
+    const me = await fetch(ncmApiUrl("/api/auth/me"), { credentials: "same-origin" }).then((r) => r.json());
     if (me.data?.role !== "superadmin") {
       setForbidden(true);
       return;
     }
-    const res = await fetch("/api/companies");
+    const res = await fetch(ncmApiUrl("/api/companies"), { credentials: "same-origin" });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error?.message ?? "Falha ao listar empresas.");
     const list = (json.data.companies ?? []) as CompanyRow[];
@@ -42,7 +43,9 @@ export default function EscritorioUsuariosPage() {
       setUsers([]);
       return;
     }
-    const res = await fetch(`/api/users?companyId=${encodeURIComponent(id)}`);
+    const res = await fetch(ncmApiUrl(`/api/users?companyId=${encodeURIComponent(id)}`), {
+      credentials: "same-origin",
+    });
     const json = await res.json();
     if (!res.ok) throw new Error(json.error?.message ?? "Falha ao listar usuários.");
     setUsers(json.data.users ?? []);
@@ -81,21 +84,30 @@ export default function EscritorioUsuariosPage() {
     setError("");
     setSuccess("");
     try {
-      const res = await fetch("/api/users", {
+      const res = await fetch(ncmApiUrl("/api/users"), {
         method: "POST",
+        credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password, role, companyId }),
+        signal: AbortSignal.timeout(20000),
       });
-      const json = await res.json();
+      const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error?.message ?? "Não foi possível cadastrar.");
-      setSuccess(`Usuário ${json.data.user.email} cadastrado.`);
+      setSuccess(`Usuário ${json.data.user.email} cadastrado. Login no HUB: cai direto nesta empresa no NCM.`);
       setName("");
       setEmail("");
       setPassword("");
       setRole("consulta");
       await loadUsers(companyId);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Não foi possível cadastrar.");
+      const timedOut = err instanceof DOMException && err.name === "TimeoutError";
+      setError(
+        timedOut
+          ? "O servidor não respondeu. Recarregue a página e tente de novo."
+          : err instanceof Error
+            ? err.message
+            : "Não foi possível cadastrar.",
+      );
     } finally {
       setSaving(false);
     }
@@ -112,7 +124,7 @@ export default function EscritorioUsuariosPage() {
       <PageHeader
         kicker="Escritório"
         title="Usuários"
-        description="Escolha a empresa e cadastre o login dela. E-mail é único no sistema."
+        description="Cadastre o login da empresa. E-mail e senha são do HUB: ao entrar, a pessoa cai direto na empresa escolhida no NCM."
       />
       <form
         onSubmit={onSubmit}
@@ -141,7 +153,7 @@ export default function EscritorioUsuariosPage() {
         </label>
         <Field label="Nome" name="name" required value={name} onChange={(e) => setName(e.target.value)} />
         <Field
-          label="E-mail"
+          label="E-mail (login do HUB)"
           name="email"
           type="email"
           required
@@ -149,7 +161,7 @@ export default function EscritorioUsuariosPage() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <Field
-          label="Senha"
+          label="Senha (login do HUB)"
           name="password"
           type="password"
           required

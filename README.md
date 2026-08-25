@@ -22,7 +22,7 @@ Login inicial (seed via `.env`):
 | Caminho | Módulo |
 |---------|--------|
 | `/` | Home do HUB |
-| `/login` | Login único |
+| `/login` | Login único (usuário ou e-mail) |
 | `/admin/usuarios` | Permissões de módulo |
 | `/folha` | Folha & Fiscal |
 | `/conci` | Conciliação |
@@ -35,10 +35,17 @@ Login inicial (seed via `.env`):
 - `CONCI` — Conciliação
 - `fiscal-p` — NCM
 
-## SSO
+## Login único
 
-- Folha: usa o usuário do HUB (admin do HUB → admin da Folha)
-- Conciliação: mesmo **username** precisa existir no banco CONCI
-- NCM: mesmo **e-mail** precisa existir no banco fiscal-p
+O ponto de acesso é só `/login`. O destino segue **onde a pessoa foi cadastrada**:
+
+- Criou no HUB só com Folha → entra em `/folha/modulos`
+- Criou empresa na Conciliação → entra em `/conci/`
+- Criou usuário/empresa no NCM (e-mail) → entra direto no NCM **daquela empresa** (`/ncm/dashboard`)
+- Mais de um módulo (ex.: admin do escritório) → home do HUB para escolher
+
+Ao cadastrar no NCM ou na Conciliação, o HUB recebe a mesma senha automaticamente. Usuários que já existiam nesses bancos são importados na subida do servidor.
+
+No NCM, **Entrar** numa empresa (ex.: BAIFER) abre a conferência dela sem segundo login.
 
 Copie `.env.example` para `.env` e ajuste as senhas.

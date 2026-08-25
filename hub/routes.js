@@ -10,6 +10,7 @@ const {
   updateUserModules,
   setUserActive,
   setUserAdmin,
+  postLoginPath,
   MODULES,
 } = require('./auth');
 const { requireHubAuth, requireHubAdmin, logoutHub } = require('./middleware');
@@ -17,7 +18,7 @@ const { requireHubAuth, requireHubAdmin, logoutHub } = require('./middleware');
 const router = express.Router();
 
 router.get('/login', (req, res) => {
-  if (req.hubUser) return res.redirect('/');
+  if (req.hubUser) return res.redirect(postLoginPath(req.hubUser));
   return res.render('login', {
     title: 'EXITO HUB — Login',
     error: null,
@@ -39,7 +40,7 @@ router.post('/login', async (req, res) => {
     }
     const sessionId = await createSession(user.id);
     setSessionCookie(res, sessionId);
-    return res.redirect('/');
+    return res.redirect(postLoginPath(user));
   } catch (err) {
     console.error('[hub] login error', err);
     return res.status(500).render('login', {

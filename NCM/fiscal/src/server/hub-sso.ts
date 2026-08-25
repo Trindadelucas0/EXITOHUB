@@ -15,7 +15,7 @@ function resolveHost(host: string) {
   return value;
 }
 
-function getHubPool() {
+export function getHubPool() {
   if (!hubPool) {
     const host = resolveHost(process.env.HUB_DB_HOST || "127.0.0.1");
     hubPool = new Pool({

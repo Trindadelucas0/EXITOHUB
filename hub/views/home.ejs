@@ -18,16 +18,7 @@
           <p class="hub-kicker">HUB</p>
         </a>
         <div class="hub-home-actions">
-          <% if (hubUser.isAdmin) { %>
-            <a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/usuarios">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                <circle cx="9.5" cy="7.5" r="3.5" stroke="currentColor" stroke-width="1.8"/>
-                <path d="M19 8v6M16 11h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-              Gerenciar usuários
-            </a>
-          <% } %>
+          <%- include('partials/hub-app-menu', { menuUser: hubUser, current: 'home', showHomeLink: false }) %>
           <form method="post" action="/logout" class="hub-inline">
             <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -42,56 +33,14 @@
 
       <div class="hub-home-welcome">
         <h1>Bem-vindo, <%= hubUser.displayName || hubUser.username %></h1>
-        <p>Selecione o sistema que deseja acessar</p>
+        <p>Abra o menu para escolher o sistema</p>
       </div>
     </section>
-
-    <div class="hub-modules">
-      <% if (hubUser.canFolha) { %>
-        <a class="hub-module-card hub-module-folha" href="/folha/modulos">
-          <span class="hub-module-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M4 7h16M4 12h16M4 17h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            </svg>
-          </span>
-          <strong>FOLHA &amp; FISCAL</strong>
-          <span class="hub-module-desc">Controle de impostos da folha e resumo fiscal (Grupo Dauto).</span>
-          <span class="hub-module-cta">Acessar &gt;</span>
-        </a>
-      <% } %>
-
-      <% if (hubUser.canConci) { %>
-        <a class="hub-module-card hub-module-conci" href="/conci/">
-          <span class="hub-module-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="6" width="18" height="12" rx="2" stroke="currentColor" stroke-width="1.8"/>
-              <path d="M3 10h18" stroke="currentColor" stroke-width="1.8"/>
-            </svg>
-          </span>
-          <strong>CONCILIAÇÃO</strong>
-          <span class="hub-module-desc">Upload de extrato, matching e exportação para o Domínio.</span>
-          <span class="hub-module-cta">Acessar &gt;</span>
-        </a>
-      <% } %>
-
-      <% if (hubUser.canNcm) { %>
-        <a class="hub-module-card hub-module-ncm" href="/ncm/">
-          <span class="hub-module-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M4 19V5h12l4 4v10H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-              <path d="M16 5v4h4" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <strong>AUDITOR NCM</strong>
-          <span class="hub-module-desc">Conferência fiscal de produtos, regras NCM e divergências.</span>
-          <span class="hub-module-cta">Acessar &gt;</span>
-        </a>
-      <% } %>
-    </div>
 
     <% if (!hubUser.canFolha && !hubUser.canConci && !hubUser.canNcm) { %>
       <div class="hub-alert">Nenhum módulo liberado. Peça ao administrador do HUB.</div>
     <% } %>
   </div>
+  <script src="/hub-assets/hub-menu.js"></script>
 </body>
 </html>

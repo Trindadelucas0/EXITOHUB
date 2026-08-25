@@ -3,6 +3,7 @@ import { z } from "zod";
 import { hashPassword } from "@/src/server/auth";
 import { prisma, withTenant } from "@/src/server/db";
 import { jsonError, jsonOk } from "@/src/server/http";
+import { provisionNcmHubUser } from "@/src/server/hub-provision";
 import { HttpError, requireSuperAdmin, requireUser } from "@/src/server/tenant";
 
 const createSchema = z.object({
@@ -73,6 +74,19 @@ export async function POST(request: Request) {
         select: { id: true, name: true, email: true, role: true, createdAt: true },
       });
     });
+    try {
+      await provisionNcmHubUser({
+        username: email,
+        email,
+        passwordHash,
+        displayName: body.name.trim(),
+      });
+    } catch (hubError) {
+      await withTenant(companyId, async (db) => {
+        await db.user.delete({ where: { id: created.id } });
+      }).catch(() => undefined);
+      throw hubError;
+    }
     return jsonOk({ user: created }, 201);
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {

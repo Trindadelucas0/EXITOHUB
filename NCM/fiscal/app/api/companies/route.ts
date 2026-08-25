@@ -5,6 +5,7 @@ import { hashPassword } from "@/src/server/auth";
 import { isValidSlug, normalizeSlug } from "@/src/server/company-slug";
 import { prisma, withTenant } from "@/src/server/db";
 import { jsonError, jsonOk } from "@/src/server/http";
+import { provisionNcmHubUser } from "@/src/server/hub-provision";
 import { HttpError, requireSuperAdmin, requireUser } from "@/src/server/tenant";
 
 const createSchema = z.object({
@@ -65,6 +66,20 @@ export async function POST(request: Request) {
       });
       return { company, admin };
     });
+    try {
+      await provisionNcmHubUser({
+        username: email,
+        email,
+        passwordHash,
+        displayName: body.adminName.trim(),
+      });
+    } catch (hubError) {
+      await withTenant(companyId, async (db) => {
+        await db.user.deleteMany({ where: { companyId } });
+        await db.company.delete({ where: { id: companyId } });
+      }).catch(() => undefined);
+      throw hubError;
+    }
     return jsonOk(
       {
         company: {

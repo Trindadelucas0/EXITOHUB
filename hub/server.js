@@ -139,8 +139,14 @@ async function start() {
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, 'views'));
 
-  app.use(express.urlencoded({ extended: true }));
-  app.use(express.json({ limit: '2mb' }));
+  // Next.js em /ncm precisa ler o body sozinho. Se o Express consumir o stream,
+  // POST JSON/form do NCM trava (Cadastrando… / Abrindo… sem log de POST).
+  const skipNcmBody = (parser) => (req, res, next) => {
+    if (req.path.startsWith('/ncm')) return next();
+    return parser(req, res, next);
+  };
+  app.use(skipNcmBody(express.urlencoded({ extended: true })));
+  app.use(skipNcmBody(express.json({ limit: '2mb' })));
   app.use('/hub-assets', express.static(path.join(__dirname, 'public')));
   // Fallback do logo NCM quando o pedido chega sem /ncm (Image optimizer / bookmark).
   const ncmPublic = path.join(rootDir, 'NCM', 'fiscal', 'public');

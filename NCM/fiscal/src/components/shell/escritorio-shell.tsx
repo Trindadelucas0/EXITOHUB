@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ComponentType } from "react";
 import { ExitoMark } from "@/src/components/brand/exito-mark";
 import { Button } from "@/src/components/ui/button";
+import { HubSystemsMenu } from "./hub-systems-menu";
 import { IconEmpresas, IconUsuarios } from "./nav-icons";
 
 type NavItem = {
@@ -93,12 +94,7 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
               <span className="block text-base font-extrabold tracking-tight text-ink">Êxito</span>
               <span className="block text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand">HUB</span>
             </a>
-            <nav className="flex flex-wrap gap-2 text-sm">
-              <a className="inline-flex min-h-10 items-center rounded-[10px] border border-line-strong px-3 hover:bg-paper-sunken" href="/">Início</a>
-              <a className="inline-flex min-h-10 items-center rounded-[10px] border border-line-strong px-3 hover:bg-paper-sunken" href="/folha/modulos">Folha</a>
-              <a className="inline-flex min-h-10 items-center rounded-[10px] border border-line-strong px-3 hover:bg-paper-sunken" href="/conci/">Conciliação</a>
-              <a className="inline-flex min-h-10 items-center rounded-[10px] border border-brand bg-brand-soft px-3 font-medium text-brand" href="/ncm/">NCM</a>
-            </nav>
+            <HubSystemsMenu active="ncm" />
             <a className="ml-auto inline-flex min-h-10 items-center rounded-[10px] border border-line-strong px-3 text-sm hover:bg-paper-sunken" href="/logout">Sair</a>
           </div>
         </div>

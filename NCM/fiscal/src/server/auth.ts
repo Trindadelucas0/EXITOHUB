@@ -85,7 +85,10 @@ export async function authenticate(email: string, password: string): Promise<Aut
   return toAuthUser(user);
 }
 
-export async function createSession(user: AuthUser): Promise<string> {
+export async function createSession(
+  user: AuthUser,
+  options?: { activeCompanyId?: string | null },
+): Promise<string> {
   const token = randomBytes(32).toString("hex");
   const tokenHash = hashSessionToken(token);
   const expiresAt = new Date(Date.now() + SESSION_HOURS * 60 * 60 * 1000);
@@ -94,6 +97,7 @@ export async function createSession(user: AuthUser): Promise<string> {
     userId: user.id,
     tokenHash,
     expiresAt,
+    activeCompanyId: options?.activeCompanyId ?? null,
   };
   if (!user.companyId) {
     await prisma.session.create({ data });
@@ -130,10 +134,26 @@ export async function getUserFromToken(token: string | undefined): Promise<AuthU
 export async function setActiveCompany(
   token: string | undefined,
   companyId: string | null,
-): Promise<void> {
-  if (!token) return;
+): Promise<number> {
+  if (!token) return 0;
   const tokenHash = hashSessionToken(token);
-  await prisma.session.updateMany({ where: { tokenHash }, data: { activeCompanyId: companyId } });
+  const result = await prisma.session.updateMany({
+    where: { tokenHash, expiresAt: { gt: new Date() } },
+    data: { activeCompanyId: companyId },
+  });
+  return result.count;
+}
+
+/**
+ * Garante sessão NCM do escritório (cookie fiscal_session) e grava a empresa aberta.
+ * No HUB o SSO não carrega activeCompanyId — sem este cookie o dashboard devolve para a lista.
+ */
+export async function openCompanySession(
+  user: AuthUser,
+  companyId: string,
+): Promise<{ token: string; setCookie: boolean }> {
+  const token = await createSession(user, { activeCompanyId: companyId });
+  return { token, setCookie: true };
 }
 
 export async function readSessionCookie(): Promise<string | undefined> {

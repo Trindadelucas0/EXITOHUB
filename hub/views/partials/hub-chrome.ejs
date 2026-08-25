@@ -11,21 +11,9 @@
       </div>
     </a>
 
-    <nav class="hub-chrome-nav" aria-label="Módulos">
-      <a href="/" class="hub-nav-link <%= cur === 'home' ? 'is-active' : '' %>">Início</a>
-      <% if (u && u.canFolha) { %>
-        <a href="/folha/modulos" class="hub-nav-link <%= cur === 'folha' ? 'is-active' : '' %>">Folha</a>
-      <% } %>
-      <% if (u && u.canConci) { %>
-        <a href="/conci/" class="hub-nav-link <%= cur === 'conci' ? 'is-active' : '' %>">Conciliação</a>
-      <% } %>
-      <% if (u && u.canNcm) { %>
-        <a href="/ncm/" class="hub-nav-link <%= cur === 'ncm' ? 'is-active' : '' %>">NCM</a>
-      <% } %>
-      <% if (u && u.isAdmin) { %>
-        <a href="/admin/usuarios" class="hub-nav-link <%= cur === 'admin' ? 'is-active' : '' %>">Usuários</a>
-      <% } %>
-    </nav>
+    <div class="hub-chrome-nav hub-chrome-nav--menu">
+      <%- include('hub-app-menu', { menuUser: u, current: cur, showHomeLink: true }) %>
+    </div>
 
     <div class="hub-chrome-user">
       <% if (u) { %>
@@ -37,3 +25,4 @@
     </div>
   </div>
 </header>
+<script src="/hub-assets/hub-menu.js"></script>
