@@ -8,11 +8,13 @@ import {
   SESSION_COOKIE,
   sessionCookieOptions,
 } from "@/src/server/auth";
+import { getHubModulesFromCookie } from "@/src/server/hub-sso";
 
 export async function GET() {
   try {
     const user = await requireUser();
     const scope = resolveCompanyScope(user);
+    const hubModules = await getHubModulesFromCookie();
     const payload = {
       id: user.id,
       name: user.name,
@@ -23,10 +25,11 @@ export async function GET() {
       fromOffice: scope?.fromOffice ?? false,
       canWrite: scope ? scope.fromOffice || user.role === "admin" : false,
       hubMode: process.env.HUB_MODE === "1",
+      isHubAdmin: hubModules.isAdmin,
       modules: {
-        folha: true,
-        conci: true,
-        ncm: true,
+        folha: hubModules.folha,
+        conci: hubModules.conci,
+        ncm: hubModules.ncm,
       },
     };
 

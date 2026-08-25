@@ -20,6 +20,7 @@ const config: Config = {
           DEFAULT: "#FFFFFF",
           raised: "#FFFFFF",
           sunken: "#F8F9FA",
+          canvas: "#F4F6F8",
         },
         line: {
           DEFAULT: "#E5E7EB",
@@ -45,14 +46,14 @@ const config: Config = {
         display: ["var(--font-sans)", "Segoe UI", "sans-serif"],
       },
       boxShadow: {
-        panel: "0 8px 32px rgba(0, 0, 0, 0.12)",
-        brand: "0 8px 32px rgba(0, 0, 0, 0.12)",
-        "brand-sm": "0 8px 24px rgba(0, 0, 0, 0.10)",
+        panel: "0 1px 3px rgba(0, 0, 0, 0.06)",
+        brand: "0 1px 3px rgba(0, 0, 0, 0.06)",
+        "brand-sm": "0 1px 2px rgba(0, 0, 0, 0.05)",
       },
       borderRadius: {
         sm: "10px",
         md: "10px",
-        lg: "20px",
+        lg: "12px",
       },
     },
   },

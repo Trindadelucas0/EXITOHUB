@@ -133,6 +133,7 @@ function postLoginPath(user) {
   const allowed = [
     '/folha/modulos',
     '/conci/',
+    '/conci/admin/empresas',
     '/ncm/',
     '/ncm/dashboard',
     '/ncm/escritorio/empresas',
@@ -202,22 +203,33 @@ async function listUsers() {
   return users.rows.map((u) => toPublicUser(u, byUser.get(u.id) || []));
 }
 
+function landingPathForModules(modules) {
+  const allowed = (modules || []).filter((m) => MODULES.includes(m));
+  if (allowed.length !== 1) return null;
+  if (allowed[0] === 'folha') return '/folha/modulos';
+  if (allowed[0] === 'conci') return '/conci/';
+  if (allowed[0] === 'ncm') return '/ncm/';
+  return null;
+}
+
 async function createUser({ username, email, password, displayName, isAdmin, modules }) {
+  const allowed = (modules || []).filter((m) => MODULES.includes(m));
+  const landingPath = landingPathForModules(allowed);
   const hash = await bcrypt.hash(String(password), 12);
   const inserted = await query(
-    `INSERT INTO hub_users (username, email, password_hash, display_name, is_admin, active)
-     VALUES ($1, $2, $3, $4, $5, true)
-     RETURNING id, username, email, display_name, is_admin, active`,
+    `INSERT INTO hub_users (username, email, password_hash, display_name, is_admin, active, landing_path)
+     VALUES ($1, $2, $3, $4, $5, true, $6)
+     RETURNING id, username, email, display_name, is_admin, active, landing_path`,
     [
       String(username).trim().toLowerCase(),
       String(email).trim().toLowerCase(),
       hash,
       String(displayName || username).trim(),
       Boolean(isAdmin),
+      landingPath,
     ],
   );
   const user = inserted.rows[0];
-  const allowed = (modules || []).filter((m) => MODULES.includes(m));
   for (const mod of allowed) {
     await query(
       `INSERT INTO hub_user_modules (user_id, module) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
@@ -236,6 +248,25 @@ async function updateUserModules(userId, modules) {
       [userId, mod],
     );
   }
+
+  const current = await query(
+    'SELECT landing_path FROM hub_users WHERE id = $1 LIMIT 1',
+    [userId],
+  );
+  const currentLanding = String(current.rows[0]?.landing_path || '').trim();
+  const preserveNcmCompany =
+    allowed.length === 1
+    && allowed[0] === 'ncm'
+    && (currentLanding === '/ncm/dashboard' || currentLanding === '/ncm/escritorio/empresas');
+
+  let nextLanding = null;
+  if (preserveNcmCompany) {
+    nextLanding = currentLanding;
+  } else if (allowed.length === 1) {
+    nextLanding = landingPathForModules(allowed);
+  }
+
+  await query('UPDATE hub_users SET landing_path = $1 WHERE id = $2', [nextLanding, userId]);
   return allowed;
 }
 
@@ -270,4 +301,5 @@ module.exports = {
   loadModules,
   toPublicUser,
   postLoginPath,
+  landingPathForModules,
 };

@@ -28,10 +28,15 @@
 }
 
 * { box-sizing: border-box; }
-body.hub-body,
-body.hub-login-page {
+body.hub-body {
   margin: 0;
   background: var(--hub-bg);
+  color: var(--hub-ink);
+  min-height: 100vh;
+}
+
+body.hub-login-page {
+  margin: 0;
   color: var(--hub-ink);
   min-height: 100vh;
 }
@@ -63,26 +68,31 @@ body.hub-login-page {
 .hub-login-brand h1 { margin: 0.35rem 0; font-size: 1.6rem; }
 .hub-logo { max-width: 180px; height: auto; margin-bottom: 0.5rem; }
 
-/* ===== LEGADO: barra navy usada pela Folha (/folha). Não alterar. ===== */
+/* ===== Chrome HUB (padrão claro Êxito — Folha, Conci, Admin) ===== */
 .hub-chrome {
   display: block;
   width: 100%;
   max-width: 100%;
   flex: 0 0 auto;
   align-self: stretch;
-  background: #0f1b2d;
-  color: #fff;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  color: var(--exito-ink);
+  border: 0;
+  padding: 1rem 1.25rem 0;
   box-sizing: border-box;
 }
 .hub-chrome-inner {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0.75rem 1.25rem;
+  padding: 0.85rem 1.15rem;
   display: flex;
   gap: 1rem;
   align-items: center;
   flex-wrap: wrap;
+  background: var(--exito-card);
+  border: 1px solid var(--exito-line);
+  border-radius: var(--exito-radius-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 .hub-chrome-brand {
   display: flex;
@@ -91,22 +101,43 @@ body.hub-login-page {
   color: inherit;
   text-decoration: none;
 }
-.hub-chrome-logo { border-radius: 8px; background: #fff; object-fit: contain; }
+.hub-chrome-logo { border-radius: 8px; background: transparent; object-fit: contain; }
 .hub-chrome-nav { display: flex; gap: 0.35rem; flex-wrap: wrap; flex: 1; }
 .hub-nav-link {
-  color: rgba(255,255,255,0.85);
+  color: var(--exito-ink);
   text-decoration: none;
-  padding: 0.4rem 0.7rem;
-  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 10px;
   font-size: 0.92rem;
-  background: transparent;
-  border: 0;
+  background: #fff;
+  border: 1px solid #d1d5db;
   cursor: pointer;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
 }
 .hub-nav-link:hover,
-.hub-nav-link.is-active { background: rgba(255,255,255,0.12); color: #fff; }
+.hub-nav-link.is-active {
+  background: var(--exito-input);
+  color: var(--exito-ink);
+  border-color: #c5cbd3;
+}
 .hub-chrome-user { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
-.hub-user-name { font-size: 0.9rem; opacity: 0.9; }
+.hub-user-name { font-size: 0.9rem; color: var(--exito-muted); opacity: 1; }
+.hub-chrome .hub-eyebrow {
+  margin: 0;
+  color: var(--exito-green);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+.hub-chrome-brand strong {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--exito-ink);
+}
 
 .hub-main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
 .hub-main-wide { max-width: 1200px; }
@@ -207,7 +238,12 @@ body.hub-login-page {
 }
 
 /* ===== Visual Êxito: só Hub (body.hub-body / hub-login-page). Folha não usa essas classes de body. ===== */
-body.hub-body,
+body.hub-body {
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--exito-ink);
+  background: var(--hub-bg);
+}
+
 body.hub-login-page {
   font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
   color: var(--exito-ink);
@@ -334,10 +370,14 @@ body.hub-body .hub-alert {
 
 body.hub-body .hub-card {
   background: var(--exito-card);
-  border: 0;
+  border: 1px solid var(--exito-line);
   border-radius: var(--exito-radius-card);
-  box-shadow: var(--exito-shadow);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   padding: 1.5rem 1.4rem;
+}
+
+body.hub-body .hub-card-spaced {
+  margin-top: 1.5rem;
 }
 
 body.hub-body .hub-fieldset {
@@ -345,60 +385,84 @@ body.hub-body .hub-fieldset {
   border-radius: var(--exito-radius-ctl);
 }
 
-/* Chrome claro — só quando a view do Hub pede. Folha não inclui esta classe. */
-.hub-chrome.hub-chrome--exito {
-  background: transparent;
-  color: var(--exito-ink);
-  border: 0;
-  padding: 1.25rem 1.25rem 0;
+body.hub-body .hub-form-create {
+  display: grid;
+  gap: 1.25rem;
 }
 
-.hub-chrome.hub-chrome--exito .hub-chrome-inner {
-  max-width: 1080px;
-  background: var(--exito-card);
-  border-radius: var(--exito-radius-card);
-  box-shadow: var(--exito-shadow);
-  padding: 0.85rem 1.15rem;
+body.hub-body .hub-form-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+  align-items: end;
 }
 
-.hub-chrome.hub-chrome--exito .hub-chrome-logo {
-  background: transparent;
-  border-radius: 8px;
+body.hub-body .hub-form-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
 }
 
-.hub-chrome.hub-chrome--exito .hub-eyebrow {
-  color: var(--exito-green);
-  font-weight: 800;
-  letter-spacing: 0.14em;
+body.hub-body .hub-form-footer .hub-fieldset {
+  flex: 1 1 16rem;
+  margin: 0;
+  padding: 0.75rem 1rem;
 }
 
-.hub-chrome.hub-chrome--exito .hub-chrome-brand strong {
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
+body.hub-body .hub-check-admin {
+  align-self: center;
 }
 
-.hub-chrome.hub-chrome--exito .hub-nav-link {
-  color: var(--exito-ink);
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  background: #fff;
-  min-height: 40px;
+body.hub-body .hub-form-footer .hub-btn {
+  margin-left: auto;
+}
+
+body.hub-body .hub-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.4rem 0.85rem;
+  min-height: 1.5rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
-.hub-chrome.hub-chrome--exito .hub-nav-link:hover,
-.hub-chrome.hub-chrome--exito .hub-nav-link.is-active {
+body.hub-body .hub-badge-ok {
+  background: var(--exito-green-soft);
+  color: var(--hub-ok);
+}
+
+body.hub-body .hub-badge-muted {
   background: var(--exito-input);
-  color: var(--exito-ink);
-  border-color: #c5cbd3;
+  color: var(--exito-muted);
 }
 
-.hub-chrome.hub-chrome--exito .hub-user-name {
-  color: var(--exito-muted);
-  opacity: 1;
+body.hub-body .hub-table-users th:last-child,
+body.hub-body .hub-table-users td:last-child {
+  text-align: right;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  body.hub-body .hub-form-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  body.hub-body .hub-form-fields {
+    grid-template-columns: 1fr;
+  }
+  body.hub-body .hub-form-footer .hub-btn {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* Chrome claro Êxito (classe mantida por compatibilidade com as views) */
+.hub-chrome.hub-chrome--exito {
+  /* herda o padrão claro de .hub-chrome */
 }
 
 body.hub-body .hub-main {
@@ -407,14 +471,14 @@ body.hub-body .hub-main {
 }
 
 body.hub-body .hub-hero h1 {
-  color: #fff;
+  color: var(--exito-ink);
   font-weight: 800;
   letter-spacing: -0.03em;
 }
 
 body.hub-body .hub-hero .hub-muted,
 body.hub-body .hub-hero .hub-eyebrow {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--exito-muted);
 }
 
 body.hub-body .hub-table th,
@@ -442,6 +506,13 @@ body.hub-body .hub-table td {
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
+}
+
+.hub-home-leading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
 }
 
 .hub-home-brand {
@@ -627,9 +698,9 @@ body.hub-menu-open {
 }
 
 .hub-chrome .hub-menu-btn {
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+  border-color: #d1d5db;
+  background: #fff;
+  color: var(--exito-ink);
 }
 
 .hub-chrome.hub-chrome--exito .hub-menu-btn {
@@ -648,7 +719,7 @@ body.hub-menu-open {
 .hub-menu-drawer {
   position: fixed;
   top: 0;
-  right: 0;
+  left: 0;
   z-index: 90;
   display: flex;
   flex-direction: column;
@@ -659,6 +730,12 @@ body.hub-menu-open {
   box-shadow: var(--exito-shadow);
   padding: 1rem 1rem 1.5rem;
   overflow-y: auto;
+}
+
+/* display:flex acima ganha de [hidden] sem !important em alguns browsers */
+.hub-menu-overlay[hidden],
+.hub-menu-drawer[hidden] {
+  display: none !important;
 }
 
 .hub-menu-drawer__head {

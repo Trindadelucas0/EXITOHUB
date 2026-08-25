@@ -234,7 +234,7 @@ export default function BaseFiscalPage() {
         }
       />
       {isAdmin ? (
-        <form className="rounded-lg bg-white p-4 shadow-panel sm:p-6">
+        <form className="rounded-lg border border-line bg-white p-4 shadow-panel sm:p-6">
           <label htmlFor="arquivo-regras" className="text-sm font-medium text-ink">
             Importar planilha de regras (XLSX, CSV ou ODS, até 8 MB)
           </label>
@@ -356,7 +356,7 @@ export default function BaseFiscalPage() {
           </div>
         </div>
         {highlight ? (
-          <aside className="hidden rounded-lg bg-white p-4 shadow-panel xl:block">
+          <aside className="hidden rounded-lg border border-line bg-white p-4 shadow-panel xl:block">
             <p className="text-xs font-medium uppercase tracking-wide text-status-ok">Linha selecionada</p>
             <h2 className="mt-1 font-display text-2xl tabular text-brand">{highlight.ncm}</h2>
             <p className="text-sm text-ink-muted">

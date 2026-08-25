@@ -13,7 +13,7 @@ export function EmptyState({
   actionLabel?: string;
 }) {
   return (
-    <div className="rounded-[20px] bg-white px-6 py-12 text-center shadow-panel">
+    <div className="rounded-lg border border-line bg-white px-6 py-12 text-center shadow-panel">
       <h2 className="font-display text-xl text-ink">{title}</h2>
       <p className="mx-auto mt-2 max-w-md text-sm text-ink-muted">{description}</p>
       {actionHref && actionLabel ? (

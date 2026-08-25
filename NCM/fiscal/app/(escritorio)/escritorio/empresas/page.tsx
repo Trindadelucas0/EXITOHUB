@@ -180,7 +180,7 @@ export default function EscritorioEmpresasPage() {
         </Button>
       </form>
       <section>
-        <h2 className="font-display text-xl font-extrabold text-white">Empresas cadastradas</h2>
+        <h2 className="font-display text-xl font-extrabold text-ink">Empresas cadastradas</h2>
         {error ? (
           <div className="mt-2">
             <Notice variant="error">{error}</Notice>

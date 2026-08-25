@@ -36,6 +36,7 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [me, setMe] = useState<Me | null>(null);
   const [error, setError] = useState("");
+  const hubMode = process.env.NEXT_PUBLIC_BASE_PATH === "/ncm";
 
   useEffect(() => {
     const controller = new AbortController();
@@ -87,28 +88,16 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen min-w-0">
-      {(process.env.NEXT_PUBLIC_BASE_PATH === "/ncm") ? (
-        <div className="px-3 pt-3 sm:px-4">
-          <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center gap-3 rounded-[20px] bg-white px-4 py-3 shadow-panel">
-            <a href="/" className="leading-tight">
-              <span className="block text-base font-extrabold tracking-tight text-ink">Êxito</span>
-              <span className="block text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand">HUB</span>
-            </a>
-            <HubSystemsMenu active="ncm" />
-            <a className="ml-auto inline-flex min-h-10 items-center rounded-[10px] border border-line-strong px-3 text-sm hover:bg-paper-sunken" href="/logout">Sair</a>
-          </div>
-        </div>
-      ) : null}
+    <div className="min-h-screen min-w-0 bg-paper-canvas">
       <a
         href="#conteudo"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:px-3 focus:py-2"
       >
         Ir para o conteúdo
       </a>
-      <header className="sticky top-0 z-50 bg-transparent px-3 pt-3 sm:px-4">
-        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3 rounded-[20px] bg-white px-4 py-3 shadow-panel">
-          <div className="flex min-w-0 items-center gap-3">
+      <header className="sticky top-0 z-50 border-b border-line bg-white">
+        <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center gap-3 px-3 py-3 sm:px-4">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
             <button
               type="button"
               className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md border border-line bg-white md:hidden"
@@ -123,8 +112,20 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
                 <span className="block h-0.5 w-5 bg-ink" />
               </span>
             </button>
+
+            {hubMode ? (
+              <>
+                <HubSystemsMenu active="ncm" />
+                <a href="/" className="shrink-0 leading-tight">
+                  <span className="block text-base font-extrabold tracking-tight text-ink">Êxito</span>
+                  <span className="block text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand">HUB</span>
+                </a>
+                <span className="hidden h-6 w-px bg-line sm:block" aria-hidden />
+              </>
+            ) : null}
+
             <Link href="/escritorio/empresas" className="flex min-w-0 items-center gap-2.5 leading-tight">
-              <ExitoMark size={34} priority />
+              {!hubMode ? <ExitoMark size={34} priority /> : null}
               <span className="min-w-0">
                 <span className="block text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand">
                   Escritório
@@ -135,14 +136,32 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
               </span>
             </Link>
           </div>
-          <div className="flex min-w-0 items-center gap-3 text-sm">
+
+          <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 text-sm sm:gap-3">
             <div className="min-w-0 text-right">
               <p className="truncate font-medium text-ink">Painel das empresas</p>
               <p className="hidden truncate text-ink-muted sm:block">{me ? me.name : "…"}</p>
             </div>
-            <Button variant="secondary" className="hidden shrink-0 md:inline-flex" onClick={logout}>
-              Sair
-            </Button>
+            {hubMode ? (
+              <a
+                className="inline-flex min-h-10 shrink-0 items-center rounded-[10px] border border-line-strong bg-white px-3 text-sm font-medium text-ink hover:bg-paper-sunken"
+                href="/"
+              >
+                Início
+              </a>
+            ) : null}
+            {hubMode ? (
+              <a
+                className="inline-flex min-h-10 shrink-0 items-center rounded-[10px] border border-line-strong px-3 text-sm hover:bg-paper-sunken"
+                href="/logout"
+              >
+                Sair
+              </a>
+            ) : (
+              <Button variant="secondary" className="hidden shrink-0 md:inline-flex" onClick={logout}>
+                Sair
+              </Button>
+            )}
           </div>
         </div>
       </header>
@@ -164,7 +183,7 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
             open
               ? "fixed left-0 top-14 z-50 flex max-h-[calc(100dvh-3.5rem)] w-[min(18rem,88vw)]"
               : "hidden"
-          } flex-col overflow-y-auto rounded-[20px] bg-white px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-panel md:sticky md:top-20 md:z-auto md:m-3 md:flex md:h-[calc(100dvh-6rem)] md:w-60 md:max-h-none md:shrink-0 md:self-start`}
+          } flex-col overflow-y-auto border-r border-line bg-white px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:sticky md:top-[4.25rem] md:z-auto md:flex md:h-[calc(100dvh-4.25rem)] md:w-60 md:max-h-none md:shrink-0 md:self-start md:rounded-none md:border-r md:shadow-none`}
         >
           <p className="px-3 pb-2 text-[11px] font-medium uppercase tracking-[0.14em] text-ink-muted">Cadastro</p>
           <ul className="grid content-start gap-1">
@@ -190,6 +209,14 @@ export function EscritorioShell({ children }: { children: React.ReactNode }) {
           </ul>
           <div className="mt-auto pt-6 md:hidden">
             <p className="mb-3 truncate px-3 text-sm text-ink-muted">{me?.name ?? ""}</p>
+            {hubMode ? (
+              <a
+                className="mb-2 flex min-h-11 w-full items-center justify-center rounded-md border border-line-strong text-sm font-medium hover:bg-paper-sunken"
+                href="/"
+              >
+                Início
+              </a>
+            ) : null}
             <Button variant="secondary" className="w-full" onClick={logout}>
               Sair
             </Button>

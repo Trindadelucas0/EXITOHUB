@@ -37,6 +37,8 @@ type HubRow = {
   is_admin: boolean;
   active: boolean;
   has_ncm: boolean;
+  has_folha: boolean;
+  has_conci: boolean;
 };
 
 async function loadHubUser(sessionId: string): Promise<HubRow | null> {
@@ -46,7 +48,15 @@ async function loadHubUser(sessionId: string): Promise<HubRow | null> {
             EXISTS (
               SELECT 1 FROM hub_user_modules m
               WHERE m.user_id = u.id AND m.module = 'ncm'
-            ) AS has_ncm
+            ) AS has_ncm,
+            EXISTS (
+              SELECT 1 FROM hub_user_modules m
+              WHERE m.user_id = u.id AND m.module = 'folha'
+            ) AS has_folha,
+            EXISTS (
+              SELECT 1 FROM hub_user_modules m
+              WHERE m.user_id = u.id AND m.module = 'conci'
+            ) AS has_conci
      FROM hub_sessions s
      JOIN hub_users u ON u.id = s.user_id
      WHERE s.id = $1 AND s.expires_at > NOW()
@@ -54,6 +64,32 @@ async function loadHubUser(sessionId: string): Promise<HubRow | null> {
     [sessionId],
   );
   return (result.rows[0] as HubRow | undefined) || null;
+}
+
+export type HubModules = {
+  folha: boolean;
+  conci: boolean;
+  ncm: boolean;
+  isAdmin: boolean;
+};
+
+/** Módulos reais do HUB para a sessão atual (fail-closed: tudo false). */
+export async function getHubModulesFromCookie(): Promise<HubModules> {
+  const empty: HubModules = { folha: false, conci: false, ncm: false, isAdmin: false };
+  if (process.env.HUB_MODE !== "1") {
+    return { folha: true, conci: true, ncm: true, isAdmin: false };
+  }
+  const jar = await cookies();
+  const hubSid = jar.get(HUB_COOKIE)?.value;
+  if (!hubSid) return empty;
+  const hub = await loadHubUser(hubSid);
+  if (!hub || !hub.active) return empty;
+  return {
+    folha: Boolean(hub.has_folha),
+    conci: Boolean(hub.has_conci),
+    ncm: Boolean(hub.has_ncm),
+    isAdmin: Boolean(hub.is_admin),
+  };
 }
 
 /**

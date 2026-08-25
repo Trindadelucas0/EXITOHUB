@@ -70,7 +70,11 @@ export function requireCompanyAdmin(session: CompanySession): void {
     fromOffice: session.fromOffice,
   };
   if (!canWriteCompany(session.role, scope)) {
-    throw new HttpError(403, "FORBIDDEN", "Esta ação exige perfil administrador da empresa.");
+    throw new HttpError(
+      403,
+      "FORBIDDEN",
+      "Somente o administrador pode importar, apagar lotes ou alterar a base fiscal. O perfil consulta apenas visualiza.",
+    );
   }
 }
 

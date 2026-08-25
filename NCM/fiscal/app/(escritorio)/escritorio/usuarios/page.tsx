@@ -189,7 +189,7 @@ export default function EscritorioUsuariosPage() {
         </Button>
       </form>
       <section>
-        <h2 className="font-display text-xl font-extrabold text-white">Usuários da empresa</h2>
+        <h2 className="font-display text-xl font-extrabold text-ink">Usuários da empresa</h2>
         {loading ? <p className="mt-2 text-sm text-ink-muted">Carregando…</p> : null}
         {!loading && users.length === 0 ? (
           <p className="mt-2 text-sm text-ink-muted">Nenhum usuário nesta empresa.</p>

@@ -16,11 +16,16 @@ html {
 body {
   min-height: 100%;
   overflow-x: hidden;
+  background: #f4f6f8;
+  color: #1a1a1a;
+}
+
+body.ncm-login-green,
+.ncm-login-green {
   background:
     radial-gradient(ellipse 70% 55% at 78% 8%, rgba(255, 255, 255, 0.22), transparent 55%),
     radial-gradient(ellipse 55% 45% at 12% 92%, rgba(0, 0, 0, 0.08), transparent 50%),
     #2ea44f;
-  color: #1a1a1a;
 }
 
 *:focus-visible {
@@ -35,12 +40,12 @@ body {
 .fiscal-grid-wrap {
   overflow: auto;
   max-width: 100%;
-  max-height: min(70vh, 44rem);
+  max-height: min(calc(100dvh - 14rem), 48rem);
   -webkit-overflow-scrolling: touch;
-  border: 0;
-  border-radius: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .fiscal-grid {

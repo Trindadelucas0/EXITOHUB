@@ -27,41 +27,45 @@
 
     <section class="hub-card">
       <h2>Novo usuário</h2>
-      <form method="post" action="/admin/usuarios" class="hub-form hub-form-grid">
-        <label class="hub-field">
-          <span>Usuário</span>
-          <input name="username" required autocomplete="off" />
-        </label>
-        <label class="hub-field">
-          <span>E-mail (usado no NCM)</span>
-          <input name="email" type="email" required autocomplete="off" />
-        </label>
-        <label class="hub-field">
-          <span>Nome</span>
-          <input name="displayName" />
-        </label>
-        <label class="hub-field">
-          <span>Senha</span>
-          <input name="password" type="password" required minlength="6" autocomplete="new-password" />
-        </label>
-        <label class="hub-check">
-          <input type="checkbox" name="is_admin" value="1" />
-          <span>Admin do HUB</span>
-        </label>
-        <fieldset class="hub-fieldset">
-          <legend>Módulos</legend>
-          <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" /> Folha</label>
-          <label class="hub-check"><input type="checkbox" name="mod_conci" value="1" /> Conciliação</label>
-          <label class="hub-check"><input type="checkbox" name="mod_ncm" value="1" /> NCM</label>
-        </fieldset>
-        <button type="submit" class="hub-btn hub-btn-primary">Criar</button>
+      <form method="post" action="/admin/usuarios" class="hub-form hub-form-create">
+        <div class="hub-form-fields">
+          <label class="hub-field">
+            <span>Usuário</span>
+            <input name="username" required autocomplete="off" />
+          </label>
+          <label class="hub-field">
+            <span>E-mail (usado no NCM)</span>
+            <input name="email" type="email" required autocomplete="off" />
+          </label>
+          <label class="hub-field">
+            <span>Nome</span>
+            <input name="displayName" />
+          </label>
+          <label class="hub-field">
+            <span>Senha</span>
+            <input name="password" type="password" required minlength="6" autocomplete="new-password" />
+          </label>
+        </div>
+        <div class="hub-form-footer">
+          <fieldset class="hub-fieldset">
+            <legend>Módulos</legend>
+            <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" /> Folha</label>
+            <label class="hub-check"><input type="checkbox" name="mod_conci" value="1" /> Conciliação</label>
+            <label class="hub-check"><input type="checkbox" name="mod_ncm" value="1" /> NCM</label>
+          </fieldset>
+          <label class="hub-check hub-check-admin">
+            <input type="checkbox" name="is_admin" value="1" />
+            <span>Admin do HUB</span>
+          </label>
+          <button type="submit" class="hub-btn hub-btn-primary">Criar</button>
+        </div>
       </form>
     </section>
 
-    <section class="hub-card" style="margin-top: 1.5rem;">
+    <section class="hub-card hub-card-spaced">
       <h2>Usuários cadastrados</h2>
       <div class="hub-table-wrap">
-        <table class="hub-table">
+        <table class="hub-table hub-table-users">
           <thead>
             <tr>
               <th>Usuário</th>
@@ -69,7 +73,7 @@
               <th>Admin</th>
               <th>Ativo</th>
               <th>Módulos</th>
-              <th></th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -80,8 +84,16 @@
                   <div class="hub-muted"><%= user.displayName %></div>
                 </td>
                 <td><%= user.email %></td>
-                <td><%= user.isAdmin ? 'Sim' : 'Não' %></td>
-                <td><%= user.active ? 'Sim' : 'Não' %></td>
+                <td>
+                  <span class="hub-badge <%= user.isAdmin ? 'hub-badge-ok' : 'hub-badge-muted' %>">
+                    <%= user.isAdmin ? 'Sim' : 'Não' %>
+                  </span>
+                </td>
+                <td>
+                  <span class="hub-badge <%= user.active ? 'hub-badge-ok' : 'hub-badge-muted' %>">
+                    <%= user.active ? 'Sim' : 'Não' %>
+                  </span>
+                </td>
                 <td>
                   <form method="post" action="/admin/usuarios/<%= user.id %>/modulos" class="hub-inline-mods">
                     <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" <%= user.canFolha ? 'checked' : '' %> /> Folha</label>

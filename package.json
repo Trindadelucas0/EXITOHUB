@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "node hub/server.js",
     "start": "node hub/server.js",
+    "validate:login": "node hub/validate-login-flows.js",
     "postinstall": "npm install --prefix BeatrizDt && npm install --prefix \"CONCI/CONCI/conciliação\" && npm install --prefix NCM/fiscal"
   },
   "engines": {

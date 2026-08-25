@@ -11,7 +11,7 @@ const SECTIONS = [
   { id: "ncm", title: "NCM: o que edita e o que não edita" },
   { id: "entrada", title: "Como dar entrada na nota" },
   { id: "base-fiscal", title: "Base fiscal" },
-  { id: "importar", title: "Importar planilha" },
+  { id: "importar", title: "Planilhas importadas" },
   { id: "exportar", title: "Exportar Excel ou PDF" },
   { id: "permissoes", title: "Quem pode o quê" },
 ] as const;
@@ -249,8 +249,15 @@ export function UserManual() {
           <ScreenLink href="/base-fiscal">Abrir Base fiscal</ScreenLink>
         </ManualCard>
 
-        <ManualCard id="importar" title="Importar planilha">
-          <p>Só o administrador importa o cadastro de produtos. Cada arquivo vira um lote novo. A base fiscal não é apagada.</p>
+        <ManualCard id="importar" title="Planilhas importadas">
+          <p>
+            Só o administrador importa ou apaga o cadastro de produtos. Cada arquivo vira um lote
+            novo. A base fiscal não é apagada.
+          </p>
+          <p>
+            O perfil consulta vê o histórico das planilhas e abre a conferência, sem formulário de
+            importação.
+          </p>
           <p>
             Colunas reconhecidas: código, descrição, NCM, CST por destinatário, CST de compra,
             alíquota, IVA/MVA e CEST.
@@ -259,7 +266,7 @@ export function UserManual() {
             Se já existir lote anterior, dá para trazer a marca “já tratado” dos mesmos códigos. Itens
             que já vierem corretos não copiam a marca.
           </p>
-          <ScreenLink href="/importar">Abrir Importar produtos</ScreenLink>
+          <ScreenLink href="/importar">Abrir Planilhas</ScreenLink>
         </ManualCard>
 
         <ManualCard id="exportar" title="Exportar Excel ou PDF">
@@ -278,8 +285,9 @@ export function UserManual() {
 
         <ManualCard id="permissoes" title="Quem pode o quê">
           <p>
-            <strong>Consulta</strong> (analista): vê Panorama, Consultar, Divergências, Base fiscal e
-            este guia; marca e desmarca tratado; exporta Excel e PDF.
+            <strong>Consulta</strong> (analista): vê Panorama, Consultar, Divergências, Base fiscal,
+            Planilhas (somente leitura do histórico) e este guia; marca e desmarca tratado; exporta
+            Excel e PDF. Não importa nem apaga lotes, nem altera regras fiscais.
           </p>
           <p>
             <strong>Administrador</strong>: tudo acima, mais importar e apagar lotes, cadastrar,

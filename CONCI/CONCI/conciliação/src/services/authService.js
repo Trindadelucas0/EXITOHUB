@@ -9,9 +9,16 @@ function loadHubProvision() {
   return require(path.join(__dirname, '..', '..', '..', '..', '..', 'hub', 'provision.js'));
 }
 
-async function syncConciUserToHub({ username, password, displayName, updatePassword = true }) {
+async function syncConciUserToHub({
+  username,
+  password,
+  displayName,
+  updatePassword = true,
+  role = 'empresa',
+}) {
   const provision = loadHubProvision();
   if (!provision) return;
+  const landingPath = role === 'admin' ? '/conci/admin/empresas' : '/conci/';
   await provision.upsertHubUser({
     username,
     email: provision.conciHubEmail(username),
@@ -19,7 +26,7 @@ async function syncConciUserToHub({ username, password, displayName, updatePassw
     displayName,
     modules: ['conci'],
     updatePassword,
-    landingPath: '/conci/',
+    landingPath,
   });
 }
 

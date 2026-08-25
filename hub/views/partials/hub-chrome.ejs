@@ -4,6 +4,8 @@
 %>
 <header class="hub-chrome hub-chrome--exito">
   <div class="hub-chrome-inner">
+    <%- include('hub-app-menu', { menuUser: u, current: cur, showHomeLink: true }) %>
+
     <a href="/" class="hub-chrome-brand">
       <div>
         <p class="hub-eyebrow">Êxito</p>
@@ -11,12 +13,9 @@
       </div>
     </a>
 
-    <div class="hub-chrome-nav hub-chrome-nav--menu">
-      <%- include('hub-app-menu', { menuUser: u, current: cur, showHomeLink: true }) %>
-    </div>
-
     <div class="hub-chrome-user">
       <% if (u) { %>
+        <a href="/" class="hub-nav-link hub-nav-btn">Início</a>
         <span class="hub-user-name"><%= u.displayName || u.username %></span>
         <form method="post" action="/logout" class="hub-inline">
           <button type="submit" class="hub-nav-link hub-nav-btn">Sair</button>

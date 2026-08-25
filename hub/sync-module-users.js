@@ -79,7 +79,7 @@ async function syncConciUsers() {
   await client.connect();
   try {
     const result = await client.query(
-      `SELECT username, password_hash FROM users WHERE ativo = true AND password_hash IS NOT NULL`,
+      `SELECT username, password_hash, role FROM users WHERE ativo = true AND password_hash IS NOT NULL`,
     );
     let created = 0;
     let skipped = 0;
@@ -94,7 +94,7 @@ async function syncConciUsers() {
           displayName: username,
           modules: ["conci"],
           updatePassword: false,
-          landingPath: "/conci/",
+          landingPath: row.role === "admin" ? "/conci/admin/empresas" : "/conci/",
         });
         if (out.created) created += 1;
       } catch (err) {

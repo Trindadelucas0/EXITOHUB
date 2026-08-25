@@ -40,7 +40,7 @@ const NAV_GROUPS: { id: string; label: string; items: NavItem[] }[] = [
       { href: "/consulta", label: "Consultar", icon: IconConsultar },
       { href: "/divergencias", label: "Divergências", icon: IconDivergencias },
       { href: "/base-fiscal", label: "Base fiscal", icon: IconBaseFiscal },
-      { href: "/importar", label: "Importar produtos", admin: true, icon: IconImportar },
+      { href: "/importar", label: "Planilhas", icon: IconImportar },
     ],
   },
 ];
@@ -141,26 +141,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     items: group.items.filter((item) => !item.admin || me?.canWrite),
   })).filter((group) => group.items.length > 0);
 
+  const hubMode = Boolean(me?.hubMode);
+
   return (
-    <div className="min-h-screen min-w-0">
-      {me?.hubMode ? (
-        <div className="px-3 pt-3 sm:px-4">
-          <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center gap-3 rounded-[20px] bg-white px-4 py-3 shadow-panel">
-            <a href="/" className="leading-tight">
-              <span className="block text-base font-extrabold tracking-tight text-ink">Êxito</span>
-              <span className="block text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand">HUB</span>
-            </a>
-            <HubSystemsMenu active="ncm" showAdmin />
-            <a className="ml-auto inline-flex min-h-10 items-center rounded-[10px] border border-line-strong px-3 text-sm hover:bg-paper-sunken" href="/logout">Sair</a>
-          </div>
-        </div>
-      ) : null}
+    <div className="min-h-screen min-w-0 bg-paper-canvas">
       <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:px-3 focus:py-2">
         Ir para o conteúdo
       </a>
-      <header className="sticky top-0 z-50 bg-transparent px-3 pt-3 sm:px-4">
-        <div className="mx-auto flex w-full max-w-[1600px] items-center justify-between gap-3 rounded-[20px] bg-white px-4 py-3 shadow-panel">
-          <div className="flex min-w-0 items-center gap-3">
+      <header className="sticky top-0 z-50 border-b border-line bg-white">
+        <div className="mx-auto flex w-full max-w-[1600px] flex-wrap items-center gap-3 px-3 py-3 sm:px-4">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
             <button
               type="button"
               className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md border border-line bg-white md:hidden"
@@ -175,47 +165,74 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <span className="block h-0.5 w-5 bg-ink" />
               </span>
             </button>
+
+            {hubMode ? (
+              <>
+                <HubSystemsMenu active="ncm" showAdmin />
+                <a href="/" className="shrink-0 leading-tight">
+                  <span className="block text-base font-extrabold tracking-tight text-ink">Êxito</span>
+                  <span className="block text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand">HUB</span>
+                </a>
+                <span className="hidden h-6 w-px bg-line sm:block" aria-hidden />
+              </>
+            ) : null}
+
             <Link
               href={hrefWithLote("/dashboard", lote)}
               className="flex min-w-0 items-center gap-2.5 leading-tight"
             >
-              <ExitoMark size={34} priority />
+              {!hubMode ? <ExitoMark size={34} priority /> : null}
               <span className="block truncate font-display text-base font-extrabold tracking-tight text-ink sm:text-lg">
                 Auditor Fiscal
               </span>
             </Link>
           </div>
-          <div className="flex min-w-0 items-center gap-3 text-sm">
+
+          <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 text-sm sm:gap-3">
+            {me?.fromOffice ? (
+              <div className="flex min-w-0 items-center gap-2 rounded-md border border-line bg-paper-sunken px-2.5 py-1.5">
+                <p className="hidden truncate text-xs text-ink-muted sm:block">
+                  Pelo escritório · <span className="font-medium text-ink">{me.companyName}</span>
+                </p>
+                <Button
+                  variant="secondary"
+                  className="min-h-9 shrink-0 px-2.5 text-xs"
+                  disabled={leaving}
+                  onClick={backToOffice}
+                >
+                  {leaving ? "Voltando…" : "Voltar"}
+                </Button>
+              </div>
+            ) : null}
             <div className="min-w-0 text-right">
               <p className="truncate font-medium text-ink">{me?.companyName ?? "…"}</p>
               <p className="hidden truncate text-ink-muted sm:block">
                 {me ? `${me.name} · ${me.role}` : "…"}
               </p>
             </div>
-            <Button variant="secondary" className="hidden shrink-0 md:inline-flex" onClick={logout}>
-              Sair
-            </Button>
+            {hubMode ? (
+              <a
+                className="inline-flex min-h-10 shrink-0 items-center rounded-[10px] border border-line-strong bg-white px-3 text-sm font-medium text-ink hover:bg-paper-sunken"
+                href="/"
+              >
+                Início
+              </a>
+            ) : null}
+            {hubMode ? (
+              <a
+                className="inline-flex min-h-10 shrink-0 items-center rounded-[10px] border border-line-strong px-3 text-sm hover:bg-paper-sunken"
+                href="/logout"
+              >
+                Sair
+              </a>
+            ) : (
+              <Button variant="secondary" className="hidden shrink-0 md:inline-flex" onClick={logout}>
+                Sair
+              </Button>
+            )}
           </div>
         </div>
       </header>
-
-      {me?.fromOffice ? (
-        <div className="px-3 pt-3 sm:px-4">
-          <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-2 rounded-[20px] bg-white px-4 py-3 shadow-panel sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-ink">
-              Você está em <span className="font-medium">{me.companyName}</span> pelo escritório.
-            </p>
-            <Button
-              variant="secondary"
-              className="sm:w-auto"
-              disabled={leaving}
-              onClick={backToOffice}
-            >
-              {leaving ? "Voltando…" : "Voltar ao escritório"}
-            </Button>
-          </div>
-        </div>
-      ) : null}
 
       {open ? (
         <button
@@ -234,7 +251,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             open
               ? "fixed left-0 top-14 z-50 flex max-h-[calc(100dvh-3.5rem)] w-[min(18rem,88vw)]"
               : "hidden"
-          } flex-col overflow-y-auto rounded-[20px] bg-white px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-panel md:sticky md:top-20 md:z-auto md:m-3 md:flex md:h-[calc(100dvh-6rem)] md:w-60 md:max-h-none md:shrink-0 md:self-start`}
+          } flex-col overflow-y-auto border-r border-line bg-white px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] md:sticky md:top-[4.25rem] md:z-auto md:flex md:h-[calc(100dvh-4.25rem)] md:w-60 md:max-h-none md:shrink-0 md:self-start md:rounded-none md:border-r md:shadow-none`}
         >
           <div className="grid content-start gap-5">
             {groups.map((group) => (
@@ -272,6 +289,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <p className="mb-3 truncate px-3 text-sm text-ink-muted">
               {me ? `${me.name} · ${me.role}` : ""}
             </p>
+            {hubMode ? (
+              <a
+                className="mb-2 flex min-h-11 w-full items-center justify-center rounded-md border border-line-strong text-sm font-medium hover:bg-paper-sunken"
+                href="/"
+              >
+                Início
+              </a>
+            ) : null}
             <Button variant="secondary" className="w-full" onClick={logout}>
               Sair
             </Button>

@@ -71,6 +71,7 @@ export function ProductCatalog({
   const [pageSize, setPageSize] = useState(25);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [queueTick, setQueueTick] = useState(0);
+  const [canWrite, setCanWrite] = useState(false);
   const { rows, summary, catalogTotal, total, pageCount, loading, error } = useProductQuery(
     filters,
     batchId,
@@ -79,6 +80,13 @@ export function ProductCatalog({
     pageSize,
     queueTick,
   );
+
+  useEffect(() => {
+    fetch(ncmApiUrl("/api/auth/me"))
+      .then((r) => r.json())
+      .then((json) => setCanWrite(Boolean(json.data?.canWrite)))
+      .catch(() => setCanWrite(false));
+  }, []);
 
   useEffect(() => {
     setPage(1);
@@ -139,13 +147,15 @@ export function ProductCatalog({
           }
           description={
             batches.length === 0
-              ? "A consulta fica vazia até a importação de um arquivo."
+              ? canWrite
+                ? "A consulta fica vazia até a importação de um arquivo."
+                : "Ainda não há planilha importada. Peça ao administrador para importar o cadastro."
               : catalogTotal === 0
                 ? "Escolha outra planilha no seletor acima ou importe um cadastro."
                 : "Nenhum produto combina com os filtros. Limpe a busca, mude a situação ou escolha outra planilha."
           }
-          actionHref={batches.length === 0 ? "/importar" : undefined}
-          actionLabel={batches.length === 0 ? "Importar cadastro" : undefined}
+          actionHref={batches.length === 0 && canWrite ? "/importar" : undefined}
+          actionLabel={batches.length === 0 && canWrite ? "Importar cadastro" : undefined}
         />
       ) : null}
       {loading || rows.length > 0 ? (

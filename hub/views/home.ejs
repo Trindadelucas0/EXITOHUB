@@ -13,12 +13,14 @@
   <div class="hub-home">
     <section class="hub-home-top">
       <div class="hub-home-bar">
-        <a href="/" class="hub-home-brand">
-          <p class="hub-wordmark">Êxito</p>
-          <p class="hub-kicker">HUB</p>
-        </a>
-        <div class="hub-home-actions">
+        <div class="hub-home-leading">
           <%- include('partials/hub-app-menu', { menuUser: hubUser, current: 'home', showHomeLink: false }) %>
+          <a href="/" class="hub-home-brand">
+            <p class="hub-wordmark">Êxito</p>
+            <p class="hub-kicker">HUB</p>
+          </a>
+        </div>
+        <div class="hub-home-actions">
           <form method="post" action="/logout" class="hub-inline">
             <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">

@@ -1,14 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { BatchDiffPanel } from "@/src/components/product/batch-diff-panel";
 import { BatchSelector } from "@/src/components/product/batch-selector";
 import { useActiveBatch } from "@/src/components/product/use-active-batch";
 import { EmptyState } from "@/src/components/ui/empty-state";
 import { PageHeader } from "@/src/components/ui/page-header";
+import { ncmApiUrl } from "@/src/lib/base-path";
 
 export function KpiDashboard({ companyName }: { companyName: string }) {
   const { batchId, onBatchChange, loteFromUrl, active, batchBooted } = useActiveBatch();
+  const [canWrite, setCanWrite] = useState(false);
+
+  useEffect(() => {
+    fetch(ncmApiUrl("/api/auth/me"))
+      .then((r) => r.json())
+      .then((json) => setCanWrite(Boolean(json.data?.canWrite)))
+      .catch(() => setCanWrite(false));
+  }, []);
 
   return (
     <div className="grid gap-6">
@@ -33,9 +43,13 @@ export function KpiDashboard({ companyName }: { companyName: string }) {
       {batchBooted && !active ? (
         <EmptyState
           title="Nenhuma planilha importada"
-          description="O panorama fica vazio até a importação de um arquivo desta empresa."
-          actionHref="/importar"
-          actionLabel="Importar cadastro"
+          description={
+            canWrite
+              ? "O panorama fica vazio até a importação de um arquivo desta empresa."
+              : "Ainda não há planilha importada. Peça ao administrador para importar o cadastro."
+          }
+          actionHref={canWrite ? "/importar" : undefined}
+          actionLabel={canWrite ? "Importar cadastro" : undefined}
         />
       ) : null}
       {active && batchId ? (

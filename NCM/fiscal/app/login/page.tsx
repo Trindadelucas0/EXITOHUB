@@ -40,7 +40,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
+    <main className="ncm-login-green flex min-h-screen flex-col items-center justify-center px-4 py-10">
       <div className="w-full max-w-[400px] rounded-[20px] bg-white p-8 shadow-panel sm:p-10">
         <div className="flex flex-col items-center text-center">
           <p className="text-[2rem] font-extrabold leading-none tracking-tight text-ink">Êxito</p>

@@ -1,20 +1,19 @@
 <%
   const u = typeof hubUser !== 'undefined' ? hubUser : null;
+  const cur = typeof current !== 'undefined' ? current : 'folha';
 %>
 <% if (typeof hubMode !== 'undefined' && hubMode && u) { %>
-<header class="hub-chrome">
+<header class="hub-chrome hub-chrome--exito">
   <div class="hub-chrome-inner">
+    <%- include('hub-app-menu', { menuUser: u, current: cur, showHomeLink: true }) %>
     <a href="/" class="hub-chrome-brand">
-      <img src="/hub-assets/logo-exito.png" alt="" class="hub-chrome-logo" width="36" height="36" onerror="this.style.display='none'" />
       <div>
-        <p class="hub-eyebrow">Êxito Contabilidade</p>
-        <strong>EXITO HUB</strong>
+        <p class="hub-eyebrow">Êxito</p>
+        <strong>HUB</strong>
       </div>
     </a>
-    <div class="hub-chrome-nav hub-chrome-nav--menu">
-      <%- include('hub-app-menu', { menuUser: u, current: 'folha', showHomeLink: true }) %>
-    </div>
     <div class="hub-chrome-user">
+      <a href="/" class="hub-nav-link hub-nav-btn">Início</a>
       <span class="hub-user-name"><%= u.displayName || u.username %></span>
       <form method="post" action="/logout" class="hub-inline">
         <button type="submit" class="hub-nav-link hub-nav-btn">Sair</button>

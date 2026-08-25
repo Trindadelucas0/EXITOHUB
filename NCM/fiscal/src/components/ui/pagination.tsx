@@ -21,7 +21,7 @@ export function Pagination({
 }) {
   if (pageCount <= 1 && !onPageSize) return null;
   return (
-    <nav className="flex flex-wrap items-center gap-2" aria-label={label}>
+    <nav className="flex flex-wrap items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 shadow-panel" aria-label={label}>
       {pageCount > 1 ? (
         <>
           <Button

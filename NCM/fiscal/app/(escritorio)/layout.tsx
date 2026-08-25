@@ -11,7 +11,7 @@ export default async function EscritorioLayout({ children }: { children: React.R
   }
   return (
     <EscritorioShell>
-      <Suspense fallback={<p className="text-sm text-white">Carregando…</p>}>{children}</Suspense>
+      <Suspense fallback={<p className="text-sm text-ink-muted">Carregando…</p>}>{children}</Suspense>
     </EscritorioShell>
   );
 }

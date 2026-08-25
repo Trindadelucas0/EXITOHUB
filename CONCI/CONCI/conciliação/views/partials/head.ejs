@@ -27,7 +27,7 @@ window.__BASE_PATH__ = <%- JSON.stringify(typeof basePath !== 'undefined' ? base
     return false;
   }
   function rewrite(el, attr) {
-    if (el.closest && el.closest('.hub-chrome')) return;
+    if (el.closest && (el.closest('.hub-chrome') || el.closest('.hub-inline-brand') || el.closest('.nav-link--home'))) return;
     var v = el.getAttribute(attr);
     if (shouldSkip(v)) return;
     el.setAttribute(attr, bp + v);

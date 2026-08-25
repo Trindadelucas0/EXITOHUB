@@ -1,8 +1,6 @@
-import type { ReactNode } from "react";
-
-export function SheetToolbar({ children }: { children: ReactNode }) {
+export function SheetToolbar({ children }: { children: React.ReactNode }) {
   return (
-    <section className="sticky top-3 z-20 flex flex-wrap items-center gap-2 rounded-[20px] bg-white p-2 shadow-panel">
+    <section className="sticky top-[4.25rem] z-20 flex flex-wrap items-center gap-2 rounded-lg border border-line bg-white p-2 shadow-panel">
       {children}
     </section>
   );

@@ -134,7 +134,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
   const title = mode === "entrada" ? "Como dar entrada?" : "Consulta fiscal do produto";
 
   return (
-    <div className="grid gap-8">
+    <div className="grid gap-6">
       <PageHeader
         kicker={data.product.codigo}
         title={title}
@@ -154,35 +154,38 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
           </>
         }
       />
-      <p className="rounded-md border border-line bg-paper-sunken px-3 py-2 text-sm text-ink-muted">
-        A tributação correta não vem do cadastro importado. Vem da regra fiscal da empresa: um NCM, uma
-        regra, para todos os produtos daquele NCM. Se o NCM no ERP estiver errado, CST, MVA e a entrada saem
-        errados juntos.
-      </p>
-      <div className="flex flex-wrap items-center gap-3">
-        <StatusBadge status={data.compare.status} />
-        <p className="text-sm text-ink-muted">NCM {data.product.ncm}</p>
-        <Button
-          variant="secondary"
-          disabled={saving}
-          onClick={() => void marcarTratado(!data.product.treated)}
-        >
-          {data.product.treated ? "Desmarcar tratado" : "Marcar como já tratado"}
-        </Button>
-      </div>
-      {data.product.treated ? (
-        <p className="text-sm text-ink-muted">
-          {data.product.treatedStale
-            ? "Tratado no lote anterior — a situação fiscal mudou. Confira de novo ou desmarque."
-            : "Já tratado: CST, MVA e destinos foram alinhados com a regra e o status passou a correto."}
+
+      <section className="grid gap-4 rounded-lg border border-line bg-white p-4 shadow-panel sm:p-5">
+        <p className="rounded-md border border-line bg-paper-sunken px-3 py-2 text-sm text-ink-muted">
+          A tributação correta não vem do cadastro importado. Vem da regra fiscal da empresa: um NCM, uma
+          regra, para todos os produtos daquele NCM. Se o NCM no ERP estiver errado, CST, MVA e a entrada saem
+          errados juntos.
         </p>
-      ) : (
-        <p className="text-sm text-ink-muted">
-          Ao marcar como tratado, o sistema copia os valores corretos da regra fiscal para este
-          produto.
-        </p>
-      )}
-      <p className="text-sm">{data.compare.motivo}</p>
+        <div className="flex flex-wrap items-center gap-3">
+          <StatusBadge status={data.compare.status} />
+          <p className="text-sm text-ink-muted">NCM {data.product.ncm}</p>
+          <Button
+            variant="secondary"
+            disabled={saving}
+            onClick={() => void marcarTratado(!data.product.treated)}
+          >
+            {data.product.treated ? "Desmarcar tratado" : "Marcar como já tratado"}
+          </Button>
+        </div>
+        {data.product.treated ? (
+          <p className="text-sm text-ink-muted">
+            {data.product.treatedStale
+              ? "Tratado no lote anterior — a situação fiscal mudou. Confira de novo ou desmarque."
+              : "Já tratado: CST, MVA e destinos foram alinhados com a regra e o status passou a correto."}
+          </p>
+        ) : (
+          <p className="text-sm text-ink-muted">
+            Ao marcar como tratado, o sistema copia os valores corretos da regra fiscal para este
+            produto.
+          </p>
+        )}
+        <p className="text-sm text-ink">{data.compare.motivo}</p>
+      </section>
 
       {data.compare.needsLink ? (
         <div className="rounded-lg border border-status-warn bg-status-warn-bg p-4">
@@ -206,7 +209,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
       ) : null}
 
       {mode === "entrada" && data.compare.diffs.length > 0 ? (
-        <section className="grid gap-2">
+        <section className="grid gap-2 rounded-lg border border-line bg-white p-4 shadow-panel sm:p-5">
           <h2 className="text-sm font-medium text-ink">
             O que veio errado no importado e como deve ficar
           </h2>
@@ -215,7 +218,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
       ) : null}
 
       {mode === "ficha" ? (
-        <section className="grid gap-2">
+        <section className="grid gap-2 rounded-lg border border-line bg-white p-4 shadow-panel sm:p-5">
           <h2 className="text-sm font-medium text-ink">Como está e como deve ficar</h2>
           <div className="md:hidden">
             <CstMatrix
@@ -238,7 +241,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
           </div>
         </section>
       ) : (
-        <section className="grid gap-4 rounded-lg bg-white p-5 shadow-panel">
+        <section className="grid gap-4 rounded-lg border border-line bg-white p-5 shadow-panel">
           {data.guide?.alertaDivergencia ? (
             <p className="rounded-md bg-status-bad-bg px-3 py-2 text-sm text-status-bad">
               {data.guide.alertaDivergencia}
@@ -264,8 +267,8 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
             <CstMatrix ideal={data.compare.rule?.destinosCst} />
           </div>
           <div>
-            <h2 className="font-medium">Checklist na NF do fornecedor</h2>
-            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+            <h2 className="font-medium text-ink">Checklist na NF do fornecedor</h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-ink">
               {data.guide?.checklist.map((item) => (
                 <li key={item}>{item}</li>
               ))}

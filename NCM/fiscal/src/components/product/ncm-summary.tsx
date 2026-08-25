@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ncmApiUrl } from "@/src/lib/base-path";
+import { Button } from "@/src/components/ui/button";
 
 type Group = {
   ncm: string;
@@ -10,6 +11,8 @@ type Group = {
   divergentes: number;
   analise: number;
 };
+
+const TOP_VISIBLE = 8;
 
 export function NcmSummary({
   lote,
@@ -31,6 +34,8 @@ export function NcmSummary({
   const [ncmCount, setNcmCount] = useState(0);
   const [productCount, setProductCount] = useState(0);
   const [groups, setGroups] = useState<Group[]>([]);
+  const [query, setQuery] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     if (!lote) {
@@ -57,6 +62,15 @@ export function NcmSummary({
     return () => controller.abort();
   }, [lote, status, tratado, refreshKey]);
 
+  const filtered = useMemo(() => {
+    const q = query.replace(/\D/g, "");
+    if (!q) return groups;
+    return groups.filter((g) => g.ncm.includes(q));
+  }, [groups, query]);
+
+  const visible = expanded ? filtered : filtered.slice(0, TOP_VISIBLE);
+  const hasMore = filtered.length > TOP_VISIBLE;
+
   if (!lote || ncmCount === 0) return null;
 
   async function treatNcm(ncm: string) {
@@ -70,13 +84,37 @@ export function NcmSummary({
   }
 
   return (
-    <section className="grid gap-2 rounded-lg bg-white p-4 shadow-panel">
-      <p className="text-sm text-ink">
-        <span className="font-medium tabular">{ncmCount}</span> NCMs ·{" "}
-        <span className="font-medium tabular">{productCount}</span> produtos nesta fila
-      </p>
+    <section className="grid gap-3 rounded-lg border border-line bg-white p-4 shadow-panel">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-ink">
+          <span className="font-medium tabular">{ncmCount}</span> NCMs ·{" "}
+          <span className="font-medium tabular">{productCount}</span> produtos nesta fila
+        </p>
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <label className="sr-only" htmlFor="ncm-summary-busca">
+            Buscar NCM na fila
+          </label>
+          <input
+            id="ncm-summary-busca"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setExpanded(true);
+            }}
+            placeholder="Buscar NCM"
+            inputMode="numeric"
+            autoComplete="off"
+            className="min-h-11 w-full min-w-0 rounded-[10px] border-0 bg-paper-sunken px-3 text-sm sm:w-44"
+          />
+          {hasMore ? (
+            <Button type="button" variant="secondary" onClick={() => setExpanded((v) => !v)}>
+              {expanded ? "Mostrar menos" : `Ver todos (${filtered.length})`}
+            </Button>
+          ) : null}
+        </div>
+      </div>
       <ul className="flex flex-wrap gap-2">
-        {groups.slice(0, 24).map((group) => {
+        {visible.map((group) => {
           const active = activeNcm.replace(/\D/g, "") === group.ncm;
           return (
             <li key={group.ncm}>
@@ -92,12 +130,15 @@ export function NcmSummary({
             </li>
           );
         })}
+        {filtered.length === 0 ? (
+          <li className="text-sm text-ink-muted">Nenhum NCM com esse filtro.</li>
+        ) : null}
       </ul>
       {activeNcm ? (
-        <div className="grid gap-2">
+        <div className="grid gap-2 border-t border-line pt-3">
           <button
             type="button"
-            className="min-h-11 w-fit rounded-md border border-line px-3 text-sm"
+            className="min-h-11 w-fit rounded-md border border-line px-3 text-sm hover:bg-paper-sunken"
             onClick={() => void treatNcm(activeNcm)}
           >
             Marcar este NCM como já tratado
