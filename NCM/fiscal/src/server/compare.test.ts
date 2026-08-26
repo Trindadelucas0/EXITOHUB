@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { compareProduct, type DestinosCst, type FiscalRule, type ImportedProduct } from "./compare";
+import {
+  compareProduct,
+  completeRuleDestinos,
+  type DestinosCst,
+  type FiscalRule,
+  type ImportedProduct,
+} from "./compare";
 
 const dest0: DestinosCst = {
   naoContribuinte: "0",
@@ -43,6 +49,18 @@ const destReducao: DestinosCst = {
   orgaoPublico: null,
   produtorRural: null,
   atacado: "20",
+};
+
+/** Como no print: só Revenda, Hosp e Atacado preenchidos com 60. */
+const dest60Furado: DestinosCst = {
+  naoContribuinte: null,
+  contribuinte: null,
+  revenda: "60",
+  construtora: null,
+  hospClinica: "60",
+  orgaoPublico: null,
+  produtorRural: null,
+  atacado: "60",
 };
 
 function rule(partial: Partial<FiscalRule> & { id: string }): FiscalRule {
@@ -94,6 +112,7 @@ describe("motor de comparação", () => {
     });
     const ok = compareProduct(product({ destinosCst: destStInterno }), [st], null);
     expect(ok.status).toBe("CORRETO");
+    expect(ok.rule?.destinosCst).toEqual(destStInterno);
 
     const revenda00 = compareProduct(
       product({ destinosCst: { ...destStInterno, revenda: "00" } }),
@@ -124,7 +143,41 @@ describe("motor de comparação", () => {
     expect(result.status).toBe("CORRETO");
   });
 
-  it("REDUÇÃO: só Atacado preenchido entra na comparação", () => {
+  it("ST NACIONAL com destinos furados completa com cstSaida e marca divergência", () => {
+    const nacional = rule({
+      id: "n",
+      ncm: "27101229",
+      cstEntrada: null,
+      cstSaida: "60",
+      cfopSaida: "5405",
+      situacaoCodigo: "ST_NACIONAL",
+      destinosCst: dest60Furado,
+    });
+    const completed = completeRuleDestinos(nacional);
+    expect(completed.destinosCst).toEqual(dest60);
+
+    const importadoParcial: DestinosCst = {
+      naoContribuinte: "00",
+      contribuinte: "60",
+      revenda: "60",
+      construtora: "00",
+      hospClinica: "00",
+      orgaoPublico: "00",
+      produtorRural: "00",
+      atacado: "60",
+    };
+    const result = compareProduct(
+      product({ ncm: "27101229", destinosCst: importadoParcial }),
+      [nacional],
+      null,
+    );
+    expect(result.status).toBe("DIVERGENTE");
+    expect(result.rule?.destinosCst).toEqual(dest60);
+    expect(result.diffs.some((d) => d.campo === "Não contribuinte")).toBe(true);
+    expect(result.diffs.some((d) => d.campo === "Hosp/clínica")).toBe(true);
+  });
+
+  it("REDUÇÃO: destinos vazios viram cstSaida e entram na comparação", () => {
     const reducao = rule({
       id: "red",
       cstEntrada: "20",
@@ -132,22 +185,45 @@ describe("motor de comparação", () => {
       situacaoCodigo: "REDUCAO",
       destinosCst: destReducao,
     });
+    const filled20: DestinosCst = {
+      naoContribuinte: "20",
+      contribuinte: "20",
+      revenda: "20",
+      construtora: "20",
+      hospClinica: "20",
+      orgaoPublico: "20",
+      produtorRural: "20",
+      atacado: "20",
+    };
+    expect(completeRuleDestinos(reducao).destinosCst).toEqual(filled20);
+
     const ok = compareProduct(
       product({
-        destinosCst: { ...destReducao, revenda: "0" },
+        destinosCst: filled20,
         cstCompra: "20",
       }),
       [reducao],
       null,
     );
     expect(ok.status).toBe("CORRETO");
+    expect(ok.rule?.destinosCst).toEqual(filled20);
 
-    const bad = compareProduct(
-      product({ destinosCst: { ...destReducao, atacado: "0" }, cstCompra: "20" }),
+    const badRevenda = compareProduct(
+      product({
+        destinosCst: { ...filled20, revenda: "0" },
+        cstCompra: "20",
+      }),
       [reducao],
       null,
     );
-    expect(bad.status).toBe("DIVERGENTE");
+    expect(badRevenda.status).toBe("DIVERGENTE");
+
+    const badAtacado = compareProduct(
+      product({ destinosCst: { ...filled20, atacado: "0" }, cstCompra: "20" }),
+      [reducao],
+      null,
+    );
+    expect(badAtacado.status).toBe("DIVERGENTE");
   });
 
   it("NCM duplicado sem vínculo → NECESSITA ANÁLISE; NCM vazio ou fora da base → DIVERGENTE", () => {

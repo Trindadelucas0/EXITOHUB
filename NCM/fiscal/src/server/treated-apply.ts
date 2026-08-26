@@ -1,4 +1,4 @@
-import type { FiscalRule, ImportedProduct } from "./compare";
+import { completeRuleDestinos, type FiscalRule, type ImportedProduct } from "./compare";
 
 export function resolveLinkedRule(
   rulesForNcm: FiscalRule[],
@@ -14,12 +14,13 @@ export function applyRuleValuesToProduct(
   product: ImportedProduct,
   rule: FiscalRule,
 ): ImportedProduct {
+  const completed = completeRuleDestinos(rule);
   return {
     ...product,
-    cstCompra: rule.cstEntrada,
-    cstUnico: rule.cstSaida,
-    destinosCst: { ...rule.destinosCst },
-    ivaMva: rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto,
-    ivaMvaNumero: rule.mvaPercentual,
+    cstCompra: completed.cstEntrada,
+    cstUnico: completed.cstSaida,
+    destinosCst: { ...completed.destinosCst },
+    ivaMva: completed.mvaPercentual != null ? String(completed.mvaPercentual) : completed.mvaTexto,
+    ivaMvaNumero: completed.mvaPercentual,
   };
 }

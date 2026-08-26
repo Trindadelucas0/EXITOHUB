@@ -3,6 +3,7 @@ import "server-only";
 import { Prisma } from "@prisma/client";
 import {
   compareProduct,
+  completeRuleDestinos,
   summarizeStatus,
   type CompareResult,
   type FiscalRule,
@@ -114,9 +115,10 @@ export function sheetItemFromPersisted(
   rulesForNcm: FiscalRule[],
   linkedRuleId: string | null,
 ) {
-  const rule =
+  const rawRule =
     rulesForNcm.find((item) => item.id === linkedRuleId) ??
     (rulesForNcm.length === 1 ? rulesForNcm[0] : null);
+  const rule = rawRule ? completeRuleDestinos(rawRule) : null;
   return {
     id: product.id,
     codigo: product.codigo,

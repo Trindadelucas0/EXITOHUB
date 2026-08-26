@@ -80,6 +80,39 @@ function destinosPreenchidos(destinos: DestinosCst | null | undefined): number {
   return DESTINO_KEYS.filter((key) => Boolean(destinos[key])).length;
 }
 
+/** Matriz padrão ST interno: 0 vs 10 nos destinatários. */
+const ST_INTERNO_DESTINOS: DestinosCst = {
+  naoContribuinte: "0",
+  contribuinte: "10",
+  revenda: "10",
+  construtora: "0",
+  hospClinica: "0",
+  orgaoPublico: "0",
+  produtorRural: "0",
+  atacado: "10",
+};
+
+/**
+ * Completa só destinos vazios da regra (não sobrescreve o que a base já tem).
+ * ST interno usa a matriz 0/10; demais situações usam cstSaida.
+ */
+export function completeRuleDestinos(rule: FiscalRule): FiscalRule {
+  const destinos = emptyDestinos();
+  for (const key of DESTINO_KEYS) {
+    const existing = rule.destinosCst[key];
+    if (existing != null && existing !== "") {
+      destinos[key] = existing;
+      continue;
+    }
+    if (rule.situacaoCodigo === "ST_INTERNO") {
+      destinos[key] = ST_INTERNO_DESTINOS[key];
+      continue;
+    }
+    destinos[key] = rule.cstSaida || null;
+  }
+  return { ...rule, destinosCst: destinos };
+}
+
 export function compareProduct(
   product: ImportedProduct,
   rulesForNcm: FiscalRule[],
@@ -132,11 +165,11 @@ export function compareProduct(
     };
   }
 
-  const rule =
+  const rawRule =
     rulesForNcm.find((item) => item.id === linkedRuleId) ??
     (rulesForNcm.length === 1 ? rulesForNcm[0] : null);
 
-  if (!rule) {
+  if (!rawRule) {
     return {
       status: "NECESSITA_ANALISE",
       motivo: "Vínculo de regra inválido para este NCM.",
@@ -146,6 +179,8 @@ export function compareProduct(
       needsLink: true,
     };
   }
+
+  const rule = completeRuleDestinos(rawRule);
 
   if (!rule.cstSaida || !rule.cfopSaida || rule.situacaoCodigo === "INCOMPLETA") {
     return {

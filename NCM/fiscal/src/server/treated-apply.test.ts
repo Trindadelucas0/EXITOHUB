@@ -91,4 +91,42 @@ describe("aplicar valores corretos ao tratar", () => {
     expect(resolveLinkedRule([st, red], "b")?.id).toBe("b");
     expect(resolveLinkedRule([st], null)?.id).toBe("a");
   });
+
+  it("regra com destinos parciais copia a matriz completa ao tratar", () => {
+    const parcial: DestinosCst = {
+      naoContribuinte: null,
+      contribuinte: null,
+      revenda: "60",
+      construtora: null,
+      hospClinica: "60",
+      orgaoPublico: null,
+      produtorRural: null,
+      atacado: "60",
+    };
+    const filled60: DestinosCst = {
+      naoContribuinte: "60",
+      contribuinte: "60",
+      revenda: "60",
+      construtora: "60",
+      hospClinica: "60",
+      orgaoPublico: "60",
+      produtorRural: "60",
+      atacado: "60",
+    };
+    const fiscal = rule({
+      id: "st60",
+      situacaoCodigo: "ST_NACIONAL",
+      cstEntrada: "10",
+      cstSaida: "60",
+      cfopSaida: "5405",
+      destinosCst: parcial,
+      mvaPercentual: null,
+      mvaTexto: "Não",
+      mvaKind: "skip",
+    });
+    const applied = applyRuleValuesToProduct(product(), fiscal);
+    expect(applied.destinosCst).toEqual(filled60);
+    expect(applied.cstUnico).toBe("60");
+    expect(compareProduct(applied, [fiscal], null).status).toBe("CORRETO");
+  });
 });

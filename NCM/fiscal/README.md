@@ -51,7 +51,7 @@ npm run import:cadastro
 | Regra geral | Entrada 0, CST BAIFER 0, CFOP 5102, CST 0 nos 8 destinos |
 | ST interno | Entrada 0, CST 10, CFOP 5403; 0 para não contrib/construt/hosp/órgão/rural; 10 para contrib/revenda/atacado |
 | ST nacional | CST 60 em todos, CFOP 5405; no `OK.xlsx` a entrada costuma ser 10 |
-| Redução | Entrada 20, CST 20, CFOP 5102; só Atacado preenchido |
+| Redução | Entrada 20, CST 20, CFOP 5102; na base só Atacado costuma vir preenchido — a conferência completa os demais com o CST de saída |
 | Incompleta | CST/CFOP vazios → necessita análise |
 | NCM com duas regras | Amarelo até vincular |
 | NCM mascarado | `82032010-2` e `82.03.20.10` → `82032010` |

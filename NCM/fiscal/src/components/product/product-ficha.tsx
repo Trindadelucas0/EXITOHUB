@@ -318,7 +318,8 @@ function fichaExtras(data: Payload): MatrixExtraRow[] {
       key: "cstCompra",
       label: "CST de compra (entrada)",
       atual: compraDiff?.atual ?? product.cstCompra,
-      ideal: compraDiff?.ideal ?? rule?.cstEntrada,
+      // Sem valor na regra: mostra o importado (não inventa CST de entrada).
+      ideal: compraDiff?.ideal ?? rule?.cstEntrada ?? product.cstCompra,
     });
   }
 
@@ -327,16 +328,19 @@ function fichaExtras(data: Payload): MatrixExtraRow[] {
       key: "cstSaida",
       label: "CST da empresa (saída)",
       atual: saidaDiff?.atual ?? product.cstUnico,
-      ideal: saidaDiff?.ideal ?? rule?.cstSaida,
+      ideal: saidaDiff?.ideal ?? rule?.cstSaida ?? product.cstUnico,
     });
   }
 
-  if (mvaDiff || product.ivaMva || rule?.mvaTexto) {
+  if (mvaDiff || product.ivaMva || rule?.mvaTexto || rule?.mvaPercentual != null) {
+    const ruleMva =
+      rule?.mvaPercentual != null ? String(rule.mvaPercentual) : rule?.mvaTexto ?? null;
     extras.push({
       key: "mva",
       label: "MVA / IVA",
       atual: mvaDiff?.atual ?? product.ivaMva,
-      ideal: mvaDiff?.ideal ?? rule?.mvaTexto,
+      // Sem valor na regra: mostra o importado (não inventa MVA).
+      ideal: mvaDiff?.ideal ?? ruleMva ?? product.ivaMva,
     });
   }
 
