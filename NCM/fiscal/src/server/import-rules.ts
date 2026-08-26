@@ -1,6 +1,11 @@
 import * as XLSX from "xlsx";
-import { DESTINO_KEYS, DESTINO_LABELS, type DestinosCst } from "@/src/lib/fiscal";
-import { normalizeNcm } from "./ncm";
+import {
+  DESTINO_KEYS,
+  DESTINO_LABELS,
+  DESTINO_SHORT_LABELS,
+  type DestinosCst,
+} from "@/src/lib/fiscal";
+import { normalizeCfop, normalizeNcm } from "./ncm";
 import {
   classifySituacao,
   destinosFromCells,
@@ -21,6 +26,10 @@ export type ParsedRule = {
   mvaPercentual: number | null;
   mvaTexto: string | null;
   mvaKind: string;
+};
+
+export type ParseRulesOptions = {
+  companyName?: string | null;
 };
 
 const SKIP_SHEETS = new Set(["planilha_classes_fiscais", "ncm_geral"]);
@@ -51,11 +60,13 @@ const HEADER_MAP: Record<string, string> = {
   descricao: "segmento",
   "cst entrada": "cstEntrada",
   "cst compra": "cstEntrada",
+  "nota de entrada cst": "cstEntrada",
+  "nota de entrada": "cstEntrada",
   "cst saida": "cstSaida",
-  "cst saida ": "cstSaida",
   "cst baifer": "cstSaida",
   cfop: "cfopSaida",
   "cfop saida": "cfopSaida",
+  "cfop de saida": "cfopSaida",
   situacao: "situacao",
   mva: "mva",
   iva: "mva",
@@ -63,11 +74,13 @@ const HEADER_MAP: Record<string, string> = {
 
 for (const key of DESTINO_KEYS) {
   HEADER_MAP[foldHeader(DESTINO_LABELS[key])] = key;
+  HEADER_MAP[foldHeader(DESTINO_SHORT_LABELS[key])] = key;
   HEADER_MAP[foldHeader(key)] = key;
 }
 
 function mapHeader(header: string): string | null {
   const folded = foldHeader(header);
+  if (folded === "aliquota" || folded === "%aliquota") return null;
   if (HEADER_MAP[folded]) return HEADER_MAP[folded];
   for (const [key, mapped] of Object.entries(HEADER_MAP)) {
     if (key.length < 3) continue;
@@ -78,7 +91,75 @@ function mapHeader(header: string): string | null {
 
 function looksLikeHeaderRow(cells: unknown[]): boolean {
   const folded = cells.map((c) => foldHeader(cellStr(c)));
-  return folded.some((c) => c === "ncm") && folded.some((c) => c.includes("segment") || c === "cfop" || c.includes("situacao"));
+  return (
+    folded.some((c) => c === "ncm") &&
+    folded.some((c) => c.includes("segment") || c.includes("cfop") || c.includes("situacao"))
+  );
+}
+
+function looksLikeRulesSheet(sheet: XLSX.WorkSheet): boolean {
+  const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw: false });
+  if (aoa.length === 0) return false;
+  if (looksLikeHeaderRow(aoa[0] ?? [])) return true;
+  const firstNcm = normalizeNcm(cellStr((aoa[0] ?? [])[0]));
+  return firstNcm.length === 8;
+}
+
+function shouldSkipSheetName(name: string): boolean {
+  const trimmed = name.trim();
+  const folded = trimmed.toLowerCase();
+  if (SKIP_SHEETS.has(folded)) return true;
+  if (folded.startsWith("file://") || folded.includes("#")) return true;
+  if (folded.startsWith("planilha") && folded !== "planilha_classes_fiscais") {
+    // Planilha4 e similares vazias
+    if (/^planilha\d+$/i.test(trimmed)) return true;
+  }
+  return false;
+}
+
+function companySheetHint(companyName: string | null | undefined): "BAIFER" | "LOJA" | null {
+  const folded = foldHeader(companyName || "");
+  if (!folded) return null;
+  if (folded.includes("loja")) return "LOJA";
+  if (folded.includes("baifer")) return "BAIFER";
+  return null;
+}
+
+function deriveCstSaida(mappedCst: string | null, destinos: DestinosCst): string | null {
+  if (mappedCst) return mappedCst;
+  return destinos.atacado || destinos.revenda || destinos.contribuinte || null;
+}
+
+function buildRule(input: {
+  ncmOriginal: string;
+  segmento: string;
+  cstEntrada: string | null;
+  cstSaida: string | null;
+  cfopSaida: string | null;
+  destinos: DestinosCst;
+  situacao: string;
+  mvaRaw: unknown;
+}): ParsedRule | null {
+  const ncm = normalizeNcm(input.ncmOriginal);
+  if (ncm.length !== 8) return null;
+  const cstSaida = deriveCstSaida(input.cstSaida, input.destinos);
+  const cfopSaida = normalizeCfop(input.cfopSaida);
+  const situacao = input.situacao || "";
+  const mva = parseMvaFields(input.mvaRaw);
+  return {
+    ncm,
+    ncmOriginal: input.ncmOriginal.trim(),
+    segmento: input.segmento || "",
+    cstEntrada: input.cstEntrada || null,
+    cstSaida,
+    cfopSaida,
+    destinosCst: input.destinos,
+    situacao,
+    situacaoCodigo: classifySituacao(situacao, cstSaida || "", cfopSaida || ""),
+    mvaPercentual: mva.mvaPercentual,
+    mvaTexto: mva.mvaTexto,
+    mvaKind: mva.mvaKind,
+  };
 }
 
 function rowToRuleFromHeaders(row: Record<string, unknown>): ParsedRule | null {
@@ -89,73 +170,97 @@ function rowToRuleFromHeaders(row: Record<string, unknown>): ParsedRule | null {
     mapped[dest] = cellStr(value);
   }
   const ncmOriginal = mapped.ncm || "";
-  const ncm = normalizeNcm(ncmOriginal);
-  if (ncm.length !== 8) return null;
+  if (!ncmOriginal) return null;
   const destinos = emptyDestinos();
   for (const key of DESTINO_KEYS) {
     destinos[key] = mapped[key] || null;
   }
-  const cstSaida = mapped.cstSaida || null;
-  const cfopSaida = mapped.cfopSaida || null;
-  const situacao = mapped.situacao || "";
-  const mva = parseMvaFields(mapped.mva || null);
-  return {
-    ncm,
-    ncmOriginal: ncmOriginal.trim(),
+  return buildRule({
+    ncmOriginal,
     segmento: mapped.segmento || "",
     cstEntrada: mapped.cstEntrada || null,
-    cstSaida,
-    cfopSaida,
-    destinosCst: destinos,
-    situacao,
-    situacaoCodigo: classifySituacao(situacao, cstSaida || "", cfopSaida || ""),
-    mvaPercentual: mva.mvaPercentual,
-    mvaTexto: mva.mvaTexto,
-    mvaKind: mva.mvaKind,
-  };
+    cstSaida: mapped.cstSaida || null,
+    cfopSaida: mapped.cfopSaida || null,
+    destinos,
+    situacao: mapped.situacao || "",
+    mvaRaw: mapped.mva || null,
+  });
 }
 
-function rowToRulePositional(raw: unknown[]): ParsedRule | null {
+/** Layout BAIFER posicional: NCM, Segmento, CST entrada, CST saída, CFOP, 8 destinos, Situação, MVA. */
+function rowToRulePositionalBaifer(raw: unknown[]): ParsedRule | null {
   const cells = raw.map(cellStr);
   while (cells.length < 15) cells.push("");
   const ncmOriginal = cells[0];
-  const ncm = normalizeNcm(ncmOriginal);
-  if (!ncmOriginal || ncm.length !== 8) return null;
+  if (!ncmOriginal) return null;
   const destinos = destinosFromCells(cells, 5);
-  const cstSaida = cells[3] || destinos.atacado || destinos.revenda || destinos.contribuinte;
-  const cfopSaida = cells[4] || null;
-  const situacao = cells[13] || "";
-  const mva = parseMvaFields(raw[14] ?? cells[14] ?? null);
-  return {
-    ncm,
-    ncmOriginal: ncmOriginal.trim(),
+  return buildRule({
+    ncmOriginal,
     segmento: cells[1] || "",
     cstEntrada: cells[2] || null,
-    cstSaida: cstSaida || null,
-    cfopSaida,
-    destinosCst: destinos,
-    situacao,
-    situacaoCodigo: classifySituacao(situacao, cstSaida || "", cfopSaida || ""),
-    mvaPercentual: mva.mvaPercentual,
-    mvaTexto: mva.mvaTexto,
-    mvaKind: mva.mvaKind,
-  };
+    cstSaida: cells[3] || null,
+    cfopSaida: cells[4] || null,
+    destinos,
+    situacao: cells[13] || "",
+    mvaRaw: raw[14] ?? cells[14] ?? null,
+  });
 }
 
-function pickSheet(workbook: XLSX.WorkBook): string {
-  const names = workbook.SheetNames.filter((n) => !SKIP_SHEETS.has(n.trim().toLowerCase()));
-  if (names.length === 0) {
+/** Layout LOJA posicional: NCM, Segmento, CST entrada, CFOP, 8 destinos, Situação (sem CST saída/MVA). */
+function rowToRulePositionalLoja(raw: unknown[]): ParsedRule | null {
+  const cells = raw.map(cellStr);
+  while (cells.length < 13) cells.push("");
+  const ncmOriginal = cells[0];
+  if (!ncmOriginal) return null;
+  const destinos = destinosFromCells(cells, 4);
+  return buildRule({
+    ncmOriginal,
+    segmento: cells[1] || "",
+    cstEntrada: cells[2] || null,
+    cstSaida: null,
+    cfopSaida: cells[3] || null,
+    destinos,
+    situacao: cells[12] || "",
+    mvaRaw: null,
+  });
+}
+
+export function pickRulesSheet(
+  workbook: XLSX.WorkBook,
+  companyName?: string | null,
+): string {
+  const candidates = workbook.SheetNames.filter((n) => !shouldSkipSheetName(n));
+  if (candidates.length === 0) {
     throw new Error("Nenhuma aba de regras válida no arquivo.");
   }
-  return names[0];
+
+  const hint = companySheetHint(companyName);
+  if (hint) {
+    const exact = candidates.find((n) => n.trim().toUpperCase() === hint);
+    if (exact && looksLikeRulesSheet(workbook.Sheets[exact])) return exact;
+  }
+
+  for (const preferred of ["BAIFER", "LOJA"] as const) {
+    if (hint && preferred !== hint) continue;
+    const match = candidates.find((n) => n.trim().toUpperCase() === preferred);
+    if (match && looksLikeRulesSheet(workbook.Sheets[match])) return match;
+  }
+
+  for (const name of candidates) {
+    if (looksLikeRulesSheet(workbook.Sheets[name])) return name;
+  }
+
+  return candidates[0];
 }
 
-export function parseRulesBuffer(buffer: Buffer): ParsedRule[] {
+export function parseRulesBuffer(buffer: Buffer, options: ParseRulesOptions = {}): ParsedRule[] {
   const workbook = XLSX.read(buffer, { type: "buffer", raw: false });
-  const sheetName = pickSheet(workbook);
+  const sheetName = pickRulesSheet(workbook, options.companyName);
   const sheet = workbook.Sheets[sheetName];
   const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw: false });
   if (aoa.length === 0) return [];
+
+  const isLoja = sheetName.trim().toUpperCase() === "LOJA";
   const header = looksLikeHeaderRow(aoa[0] ?? []);
   if (header) {
     const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
@@ -164,11 +269,13 @@ export function parseRulesBuffer(buffer: Buffer): ParsedRule[] {
     });
     return rows.map(rowToRuleFromHeaders).filter((item): item is ParsedRule => item != null);
   }
+
   const firstNcm = normalizeNcm(cellStr((aoa[0] ?? [])[0]));
   const start = firstNcm.length === 8 ? 0 : 1;
+  const mapper = isLoja ? rowToRulePositionalLoja : rowToRulePositionalBaifer;
   return aoa
     .slice(start)
-    .map(rowToRulePositional)
+    .map(mapper)
     .filter((item): item is ParsedRule => item != null);
 }
 

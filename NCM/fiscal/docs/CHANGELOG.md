@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.4.0 — 26/08/2026
+
+Adicionado:
+
+- Planilha padrão `ncm-atualizado.ods` (fixture + `data/calibracao/layouts.json`).
+- Importação de regras escolhe a aba pela empresa (`BAIFER` ou `LOJA`) e mapeia cabeçalhos curtos Santri (`Não contr`, `Contrib`, etc.).
+- Normalização de CFOP (`5.405` → `5405`); na Loja, CST de saída deriva dos destinos quando a coluna não existe.
+
+Alterado:
+
+- Extractor Python e seed passam a usar só o ODS padrão (sem `OK.xlsx`).
+- Cadastro no mesmo ODS usa a aba `Planilha_Classes_Fiscais` e ignora links/`NCM_GERAL`.
+
 ## v1.3.0 — 20/08/2026
 
 Adicionado:

@@ -1,7 +1,9 @@
-"""Extrai regras fiscais sem misturar empresas.
+"""Extrai regras fiscais do ODS padrão sem misturar empresas.
 
-- OK.xlsx, primeira aba → BAIFER
-- ODS aba LOJA → Loja das Máquinas
+Fonte única: data/ncm-atualizado.ods (ou fixture tests/fixtures/ncm-atualizado.ods)
+- aba BAIFER → BAIFER
+- aba LOJA → Loja das Máquinas
+- Planilha_Classes_Fiscais / NCM_GERAL / links → ignoradas
 """
 
 from __future__ import annotations
@@ -15,7 +17,6 @@ from pathlib import Path
 from odf.opendocument import load
 from odf.table import Table, TableCell, TableRow
 from odf.text import P
-from openpyxl import load_workbook
 
 DESTINO_KEYS = [
     "naoContribuinte",
@@ -29,11 +30,19 @@ DESTINO_KEYS = [
 ]
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_OK = ROOT / "data" / "ok-baifer.xlsx"
-DEFAULT_ODS = ROOT / "data" / "relacao-produtos-ncms-baifer.ods"
+DEFAULT_ODS = ROOT / "data" / "ncm-atualizado.ods"
+FIXTURE_ODS = ROOT / "tests" / "fixtures" / "ncm-atualizado.ods"
 DEFAULT_BAIFER_JSON = ROOT / "data" / "base-baifer.json"
 DEFAULT_LOJA_JSON = ROOT / "data" / "base-loja.json"
-FORBIDDEN_SHEETS = {"Planilha_Classes_Fiscais"}
+FORBIDDEN_SHEETS = {"Planilha_Classes_Fiscais", "NCM_GERAL"}
+
+
+def resolve_default_ods() -> Path:
+    if DEFAULT_ODS.exists():
+        return DEFAULT_ODS
+    if FIXTURE_ODS.exists():
+        return FIXTURE_ODS
+    return DEFAULT_ODS
 
 
 def normalize_ncm(raw: object | None) -> str:
@@ -47,26 +56,18 @@ def normalize_ncm(raw: object | None) -> str:
     return digits[:8]
 
 
+def normalize_cfop(raw: object | None) -> str | None:
+    if raw is None:
+        return None
+    digits = re.sub(r"\D", "", str(raw))
+    if not digits:
+        return None
+    return digits[:4] if len(digits) >= 4 else digits
+
+
 def _strip_accents(text: str) -> str:
     nfd = unicodedata.normalize("NFD", text)
     return "".join(ch for ch in nfd if unicodedata.category(ch) != "Mn")
-
-
-def cell_to_str(value: object | None) -> str:
-    if value is None:
-        return ""
-    if isinstance(value, bool):
-        return str(value)
-    if isinstance(value, int):
-        return str(value)
-    if isinstance(value, float):
-        if value.is_integer():
-            return str(int(value))
-        return str(value)
-    text = str(value).strip()
-    if text.lower() in {"none", "nan"}:
-        return ""
-    return text
 
 
 def parse_mva(raw: object | None) -> tuple[float | None, str | None, str]:
@@ -103,7 +104,7 @@ def parse_mva(raw: object | None) -> tuple[float | None, str | None, str]:
 def classify_situacao(situacao: str, cst_saida: str, cfop: str) -> str:
     sit = _strip_accents((situacao or "").upper())
     cst_s = (cst_saida or "").strip()
-    cfop_s = (cfop or "").strip()
+    cfop_s = (normalize_cfop(cfop) or "").strip()
     if "ST INTERNO" in sit:
         return "ST_INTERNO"
     if "ST NACIONAL" in sit:
@@ -146,6 +147,7 @@ def _rule_dict(
     mva_raw: object | None,
 ) -> dict:
     mva_pct, mva_texto, mva_kind = parse_mva(mva_raw)
+    cfop = normalize_cfop(cfop_saida)
     return {
         "company": company,
         "sourceFile": source_file,
@@ -155,10 +157,10 @@ def _rule_dict(
         "segmento": segmento,
         "cstEntrada": cst_entrada,
         "cstSaida": cst_saida,
-        "cfopSaida": cfop_saida,
+        "cfopSaida": cfop,
         "destinosCst": destinos,
         "situacao": situacao,
-        "situacaoCodigo": classify_situacao(situacao, cst_saida or "", cfop_saida or ""),
+        "situacaoCodigo": classify_situacao(situacao, cst_saida or "", cfop or ""),
         "mvaPercentual": mva_pct,
         "mvaTexto": mva_texto,
         "mvaKind": mva_kind,
@@ -182,46 +184,6 @@ def _payload(company: str, source: str, sheet: str, rules: list[dict], ignored: 
         "counts": counts,
         "rules": rules,
     }
-
-
-def extract_ok_xlsx(path: Path) -> dict:
-    wb = load_workbook(path, read_only=True, data_only=True)
-    try:
-        first_name = wb.sheetnames[0]
-        ignored = list(wb.sheetnames[1:])
-        ws = wb[first_name]
-        rows = list(ws.iter_rows(values_only=True))
-    finally:
-        wb.close()
-    if not rows:
-        raise RuntimeError("OK.xlsx primeira aba vazia.")
-    rules: list[dict] = []
-    for raw in rows[1:]:
-        cells = [cell_to_str(c) for c in (raw or ())]
-        while len(cells) < 15:
-            cells.append("")
-        ncm_original = cells[0]
-        if not ncm_original:
-            continue
-        if len(normalize_ncm(ncm_original)) != 8:
-            continue
-        mva_raw = raw[14] if raw and len(raw) > 14 else None
-        rules.append(
-            _rule_dict(
-                source_file=path.name,
-                source_sheet=first_name,
-                company="baifer",
-                ncm_original=ncm_original,
-                segmento=cells[1],
-                cst_entrada=cells[2] or None,
-                cst_saida=cells[3] or None,
-                cfop_saida=cells[4] or None,
-                destinos=_destinos_from_cells(cells, 5),
-                situacao=cells[13],
-                mva_raw=mva_raw,
-            )
-        )
-    return _payload("baifer", path.name, first_name, rules, ignored)
 
 
 def _cell_text_ods(cell: TableCell) -> str:
@@ -251,18 +213,59 @@ def _expand_row(row: TableRow, max_cols: int = 16) -> list[str]:
     return out[:max_cols]
 
 
-def extract_ods_loja(path: Path) -> dict:
-    doc = load(str(path))
-    tables = doc.spreadsheet.getElementsByType(Table)
-    names = [str(t.getAttribute("name")) for t in tables]
-    loja = None
+def _find_table(tables: list, wanted: str):
     for table in tables:
         name = str(table.getAttribute("name"))
         if name in FORBIDDEN_SHEETS:
             continue
-        if name.strip().upper() == "LOJA":
-            loja = table
-            break
+        if name.strip().upper() == wanted.upper():
+            return table
+    return None
+
+
+def _sheet_names(tables: list) -> list[str]:
+    return [str(t.getAttribute("name")) for t in tables]
+
+
+def extract_ods_baifer(path: Path) -> dict:
+    doc = load(str(path))
+    tables = doc.spreadsheet.getElementsByType(Table)
+    names = _sheet_names(tables)
+    baifer = _find_table(tables, "BAIFER")
+    if baifer is None:
+        raise RuntimeError("Aba BAIFER não encontrada no ODS.")
+
+    rules: list[dict] = []
+    for row in baifer.getElementsByType(TableRow)[1:]:
+        cells = _expand_row(row, 16)
+        ncm_original = (cells[0] or "").strip()
+        if not ncm_original or len(normalize_ncm(ncm_original)) != 8:
+            continue
+        destinos = _destinos_from_cells(cells, 5)
+        rules.append(
+            _rule_dict(
+                source_file=path.name,
+                source_sheet="BAIFER",
+                company="baifer",
+                ncm_original=ncm_original,
+                segmento=cells[1],
+                cst_entrada=(cells[2] or "").strip() or None,
+                cst_saida=(cells[3] or "").strip() or None,
+                cfop_saida=(cells[4] or "").strip() or None,
+                destinos=destinos,
+                situacao=(cells[13] or "").strip(),
+                mva_raw=(cells[14] or "").strip() or None,
+            )
+        )
+    ignored = [n for n in names if n.strip().upper() != "BAIFER"]
+    return _payload("baifer", path.name, "BAIFER", rules, ignored)
+
+
+def extract_ods_loja(path: Path) -> dict:
+    doc = load(str(path))
+    tables = doc.spreadsheet.getElementsByType(Table)
+    names = _sheet_names(tables)
+    loja = _find_table(tables, "LOJA")
     if loja is None:
         raise RuntimeError("Aba LOJA não encontrada no ODS.")
 
@@ -311,15 +314,11 @@ def assert_not_mixed(baifer: dict, loja: dict) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     args = argv if argv is not None else sys.argv[1:]
-    ok_path = Path(args[0]) if args else DEFAULT_OK
-    ods_path = Path(args[1]) if len(args) > 1 else DEFAULT_ODS
-    if not ok_path.exists():
-        print(f"OK.xlsx não encontrado: {ok_path}", file=sys.stderr)
-        return 1
+    ods_path = Path(args[0]) if args else resolve_default_ods()
     if not ods_path.exists():
         print(f"ODS não encontrado: {ods_path}", file=sys.stderr)
         return 1
-    baifer = extract_ok_xlsx(ok_path)
+    baifer = extract_ods_baifer(ods_path)
     loja = extract_ods_loja(ods_path)
     assert_not_mixed(baifer, loja)
     write_json(baifer, DEFAULT_BAIFER_JSON)

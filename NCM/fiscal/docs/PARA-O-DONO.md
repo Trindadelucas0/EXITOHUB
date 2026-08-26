@@ -4,10 +4,11 @@ O Auditor Fiscal BAIFER é um sistema interno do escritório. Ele **não substit
 
 ## O que o sistema faz hoje
 
-- Guarda a **base fiscal da empresa ativa**:
-  - BAIFER ← primeira aba do `OK.xlsx`
-  - Loja das Máquinas ← aba **LOJA** do ODS
+- Guarda a **base fiscal da empresa ativa**, lida da planilha padrão `NCM ATUALIZADO.ods`:
+  - BAIFER ← aba **BAIFER**
+  - Loja das Máquinas ← aba **LOJA**
   - As duas **não se misturam**
+  - A aba Santri `Planilha_Classes_Fiscais` é só cadastro (tela Importar), não base fiscal
 - Permite **importar** várias planilhas; cada arquivo vira um lote no histórico, sem misturar. Em Panorama, Consulta e Divergências dá para **escolher a planilha** e ver só os dados dela.
 - Classifica cada produto como **correto**, **divergente** ou **necessita análise**.
 - Em **Divergências**, mostra primeiro **quantos NCMs** estão errados; um clique filtra a grade.
@@ -42,9 +43,10 @@ A tela inicial é só login. Cada e-mail abre o painel daquela conta:
 
 1. Entrar no sistema.
 2. Conferir a **Base fiscal** (já vem preenchida após a instalação).
-3. **Importar** o cadastro atual da BAIFER (export Santri *Relação de Classes Fiscais*, arquivo `bs.xlsx`). Isso **não** é a base fiscal — é o cadastro a ser auditado. Cada arquivo fica no histórico; use **Ver conferência** ou o seletor **Ver dados desta planilha** para olhar só aquele arquivo.
-4. Abrir **Divergências**, filtrar pelo NCM e marcar o que já foi ajustado no ERP.
-5. Em NCM com ST e REDUÇÃO, o administrador **vincula** a regra correta.
+3. **Importar** o cadastro atual (export Santri *Relação de Classes Fiscais*, ou a aba `Planilha_Classes_Fiscais` do ODS padrão). Isso **não** é a base fiscal — é o cadastro a ser auditado. Cada arquivo fica no histórico; use **Ver conferência** ou o seletor **Ver dados desta planilha** para olhar só aquele arquivo.
+4. Para atualizar a **base fiscal**, use Base fiscal → Importar regras com o mesmo ODS: a empresa BAIFER lê a aba BAIFER; a Loja lê a aba LOJA.
+5. Abrir **Divergências**, filtrar pelo NCM e marcar o que já foi ajustado no ERP.
+6. Em NCM com ST e REDUÇÃO, o administrador **vincula** a regra correta.
 
 ## Expansão
 

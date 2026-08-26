@@ -21,7 +21,9 @@ export async function POST(request: Request) {
       throw new HttpError(400, "VALIDATION", error instanceof Error ? error.message : "Arquivo inválido.");
     }
     const buffer = Buffer.from(await file.arrayBuffer());
-    const parsed = dedupeParsedRules(parseRulesBuffer(buffer));
+    const parsed = dedupeParsedRules(
+      parseRulesBuffer(buffer, { companyName: user.companyName }),
+    );
     if (parsed.length === 0) {
       throw new HttpError(400, "EMPTY", "Nenhuma regra reconhecida na planilha.");
     }

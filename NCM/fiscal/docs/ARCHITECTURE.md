@@ -14,7 +14,7 @@ Prisma (SQL parametrizado)
 PostgreSQL (database "fiscal-p")
 ```
 
-Python **não** sobe como API. Roda em `tools/extract_rules.py`: primeira aba do `OK.xlsx` → `data/base-baifer.json`; aba `LOJA` do ODS → `data/base-loja.json`. O seed grava cada JSON na empresa correspondente.
+Python **não** sobe como API. Roda em `tools/extract_rules.py`: ODS padrão (`data/ncm-atualizado.ods`) — aba `BAIFER` → `data/base-baifer.json`; aba `LOJA` → `data/base-loja.json`. O seed grava cada JSON na empresa correspondente. A aba `Planilha_Classes_Fiscais` não entra no seed.
 
 ## Separação
 

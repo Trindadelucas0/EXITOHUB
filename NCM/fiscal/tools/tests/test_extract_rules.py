@@ -1,4 +1,4 @@
-"""Valida extração separada: OK.xlsx = BAIFER, ODS aba LOJA = Loja."""
+"""Valida extração do ODS padrão: aba BAIFER = BAIFER, aba LOJA = Loja."""
 
 from __future__ import annotations
 
@@ -12,44 +12,47 @@ TOOLS = ROOT / "tools"
 sys.path.insert(0, str(TOOLS))
 
 from extract_rules import (  # noqa: E402
-    DEFAULT_ODS,
-    DEFAULT_OK,
     assert_not_mixed,
+    extract_ods_baifer,
     extract_ods_loja,
-    extract_ok_xlsx,
+    normalize_cfop,
     normalize_ncm,
     parse_mva,
+    resolve_default_ods,
 )
+
+ODS = resolve_default_ods()
 
 
 @pytest.fixture(scope="module")
 def baifer() -> dict:
-    assert DEFAULT_OK.exists(), f"OK.xlsx ausente: {DEFAULT_OK}"
-    return extract_ok_xlsx(DEFAULT_OK)
+    assert ODS.exists(), f"ODS ausente: {ODS}"
+    return extract_ods_baifer(ODS)
 
 
 @pytest.fixture(scope="module")
 def loja() -> dict:
-    assert DEFAULT_ODS.exists(), f"ODS ausente: {DEFAULT_ODS}"
-    return extract_ods_loja(DEFAULT_ODS)
+    assert ODS.exists(), f"ODS ausente: {ODS}"
+    return extract_ods_loja(ODS)
 
 
 def test_empresas_nao_misturam(baifer: dict, loja: dict) -> None:
     assert_not_mixed(baifer, loja)
     assert baifer["extractedSheets"] != loja["extractedSheets"]
     assert "LOJA" not in baifer["extractedSheets"]
-    assert "Planilha_Classes_Fiscais" not in baifer["extractedSheets"]
     assert "Planilha_Classes_Fiscais" in loja["ignoredSheets"]
     assert "BAIFER" in loja["ignoredSheets"]
+    assert baifer["source"].lower().endswith(".ods")
+    assert loja["source"].lower().endswith(".ods")
 
 
-def test_ok_xlsx_so_primeira_aba(baifer: dict) -> None:
+def test_ods_so_aba_baifer(baifer: dict) -> None:
     assert baifer["company"] == "baifer"
-    assert baifer["source"].lower().endswith(".xlsx")
+    assert baifer["sheet"] == "BAIFER"
     assert len(baifer["extractedSheets"]) == 1
     for rule in baifer["rules"]:
         assert rule["company"] == "baifer"
-        assert rule["sourceSheet"] != "LOJA"
+        assert rule["sourceSheet"] == "BAIFER"
         assert "codigoProduto" not in rule
 
 
@@ -70,6 +73,8 @@ def test_baifer_32141010_st_interno(baifer: dict) -> None:
     assert dest["contribuinte"] == "10"
     assert dest["revenda"] == "10"
     assert dest["atacado"] == "10"
+    assert rule["mvaPercentual"] is not None
+    assert abs((rule["mvaPercentual"] or 0) - 29.72) < 0.01
 
 
 def test_loja_32141010_nao_usa_regra_baifer(loja: dict) -> None:
@@ -87,12 +92,12 @@ def test_loja_32141010_nao_usa_regra_baifer(loja: dict) -> None:
     assert rule["cstSaida"] != "10"
 
 
-def test_contagens_baifer_ok(baifer: dict) -> None:
+def test_contagens_baifer_ods(baifer: dict) -> None:
     counts = baifer["counts"]
     assert baifer["totalRules"] >= 1000
     assert counts.get("ST_INTERNO", 0) >= 70
     assert counts.get("ST_NACIONAL", 0) >= 60
-    assert counts.get("REDUCAO", 0) >= 200
+    assert counts.get("REGRA_GERAL", 0) >= 500
 
 
 def test_contagens_loja(loja: dict) -> None:
@@ -112,3 +117,8 @@ def test_mva_fracao_excel() -> None:
 def test_normalize_ncm() -> None:
     assert normalize_ncm("82032010-2") == "82032010"
     assert normalize_ncm("82.03.20.10") == "82032010"
+
+
+def test_normalize_cfop() -> None:
+    assert normalize_cfop("5.405") == "5405"
+    assert normalize_cfop("5102") == "5102"

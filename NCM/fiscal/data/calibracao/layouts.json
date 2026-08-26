@@ -1,0 +1,110 @@
+{
+  "layouts": [
+    {
+      "tipo": "cadastro",
+      "bancoOuOrigem": "Santri Relação de Classes Fiscais",
+      "aba": "Planilha_Classes_Fiscais",
+      "cabecalhosChave": [
+        "código",
+        "nome do produto",
+        "ncm",
+        "%icms",
+        "não contr",
+        "contrib",
+        "revenda",
+        "construt",
+        "hosp/clínica",
+        "órgão púb",
+        "prod.rural",
+        "atacado",
+        "%iva compra"
+      ],
+      "ajustes": [
+        "cabeçalho na linha 6 (após título Santri)",
+        "ignorar abas BAIFER/LOJA/NCM_GERAL no mesmo ODS",
+        "NCM mascarado 82032010-2 → 82032010"
+      ],
+      "fixture": "tests/fixtures/ncm-atualizado.ods",
+      "aprendidoEm": "2026-08-26"
+    },
+    {
+      "tipo": "regras",
+      "bancoOuOrigem": "BAIFER",
+      "aba": "BAIFER",
+      "cabecalhosChave": [
+        "ncm",
+        "segmento",
+        "nota de entrada cst",
+        "cst baifer",
+        "cfop",
+        "não contr",
+        "contrib",
+        "revenda",
+        "construt",
+        "hosp/clínica",
+        "órgão púb",
+        "prod.rural",
+        "atacado",
+        "situação",
+        "mva",
+        "aliquota"
+      ],
+      "ajustes": [
+        "rótulos curtos Santri nos 8 destinos",
+        "ALIQUOTA não grava na regra (só no cadastro)",
+        "pickSheet por companyName BAIFER"
+      ],
+      "fixture": "tests/fixtures/ncm-atualizado.ods",
+      "aprendidoEm": "2026-08-26"
+    },
+    {
+      "tipo": "regras",
+      "bancoOuOrigem": "Loja das Máquinas",
+      "aba": "LOJA",
+      "cabecalhosChave": [
+        "ncm",
+        "segmento",
+        "nota de entrada cst",
+        "cfop de saida",
+        "não contr",
+        "contrib",
+        "revenda",
+        "construt",
+        "hosp/clínica",
+        "órgão púb",
+        "prod.rural",
+        "atacado",
+        "situação"
+      ],
+      "ajustes": [
+        "sem coluna CST BAIFER — CST saída deriva de atacado/revenda/contribuinte",
+        "CFOP 5.405 → 5405",
+        "pickSheet por companyName Loja"
+      ],
+      "fixture": "tests/fixtures/ncm-atualizado.ods",
+      "aprendidoEm": "2026-08-26"
+    }
+  ],
+  "ignorarAbas": [
+    "NCM_GERAL",
+    "Planilha4",
+    "abas file:// e # (links externos vazios)"
+  ],
+  "ouro": {
+    "ncm": "32141010",
+    "baifer": {
+      "cstEntrada": "0",
+      "cstSaida": "10",
+      "cfopSaida": "5403",
+      "situacaoCodigo": "ST_INTERNO",
+      "destinos": ["0", "10", "10", "0", "0", "0", "0", "10"],
+      "mva": "29,72%"
+    },
+    "loja": {
+      "cstEntrada": "0",
+      "cfopSaida": "5102",
+      "situacaoCodigo": "ST_INTERNO",
+      "destinos": ["0", "0", "0", "0", "0", "0", "0", "0"]
+    }
+  }
+}

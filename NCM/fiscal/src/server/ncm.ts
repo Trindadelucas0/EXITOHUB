@@ -15,6 +15,15 @@ export function normalizeCst(raw: string | null | undefined): string | null {
   return String(Number.parseInt(digits, 10));
 }
 
+/** CFOP Santri/ODS: `5.405` / `5405` / `5.102` → `5405` / `5405` / `5102`. */
+export function normalizeCfop(raw: string | null | undefined): string | null {
+  if (raw == null) return null;
+  const digits = String(raw).replace(/\D/g, "");
+  if (!digits) return null;
+  if (digits.length >= 4) return digits.slice(0, 4);
+  return digits;
+}
+
 export function parseMvaNumber(raw: string | null | undefined): number | null {
   if (raw == null) return null;
   const text = String(raw).trim();

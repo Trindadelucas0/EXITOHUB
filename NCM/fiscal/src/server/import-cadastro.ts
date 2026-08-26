@@ -196,8 +196,16 @@ function sheetLooksLikeCadastro(sheet: XLSX.WorkSheet, raw: boolean): boolean {
   return findHeaderRowIndex(aoa) >= 0 && isCadastroHeader(aoa[findHeaderRowIndex(aoa)] ?? []);
 }
 
-function pickSheet(workbook: XLSX.WorkBook, raw: boolean): string {
-  const names = workbook.SheetNames.filter((n) => !SKIP_SHEETS.has(n.trim().toLowerCase()));
+function shouldSkipCadastroSheetName(name: string): boolean {
+  const folded = name.trim().toLowerCase();
+  if (SKIP_SHEETS.has(folded)) return true;
+  if (folded.startsWith("file://") || folded.includes("#")) return true;
+  return false;
+}
+
+/** Escolhe a aba Santri (cadastro) e ignora BAIFER/LOJA/NCM_GERAL/links. */
+export function pickCadastroSheet(workbook: XLSX.WorkBook, raw: boolean): string {
+  const names = workbook.SheetNames.filter((n) => !shouldSkipCadastroSheetName(n));
   for (const name of names) {
     if (sheetLooksLikeCadastro(workbook.Sheets[name], raw)) return name;
   }
@@ -214,7 +222,7 @@ export function parseCadastroBuffer(buffer: Buffer, ext: string): ParsedProduct[
   if (isCsv) readOpts.codepage = resolveCsvCodepage(buffer);
 
   const workbook = XLSX.read(buffer, readOpts);
-  const sheetName = pickSheet(workbook, raw);
+  const sheetName = pickCadastroSheet(workbook, raw);
   const sheet = workbook.Sheets[sheetName];
   const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw });
   const headerRow = findHeaderRowIndex(aoa);

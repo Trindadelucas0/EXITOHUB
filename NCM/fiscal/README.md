@@ -2,11 +2,18 @@
 
 Sistema web para o escritório conferir o cadastro importado contra a **base fiscal da empresa ativa**.
 
-- **BAIFER:** regras da primeira aba do `OK.xlsx`
-- **Loja das Máquinas:** regras da aba **LOJA** do ODS
-- As duas bases **não se misturam** (`companyId` em toda query)
+**Planilha padrão:** `data/ncm-atualizado.ods` (fixture em `tests/fixtures/ncm-atualizado.ods`).
 
-1. Extraia as regras (BAIFER do `OK.xlsx`, Loja da aba `LOJA` do ODS):
+| Aba | Uso |
+| --- | --- |
+| `BAIFER` | Base fiscal da BAIFER |
+| `LOJA` | Base fiscal da Loja das Máquinas |
+| `Planilha_Classes_Fiscais` | Cadastro Santri (tela **Importar**) — não vira base fiscal |
+| `NCM_GERAL` / links | Ignoradas |
+
+As duas bases **não se misturam** (`companyId` em toda query). Em **Base fiscal → Importar regras**, a aba escolhida segue a empresa da sessão.
+
+1. Extraia as regras do ODS padrão:
 
 ```bash
 python tools/extract_rules.py
@@ -32,7 +39,7 @@ npm run dev
 
 Senha das empresas: `SEED_ADMIN_PASSWORD`. Senha do escritório: `SEED_SUPERADMIN_PASSWORD`. O seed **não apaga** planilhas já importadas. Para zerar só o cadastro: `SEED_RESET_CADASTRO=1 npm run db:seed`.
 
-4. Cadastro do cliente (export Santri) importa **um lote por arquivo** na empresa logada. Lotes anteriores ficam no histórico:
+4. Cadastro do cliente (export Santri ou a aba `Planilha_Classes_Fiscais` do ODS) importa **um lote por arquivo** na empresa logada. Lotes anteriores ficam no histórico:
 
 ```bash
 npm run import:cadastro
@@ -50,18 +57,18 @@ npm run import:cadastro
 | --- | --- |
 | Regra geral | Entrada 0, CST BAIFER 0, CFOP 5102, CST 0 nos 8 destinos |
 | ST interno | Entrada 0, CST 10, CFOP 5403; 0 para não contrib/construt/hosp/órgão/rural; 10 para contrib/revenda/atacado |
-| ST nacional | CST 60 em todos, CFOP 5405; no `OK.xlsx` a entrada costuma ser 10 |
+| ST nacional | CST 60 em todos, CFOP 5405; a entrada costuma ser 10 |
 | Redução | Entrada 20, CST 20, CFOP 5102; na base só Atacado costuma vir preenchido — a conferência completa os demais com o CST de saída |
 | Incompleta | CST/CFOP vazios → necessita análise |
 | NCM com duas regras | Amarelo até vincular |
 | NCM mascarado | `82032010-2` e `82.03.20.10` → `82032010` |
 
-**Fonte BAIFER:** primeira aba do `OK.xlsx`. **Fonte Loja:** aba `LOJA` do ODS. A aba `Planilha_Classes_Fiscais` não é extraída, seedada nem testada.
+**Fonte única:** `ncm-atualizado.ods` (abas `BAIFER` e `LOJA`). A aba `Planilha_Classes_Fiscais` só entra como cadastro. Layout calibrado em `data/calibracao/layouts.json`.
 
 ## Testes
 
-- `pytest` — contagens e matriz `32141010` na planilha
-- `npm test` — motor TS, auth/tenant, import fixture, escape de PDF
+- `pytest` — contagens e matriz `32141010` no ODS
+- `npm test` — motor TS, auth/tenant, import do ODS padrão, escape de PDF
 
 ## Documentação
 
