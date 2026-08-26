@@ -38,6 +38,7 @@ type Payload = {
       cfopSaida: string | null;
       destinosCst: DestinosCst;
       mvaTexto: string | null;
+      mvaPercentual: number | null;
     } | null;
     candidates: { id: string; situacaoCodigo: string; cstSaida: string | null }[];
   };
