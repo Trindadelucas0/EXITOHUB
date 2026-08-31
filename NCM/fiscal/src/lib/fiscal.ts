@@ -69,6 +69,7 @@ export type FieldDiff = {
 export function labelCampoFiscal(campo: string): string {
   if (campo === "CST BAIFER") return "CST da empresa (saída)";
   if (campo === "CST compra / nota de entrada") return "CST de compra (entrada)";
+  if (campo === "Abreviação") return "Abreviação fiscal";
   return campo;
 }
 

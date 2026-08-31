@@ -7,7 +7,7 @@ O Auditor Fiscal BAIFER é um sistema interno do escritório. Ele **não substit
 - Guarda a **base fiscal da empresa ativa**:
   - BAIFER ← aba **BAIFER** (ou XLSX de tributação NCM BAIFER)
   - Loja das Máquinas ← aba **LOJA** (ou XLSX Lojão)
-  - Unica ← planilha de regra fiscal Unica (CEST e alíquotas DF, GO, MG)
+  - Unica ← planilha de regra fiscal Unica (CEST, Abreviação e alíquotas DF, GO, MG); a conferência do CSV também marca divergência de Abreviação
   - As três **não se misturam**
   - A aba Santri `Planilha_Classes_Fiscais` é só cadastro (tela Planilhas), não base fiscal
   - Listagem/relatório Egaplast também entram só como **cadastro** na tela Planilhas (aceita `.xls`); ainda não há empresa Egaplast nem base fiscal própria dessas planilhas

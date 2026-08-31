@@ -38,6 +38,7 @@ function product(partial: Partial<ParsedProduct>): ParsedProduct {
     ivaMva: null,
     ivaMvaNumero: null,
     cest: null,
+    abreviacao: null,
     cstCompra: "0",
     cstUnico: "0",
     destinosCst: rule.destinosCst,

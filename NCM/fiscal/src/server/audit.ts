@@ -33,6 +33,7 @@ const productSelect = {
   ivaMva: true,
   ivaMvaNumero: true,
   cest: true,
+  abreviacao: true,
   cstCompra: true,
   cstUnico: true,
   destinosCst: true,

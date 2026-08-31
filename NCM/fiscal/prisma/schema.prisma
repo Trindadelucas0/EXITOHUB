@@ -130,6 +130,7 @@ model Product {
   ivaMva        String?  @map("iva_mva")
   ivaMvaNumero  Decimal? @map("iva_mva_numero") @db.Decimal(8, 4)
   cest          String?
+  abreviacao    String?
   cstCompra     String?  @map("cst_compra")
   cstUnico      String?  @map("cst_unico")
   destinosCst      Json?    @map("destinos_cst")

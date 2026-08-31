@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.6.1 — 31/08/2026
+
+Alterado:
+
+- Conferência **Unica** (`TRIBUTACAO_UF`): compara **Abreviação fiscal** do cadastro com `abreviacao` da base; `004` e `4` são iguais; diferença → **DIVERGENTE**. BAIFER/Loja não comparam Abreviação.
+- Import de CSV Unica grava a coluna `Novo Abreviação Fiscal` / `Abreviação fiscal` em `products.abreviacao` (não confundir com `Desc. Abrev. ICMS`).
+
 ## v1.6.0 — 31/08/2026
 
 Adicionado:

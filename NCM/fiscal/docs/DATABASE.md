@@ -13,7 +13,7 @@ Credenciais **somente** em `.env` (`DATABASE_URL`, `DB_*`). Nenhuma variável `N
 | `users` | E-mail único, hash bcrypt, papel `superadmin`, `admin` ou `consulta`. Superadmin sem `company_id`. |
 | `sessions` | Token hasheado, expiração. `active_company_id` guarda a empresa que o escritório abriu (só vale para `superadmin`) |
 | `fiscal_ncm_rules` | Uma linha por NCM + situação (`company_id, ncm, situacao_codigo` unique). Na Unica: `cest`, `ipi`, `abreviacao`, `reducao`, `uf_tributacao` (DF/GO/MG) |
-| `products` | Cadastro importado (sempre ligado a um lote); `audit_status`, `treated_at` |
+| `products` | Cadastro importado (sempre ligado a um lote); `audit_status`, `treated_at`; Unica: `abreviacao` do CSV |
 | `product_rule_links` | Vínculo produto → regra (NCM duplicado) |
 | `import_batches` | Histórico de cada planilha (arquivo, data, totais da conferência) |
 

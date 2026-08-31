@@ -45,6 +45,7 @@ export type ImportedProduct = {
   ivaMva?: string | null;
   ivaMvaNumero?: number | null;
   cest?: string | null;
+  abreviacao?: string | null;
   cstCompra?: string | null;
   cstUnico?: string | null;
   destinosCst?: DestinosCst | null;
@@ -262,18 +263,33 @@ function foldCest(raw: string | null | undefined): string | null {
   return digits || null;
 }
 
+/** Trim; se só dígitos, remove zeros à esquerda (004→4; mantém 0). */
+export function foldAbrev(raw: string | null | undefined): string | null {
+  if (raw == null) return null;
+  const text = String(raw).trim();
+  if (!text) return null;
+  if (/^\d+$/.test(text)) {
+    const stripped = text.replace(/^0+/, "");
+    return stripped || "0";
+  }
+  return text;
+}
+
 function compareUnicaProduct(
   product: ImportedProduct,
   rule: FiscalRule,
   candidates: FiscalRule[],
 ): CompareResult {
   const hasCadastro =
-    Boolean(product.cest) || Boolean(product.aliquotaIcms) || product.ivaMvaNumero != null;
+    Boolean(product.cest) ||
+    Boolean(product.aliquotaIcms) ||
+    product.ivaMvaNumero != null ||
+    Boolean(product.abreviacao);
   if (!hasCadastro) {
     return {
       status: "NECESSITA_ANALISE",
       motivo:
-        "Base Unica não compara matriz CST. Importe o CSV de produtos (Cód.Item / Desc. Abrev. ICMS) para conferir CEST, alíquota e MVA.",
+        "Base Unica não compara matriz CST. Importe o CSV de produtos (Cód.Item / Desc. Abrev. ICMS / Abreviação fiscal) para conferir CEST, alíquota, MVA e Abreviação.",
       diffs: [],
       rule,
       candidates,
@@ -310,12 +326,21 @@ function compareUnicaProduct(
       });
     }
   }
+  const abrevAtual = foldAbrev(product.abreviacao);
+  const abrevIdeal = foldAbrev(rule.abreviacao);
+  if (abrevAtual != null && abrevIdeal != null && abrevAtual !== abrevIdeal) {
+    diffs.push({
+      campo: "Abreviação",
+      atual: String(product.abreviacao).trim(),
+      ideal: String(rule.abreviacao).trim(),
+    });
+  }
 
   if (diffs.length > 0) {
+    const campos = diffs.map((d) => d.campo).join(", ");
     return {
       status: "DIVERGENTE",
-      motivo:
-        "Cadastro Unica diverge da base fiscal deste NCM (CEST, alíquota DF ou MVA Original DF).",
+      motivo: `Cadastro Unica diverge da base fiscal deste NCM (${campos}).`,
       diffs,
       rule,
       candidates,
@@ -325,7 +350,7 @@ function compareUnicaProduct(
 
   return {
     status: "CORRETO",
-    motivo: "NCM da Unica confere CEST/alíquota/MVA com a base fiscal desta empresa.",
+    motivo: "NCM da Unica confere CEST/alíquota/MVA/Abreviação com a base fiscal desta empresa.",
     diffs: [],
     rule,
     candidates,

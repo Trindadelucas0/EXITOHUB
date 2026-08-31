@@ -290,4 +290,45 @@ describe("motor de comparação", () => {
     expect(bad.status).toBe("DIVERGENTE");
     expect(bad.diffs.some((d) => d.campo === "CEST")).toBe(true);
   });
+
+  it("Unica Abreviação 004 vs regra 4 → CORRETO; 3 vs 4 → DIVERGENTE", () => {
+    const unica = rule({
+      id: "u1",
+      situacaoCodigo: "TRIBUTACAO_UF",
+      cstSaida: null,
+      cfopSaida: null,
+      cest: "24000200",
+      abreviacao: "4",
+      ufTributacao: {
+        DF: { original: "50%", ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "20%" },
+        GO: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "19%" },
+        MG: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "18%" },
+      },
+    });
+    const ok = compareProduct(
+      product({
+        destinosCst: null,
+        cest: "24000200",
+        aliquotaIcms: "20%",
+        abreviacao: "004",
+      }),
+      [unica],
+      null,
+    );
+    expect(ok.status).toBe("CORRETO");
+
+    const bad = compareProduct(
+      product({
+        destinosCst: null,
+        cest: "24000200",
+        aliquotaIcms: "20%",
+        abreviacao: "3",
+      }),
+      [unica],
+      null,
+    );
+    expect(bad.status).toBe("DIVERGENTE");
+    expect(bad.diffs.some((d) => d.campo === "Abreviação")).toBe(true);
+    expect(bad.motivo).toMatch(/Abreviação/);
+  });
 });

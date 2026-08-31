@@ -53,8 +53,8 @@ npm run import:cadastro
 
 ## O que o MVP responde
 
-1. O cadastro está coerente com a matriz NCM (BAIFER/Loja) ou com CEST/alíquota/MVA (Unica, quando o CSV de produtos existir)?
-2. Onde diverge (destinatário a destinatário, ou CEST/alíquota Unica)?
+1. O cadastro está coerente com a matriz NCM (BAIFER/Loja) ou com CEST/alíquota/MVA/Abreviação (Unica, quando o CSV de produtos existir)?
+2. Onde diverge (destinatário a destinatário, ou CEST/alíquota/Abreviação Unica)?
 3. Como dar entrada — só com o que existe na regra (CST entrada, CST BAIFER, CFOP de saída, MVA). Na Unica a conferência de cadastro fica limitada até o CSV de itens.
 
 ## Regras da aba BAIFER
@@ -66,7 +66,7 @@ npm run import:cadastro
 | ST nacional | CST 60 em todos, CFOP 5405; a entrada costuma ser 10 |
 | Redução | Entrada 20, CST 20, CFOP 5102; na base só Atacado costuma vir preenchido — a conferência completa os demais com o CST de saída |
 | Incompleta | CST/CFOP vazios → necessita análise |
-| Tributação por UF | Unica: NCM + CEST + Abrev. (Atacadista) + MVA/alíquota DF, GO, MG (sem matriz de 8 destinos; BAIFER/Lojão sem Abrev.) |
+| Tributação por UF | Unica: NCM + CEST + Abrev. (Atacadista) + MVA/alíquota DF, GO, MG; conferência do CSV também confere Abreviação (BAIFER/Lojão sem Abrev.) |
 | NCM com duas regras | Amarelo até vincular |
 | NCM mascarado | `82032010-2` e `82.03.20.10` → `82032010` |
 

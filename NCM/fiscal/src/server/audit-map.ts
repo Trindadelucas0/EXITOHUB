@@ -61,6 +61,7 @@ export function productFromDb(row: {
   ivaMva: string | null;
   ivaMvaNumero: Prisma.Decimal | number | null;
   cest: string | null;
+  abreviacao?: string | null;
   cstCompra: string | null;
   cstUnico: string | null;
   destinosCst: Prisma.JsonValue | null;
@@ -75,6 +76,7 @@ export function productFromDb(row: {
     ivaMva: row.ivaMva,
     ivaMvaNumero: toNumber(row.ivaMvaNumero),
     cest: row.cest,
+    abreviacao: row.abreviacao ?? null,
     cstCompra: row.cstCompra,
     cstUnico: row.cstUnico,
     destinosCst: row.destinosCst ? asDestinos(row.destinosCst) : null,

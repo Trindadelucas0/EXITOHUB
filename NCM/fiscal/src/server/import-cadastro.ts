@@ -16,6 +16,7 @@ export type ParsedProduct = {
   ivaMva: string | null;
   ivaMvaNumero: number | null;
   cest: string | null;
+  abreviacao: string | null;
   cstCompra: string | null;
   cstUnico: string | null;
   destinosCst: DestinosCst | null;
@@ -114,9 +115,17 @@ export function assertSafeUpload(fileName: string, size: number, mime: string): 
 function mapHeader(header: string): string | null {
   const folded = foldHeader(header);
   if (folded === "codigo original" || folded === "marca" || folded === "origem") return null;
-  if (folded.includes("abreviacao fiscal")) return null;
   if (folded.includes("iva") && folded.includes("venda")) return null;
+  // Desc. Abrev. ICMS = CST + alíquota (não confundir com Abreviação fiscal)
   if (folded.includes("abrev") && folded.includes("icms")) return "descAbrevIcms";
+  if (
+    folded.includes("abreviacao fiscal") ||
+    folded.includes("novo abreviacao fiscal") ||
+    folded === "abreviacao" ||
+    folded === "novo abreviacao"
+  ) {
+    return "abreviacao";
+  }
   if (folded === "cod.item" || folded === "cod item" || folded.startsWith("cod.")) return "codigo";
   if (folded.includes("sit") && folded.includes("tribut")) return "cstUnico";
   if (HEADER_MAP[folded]) return HEADER_MAP[folded];
@@ -391,6 +400,7 @@ export function parseEgaplastRelatorioAoa(aoa: unknown[][]): ParsedProduct[] {
       ivaMva: iva.ivaMva,
       ivaMvaNumero: iva.ivaMvaNumero,
       cest: null,
+      abreviacao: null,
       cstCompra: null,
       cstUnico,
       destinosCst: null,
@@ -470,6 +480,7 @@ function toProduct(row: Record<string, unknown>): ParsedProduct | null {
     ivaMva: ivaRaw,
     ivaMvaNumero: ivaNum,
     cest: mapped.cest || null,
+    abreviacao: mapped.abreviacao || null,
     cstCompra: normalizeCst(mapped.cstCompra),
     cstUnico,
     destinosCst: filled > 0 ? destinos : null,

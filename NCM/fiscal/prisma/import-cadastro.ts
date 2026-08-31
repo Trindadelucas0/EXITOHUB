@@ -54,6 +54,7 @@ async function main() {
           ivaMva: item.ivaMva,
           ivaMvaNumero: item.ivaMvaNumero,
           cest: item.cest,
+          abreviacao: item.abreviacao,
           cstCompra: item.cstCompra,
           cstUnico: item.cstUnico,
           destinosCst: item.destinosCst ?? undefined,
