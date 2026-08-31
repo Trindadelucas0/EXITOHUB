@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { SheetToolbar } from "@/src/components/ui/sheet-toolbar";
 import { Field } from "@/src/components/ui/field";
 import { Button } from "@/src/components/ui/button";
+import type { SegmentoOption } from "@/src/components/product/segmento-summary";
 
 export type ProductFilterValues = {
   q: string;
@@ -46,6 +47,7 @@ export function ProductFilters({
   resetStatus = "",
   hideTreatedDefault = false,
   lead,
+  segmentoOptions = [],
 }: {
   values: ProductFilterValues;
   summary?: ProductFilterSummary;
@@ -53,6 +55,7 @@ export function ProductFilters({
   resetStatus?: ProductFilterValues["status"];
   hideTreatedDefault?: boolean;
   lead?: ReactNode;
+  segmentoOptions?: SegmentoOption[];
 }) {
   const dirty = Boolean(
     values.q ||
@@ -88,6 +91,27 @@ export function ProductFilters({
           autoComplete="off"
         />
       </div>
+      {segmentoOptions.length > 0 ? (
+        <div className="grid w-full min-w-0 gap-1 md:w-72">
+          <label htmlFor="filtro-segmento" className="text-xs font-medium text-ink">
+            Filtrar segmento
+          </label>
+          <select
+            id="filtro-segmento"
+            value={values.segmento}
+            onChange={(e) => onChange({ ...values, segmento: e.target.value, ncm: "" })}
+            className="min-h-11 w-full rounded-[10px] border-0 bg-paper-sunken px-3 text-sm text-ink"
+          >
+            <option value="">Todos os segmentos</option>
+            {segmentoOptions.map((group) => (
+              <option key={group.id} value={group.id}>
+                {group.label} ({group.total}
+                {group.divergentes ? ` · ${group.divergentes} div.` : ""})
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
       <div className="flex min-w-0 flex-wrap gap-1.5" role="group" aria-label="Filtrar por situação">
         {STATUS_CHIPS.map((chip) => {
           const active = values.status === chip.id;

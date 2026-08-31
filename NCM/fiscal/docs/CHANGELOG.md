@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.6 — 31/08/2026
+
+Adicionado:
+
+- Consulta e Divergências da Unica: campo **Filtrar segmento** na barra (lista todos os segmentos da base). BAIFER/Loja não veem esse campo.
+
 ## v1.6.5 — 31/08/2026
 
 Adicionado:

@@ -12,7 +12,7 @@ import {
 } from "@/src/components/product/product-sheet-columns";
 import type { ProductSheetItem } from "@/src/components/product/product-sheet-types";
 import { NcmSummary } from "@/src/components/product/ncm-summary";
-import { SegmentoSummary } from "@/src/components/product/segmento-summary";
+import { SegmentoSummary, type SegmentoOption } from "@/src/components/product/segmento-summary";
 import {
   ProductFilters,
   parseStatusFilter,
@@ -77,6 +77,7 @@ export function ProductCatalog({
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [queueTick, setQueueTick] = useState(0);
   const [canWrite, setCanWrite] = useState(false);
+  const [segmentoOptions, setSegmentoOptions] = useState<SegmentoOption[]>([]);
   const { rows, summary, catalogTotal, total, pageCount, loading, error, layout } = useProductQuery(
     filters,
     batchId,
@@ -119,12 +120,24 @@ export function ProductCatalog({
         actions={renderSlot(actions, batchId, batches, filters)}
       />
       {renderSlot(extra, batchId, batches, filters)}
+      <ProductFilters
+        values={filters}
+        summary={summary}
+        onChange={setFilters}
+        resetStatus={defaultStatus}
+        hideTreatedDefault={hideTreatedDefault}
+        segmentoOptions={segmentoOptions}
+        lead={
+          <BatchSelector compact preferredId={loteFromUrl} onChange={onBatchChange} />
+        }
+      />
       <SegmentoSummary
         lote={batchId}
         status={filters.status}
         tratado={filters.tratado}
         activeSegmento={filters.segmento}
         onSelect={(segmento) => setFilters((current) => ({ ...current, segmento, ncm: "" }))}
+        onGroups={setSegmentoOptions}
       />
       {showNcmSummary ? (
         <NcmSummary
@@ -138,16 +151,6 @@ export function ProductCatalog({
           refreshKey={queueTick}
         />
       ) : null}
-      <ProductFilters
-        values={filters}
-        summary={summary}
-        onChange={setFilters}
-        resetStatus={defaultStatus}
-        hideTreatedDefault={hideTreatedDefault}
-        lead={
-          <BatchSelector compact preferredId={loteFromUrl} onChange={onBatchChange} />
-        }
-      />
       {error ? <p className="text-sm text-status-bad">{error}</p> : null}
       {!loading && !error && rows.length === 0 ? (
         <EmptyState

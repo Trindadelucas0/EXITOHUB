@@ -17,18 +17,22 @@ type Group = {
 
 const TOP_VISIBLE = 8;
 
+export type SegmentoOption = Group;
+
 export function SegmentoSummary({
   lote,
   status,
   tratado,
   activeSegmento,
   onSelect,
+  onGroups,
 }: {
   lote: string | null;
   status: string;
   tratado: string;
   activeSegmento: string;
   onSelect: (segmento: string) => void;
+  onGroups?: (groups: SegmentoOption[]) => void;
 }) {
   const [unica, setUnica] = useState(false);
   const [productCount, setProductCount] = useState(0);
@@ -41,6 +45,7 @@ export function SegmentoSummary({
       setGroups([]);
       setUnica(false);
       setProductCount(0);
+      onGroups?.([]);
       return;
     }
     const params = new URLSearchParams({ lote });
@@ -53,13 +58,15 @@ export function SegmentoSummary({
         if (!res.ok) throw new Error(json.error?.message ?? "Falha");
         setUnica(Boolean(json.data.unica));
         setProductCount(json.data.productCount ?? 0);
-        setGroups(json.data.groups ?? []);
+        const next = json.data.groups ?? [];
+        setGroups(next);
+        onGroups?.(json.data.unica ? next : []);
       })
       .catch((err: Error) => {
         if (err.name === "AbortError") return;
       });
     return () => controller.abort();
-  }, [lote, status, tratado]);
+  }, [lote, status, tratado, onGroups]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -144,8 +151,8 @@ export function SegmentoSummary({
         </p>
       ) : (
         <p className="text-sm text-ink-muted">
-          Clique num segmento para ver só aqueles produtos. A conferência continua sendo por NCM da
-          base.
+          Use <span className="font-medium text-ink">Filtrar segmento</span> na barra acima, ou
+          clique num chip. A conferência continua sendo por NCM da base.
         </p>
       )}
     </section>

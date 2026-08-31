@@ -14,7 +14,7 @@ O Auditor Fiscal BAIFER é um sistema interno do escritório. Ele **não substit
 - Permite **importar** várias planilhas; cada arquivo vira um lote no histórico, sem misturar. Em Panorama, Consulta e Divergências dá para **escolher a planilha** e ver só os dados dela.
 - Classifica cada produto como **correto**, **divergente** ou **necessita análise**.
 - Em **Divergências**, mostra primeiro **quantos NCMs** estão errados; um clique filtra a grade.
-- Em **Consulta** e **Divergências** da Unica a grade mostra Abreviação, CEST, alíquota DF e MVA, agrupada por **segmento** da base (não a matriz de 8 destinatários da BAIFER).
+- Em **Consulta** e **Divergências** da Unica, a barra tem **Filtrar segmento**; a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz de 8 destinatários da BAIFER).
 - Compara a planilha nova com a **anterior** (códigos novos, que saíram, NCM ou situação que mudou).
 - Permite marcar produto ou NCM como **já tratado**. Na próxima importação dá para **trazer essas marcas** (ou começar do zero).
 - Mostra a **matriz dos 8 destinatários** (não um CST único).
