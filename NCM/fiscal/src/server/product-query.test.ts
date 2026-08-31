@@ -27,6 +27,14 @@ describe("consulta paginada de produtos", () => {
     expect(params.status).toBe("DIVERGENTE");
     expect(params.ncm).toBe("32091010");
     expect(params.tratado).toBe("");
+    expect(params.segmento).toBe("");
+  });
+
+  it("aceita filtro de segmento Unica", () => {
+    const params = parseProductListParams(
+      new URL("http://local/api/products?segmento=autopecas&status=DIVERGENTE"),
+    );
+    expect(params.segmento).toBe("autopecas");
   });
 
   it("aceita filtro de tratados", () => {

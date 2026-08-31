@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import {
   compareProduct,
   completeRuleDestinos,
@@ -19,6 +19,13 @@ import {
   treatedWhere,
 } from "./product-query";
 import type { StatusFiscal } from "@/src/lib/fiscal";
+import {
+  SEGMENTO_FORA,
+  canonicalSegmentoName,
+  ncmFilterForSegmento,
+  segmentoIdFromRule,
+  segmentoLabel,
+} from "@/src/lib/segmento";
 import { HttpError } from "./tenant";
 
 export type ProductSheetLayout = "unica" | "matriz";
@@ -94,6 +101,7 @@ export function sheetItemFromCompare(
     needsLink: compare.needsLink,
     situacao: compare.rule?.situacao ?? compare.rule?.situacaoCodigo ?? null,
     situacaoCodigo: compare.rule?.situacaoCodigo ?? null,
+    segmento: compare.rule?.segmento?.trim() || null,
     diffs: includeDiffs ? compare.diffs : [],
     treated: treated?.treated ?? false,
     treatedStale: treated?.treatedStale ?? false,
@@ -144,6 +152,7 @@ export function sheetItemFromPersisted(
     needsLink: rulesForNcm.length > 1 && !linkedRuleId,
     situacao: rule?.situacao ?? rule?.situacaoCodigo ?? null,
     situacaoCodigo: rule?.situacaoCodigo ?? null,
+    segmento: rule?.segmento?.trim() || null,
     diffs: [] as CompareResult["diffs"],
     treated: Boolean(product.treatedAt),
     treatedStale: product.treatedStale,
@@ -350,6 +359,27 @@ export async function syncProductAudit(companyId: string, productId: string) {
   );
 }
 
+function prismaWhereForSegmento(filter: { mode: "in" | "notIn"; ncms: string[] }): Prisma.ProductWhereInput {
+  if (filter.mode === "notIn") {
+    return filter.ncms.length > 0 ? { ncm: { notIn: filter.ncms } } : {};
+  }
+  return { ncm: { in: filter.ncms } };
+}
+
+async function unicaSegmentoWhere(
+  db: PrismaClient,
+  companyId: string,
+  segmento: string,
+  isUnica: boolean,
+): Promise<Prisma.ProductWhereInput> {
+  if (!segmento || !isUnica) return {};
+  const rules = await db.fiscalNcmRule.findMany({
+    where: { companyId },
+    select: { ncm: true, segmento: true },
+  });
+  return prismaWhereForSegmento(ncmFilterForSegmento(rules, segmento));
+}
+
 function searchWhere(
   companyId: string,
   batchId: string,
@@ -389,12 +419,26 @@ export async function listAuditedProducts(companyId: string, batchId: string, re
     if (!batch) {
       throw new HttpError(404, "NOT_FOUND", "Lote não encontrado.");
     }
-    const baseWhere = searchWhere(companyId, batchId, params.q, params.ncm, params.tratado);
+    const unicaRule = await db.fiscalNcmRule.findFirst({
+      where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
+      select: { id: true },
+    });
+    const layout: ProductSheetLayout = unicaRule ? "unica" : "matriz";
+    const segmentoWhere = await unicaSegmentoWhere(
+      db,
+      companyId,
+      params.segmento,
+      Boolean(unicaRule),
+    );
+    const searched = searchWhere(companyId, batchId, params.q, params.ncm, params.tratado);
+    const baseWhere: Prisma.ProductWhereInput = Object.keys(segmentoWhere).length
+      ? { AND: [searched, segmentoWhere] }
+      : searched;
     const listWhere: Prisma.ProductWhereInput = {
       ...baseWhere,
       ...(params.status ? { auditStatus: params.status } : { auditStatus: { not: null } }),
     };
-    const [catalogTotal, grouped, total, rows, unicaRule] = await Promise.all([
+    const [catalogTotal, grouped, total, rows] = await Promise.all([
       db.product.count({
         where: { companyId, importBatchId: batchId, auditStatus: { not: null } },
       }),
@@ -411,12 +455,7 @@ export async function listAuditedProducts(companyId: string, batchId: string, re
         take: params.pageSize,
         select: productSelect,
       }),
-      db.fiscalNcmRule.findFirst({
-        where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
-        select: { id: true },
-      }),
     ]);
-    const layout: ProductSheetLayout = unicaRule ? "unica" : "matriz";
     const summary = {
       total: grouped.reduce((acc, row) => acc + row._count._all, 0),
       corretos: grouped.find((row) => row.auditStatus === "CORRETO")?._count._all ?? 0,
@@ -484,11 +523,22 @@ export async function listNcmSummary(companyId: string, batchId: string, request
     if (!batch) {
       throw new HttpError(404, "NOT_FOUND", "Lote não encontrado.");
     }
+    const unicaRule = await db.fiscalNcmRule.findFirst({
+      where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
+      select: { id: true },
+    });
+    const segmentoWhere = await unicaSegmentoWhere(
+      db,
+      companyId,
+      params.segmento,
+      Boolean(unicaRule),
+    );
     const where: Prisma.ProductWhereInput = {
       companyId,
       importBatchId: batchId,
       auditStatus: params.status ? params.status : { not: null },
       ...treatedWhere(params.tratado),
+      ...(Object.keys(segmentoWhere).length ? { AND: [segmentoWhere] } : {}),
     };
     const grouped = await db.product.groupBy({
       by: ["ncm", "auditStatus"],
@@ -518,6 +568,103 @@ export async function listNcmSummary(companyId: string, batchId: string, request
     );
     return {
       ncmCount: groups.length,
+      productCount: groups.reduce((acc, row) => acc + row.total, 0),
+      groups,
+    };
+  });
+}
+
+export async function listSegmentoSummary(companyId: string, batchId: string, requestUrl: URL) {
+  const params = parseProductListParams(requestUrl);
+  return withTenant(companyId, async (db) => {
+    const batch = await db.importBatch.findFirst({
+      where: { id: batchId, companyId },
+      select: { id: true },
+    });
+    if (!batch) {
+      throw new HttpError(404, "NOT_FOUND", "Lote não encontrado.");
+    }
+    const unicaRule = await db.fiscalNcmRule.findFirst({
+      where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
+      select: { id: true },
+    });
+    if (!unicaRule) {
+      return { unica: false as const, segmentoCount: 0, productCount: 0, groups: [] };
+    }
+    const where: Prisma.ProductWhereInput = {
+      companyId,
+      importBatchId: batchId,
+      auditStatus: params.status ? params.status : { not: null },
+      ...treatedWhere(params.tratado),
+    };
+    const [grouped, rules] = await Promise.all([
+      db.product.groupBy({
+        by: ["ncm", "auditStatus"],
+        where,
+        _count: { _all: true },
+      }),
+      db.fiscalNcmRule.findMany({
+        where: { companyId },
+        select: { ncm: true, segmento: true },
+      }),
+    ]);
+    const ncmToId = new Map<string, string>();
+    const namesById = new Map<string, string[]>();
+    const regrasById = new Map<string, Set<string>>();
+    for (const rule of rules) {
+      const id = segmentoIdFromRule(rule.segmento);
+      if (!ncmToId.has(rule.ncm)) ncmToId.set(rule.ncm, id);
+      const names = namesById.get(id) ?? [];
+      names.push(rule.segmento);
+      namesById.set(id, names);
+      const ncms = regrasById.get(id) ?? new Set<string>();
+      ncms.add(rule.ncm);
+      regrasById.set(id, ncms);
+    }
+    type Group = {
+      id: string;
+      label: string;
+      total: number;
+      corretos: number;
+      divergentes: number;
+      analise: number;
+      regras: number;
+    };
+    const byId = new Map<string, Group>();
+    function ensure(id: string): Group {
+      const current = byId.get(id);
+      if (current) return current;
+      const created: Group = {
+        id,
+        label: segmentoLabel(id, canonicalSegmentoName(namesById.get(id) ?? [])),
+        total: 0,
+        corretos: 0,
+        divergentes: 0,
+        analise: 0,
+        regras: regrasById.get(id)?.size ?? 0,
+      };
+      byId.set(id, created);
+      return created;
+    }
+    for (const row of grouped) {
+      const id = ncmToId.get(row.ncm) ?? SEGMENTO_FORA;
+      const current = ensure(id);
+      current.total += row._count._all;
+      if (row.auditStatus === "CORRETO") current.corretos += row._count._all;
+      if (row.auditStatus === "DIVERGENTE") current.divergentes += row._count._all;
+      if (row.auditStatus === "NECESSITA_ANALISE") current.analise += row._count._all;
+    }
+    const groups = [...byId.values()]
+      .filter((group) => group.total > 0)
+      .sort(
+        (a, b) =>
+          b.divergentes + b.analise - (a.divergentes + a.analise) ||
+          b.total - a.total ||
+          a.label.localeCompare(b.label, "pt-BR"),
+      );
+    return {
+      unica: true as const,
+      segmentoCount: groups.length,
       productCount: groups.reduce((acc, row) => acc + row.total, 0),
       groups,
     };

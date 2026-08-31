@@ -89,6 +89,7 @@ describe("sheetItemFromPersisted", () => {
   it("mapeia campos Unica no importado e na regra", () => {
     const item = sheetItemFromPersisted(product(), [unicaRule()], null);
     expect(item.situacaoCodigo).toBe("TRIBUTACAO_UF");
+    expect(item.segmento).toBe("Higiene");
     expect(item.importado.abreviacao).toBe("003");
     expect(item.importado.cest).toBe("1300100");
     expect(item.importado.aliquotaIcms).toBe("18,00");
@@ -101,6 +102,7 @@ describe("sheetItemFromPersisted", () => {
   it("sem regra deixa correto nulo", () => {
     const item = sheetItemFromPersisted(product(), [], null);
     expect(item.correto).toBeNull();
+    expect(item.segmento).toBeNull();
     expect(item.importado.abreviacao).toBe("003");
   });
 });

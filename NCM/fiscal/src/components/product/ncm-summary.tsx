@@ -18,6 +18,7 @@ export function NcmSummary({
   lote,
   status,
   tratado,
+  segmento = "",
   activeNcm,
   onSelect,
   onQueueChange,
@@ -26,6 +27,7 @@ export function NcmSummary({
   lote: string | null;
   status: string;
   tratado: string;
+  segmento?: string;
   activeNcm: string;
   onSelect: (ncm: string) => void;
   onQueueChange?: () => void;
@@ -47,6 +49,7 @@ export function NcmSummary({
     const params = new URLSearchParams({ lote });
     if (status) params.set("status", status);
     if (tratado) params.set("tratado", tratado);
+    if (segmento) params.set("segmento", segmento);
     const controller = new AbortController();
     fetch(ncmApiUrl(`/api/products/ncm-summary?${params}`), { signal: controller.signal })
       .then(async (res) => {
@@ -60,7 +63,7 @@ export function NcmSummary({
         if (err.name === "AbortError") return;
       });
     return () => controller.abort();
-  }, [lote, status, tratado, refreshKey]);
+  }, [lote, status, tratado, segmento, refreshKey]);
 
   const filtered = useMemo(() => {
     const q = query.replace(/\D/g, "");

@@ -15,7 +15,7 @@ Sistema web para o escritório conferir o cadastro importado contra a **base fis
 | Relatório Egaplast de produtos (blocos) | Cadastro: SIT.TRIBUTÁRIA + IVA/ICM por UF (dedupe por código) |
 | `NCM_GERAL` / links | Ignoradas |
 
-As bases **não se misturam** (`companyId` em toda query). Em **Base fiscal → Importar regras**, o layout segue a empresa da sessão.
+As bases **não se misturam** (`companyId` em toda query). Em **Base fiscal → Importar regras**, o layout segue a empresa da sessão. Na Unica, **Consulta** e **Divergências** separam o cadastro por segmento da base.
 
 1. Extraia as regras do ODS padrão (BAIFER/Loja) e da Unica:
 

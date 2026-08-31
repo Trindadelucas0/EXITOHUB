@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.5 — 31/08/2026
+
+Adicionado:
+
+- Consulta e Divergências da **Unica** separam o cadastro por **segmento** da Base fiscal (chips com totais corretos/divergentes). Clique no segmento para filtrar; a conferência de cada item continua sendo Abreviação/CEST/MVA contra a regra do NCM. NCM sem regra aparece em **Fora da base**. BAIFER/Loja não mudam.
+
 ## v1.6.4 — 31/08/2026
 
 Corrigido:

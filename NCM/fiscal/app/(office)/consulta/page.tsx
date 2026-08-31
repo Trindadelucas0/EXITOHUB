@@ -7,7 +7,7 @@ export default function ConsultaPage() {
     <ProductCatalog
       kicker="Produto"
       title="Consulta fiscal"
-      description="Escolha a planilha importada para ver só os dados dela. Filtre por código, descrição, NCM ou situação e clique na linha para abrir a ficha."
+      description="Escolha a planilha importada para ver só os dados dela. Na Unica, os produtos separam por segmento da base fiscal. Filtre por código, descrição, NCM ou situação e clique na linha para abrir a ficha."
       rowMode="navigate"
     />
   );

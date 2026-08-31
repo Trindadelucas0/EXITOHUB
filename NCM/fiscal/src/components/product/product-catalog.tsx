@@ -12,6 +12,7 @@ import {
 } from "@/src/components/product/product-sheet-columns";
 import type { ProductSheetItem } from "@/src/components/product/product-sheet-types";
 import { NcmSummary } from "@/src/components/product/ncm-summary";
+import { SegmentoSummary } from "@/src/components/product/segmento-summary";
 import {
   ProductFilters,
   parseStatusFilter,
@@ -67,6 +68,7 @@ export function ProductCatalog({
   const [filters, setFilters] = useState<ProductFilterValues>({
     q: searchParams.get("q") ?? "",
     ncm: searchParams.get("ncm") ?? "",
+    segmento: searchParams.get("segmento") ?? "",
     status: parseStatusFilter(searchParams.get("status"), defaultStatus),
     tratado: hideTreatedDefault ? "nao" : "",
   });
@@ -117,11 +119,19 @@ export function ProductCatalog({
         actions={renderSlot(actions, batchId, batches, filters)}
       />
       {renderSlot(extra, batchId, batches, filters)}
+      <SegmentoSummary
+        lote={batchId}
+        status={filters.status}
+        tratado={filters.tratado}
+        activeSegmento={filters.segmento}
+        onSelect={(segmento) => setFilters((current) => ({ ...current, segmento, ncm: "" }))}
+      />
       {showNcmSummary ? (
         <NcmSummary
           lote={batchId}
           status={filters.status}
           tratado={filters.tratado}
+          segmento={filters.segmento}
           activeNcm={filters.ncm}
           onSelect={(ncm) => setFilters((current) => ({ ...current, ncm }))}
           onQueueChange={() => setQueueTick((tick) => tick + 1)}

@@ -11,6 +11,7 @@ export type ProductSheetItem = {
   needsLink: boolean;
   situacao: string | null;
   situacaoCodigo: string | null;
+  segmento: string | null;
   diffs: FieldDiff[];
   importado: {
     cstCompra: string | null;

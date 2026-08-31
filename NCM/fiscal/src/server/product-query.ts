@@ -1,4 +1,5 @@
 import type { StatusFiscal } from "@/src/lib/fiscal";
+import { parseSegmentoParam } from "@/src/lib/segmento";
 
 export const PRODUCT_PAGE_SIZE_DEFAULT = 25;
 export const PRODUCT_PAGE_SIZE_MAX = 100;
@@ -8,6 +9,7 @@ export type TreatedFilter = "" | "nao" | "sim";
 export type ProductListParams = {
   q: string;
   ncm: string;
+  segmento: string;
   status: StatusFiscal | "";
   tratado: TreatedFilter;
   page: number;
@@ -27,6 +29,7 @@ export function ncmSearchDigits(value: string): string {
 export function parseProductListParams(url: URL): ProductListParams {
   const q = (url.searchParams.get("q") ?? "").trim();
   const ncm = ncmSearchDigits(url.searchParams.get("ncm") ?? "");
+  const segmento = parseSegmentoParam(url.searchParams.get("segmento"));
   const rawStatus = (url.searchParams.get("status") ?? "").trim();
   const status: ProductListParams["status"] =
     rawStatus === "DIVERGENTE" || rawStatus === "NECESSITA_ANALISE" || rawStatus === "CORRETO"
@@ -40,7 +43,7 @@ export function parseProductListParams(url: URL): ProductListParams {
   const pageSize = Number.isFinite(sizeRaw)
     ? Math.min(PRODUCT_PAGE_SIZE_MAX, Math.max(1, Math.floor(sizeRaw)))
     : PRODUCT_PAGE_SIZE_DEFAULT;
-  return { q, ncm, status, tratado, page, pageSize };
+  return { q, ncm, segmento, status, tratado, page, pageSize };
 }
 
 const SOMENTE_TO_STATUS: Record<string, StatusFiscal> = {

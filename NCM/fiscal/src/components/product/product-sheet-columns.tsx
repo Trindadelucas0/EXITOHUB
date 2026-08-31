@@ -100,6 +100,13 @@ export const PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
 export const UNICA_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
   ...identityColumns,
   {
+    id: "segmento",
+    header: "Segmento",
+    show: "md",
+    className: "min-w-[9rem] max-w-[14rem] truncate",
+    cell: (row) => <span title={row.segmento ?? ""}>{row.segmento || "—"}</span>,
+  },,
+  {
     id: "abreviacao",
     header: "Abreviação",
     className: "tabular",

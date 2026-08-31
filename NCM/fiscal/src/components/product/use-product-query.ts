@@ -14,6 +14,7 @@ export function buildProductsUrl(
   const params = new URLSearchParams();
   if (filters.q.trim()) params.set("q", filters.q.trim());
   if (filters.ncm.trim()) params.set("ncm", filters.ncm.trim());
+  if (filters.segmento.trim()) params.set("segmento", filters.segmento.trim());
   if (filters.status) params.set("status", filters.status);
   if (filters.tratado) params.set("tratado", filters.tratado);
   if (lote) params.set("lote", lote);
@@ -42,6 +43,7 @@ export function useProductQuery(
 
   const q = filters.q;
   const ncm = filters.ncm;
+  const segmento = filters.segmento;
   const status = filters.status;
   const tratado = filters.tratado;
   const prevText = useRef({ q, ncm });
@@ -65,7 +67,7 @@ export function useProductQuery(
     const timer = setTimeout(() => {
       setLoading(true);
       setError("");
-      fetch(ncmApiUrl(buildProductsUrl({ q, ncm, status, tratado }, lote, page, pageSize)), {
+      fetch(ncmApiUrl(buildProductsUrl({ q, ncm, segmento, status, tratado }, lote, page, pageSize)), {
         signal: controller.signal,
       })
         .then(async (res) => {
@@ -92,7 +94,7 @@ export function useProductQuery(
       clearTimeout(timer);
       controller.abort();
     };
-  }, [q, ncm, status, tratado, lote, enabled, page, pageSize, reloadKey]);
+  }, [q, ncm, segmento, status, tratado, lote, enabled, page, pageSize, reloadKey]);
 
   return { rows, summary, catalogTotal, total, pageCount, loading: !enabled || loading, error, layout };
 }

@@ -8,7 +8,7 @@ export default function DivergenciasPage() {
     <ProductCatalog
       kicker="Relatório"
       title="Divergências"
-      description="Escolha a planilha e veja só as divergências dela. Clique na linha para ver o que veio errado no importado e como a regra fiscal manda ficar. Itens já tratados ficam ocultos por padrão."
+      description="Escolha a planilha e veja só as divergências dela, separadas por segmento na Unica. Clique na linha para ver o que veio errado no importado e como a regra fiscal manda ficar. Itens já tratados ficam ocultos por padrão."
       defaultStatus="DIVERGENTE"
       hideTreatedDefault
       showNcmSummary

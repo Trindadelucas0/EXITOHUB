@@ -8,6 +8,7 @@ import { Button } from "@/src/components/ui/button";
 export type ProductFilterValues = {
   q: string;
   ncm: string;
+  segmento: string;
   status: "" | "DIVERGENTE" | "NECESSITA_ANALISE" | "CORRETO";
   tratado: "" | "nao" | "sim";
 };
@@ -56,6 +57,7 @@ export function ProductFilters({
   const dirty = Boolean(
     values.q ||
       values.ncm ||
+      values.segmento ||
       values.status !== resetStatus ||
       (hideTreatedDefault ? values.tratado !== "nao" : Boolean(values.tratado)),
   );
@@ -132,6 +134,7 @@ export function ProductFilters({
             onChange({
               q: "",
               ncm: "",
+              segmento: "",
               status: resetStatus,
               tratado: hideTreatedDefault ? "nao" : "",
             })
