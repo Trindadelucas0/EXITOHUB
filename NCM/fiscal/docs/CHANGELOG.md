@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.4 — 31/08/2026
+
+Corrigido:
+
+- Import de `PLANILHA REGRA FISCAL UNICA.xlsx` na Base fiscal **não trazia Abrev.** porque o arquivo não tem coluna `ABREVIACAO` (só a Atacadista `Planilha3` tem). O parser passa a completar Abrev. pelo NCM da base Atacadista (`25202090` → `4`). NCM que não está nessa base continua sem Abrev.; se a coluna existir no arquivo, vale o valor da planilha.
+
 ## v1.6.3 — 31/08/2026
 
 Corrigido:

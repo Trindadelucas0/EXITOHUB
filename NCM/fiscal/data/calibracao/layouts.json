@@ -153,7 +153,7 @@
         "MVA gravado no campo mva* vem do Original DF; o restante fica em ufTributacao",
         "situação TRIBUTACAO_UF (sem CST/CFOP/8 destinos)",
         "fonte oficial do seed: TRIBUTACAO NCM UNICA ATACADISTA (Planilha3) com coluna ABREVIACAO",
-        "variante PLANILHA REGRA FISCAL UNICA.xlsx não tem ABREVIACAO — parse deixa undefined e import no update não apaga",
+        "variante PLANILHA REGRA FISCAL UNICA.xlsx não tem ABREVIACAO — parse completa Abrev. pelo NCM da base Atacadista; NCM fora do mapa fica undefined e import no update não apaga",
         "BAIFER e Lojão não têm coluna de abreviação"
       ],
       "fixture": "tests/fixtures/tributacao-ncm-unica-atacadista-2026-08-27.xlsx",

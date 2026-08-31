@@ -17,6 +17,7 @@ import {
   emptyDestinos,
   parseMvaFields,
 } from "./rule-classify";
+import { fillMissingUnicaAbreviacao } from "./unica-abreviacao";
 
 export type ParsedRule = {
   ncm: string;
@@ -407,10 +408,12 @@ function rowToUnicaRule(raw: unknown[], map: UnicaColumnMap): ParsedRule | null 
 function parseUnicaAoa(aoa: unknown[][]): ParsedRule[] {
   const map = findUnicaColumnMap(aoa);
   if (!map) return [];
-  return aoa
+  const parsed = aoa
     .slice(map.headerRow + 1)
     .map((row) => rowToUnicaRule(row ?? [], map))
     .filter((item): item is ParsedRule => item != null);
+  if (map.abreviacao != null) return parsed;
+  return fillMissingUnicaAbreviacao(parsed);
 }
 
 export function pickRulesSheet(

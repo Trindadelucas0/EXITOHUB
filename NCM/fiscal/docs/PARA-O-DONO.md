@@ -47,7 +47,7 @@ A tela inicial é só login. Cada e-mail abre o painel daquela conta:
 1. Entrar no sistema.
 2. Conferir a **Base fiscal** (já vem preenchida após a instalação).
 3. **Importar** o cadastro atual (export Santri *Relação de Classes Fiscais*, CSV Unica, listagem/relatório Egaplast em `.xls`/`.xlsx`, ou a aba `Planilha_Classes_Fiscais` do ODS padrão). Isso **não** é a base fiscal — é o cadastro a ser auditado. Cada arquivo fica no histórico; use **Ver conferência** ou o seletor **Ver dados desta planilha** para olhar só aquele arquivo.
-4. Para atualizar a **base fiscal**, use Base fiscal → Importar regras com o mesmo ODS: a empresa BAIFER lê a aba BAIFER; a Loja lê a aba LOJA.
+4. Para atualizar a **base fiscal**, use Base fiscal → Importar regras: a empresa BAIFER lê a aba BAIFER; a Loja lê a aba LOJA; a Unica aceita a planilha Atacadista (com Abrev.) ou `PLANILHA REGRA FISCAL UNICA.xlsx` (completa a Abrev. pelo NCM da Atacadista).
 5. Abrir **Divergências**, filtrar pelo NCM e marcar o que já foi ajustado no ERP.
 6. Em NCM com ST e REDUÇÃO, o administrador **vincula** a regra correta.
 

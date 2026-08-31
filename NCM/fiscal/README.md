@@ -9,7 +9,7 @@ Sistema web para o escritório conferir o cadastro importado contra a **base fis
 | `BAIFER` (ODS) ou XLSX `TRIBUTACAO NCM BAIFER` (`Planilha1`) | Base fiscal da BAIFER |
 | `LOJA` (ODS) ou XLSX Lojão (`Planilha1`) | Base fiscal da Loja das Máquinas |
 | Atacadista Unica (`Planilha3`, com `ABREVIACAO`) | Base fiscal oficial da Unica no seed (CEST + Abrev. + MVA/alíquota DF·GO·MG) |
-| `PLANILHA REGRA FISCAL UNICA.xlsx` | Variante sem coluna `ABREVIACAO` — import no update não apaga Abrev. já gravada |
+| `PLANILHA REGRA FISCAL UNICA.xlsx` | Variante sem coluna `ABREVIACAO` — import completa Abrev. pelo NCM da base Atacadista |
 | `Planilha_Classes_Fiscais` | Cadastro Santri (tela **Planilhas**) — não vira base fiscal |
 | Listagem Egaplast `ncm.xls` (aba `Dados`) | Cadastro: CÓDIGO, NOME, NCM |
 | Relatório Egaplast de produtos (blocos) | Cadastro: SIT.TRIBUTÁRIA + IVA/ICM por UF (dedupe por código) |

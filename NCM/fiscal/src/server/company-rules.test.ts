@@ -177,7 +177,7 @@ describe("calibração planilha Unica UF", () => {
 
     const emptyCest = rules.find((r) => r.ncm === "25202090");
     expect(emptyCest?.cest).toBeNull();
-    expect(emptyCest?.abreviacao).toBeUndefined();
+    expect(emptyCest?.abreviacao).toBe("4");
     expect(emptyCest?.situacaoCodigo).toBe("TRIBUTACAO_UF");
     expect(emptyCest?.cstSaida).toBeNull();
     expect(emptyCest?.cfopSaida).toBeNull();
@@ -195,10 +195,74 @@ describe("calibração planilha Unica UF", () => {
     expect(tinta?.mvaPercentual).toBeCloseTo(50, 1);
   });
 
-  it("planilha Unica sem coluna ABREVIACAO deixa abreviacao undefined", () => {
+  it("planilha Unica sem coluna ABREVIACAO preenche Abrev. da base Atacadista", () => {
     const rules = parseRulesBuffer(readFileSync(UNICA_XLSX), { companyName: "Unica" });
     expect(rules.length).toBe(125);
-    expect(rules.every((r) => r.abreviacao === undefined)).toBe(true);
+    expect(rules.find((r) => r.ncm === "25202090")?.abreviacao).toBe("4");
+    expect(rules.find((r) => r.ncm === "27101230")?.abreviacao).toBe("3");
+    expect(rules.find((r) => r.ncm === "27150000")?.abreviacao).toBe("2");
+    expect(rules.every((r) => typeof r.abreviacao === "string" && r.abreviacao.length > 0)).toBe(true);
+  });
+
+  it("NCM Unica fora da base Atacadista continua sem Abrev. se a coluna não existe", () => {
+    const aoa = [
+      ["", "", "", "", "", "", "", "DF", "", "", "", "", "GO", "", "", "", "", "MG"],
+      [
+        "NCM",
+        "CEST",
+        "SEGMENTO",
+        "DESCRIÇÃO",
+        "IPI",
+        "REDUÇÃO",
+        "%",
+        "Original",
+        "Ajustada 4%",
+        "Ajustada 7%",
+        "Ajustada 12%",
+        "Aliq. Interna",
+        "Original",
+        "Ajustada 4%",
+        "Ajustada 7%",
+        "Ajustada 12%",
+        "Aliq. Interna",
+        "Original",
+        "Ajustada 4%",
+        "Ajustada 7%",
+        "Ajustada 12%",
+        "Aliq. Interna",
+      ],
+      [
+        "99999999",
+        "-",
+        "Teste",
+        "",
+        "",
+        "",
+        "",
+        "-",
+        "-",
+        "-",
+        "-",
+        "20%",
+        "-",
+        "-",
+        "-",
+        "-",
+        "19%",
+        "-",
+        "-",
+        "-",
+        "-",
+        "18%",
+      ],
+    ];
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(aoa), "NCM ATUALIZADO ");
+    const buffer = Buffer.from(XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }));
+    const rules = parseRulesBuffer(buffer, { companyName: "Unica" });
+    expect(rules).toHaveLength(1);
+    expect(rules[0]?.ncm).toBe("99999999");
+    expect(rules[0]?.abreviacao).toBeUndefined();
   });
 
   it("variante atacadista traz ABREVIACAO e os mesmos NCMs", () => {
