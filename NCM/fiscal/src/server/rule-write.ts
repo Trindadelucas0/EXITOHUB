@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { asUfTributacao, DESTINO_KEYS } from "@/src/lib/fiscal";
 import { HttpError } from "@/src/server/tenant";
@@ -61,6 +62,12 @@ export const ruleBodySchema = z.object({
 
 export type RuleBody = z.infer<typeof ruleBodySchema>;
 
+export function jsonField(value: Prisma.InputJsonValue | null | undefined) {
+  if (value === undefined) return undefined;
+  if (value === null) return Prisma.DbNull;
+  return value;
+}
+
 function dashOrEmpty(value: string | null | undefined): string | null {
   const text = (value ?? "").trim();
   if (!text || text === "-" || text === "–") return null;
@@ -107,6 +114,6 @@ export function ruleWriteData(companyId: string, body: RuleBody) {
     abreviacao: dashOrEmpty(body.abreviacao),
     reducao: Boolean(body.reducao),
     reducaoPercentual: body.reducaoPercentual ?? null,
-    ufTributacao,
+    ufTributacao: jsonField(ufTributacao),
   };
 }

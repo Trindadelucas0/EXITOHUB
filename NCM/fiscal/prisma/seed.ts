@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import bcrypt from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import {
   classifyRuleSync,
   shouldWipeCadastro,
@@ -137,7 +137,7 @@ function ruleData(spec: CompanySeed, rule: ExtractedRule) {
     abreviacao: rule.abreviacao ?? null,
     reducao: Boolean(rule.reducao),
     reducaoPercentual: rule.reducaoPercentual ?? null,
-    ufTributacao: rule.ufTributacao ?? null,
+    ufTributacao: rule.ufTributacao ?? Prisma.DbNull,
   };
 }
 
@@ -216,12 +216,13 @@ async function syncRules(spec: CompanySeed, incoming: ExtractedRule[]) {
     situacaoCodigo: row.situacaoCodigo,
     linked: row._count.links > 0,
   }));
-  const plan = classifyRuleSync(
-    incoming.map((rule) => ({ ncm: rule.ncm, situacaoCodigo: rule.situacaoCodigo })),
-    existing,
-  );
   const incomingByKey = new Map(
     incoming.map((rule) => [`${rule.ncm}::${rule.situacaoCodigo}`, rule]),
+  );
+  const uniqueIncoming = [...incomingByKey.values()];
+  const plan = classifyRuleSync(
+    uniqueIncoming.map((rule) => ({ ncm: rule.ncm, situacaoCodigo: rule.situacaoCodigo })),
+    existing,
   );
 
   for (const item of plan.toUpdate) {

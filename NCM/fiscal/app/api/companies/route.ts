@@ -66,6 +66,9 @@ export async function POST(request: Request) {
     if (!body.adminName || !body.adminEmail || !body.adminPassword) {
       throw new HttpError(400, "VALIDATION", "Informe nome, e-mail e senha do administrador.");
     }
+    const adminName = body.adminName.trim();
+    const adminEmail = body.adminEmail.trim().toLowerCase();
+    const adminPassword = body.adminPassword;
     const slug = normalizeSlug(body.slug);
     if (!isValidSlug(slug)) {
       throw new HttpError(400, "VALIDATION", "Slug inválido. Use letras, números e hífen.");
@@ -74,13 +77,13 @@ export async function POST(request: Request) {
     if (existing) {
       throw new HttpError(409, "CONFLICT", "Já existe uma empresa com este identificador.");
     }
-    const email = body.adminEmail.trim().toLowerCase();
+    const email = adminEmail;
     const emailTaken = await prisma.user.findFirst({ where: { email }, select: { id: true } });
     if (emailTaken) {
       throw new HttpError(409, "CONFLICT", "Já existe um usuário com este e-mail.");
     }
     const companyId = `c${randomBytes(12).toString("hex")}`;
-    const passwordHash = await hashPassword(body.adminPassword);
+    const passwordHash = await hashPassword(adminPassword);
     const created = await withTenant(companyId, async (db) => {
       const company = await db.company.create({
         data: { id: companyId, name: body.name.trim(), slug },
@@ -90,7 +93,7 @@ export async function POST(request: Request) {
           companyId,
           email,
           passwordHash,
-          name: body.adminName.trim(),
+          name: adminName,
           role: "admin",
         },
         select: { id: true, email: true, name: true, role: true },
@@ -102,7 +105,7 @@ export async function POST(request: Request) {
         username: email,
         email,
         passwordHash,
-        displayName: body.adminName.trim(),
+        displayName: adminName,
       });
     } catch (hubError) {
       await withTenant(companyId, async (db) => {

@@ -4,6 +4,7 @@ import { LONG_TX, withTenant } from "@/src/server/db";
 import { jsonError, jsonOk } from "@/src/server/http";
 import { assertSafeUpload } from "@/src/server/import-cadastro";
 import { dedupeParsedRules, parseRulesBuffer } from "@/src/server/import-rules";
+import { jsonField } from "@/src/server/rule-write";
 import { HttpError, requireCompanyAdmin, requireCompanySession } from "@/src/server/tenant";
 
 export async function POST(request: Request) {
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
               abreviacao: rule.abreviacao,
               reducao: rule.reducao,
               reducaoPercentual: rule.reducaoPercentual,
-              ufTributacao: rule.ufTributacao,
+              ufTributacao: jsonField(rule.ufTributacao),
             },
           });
           updated += 1;
@@ -88,7 +89,7 @@ export async function POST(request: Request) {
               abreviacao: rule.abreviacao,
               reducao: rule.reducao,
               reducaoPercentual: rule.reducaoPercentual,
-              ufTributacao: rule.ufTributacao,
+              ufTributacao: jsonField(rule.ufTributacao),
             })),
           });
           inserted = created.count;

@@ -125,7 +125,7 @@ export default function EscritorioEmpresasPage() {
         title="Empresas"
         description="Cadastre a empresa aqui. O login da equipe é criado em /admin/usuarios (HUB) com módulo NCM vinculado à empresa."
       />
-      <Notice variant="info">
+      <Notice variant="warn">
         Usuários NCM são criados em{" "}
         <a href="/admin/usuarios" className="font-semibold text-brand underline">
           /admin/usuarios

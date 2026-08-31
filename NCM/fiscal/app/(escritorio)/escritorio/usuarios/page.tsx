@@ -84,7 +84,7 @@ export default function EscritorioUsuariosPage() {
         description="Cadastro centralizado no EXITO HUB. Crie empresas aqui; vincule usuários em /admin/usuarios com módulo NCM."
       />
 
-      <Notice variant="info">
+      <Notice variant="warn">
         Novos logins são criados em{" "}
         <a href="/admin/usuarios" className="font-semibold text-brand underline">
           /admin/usuarios
