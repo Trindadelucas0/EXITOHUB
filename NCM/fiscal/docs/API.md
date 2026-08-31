@@ -12,7 +12,8 @@ Respostas: `{ success, data }` ou `{ success: false, error: { code, message } }`
 | POST | `/api/auth/select-company` | superadmin | abre a empresa (`companyId`) na sessão do escritório |
 | POST | `/api/auth/clear-company` | superadmin | fecha a empresa e volta ao painel do escritório |
 | GET | `/api/dashboard` | sessão | totais do lote ativo (`lote`) |
-| GET | `/api/rules` | sessão | lista NCM (`q`, `situacao`) |
+| GET | `/api/rules` | sessão | lista NCM (`q`, `situacao`; Unica inclui `ufTributacao`, `cest`) |
+| POST | `/api/rules/import` | admin | importa XLSX/CSV/ODS de regras na empresa aberta |
 | GET | `/api/rules/:id` | sessão | regra; outro tenant → 404 |
 | GET | `/api/products` | sessão | cadastro do lote (`q`, `ncm`, `status`, `lote`, `page`, `pageSize`, `tratado=nao\|sim`); summary e página |
 | GET | `/api/products/ncm-summary` | sessão | agrupamento por NCM do lote (`status`, `tratado`) |

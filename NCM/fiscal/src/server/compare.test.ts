@@ -244,4 +244,50 @@ describe("motor de comparação", () => {
     const result = compareProduct(product({ destinosCst: dest60 }), [st, red], "a");
     expect(result.status).toBe("CORRETO");
   });
+
+  it("Unica TRIBUTACAO_UF sem cadastro de CEST/alíquota → NECESSITA_ANALISE", () => {
+    const unica = rule({
+      id: "u1",
+      situacaoCodigo: "TRIBUTACAO_UF",
+      cstSaida: null,
+      cfopSaida: null,
+      cest: "24000200",
+      ufTributacao: {
+        DF: { original: "50%", ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "20%" },
+        GO: { original: "50%", ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "19%" },
+        MG: { original: "64.68%", ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "18%" },
+      },
+    });
+    const result = compareProduct(product({ destinosCst: null, cest: null, aliquotaIcms: null }), [unica], null);
+    expect(result.status).toBe("NECESSITA_ANALISE");
+    expect(result.motivo).toMatch(/CSV de produtos/i);
+  });
+
+  it("Unica compara CEST quando o cadastro traz CEST", () => {
+    const unica = rule({
+      id: "u1",
+      situacaoCodigo: "TRIBUTACAO_UF",
+      cstSaida: null,
+      cfopSaida: null,
+      cest: "24000200",
+      ufTributacao: {
+        DF: { original: "50%", ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "20%" },
+        GO: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "19%" },
+        MG: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "18%" },
+      },
+    });
+    const ok = compareProduct(
+      product({ destinosCst: null, cest: "24.000.200", aliquotaIcms: "20%" }),
+      [unica],
+      null,
+    );
+    expect(ok.status).toBe("CORRETO");
+    const bad = compareProduct(
+      product({ destinosCst: null, cest: "1301100", aliquotaIcms: "20%" }),
+      [unica],
+      null,
+    );
+    expect(bad.status).toBe("DIVERGENTE");
+    expect(bad.diffs.some((d) => d.campo === "CEST")).toBe(true);
+  });
 });

@@ -22,6 +22,7 @@ describe("normalizeCst", () => {
 describe("normalizeCfop", () => {
   it("remove ponto Santri e mantém 4 dígitos", () => {
     expect(normalizeCfop("5.405")).toBe("5405");
+    expect(normalizeCfop(" 5,405 ")).toBe("5405");
     expect(normalizeCfop("5102")).toBe("5102");
     expect(normalizeCfop("")).toBeNull();
   });

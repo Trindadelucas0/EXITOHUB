@@ -1,0 +1,6891 @@
+{
+  "company": "unica",
+  "source": "planilha-regra-fiscal-unica.xlsx",
+  "sheet": "NCM ATUALIZADO ",
+  "extractedSheets": [
+    "NCM ATUALIZADO "
+  ],
+  "ignoredSheets": [],
+  "totalRules": 125,
+  "uniqueNcm": 125,
+  "counts": {
+    "TRIBUTACAO_UF": 125
+  },
+  "rules": [
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "25202090",
+      "ncmOriginal": "25202090",
+      "segmento": "Material para construção, material elétrico e ferragens",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "27101230",
+      "ncmOriginal": "27101230",
+      "segmento": "Combustíveis e lubrificantes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": "06.019.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "31%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "27101249",
+      "ncmOriginal": "27101249",
+      "segmento": "Combustíveis e lubrificantes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": "06.019.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "31%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "27101919",
+      "ncmOriginal": "27101919",
+      "segmento": "Combustíveis e lubrificantes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": "06.019.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "31%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "27150000",
+      "ncmOriginal": "27150000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "28092011",
+      "ncmOriginal": "28092011",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "28092019",
+      "ncmOriginal": "28092019",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "29037300",
+      "ncmOriginal": "29037300",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "29096090",
+      "ncmOriginal": "29096090",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "29153300",
+      "ncmOriginal": "29153300",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "30059090",
+      "ncmOriginal": "30059090",
+      "segmento": "Medicamentos de uso humano e outros produtos farmacêuticos para uso humano ou veterinário",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 41.34,
+      "mvaTexto": "41.34%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "13.011.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "41.34%",
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "41.38%",
+          "ajustada4": "65.52%",
+          "ajustada7": null,
+          "ajustada12": "51.72%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32041700",
+      "ncmOriginal": "32041700",
+      "segmento": "tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 50,
+      "mvaTexto": "50%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "24000200",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "50%",
+          "ajustada4": "80%",
+          "ajustada7": "74.38%",
+          "ajustada12": "65.00%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "50%",
+          "ajustada4": "77.78%",
+          "ajustada7": "72.22%",
+          "ajustada12": "62.96%",
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "64.68%",
+          "ajustada4": "92.80%",
+          "ajustada7": null,
+          "ajustada12": "76.73%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32081010",
+      "ncmOriginal": "32081010",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76.00%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32081020",
+      "ncmOriginal": "32081020",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76.00%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32081030",
+      "ncmOriginal": "32081030",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76.00%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32082011",
+      "ncmOriginal": "32082011",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76.00%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32082019",
+      "ncmOriginal": "32082019",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76.00%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32082020",
+      "ncmOriginal": "32082020",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76.00%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32082030",
+      "ncmOriginal": "32082030",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76.00%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32089010",
+      "ncmOriginal": "32089010",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76.00%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32089029",
+      "ncmOriginal": "32089029",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76.00%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32089039",
+      "ncmOriginal": "32089039",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76.00%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32091010",
+      "ncmOriginal": "32091010",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32091020",
+      "ncmOriginal": "32091020",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32099019",
+      "ncmOriginal": "32099019",
+      "segmento": "Tintas e vernizes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 35,
+      "mvaTexto": "35%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "2400100",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "35%",
+          "ajustada4": "62%",
+          "ajustada7": "56.94%",
+          "ajustada12": "48.50%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": "35%",
+          "ajustada4": "60%",
+          "ajustada7": "55%",
+          "ajustada12": "46.67%",
+          "aliqInterna": "19.00%"
+        },
+        "MG": {
+          "original": "64%",
+          "ajustada4": "92%",
+          "ajustada7": null,
+          "ajustada12": "76%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32141010",
+      "ncmOriginal": "32141010",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "40%",
+          "ajustada4": "63.90%",
+          "ajustada7": null,
+          "ajustada12": "50.24%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32141020",
+      "ncmOriginal": "32141020",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "40%",
+          "ajustada4": "63.90%",
+          "ajustada7": null,
+          "ajustada12": "50.24%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "32149000",
+      "ncmOriginal": "32149000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "40%",
+          "ajustada4": "63.90%",
+          "ajustada7": null,
+          "ajustada12": "50.24%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "34023100",
+      "ncmOriginal": "34023100",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 20.99,
+      "mvaTexto": "20.99%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "1100700",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "20.99%",
+          "ajustada4": "56.31%",
+          "ajustada7": "51.43%",
+          "ajustada12": "43.29%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19"
+        },
+        "MG": {
+          "original": "40.88%",
+          "ajustada4": "64.93%",
+          "ajustada7": null,
+          "ajustada12": "51.19%",
+          "aliqInterna": "19%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "34023990",
+      "ncmOriginal": "34023990",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 20.99,
+      "mvaTexto": "20.99%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "1100700",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "20.99%",
+          "ajustada4": "56.31%",
+          "ajustada7": "51.43%",
+          "ajustada12": "43.29%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19"
+        },
+        "MG": {
+          "original": "40.88%",
+          "ajustada4": "64.93%",
+          "ajustada7": null,
+          "ajustada12": "51.19%",
+          "aliqInterna": "19%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "34024200",
+      "ncmOriginal": "34024200",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 20.99,
+      "mvaTexto": "20.99%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "1100700",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "20.99%",
+          "ajustada4": "56.31%",
+          "ajustada7": "51.43%",
+          "ajustada12": "43.29%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19"
+        },
+        "MG": {
+          "original": "40.88%",
+          "ajustada4": "64.93%",
+          "ajustada7": null,
+          "ajustada12": "51.19%",
+          "aliqInterna": "19%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "34029031",
+      "ncmOriginal": "34029031",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 20.99,
+      "mvaTexto": "20.99%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "1100700",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "20.99%",
+          "ajustada4": "56.31%",
+          "ajustada7": "51.43%",
+          "ajustada12": "43.29%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19"
+        },
+        "MG": {
+          "original": "40.88%",
+          "ajustada4": "64.93%",
+          "ajustada7": null,
+          "ajustada12": "51.19%",
+          "aliqInterna": "19%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "34029039",
+      "ncmOriginal": "34029039",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 20.99,
+      "mvaTexto": "20.99%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "1100700",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "20.99%",
+          "ajustada4": "56.31%",
+          "ajustada7": "51.43%",
+          "ajustada12": "43.29%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "40.88%",
+          "ajustada4": "64.93%",
+          "ajustada7": null,
+          "ajustada12": "51.19%",
+          "aliqInterna": "19%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "34029090",
+      "ncmOriginal": "34029090",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 20.99,
+      "mvaTexto": "20.99%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "1100700",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "20.99%",
+          "ajustada4": "56.31%",
+          "ajustada7": "51.43%",
+          "ajustada12": "43.29%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19"
+        },
+        "MG": {
+          "original": "40.88%",
+          "ajustada4": "64.93%",
+          "ajustada7": null,
+          "ajustada12": "51.19%",
+          "aliqInterna": "19%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "34031900",
+      "ncmOriginal": "34031900",
+      "segmento": "Combustíveis e lubrificantes",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 54.87,
+      "mvaTexto": "54.87%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "06.017.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "54.87%",
+          "ajustada4": "100.41%",
+          "ajustada7": "94.15%",
+          "ajustada12": "83.71%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "61.38%",
+          "ajustada4": "88.85%",
+          "ajustada7": null,
+          "ajustada12": "73.11%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "34051000",
+      "ncmOriginal": "34051000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "34053000",
+      "ncmOriginal": "34053000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "34059000",
+      "ncmOriginal": "34059000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "35061010",
+      "ncmOriginal": "35061010",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "35061090",
+      "ncmOriginal": "35061090",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "35069110",
+      "ncmOriginal": "35069110",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "35069120",
+      "ncmOriginal": "35069120",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "35069190",
+      "ncmOriginal": "35069190",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "35069900",
+      "ncmOriginal": "35069900",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "38140090",
+      "ncmOriginal": "38140090",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "38151900",
+      "ncmOriginal": "38151900",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.001.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "38159099",
+      "ncmOriginal": "38159099",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.001.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "38244000",
+      "ncmOriginal": "38244000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "40%",
+          "ajustada4": "63.90%",
+          "ajustada7": null,
+          "ajustada12": "50.24%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "38249931",
+      "ncmOriginal": "38249931",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "40%",
+          "ajustada4": "63.90%",
+          "ajustada7": null,
+          "ajustada12": "50.24%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "38249939",
+      "ncmOriginal": "38249939",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "40%",
+          "ajustada4": "63.90%",
+          "ajustada7": null,
+          "ajustada12": "50.24%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "38249941",
+      "ncmOriginal": "38249941",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "40%",
+          "ajustada4": "63.90%",
+          "ajustada7": null,
+          "ajustada12": "50.24%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39053000",
+      "ncmOriginal": "39053000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39079100",
+      "ncmOriginal": "39079100",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39079999",
+      "ncmOriginal": "39079999",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39081014",
+      "ncmOriginal": "39081014",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39093900",
+      "ncmOriginal": "39093900",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39095011",
+      "ncmOriginal": "39095011",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39174090",
+      "ncmOriginal": "39174090",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.002.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39191010",
+      "ncmOriginal": "39191010",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 31.33,
+      "mvaTexto": "31.33%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.008.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "31.33%",
+          "ajustada4": "66.80%",
+          "ajustada7": "61.59%",
+          "ajustada12": "52.90%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "50%",
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "*%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39191020",
+      "ncmOriginal": "39191020",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 31.33,
+      "mvaTexto": "31.33%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.008.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "31.33%",
+          "ajustada4": "66.80%",
+          "ajustada7": "61.59%",
+          "ajustada12": "52.90%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "50%",
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "*%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39191090",
+      "ncmOriginal": "39191090",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 31.33,
+      "mvaTexto": "31.33%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.008.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "31.33%",
+          "ajustada4": "66.80%",
+          "ajustada7": "61.59%",
+          "ajustada12": "52.90%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "50%",
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "*%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39201099",
+      "ncmOriginal": "39201099",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 28.49,
+      "mvaTexto": "28.49%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.009.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "28.49%",
+          "ajustada4": "53.60%",
+          "ajustada7": "48.80%",
+          "ajustada12": "40.80%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "50%",
+          "ajustada4": "75.61%",
+          "ajustada7": null,
+          "ajustada12": "60.98%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39202019",
+      "ncmOriginal": "39202019",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 28.49,
+      "mvaTexto": "28.49%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.009.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "28.49%",
+          "ajustada4": "53.60%",
+          "ajustada7": "48.80%",
+          "ajustada12": "40.80%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "50%",
+          "ajustada4": "75.61%",
+          "ajustada7": null,
+          "ajustada12": "60.98%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39232110",
+      "ncmOriginal": "39232110",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 54.57,
+      "mvaTexto": "54.57%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "11.012.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "54.57%",
+          "ajustada4": "100.02%",
+          "ajustada7": "93.77%",
+          "ajustada12": "83.35%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "65%",
+          "ajustada4": "93.17%",
+          "ajustada7": null,
+          "ajustada12": "77.07%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39241000",
+      "ncmOriginal": "39241000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 41.77,
+      "mvaTexto": "41.77%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.014.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "41.77%",
+          "ajustada4": "82.40%",
+          "ajustada7": "76.70%",
+          "ajustada12": "67.20%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "70%",
+          "ajustada4": "99.02%",
+          "ajustada7": null,
+          "ajustada12": "82.44%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39249000",
+      "ncmOriginal": "39249000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 41.77,
+      "mvaTexto": "41.77%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.014.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "41.77%",
+          "ajustada4": "82.40%",
+          "ajustada7": "76.70%",
+          "ajustada12": "67.20%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "70%",
+          "ajustada4": "99.02%",
+          "ajustada7": null,
+          "ajustada12": "82.44%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39259090",
+      "ncmOriginal": "39259090",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 30,
+      "mvaTexto": "30%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.016.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "30%",
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "45%",
+          "ajustada4": "69.76%",
+          "ajustada7": null,
+          "ajustada12": "55.61%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39269040",
+      "ncmOriginal": "39269040",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 28.92,
+      "mvaTexto": "28.92%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.020.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "28.92%",
+          "ajustada4": "63.20%",
+          "ajustada7": "58.10%",
+          "ajustada12": "49.60%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "60.00%",
+          "ajustada4": "87.32%",
+          "ajustada7": null,
+          "ajustada12": "71.71%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "39269090",
+      "ncmOriginal": "39269090",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 28.92,
+      "mvaTexto": "28.92%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.020.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "28.92%",
+          "ajustada4": "63.20%",
+          "ajustada7": "58.10%",
+          "ajustada12": "49.60%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "60.00%",
+          "ajustada4": "87.32%",
+          "ajustada7": null,
+          "ajustada12": "71.71%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "40069000",
+      "ncmOriginal": "40069000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "40082900",
+      "ncmOriginal": "40082900",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.103.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "40151900",
+      "ncmOriginal": "40151900",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": "13.012.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "41,38&",
+          "ajustada4": "65.52%",
+          "ajustada7": null,
+          "ajustada12": "51.72%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "48043190",
+      "ncmOriginal": "48043190",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "48089000",
+      "ncmOriginal": "48089000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "80%",
+          "ajustada4": "110.73%",
+          "ajustada7": null,
+          "ajustada12": "93.17%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "48114110",
+      "ncmOriginal": "48114110",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "50%",
+          "ajustada4": "75.61%",
+          "ajustada7": null,
+          "ajustada12": "60.98%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "48211000",
+      "ncmOriginal": "48211000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "53013000",
+      "ncmOriginal": "53013000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "-18%",
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "56031230",
+      "ncmOriginal": "56031230",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 42.49,
+      "mvaTexto": "42.49%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "20.052.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "42.49%",
+          "ajustada4": "84.32%",
+          "ajustada7": "78.56%",
+          "ajustada12": "68.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "53.60%",
+          "ajustada4": "79.82%",
+          "ajustada7": null,
+          "ajustada12": "64.84%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "56039410",
+      "ncmOriginal": "56039410",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 42.49,
+      "mvaTexto": "42.49%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "20.052.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "42.49%",
+          "ajustada4": "84.32%",
+          "ajustada7": "78.56%",
+          "ajustada12": "68.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "53.60%",
+          "ajustada4": "79.82%",
+          "ajustada7": null,
+          "ajustada12": "64.84%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "59039000",
+      "ncmOriginal": "59039000",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.010.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "59119000",
+      "ncmOriginal": "59119000",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.107.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "63071000",
+      "ncmOriginal": "63071000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "63079010",
+      "ncmOriginal": "63079010",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "68042211",
+      "ncmOriginal": "68042211",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "45%",
+          "ajustada4": "69.76%",
+          "ajustada7": null,
+          "ajustada12": "55.61%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "68051000",
+      "ncmOriginal": "68051000",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 43.37,
+      "mvaTexto": "43.37%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "11.009.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "43.37%",
+          "ajustada4": "89.36%",
+          "ajustada7": "83.44%",
+          "ajustada12": "73.58%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "55%",
+          "ajustada4": "81,46.%",
+          "ajustada7": null,
+          "ajustada12": "66.34%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "68052000",
+      "ncmOriginal": "68052000",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 43.37,
+      "mvaTexto": "43.37%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "11.009.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "43.37%",
+          "ajustada4": "89.36%",
+          "ajustada7": "83.44%",
+          "ajustada12": "73.58%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "55%",
+          "ajustada4": "81,46.%",
+          "ajustada7": null,
+          "ajustada12": "66.34%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "68053010",
+      "ncmOriginal": "68053010",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 43.37,
+      "mvaTexto": "43.37%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "11.009.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "43.37%",
+          "ajustada4": "89.36%",
+          "ajustada7": "83.44%",
+          "ajustada12": "73.58%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "55%",
+          "ajustada4": "81,46.%",
+          "ajustada7": null,
+          "ajustada12": "66.34%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "68053020",
+      "ncmOriginal": "68053020",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 43.37,
+      "mvaTexto": "43.37%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "11.009.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "43.37%",
+          "ajustada4": "89.36%",
+          "ajustada7": "83.44%",
+          "ajustada12": "73.58%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "55%",
+          "ajustada4": "81,46.%",
+          "ajustada7": null,
+          "ajustada12": "66.34%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "68053090",
+      "ncmOriginal": "68053090",
+      "segmento": "Materiais de limpeza",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 43.37,
+      "mvaTexto": "43.37%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "11.009.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "43.37%",
+          "ajustada4": "89.36%",
+          "ajustada7": "83.44%",
+          "ajustada12": "73.58%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "55%",
+          "ajustada4": "81,46.%",
+          "ajustada7": null,
+          "ajustada12": "66.34%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "68071000",
+      "ncmOriginal": "68071000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "70191500",
+      "ncmOriginal": "70191500",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "73065000",
+      "ncmOriginal": "73065000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "73071990",
+      "ncmOriginal": "73071990",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 26.51,
+      "mvaTexto": "26.51%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "1004600",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "26.51%",
+          "ajustada4": "59.60%",
+          "ajustada7": "54.61%",
+          "ajustada12": "46.30%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "35%",
+          "ajustada4": "58.05%",
+          "ajustada7": null,
+          "ajustada12": "44.88%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "73102190",
+      "ncmOriginal": "73102190",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 47.39,
+      "mvaTexto": "47.39%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.051.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "47.39%",
+          "ajustada4": "90.80%",
+          "ajustada7": "84.84%",
+          "ajustada12": "74.90%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "75%",
+          "ajustada4": "104.88%",
+          "ajustada7": null,
+          "ajustada12": "87.80%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "73231000",
+      "ncmOriginal": "73231000",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 55.52,
+      "mvaTexto": "55.52%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.059.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "55.52%",
+          "ajustada4": "102.96%",
+          "ajustada7": "96.61%",
+          "ajustada12": "86.04%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "75%",
+          "ajustada4": "104.88%",
+          "ajustada7": null,
+          "ajustada12": "87.80%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "73269090",
+      "ncmOriginal": "73269090",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 41.77,
+      "mvaTexto": "41.77%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.062.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "41.77%",
+          "ajustada4": "82.40%",
+          "ajustada7": "76.70%",
+          "ajustada12": "67.20%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "75%",
+          "ajustada4": "104.88%",
+          "ajustada7": null,
+          "ajustada12": "87.80%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "76061290",
+      "ncmOriginal": "76061290",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "76071190",
+      "ncmOriginal": "76071190",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 27.31,
+      "mvaTexto": "27.31%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "1006800",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "27.31%",
+          "ajustada4": "60.80%",
+          "ajustada7": "55.78%",
+          "ajustada12": "47.40%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "50%",
+          "ajustada4": "75.61%",
+          "ajustada7": null,
+          "ajustada12": "60.98%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "76169900",
+      "ncmOriginal": "76169900",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 29.72,
+      "mvaTexto": "29.72%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.073.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "29.72%",
+          "ajustada4": "64.40%",
+          "ajustada7": "59.20%",
+          "ajustada12": "50.70%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "45%",
+          "ajustada4": "69.76%",
+          "ajustada7": null,
+          "ajustada12": "55.61%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "82055900",
+      "ncmOriginal": "82055900",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "45%",
+          "ajustada4": "69.76%",
+          "ajustada7": null,
+          "ajustada12": "55.61%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "83100000",
+      "ncmOriginal": "83100000",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.027.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18.00%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84242000",
+      "ncmOriginal": "84242000",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.040.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84243010",
+      "ncmOriginal": "84243010",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.040.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84243090",
+      "ncmOriginal": "84243090",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.040.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84248990",
+      "ncmOriginal": "84248990",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.040.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84249090",
+      "ncmOriginal": "84249090",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.115.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84669200",
+      "ncmOriginal": "84669200",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84671190",
+      "ncmOriginal": "84671190",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "45%",
+          "ajustada4": "69.76",
+          "ajustada7": null,
+          "ajustada12": "55.61%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84671900",
+      "ncmOriginal": "84671900",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "45%",
+          "ajustada4": "69.76",
+          "ajustada7": null,
+          "ajustada12": "55.61%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84672999",
+      "ncmOriginal": "84672999",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "45%",
+          "ajustada4": "69.76",
+          "ajustada7": null,
+          "ajustada12": "55.61%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84679200",
+      "ncmOriginal": "84679200",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "45%",
+          "ajustada4": "69.76",
+          "ajustada7": null,
+          "ajustada12": "55.61%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84679900",
+      "ncmOriginal": "84679900",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "45%",
+          "ajustada4": "69.76",
+          "ajustada7": null,
+          "ajustada12": "55.61%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84812090",
+      "ncmOriginal": "84812090",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 27.31,
+      "mvaTexto": "27.31%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.079.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "27.31%",
+          "ajustada4": "60.80%",
+          "ajustada7": "55.78%",
+          "ajustada12": "47.40%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "40%",
+          "ajustada4": "63.90%",
+          "ajustada7": null,
+          "ajustada12": "50.24%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "84818099",
+      "ncmOriginal": "84818099",
+      "segmento": "Materiais de construção e congêneres",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 27.31,
+      "mvaTexto": "27.31%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "10.079.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "27.31%",
+          "ajustada4": "60.80%",
+          "ajustada7": "55.78%",
+          "ajustada12": "47.40%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "40%",
+          "ajustada4": "63.90%",
+          "ajustada7": null,
+          "ajustada12": "50.24%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "85081100",
+      "ncmOriginal": "85081100",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "35%",
+          "ajustada4": "58.05%",
+          "ajustada7": null,
+          "ajustada12": "48.88%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "85081900",
+      "ncmOriginal": "85081900",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "35%",
+          "ajustada4": "58.05%",
+          "ajustada7": null,
+          "ajustada12": "48.88%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "85153900",
+      "ncmOriginal": "85153900",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "86040010",
+      "ncmOriginal": "86040010",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "90200010",
+      "ncmOriginal": "90200010",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "90262010",
+      "ncmOriginal": "90262010",
+      "segmento": "Autopeças",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 71.78,
+      "mvaTexto": "71.78%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "01.078.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "71.78%",
+          "ajustada4": "106.14%",
+          "ajustada7": "99.69%",
+          "ajustada12": "88.96%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "71.78%",
+          "ajustada4": "101.11%",
+          "ajustada7": null,
+          "ajustada12": "84.35%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "96034010",
+      "ncmOriginal": "96034010",
+      "segmento": "Produtos de perfumaria e de higiene pessoal e cosméticos",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 46.58,
+      "mvaTexto": "46.58%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "20.057.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "46.58%",
+          "ajustada4": "89.65%",
+          "ajustada7": "83.72%",
+          "ajustada12": "73.84%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "58.04%",
+          "ajustada4": "85.02%",
+          "ajustada7": null,
+          "ajustada12": "69.60%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "96034090",
+      "ncmOriginal": "96034090",
+      "segmento": "Produtos de perfumaria e de higiene pessoal e cosméticos",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 46.58,
+      "mvaTexto": "46.58%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "20.057.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "46.58%",
+          "ajustada4": "89.65%",
+          "ajustada7": "83.72%",
+          "ajustada12": "73.84%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "58.04%",
+          "ajustada4": "85.02%",
+          "ajustada7": null,
+          "ajustada12": "69.60%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "96035000",
+      "ncmOriginal": "96035000",
+      "segmento": "Produtos de perfumaria e de higiene pessoal e cosméticos",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 46.58,
+      "mvaTexto": "46.58%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "20.057.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "46.58%",
+          "ajustada4": "89.65%",
+          "ajustada7": "83.72%",
+          "ajustada12": "73.84%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "58.04%",
+          "ajustada4": "85.02%",
+          "ajustada7": null,
+          "ajustada12": "69.60%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "96039000",
+      "ncmOriginal": "96039000",
+      "segmento": "Produtos de perfumaria e de higiene pessoal e cosméticos",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": 46.58,
+      "mvaTexto": "46.58%",
+      "mvaKind": "numeric",
+      "observacao": null,
+      "cest": "20.057.00",
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": "46.58%",
+          "ajustada4": "89.65%",
+          "ajustada7": "83.72%",
+          "ajustada12": "73.84%",
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": "58.04%",
+          "ajustada4": "85.02%",
+          "ajustada7": null,
+          "ajustada12": "69.60%",
+          "aliqInterna": "18%"
+        }
+      }
+    },
+    {
+      "company": "unica",
+      "sourceFile": "planilha-regra-fiscal-unica.xlsx",
+      "sourceSheet": "NCM ATUALIZADO ",
+      "ncm": "96040000",
+      "ncmOriginal": "96040000",
+      "segmento": "",
+      "cstEntrada": null,
+      "cstSaida": null,
+      "cfopSaida": null,
+      "destinosCst": {
+        "naoContribuinte": null,
+        "contribuinte": null,
+        "revenda": null,
+        "construtora": null,
+        "hospClinica": null,
+        "orgaoPublico": null,
+        "produtorRural": null,
+        "atacado": null
+      },
+      "situacao": "Tributação por UF",
+      "situacaoCodigo": "TRIBUTACAO_UF",
+      "mvaPercentual": null,
+      "mvaTexto": null,
+      "mvaKind": "skip",
+      "observacao": null,
+      "cest": null,
+      "ipi": null,
+      "abreviacao": null,
+      "reducao": false,
+      "reducaoPercentual": null,
+      "ufTributacao": {
+        "DF": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "20%"
+        },
+        "GO": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "19%"
+        },
+        "MG": {
+          "original": null,
+          "ajustada4": null,
+          "ajustada7": null,
+          "ajustada12": null,
+          "aliqInterna": "18%"
+        }
+      }
+    }
+  ]
+}

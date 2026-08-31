@@ -1,22 +1,24 @@
-# Auditor Fiscal BAIFER
+# Auditor Fiscal
 
 Sistema web para o escritório conferir o cadastro importado contra a **base fiscal da empresa ativa**.
 
-**Planilha padrão:** `data/ncm-atualizado.ods` (fixture em `tests/fixtures/ncm-atualizado.ods`).
+**Planilha padrão BAIFER/Loja:** `data/ncm-atualizado.ods` (fixture em `tests/fixtures/ncm-atualizado.ods`).
 
-| Aba | Uso |
+| Aba / arquivo | Uso |
 | --- | --- |
-| `BAIFER` | Base fiscal da BAIFER |
-| `LOJA` | Base fiscal da Loja das Máquinas |
-| `Planilha_Classes_Fiscais` | Cadastro Santri (tela **Importar**) — não vira base fiscal |
+| `BAIFER` (ODS) ou XLSX `TRIBUTACAO NCM BAIFER` (`Planilha1`) | Base fiscal da BAIFER |
+| `LOJA` (ODS) ou XLSX Lojão (`Planilha1`) | Base fiscal da Loja das Máquinas |
+| `PLANILHA REGRA FISCAL UNICA.xlsx` / atacadista (`Planilha3`) | Base fiscal da Unica (CEST + MVA/alíquota DF·GO·MG) |
+| `Planilha_Classes_Fiscais` | Cadastro Santri (tela **Planilhas**) — não vira base fiscal |
 | `NCM_GERAL` / links | Ignoradas |
 
-As duas bases **não se misturam** (`companyId` em toda query). Em **Base fiscal → Importar regras**, a aba escolhida segue a empresa da sessão.
+As bases **não se misturam** (`companyId` em toda query). Em **Base fiscal → Importar regras**, o layout segue a empresa da sessão.
 
-1. Extraia as regras do ODS padrão:
+1. Extraia as regras do ODS padrão (BAIFER/Loja) e da Unica:
 
 ```bash
 python tools/extract_rules.py
+npx tsx prisma/extract-unica.ts
 pytest
 ```
 
@@ -31,15 +33,16 @@ npm test
 npm run dev
 ```
 
-3. Abra `http://localhost:3000` e entre só com e-mail e senha:
+3. Abra `http://localhost:3000` (ou o HUB) e entre só com e-mail e senha:
 
 - Escritório: `SEED_SUPERADMIN_EMAIL` — cai no painel das empresas; cadastra empresa/usuário e usa “Entrar” para abrir a conferência de uma empresa
 - BAIFER: `admin@baifer.local` — abre direto a conferência da BAIFER
 - Loja: `admin@loja.local` — abre direto a conferência da Loja
+- Unica (seed local): `admin@unica.local` — base fiscal Unica. No HUB, o login da equipe é criado em `/admin/usuarios`
 
 Senha das empresas: `SEED_ADMIN_PASSWORD`. Senha do escritório: `SEED_SUPERADMIN_PASSWORD`. O seed **não apaga** planilhas já importadas. Para zerar só o cadastro: `SEED_RESET_CADASTRO=1 npm run db:seed`.
 
-4. Cadastro do cliente (export Santri ou a aba `Planilha_Classes_Fiscais` do ODS) importa **um lote por arquivo** na empresa logada. Lotes anteriores ficam no histórico:
+4. Cadastro do cliente (export Santri, CSV Unica ou a aba `Planilha_Classes_Fiscais` do ODS) importa **um lote por arquivo** na empresa logada. Lotes anteriores ficam no histórico:
 
 ```bash
 npm run import:cadastro
@@ -47,9 +50,9 @@ npm run import:cadastro
 
 ## O que o MVP responde
 
-1. O cadastro está coerente com a matriz NCM?
-2. Onde diverge (destinatário a destinatário)?
-3. Como dar entrada — só com o que existe na regra (CST entrada, CST BAIFER, CFOP de saída, MVA).
+1. O cadastro está coerente com a matriz NCM (BAIFER/Loja) ou com CEST/alíquota/MVA (Unica, quando o CSV de produtos existir)?
+2. Onde diverge (destinatário a destinatário, ou CEST/alíquota Unica)?
+3. Como dar entrada — só com o que existe na regra (CST entrada, CST BAIFER, CFOP de saída, MVA). Na Unica a conferência de cadastro fica limitada até o CSV de itens.
 
 ## Regras da aba BAIFER
 
@@ -60,15 +63,16 @@ npm run import:cadastro
 | ST nacional | CST 60 em todos, CFOP 5405; a entrada costuma ser 10 |
 | Redução | Entrada 20, CST 20, CFOP 5102; na base só Atacado costuma vir preenchido — a conferência completa os demais com o CST de saída |
 | Incompleta | CST/CFOP vazios → necessita análise |
+| Tributação por UF | Unica: NCM + CEST + MVA/alíquota DF, GO, MG (sem matriz de 8 destinos) |
 | NCM com duas regras | Amarelo até vincular |
 | NCM mascarado | `82032010-2` e `82.03.20.10` → `82032010` |
 
-**Fonte única:** `ncm-atualizado.ods` (abas `BAIFER` e `LOJA`). A aba `Planilha_Classes_Fiscais` só entra como cadastro. Layout calibrado em `data/calibracao/layouts.json`.
+**Fonte BAIFER/Loja:** `ncm-atualizado.ods`. **Fonte Unica:** `tests/fixtures/planilha-regra-fiscal-unica.xlsx` → `data/base-unica.json`. Layout calibrado em `data/calibracao/layouts.json`.
 
 ## Testes
 
 - `pytest` — contagens e matriz `32141010` no ODS
-- `npm test` — motor TS, auth/tenant, import do ODS padrão, escape de PDF
+- `npm test` — motor TS, auth/tenant, import do ODS, XLSX BAIFER/Lojão/Unica, escape de PDF
 
 ## Documentação
 

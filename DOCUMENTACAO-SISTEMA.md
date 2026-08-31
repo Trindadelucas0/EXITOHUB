@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.1 — login e cadastro centralizados no HUB.
+> Versão: 1.2 — empresa Unica no Auditor NCM e import de regras calibrado.
 
 ## 1. Visão geral
 
@@ -83,7 +83,22 @@ npm run reconcile:modules         # aplica correção (Conci/NCM módulo único)
 | Usuários HUB | `/admin/usuarios` | [`hub/views/admin-users.ejs`](hub/views/admin-users.ejs) |
 | Empresas Conci | `/conci/admin/empresas` | [`adminEmpresas.ejs`](CONCI/CONCI/conciliação/views/adminEmpresas.ejs) |
 | Empresas NCM | `/ncm/escritorio/empresas` | NCM escritório |
+| Base fiscal NCM | `/ncm/base-fiscal` | Importa regras da empresa aberta |
 | Auth/me NCM | `/ncm/api/auth/me` | [`route.ts`](NCM/fiscal/app/api/auth/me/route.ts) |
+
+Empresas NCM no seed: **BAIFER**, **Loja das Máquinas**, **Unica** (`slug` `unica`). Login da equipe Unica continua em `/admin/usuarios` (HUB), não no seed do HUB.
+
+### Import de regras NCM
+
+Tela **Base fiscal** (`POST /ncm/api/rules/import`). Parser: [`import-rules.ts`](NCM/fiscal/src/server/import-rules.ts). Layouts: [`NCM/fiscal/data/calibracao/layouts.json`](NCM/fiscal/data/calibracao/layouts.json).
+
+| Empresa | Arquivo típico | Aba | O que grava |
+|---------|----------------|-----|-------------|
+| BAIFER | ODS aba `BAIFER` ou XLSX `TRIBUTACAO NCM BAIFER` (`Planilha1`) | matriz 8 destinos | CST/CFOP/MVA |
+| Loja | ODS aba `LOJA` ou XLSX Lojão (`Planilha1`) | matriz 8 destinos sem CST BAIFER | CFOP `5,405` → `5405` |
+| Unica | `PLANILHA REGRA FISCAL UNICA.xlsx` ou `TRIBUTACAO NCM UNICA ATACADISTA` (`Planilha3`) | NCM, CEST, MVA/alíquota DF·GO·MG | situação `TRIBUTACAO_UF` |
+
+Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `Desc. Abrev. ICMS`) na tela **Planilhas** — não veio nestas planilhas de tributação.
 
 ## 8. Guia rápido
 
@@ -91,5 +106,6 @@ npm run reconcile:modules         # aplica correção (Conci/NCM módulo único)
 2. Em `/admin/usuarios`, crie o login: marque Conciliação ou NCM, escolha empresa e papel.
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu sem Folha/NCM.
 4. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar.
+5. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST e alíquotas DF/GO/MG (125 NCMs no seed).
 
-Guia expandido: [`README.md`](README.md).
+Guia expandido: [`README.md`](README.md). Detalhe do auditor: [`NCM/fiscal/README.md`](NCM/fiscal/README.md).

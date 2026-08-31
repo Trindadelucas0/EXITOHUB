@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.5.0 — 31/08/2026
+
+Adicionado:
+
+- Empresa **Unica** no seed (`slug` `unica`, 125 regras) com layout de MVA/alíquota por UF (DF, GO, MG), CEST e situação `TRIBUTACAO_UF`.
+- Parser de `PLANILHA REGRA FISCAL UNICA.xlsx` e da variante `TRIBUTACAO NCM UNICA ATACADISTA` (coluna `ABREVIACAO`, aba `Planilha3`).
+- Grade da Base fiscal troca para colunas Unica quando a empresa tem `ufTributacao`.
+- Colunas em `fiscal_ncm_rules`: `cest`, `ipi`, `abreviacao`, `reducao`, `reducao_percentual`, `uf_tributacao`.
+
+Alterado:
+
+- Import de regras deixa de ignorar abas `Planilha1`/`Planilha3` quando a aba tem NCM (XLSX BAIFER e Lojão).
+- CFOP `5,405` (vírgula) normaliza para `5405`, como `5.405`.
+- Conferência Unica não exige CST/CFOP; sem CSV de produtos fica `NECESSITA_ANALISE`.
+
 ## v1.4.0 — 26/08/2026
 
 Adicionado:

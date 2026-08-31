@@ -38,6 +38,12 @@ type ExtractedRule = {
   mvaTexto: string | null;
   mvaKind: string;
   observacao: string | null;
+  cest?: string | null;
+  ipi?: string | null;
+  abreviacao?: string | null;
+  reducao?: boolean;
+  reducaoPercentual?: number | null;
+  ufTributacao?: unknown;
 };
 
 type ExtractedFile = {
@@ -72,6 +78,14 @@ const COMPANIES: CompanySeed[] = [
     adminEmail: "admin@loja.local",
     consultaEmail: "consulta@loja.local",
   },
+  {
+    id: "cm_unica_seed_company",
+    slug: "unica",
+    name: "Unica",
+    jsonFile: "base-unica.json",
+    adminEmail: "admin@unica.local",
+    consultaEmail: "consulta@unica.local",
+  },
 ];
 
 const prisma = new PrismaClient();
@@ -92,6 +106,9 @@ function loadRules(file: string, expectedCompany: string): ExtractedFile {
   }
   if (expectedCompany === "baifer" && raw.rules.some((r) => r.sourceSheet === "LOJA")) {
     throw new Error("JSON da BAIFER contém aba LOJA.");
+  }
+  if (expectedCompany === "unica" && raw.rules.some((r) => r.sourceSheet === "BAIFER" || r.sourceSheet === "LOJA")) {
+    throw new Error("JSON da Unica contém aba BAIFER ou LOJA.");
   }
   if (raw.rules.some((r) => "codigoProduto" in r || "descricaoProduto" in r)) {
     throw new Error("Seed recusou payload com produtos.");
@@ -115,6 +132,12 @@ function ruleData(spec: CompanySeed, rule: ExtractedRule) {
     mvaTexto: rule.mvaTexto,
     mvaKind: rule.mvaKind,
     observacao: rule.observacao,
+    cest: rule.cest ?? null,
+    ipi: rule.ipi ?? null,
+    abreviacao: rule.abreviacao ?? null,
+    reducao: Boolean(rule.reducao),
+    reducaoPercentual: rule.reducaoPercentual ?? null,
+    ufTributacao: rule.ufTributacao ?? null,
   };
 }
 
@@ -231,36 +254,46 @@ async function syncRules(spec: CompanySeed, incoming: ExtractedRule[]) {
   return { inserted: plan.toInsert.length, updated: plan.toUpdate.length };
 }
 
+async function resolveSpec(spec: CompanySeed): Promise<CompanySeed> {
+  const bySlug = await prisma.company.findFirst({
+    where: { slug: spec.slug },
+    select: { id: true },
+  });
+  if (!bySlug || bySlug.id === spec.id) return spec;
+  return { ...spec, id: bySlug.id };
+}
+
 async function seedCompany(spec: CompanySeed, passwordHash: string, wipeCadastro: boolean) {
   const raw = loadRules(spec.jsonFile, spec.slug);
-  await withCompany(spec.id, async () => {
+  const resolved = await resolveSpec(spec);
+  await withCompany(resolved.id, async () => {
     const deletion = seedDeletionPlan(wipeCadastro);
     if (wipeCadastro) {
-      console.warn(`SEED_RESET_CADASTRO=1: apagando lotes e produtos de ${spec.slug}.`);
+      console.warn(`SEED_RESET_CADASTRO=1: apagando lotes e produtos de ${resolved.slug}.`);
     }
     if (deletion.links) {
-      await prisma.productRuleLink.deleteMany({ where: { companyId: spec.id } });
+      await prisma.productRuleLink.deleteMany({ where: { companyId: resolved.id } });
     }
     if (deletion.products) {
-      await prisma.product.deleteMany({ where: { companyId: spec.id } });
+      await prisma.product.deleteMany({ where: { companyId: resolved.id } });
     }
     if (deletion.batches) {
-      await prisma.importBatch.deleteMany({ where: { companyId: spec.id } });
+      await prisma.importBatch.deleteMany({ where: { companyId: resolved.id } });
     }
 
     await prisma.company.upsert({
-      where: { id: spec.id },
-      create: { id: spec.id, name: spec.name, slug: spec.slug },
-      update: { name: spec.name, slug: spec.slug },
+      where: { id: resolved.id },
+      create: { id: resolved.id, name: resolved.name, slug: resolved.slug },
+      update: { name: resolved.name, slug: resolved.slug },
     });
-    await ensureUser(spec, `${spec.id}_admin`, spec.adminEmail, "Administrador", "admin", passwordHash);
-    await ensureUser(spec, `${spec.id}_consulta`, spec.consultaEmail, "Consulta", "consulta", passwordHash);
-    await syncRules(spec, raw.rules);
+    await ensureUser(resolved, `${resolved.id}_admin`, resolved.adminEmail, "Administrador", "admin", passwordHash);
+    await ensureUser(resolved, `${resolved.id}_consulta`, resolved.consultaEmail, "Consulta", "consulta", passwordHash);
+    await syncRules(resolved, raw.rules);
 
-    const products = await prisma.product.count({ where: { companyId: spec.id } });
-    const rules = await prisma.fiscalNcmRule.count({ where: { companyId: spec.id } });
+    const products = await prisma.product.count({ where: { companyId: resolved.id } });
+    const rules = await prisma.fiscalNcmRule.count({ where: { companyId: resolved.id } });
     console.log(
-      `Seed OK: ${spec.name} (${spec.slug}) ${rules} regras, ${products} produtos no histórico, admin ${spec.adminEmail}`,
+      `Seed OK: ${resolved.name} (${resolved.slug}) ${rules} regras, ${products} produtos no histórico, admin ${resolved.adminEmail}`,
     );
   });
 }
@@ -280,10 +313,13 @@ async function main() {
     await seedCompany(spec, hash, wipeCadastro);
   }
   const baiferRules = await prisma.fiscalNcmRule.count({
-    where: { companyId: "cm_baifer_seed_company" },
+    where: { company: { slug: "baifer" } },
   });
-  const lojaRules = await prisma.fiscalNcmRule.count({ where: { companyId: "cm_loja_seed_company" } });
-  console.log(`Conferência: BAIFER ${baiferRules} regras, LOJA ${lojaRules} regras — isoladas por companyId.`);
+  const lojaRules = await prisma.fiscalNcmRule.count({ where: { company: { slug: "loja" } } });
+  const unicaRules = await prisma.fiscalNcmRule.count({ where: { company: { slug: "unica" } } });
+  console.log(
+    `Conferência: BAIFER ${baiferRules} regras, LOJA ${lojaRules} regras, UNICA ${unicaRules} regras — isoladas por companyId.`,
+  );
 }
 
 main()

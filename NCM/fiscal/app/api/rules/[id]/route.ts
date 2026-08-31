@@ -4,7 +4,7 @@ import { jsonError, jsonOk } from "@/src/server/http";
 import { HttpError, ownedWhere, requireCompanyAdmin, requireCompanySession } from "@/src/server/tenant";
 import { withTenant } from "@/src/server/db";
 import { asDestinos } from "@/src/server/compare";
-import { ruleBodySchema, ruleWriteData } from "@/src/server/rule-write";
+import { ruleBodySchema, ruleWriteData, type RuleBody } from "@/src/server/rule-write";
 
 export async function GET(
   _request: Request,

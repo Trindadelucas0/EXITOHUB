@@ -9,10 +9,10 @@ Credenciais **somente** em `.env` (`DATABASE_URL`, `DB_*`). Nenhuma variável `N
 
 | Tabela | Papel |
 | --- | --- |
-| `companies` | Empresa (BAIFER no seed) |
+| `companies` | Empresa (BAIFER, Loja e Unica no seed) |
 | `users` | E-mail único, hash bcrypt, papel `superadmin`, `admin` ou `consulta`. Superadmin sem `company_id`. |
 | `sessions` | Token hasheado, expiração. `active_company_id` guarda a empresa que o escritório abriu (só vale para `superadmin`) |
-| `fiscal_ncm_rules` | Uma linha por NCM + situação (`company_id, ncm, situacao_codigo` unique) |
+| `fiscal_ncm_rules` | Uma linha por NCM + situação (`company_id, ncm, situacao_codigo` unique). Na Unica: `cest`, `ipi`, `abreviacao`, `reducao`, `uf_tributacao` (DF/GO/MG) |
 | `products` | Cadastro importado (sempre ligado a um lote); `audit_status`, `treated_at` |
 | `product_rule_links` | Vínculo produto → regra (NCM duplicado) |
 | `import_batches` | Histórico de cada planilha (arquivo, data, totais da conferência) |
@@ -26,6 +26,7 @@ A conexão local usa o papel `postgres` (superuser), que **bypassa RLS**. Em pro
 
 ## Seed
 
-Empresa BAIFER + Loja + admin + consulta + regras + administrador do escritório. **Não apaga lotes.**  
+Empresa BAIFER + Loja + Unica + admin + consulta + regras + administrador do escritório. **Não apaga lotes.**  
+Se o slug já existe com outro id, o seed reaproveita essa empresa (não duplica `unica`).  
 Usuário já existente não tem senha resetada. Regras são atualizadas no lugar (o id permanece para não quebrar vínculo).  
 Wipe explícito do cadastro: `SEED_RESET_CADASTRO=1 npm run db:seed`.

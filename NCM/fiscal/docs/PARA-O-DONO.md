@@ -4,11 +4,12 @@ O Auditor Fiscal BAIFER é um sistema interno do escritório. Ele **não substit
 
 ## O que o sistema faz hoje
 
-- Guarda a **base fiscal da empresa ativa**, lida da planilha padrão `NCM ATUALIZADO.ods`:
-  - BAIFER ← aba **BAIFER**
-  - Loja das Máquinas ← aba **LOJA**
-  - As duas **não se misturam**
-  - A aba Santri `Planilha_Classes_Fiscais` é só cadastro (tela Importar), não base fiscal
+- Guarda a **base fiscal da empresa ativa**:
+  - BAIFER ← aba **BAIFER** (ou XLSX de tributação NCM BAIFER)
+  - Loja das Máquinas ← aba **LOJA** (ou XLSX Lojão)
+  - Unica ← planilha de regra fiscal Unica (CEST e alíquotas DF, GO, MG)
+  - As três **não se misturam**
+  - A aba Santri `Planilha_Classes_Fiscais` é só cadastro (tela Planilhas), não base fiscal
 - Permite **importar** várias planilhas; cada arquivo vira um lote no histórico, sem misturar. Em Panorama, Consulta e Divergências dá para **escolher a planilha** e ver só os dados dela.
 - Classifica cada produto como **correto**, **divergente** ou **necessita análise**.
 - Em **Divergências**, mostra primeiro **quantos NCMs** estão errados; um clique filtra a grade.

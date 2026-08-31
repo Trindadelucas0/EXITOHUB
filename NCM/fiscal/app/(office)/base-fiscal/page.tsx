@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { FiscalGrid } from "@/src/components/grid/fiscal-grid";
-import { RULE_SHEET_COLUMNS, type RuleSheetItem } from "@/src/components/grid/rule-sheet-columns";
+import {
+  RULE_SHEET_COLUMNS,
+  UNICA_SHEET_COLUMNS,
+  ruleUsesUnicaLayout,
+  type RuleSheetItem,
+} from "@/src/components/grid/rule-sheet-columns";
 import { CstMatrix } from "@/src/components/matrix/cst-matrix";
 import { emptyRuleForm, RuleEditor, type RuleFormState } from "@/src/components/rules/rule-editor";
 import { PageHeader } from "@/src/components/ui/page-header";
@@ -12,6 +17,7 @@ import { SheetToolbar } from "@/src/components/ui/sheet-toolbar";
 import { Button } from "@/src/components/ui/button";
 import { clearImportListCache } from "@/src/components/product/batch-selector";
 import { ncmApiUrl } from "@/src/lib/base-path";
+import { emptyUfTributacao } from "@/src/lib/fiscal";
 
 const SITUACOES = [
   { value: "", label: "Todas as situações" },
@@ -19,6 +25,7 @@ const SITUACOES = [
   { value: "ST_INTERNO", label: "ST interno" },
   { value: "ST_NACIONAL", label: "ST nacional" },
   { value: "REDUCAO", label: "Redução" },
+  { value: "TRIBUTACAO_UF", label: "Tributação por UF" },
   { value: "INCOMPLETA", label: "Incompleta" },
 ];
 
@@ -35,6 +42,10 @@ function toForm(rule: RuleSheetItem): RuleFormState {
     situacao: rule.situacao,
     situacaoCodigo: rule.situacaoCodigo,
     mvaTexto: rule.mvaTexto ?? "",
+    cest: rule.cest ?? "",
+    ipi: rule.ipi ?? "",
+    abreviacao: rule.abreviacao ?? "",
+    ufTributacao: rule.ufTributacao ?? null,
   };
 }
 
@@ -49,6 +60,10 @@ function payloadFromForm(form: RuleFormState) {
     situacao: form.situacao,
     situacaoCodigo: form.situacaoCodigo || undefined,
     mvaTexto: form.mvaTexto || null,
+    cest: form.cest || null,
+    ipi: form.ipi || null,
+    abreviacao: form.abreviacao || null,
+    ufTributacao: form.ufTributacao,
   };
 }
 
@@ -104,6 +119,7 @@ export default function BaseFiscalPage() {
     };
   }, [q, situacao, reload]);
 
+  const unicaLayout = ruleUsesUnicaLayout(rules);
   const highlight = useMemo(
     () => selected ?? rules[0] ?? null,
     [selected, rules],
@@ -218,14 +234,24 @@ export default function BaseFiscalPage() {
       <PageHeader
         kicker="Regras da empresa"
         title="Base fiscal"
-        description="NCM, CST, CFOP, destinatários, situação e MVA desta empresa. Produtos não entram aqui."
+        description={
+          unicaLayout
+            ? "NCM, CEST e MVA/alíquota por UF (DF, GO, MG) desta empresa. Produtos não entram aqui."
+            : "NCM, CST, CFOP, destinatários, situação e MVA desta empresa. Produtos não entram aqui."
+        }
         actions={
           isAdmin ? (
             <Button
               type="button"
               onClick={() => {
                 setMode("create");
-                setForm(emptyRuleForm());
+                const blank = emptyRuleForm();
+                if (unicaLayout) {
+                  blank.situacaoCodigo = "TRIBUTACAO_UF";
+                  blank.situacao = "Tributação por UF";
+                  blank.ufTributacao = emptyUfTributacao();
+                }
+                setForm(blank);
               }}
             >
               Nova regra
@@ -252,7 +278,9 @@ export default function BaseFiscalPage() {
             }}
           />
           <p className="mt-2 text-xs text-ink-muted">
-            Colunas: NCM, segmento, CST entrada, CST saída, CFOP, 8 destinatários, situação e MVA.
+            {unicaLayout
+              ? "Unica: NCM, CEST, segmento e MVA/alíquota Original, 4%, 7%, 12% e interna para DF, GO e MG. A variante com ABREVIACAO também entra."
+              : "Colunas: NCM, segmento, CST entrada, CST saída, CFOP, 8 destinatários, situação e MVA. Arquivo só com aba Planilha1 também vale."}
           </p>
           <div className="mt-4 border-t border-line pt-4">
             <p className="text-sm text-ink-muted">
@@ -279,6 +307,7 @@ export default function BaseFiscalPage() {
           onCancel={() => setMode("idle")}
           saving={saving}
           title={mode === "edit" ? "Editar regra" : "Cadastrar regra"}
+          layout={unicaLayout ? "unica" : "matriz"}
         />
       ) : null}
       <SheetToolbar>
@@ -334,7 +363,7 @@ export default function BaseFiscalPage() {
         <div className="min-w-0">
           <FiscalGrid
             caption="Base fiscal NCM"
-            columns={RULE_SHEET_COLUMNS}
+            columns={unicaLayout ? UNICA_SHEET_COLUMNS : RULE_SHEET_COLUMNS}
             rows={pageRows}
             getRowId={(row) => row.id}
             loading={loading}
@@ -360,10 +389,27 @@ export default function BaseFiscalPage() {
             <p className="text-xs font-medium uppercase tracking-wide text-status-ok">Linha selecionada</p>
             <h2 className="mt-1 font-display text-2xl tabular text-brand">{highlight.ncm}</h2>
             <p className="text-sm text-ink-muted">
-              {highlight.segmento} · {highlight.situacaoCodigo} · MVA {highlight.mvaTexto ?? "—"}
+              {highlight.segmento} · {highlight.situacaoCodigo} ·{" "}
+              {unicaLayout
+                ? `CEST ${highlight.cest ?? "—"} · Aliq. DF ${highlight.ufTributacao?.DF.aliqInterna ?? "—"}`
+                : `MVA ${highlight.mvaTexto ?? "—"}`}
             </p>
             <div className="mt-4">
-              <CstMatrix layout="stacked" ideal={highlight.destinosCst} />
+              {unicaLayout ? (
+                <dl className="grid gap-2 text-sm">
+                  {(["DF", "GO", "MG"] as const).map((uf) => (
+                    <div key={uf} className="flex justify-between gap-2 border-b border-line py-1">
+                      <dt className="font-medium text-ink">{uf}</dt>
+                      <dd className="tabular text-ink-muted">
+                        aliq {highlight.ufTributacao?.[uf].aliqInterna ?? "—"} · MVA{" "}
+                        {highlight.ufTributacao?.[uf].original ?? "—"}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              ) : (
+                <CstMatrix layout="stacked" ideal={highlight.destinosCst} />
+              )}
             </div>
             {isAdmin ? (
               <div className="mt-4 grid gap-2">
