@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { asDestinos, type FiscalRule, type ImportedProduct } from "./compare";
+import { asUfTributacao } from "@/src/lib/fiscal";
 
 function toNumber(value: Prisma.Decimal | number | null | undefined): number | null {
   if (value == null) return null;
@@ -20,6 +21,12 @@ export function ruleFromDb(row: {
   mvaPercentual: Prisma.Decimal | number | null;
   mvaTexto: string | null;
   mvaKind: string;
+  cest?: string | null;
+  ipi?: string | null;
+  abreviacao?: string | null;
+  reducao?: boolean;
+  reducaoPercentual?: Prisma.Decimal | number | null;
+  ufTributacao?: Prisma.JsonValue | null;
 }): FiscalRule {
   return {
     id: row.id,
@@ -35,6 +42,12 @@ export function ruleFromDb(row: {
     mvaPercentual: toNumber(row.mvaPercentual),
     mvaTexto: row.mvaTexto,
     mvaKind: row.mvaKind,
+    cest: row.cest ?? null,
+    ipi: row.ipi ?? null,
+    abreviacao: row.abreviacao ?? null,
+    reducao: Boolean(row.reducao),
+    reducaoPercentual: toNumber(row.reducaoPercentual),
+    ufTributacao: asUfTributacao(row.ufTributacao ?? null),
   };
 }
 

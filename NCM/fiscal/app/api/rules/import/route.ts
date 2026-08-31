@@ -57,6 +57,12 @@ export async function POST(request: Request) {
               mvaPercentual: rule.mvaPercentual,
               mvaTexto: rule.mvaTexto,
               mvaKind: rule.mvaKind,
+              cest: rule.cest,
+              ipi: rule.ipi,
+              abreviacao: rule.abreviacao,
+              reducao: rule.reducao,
+              reducaoPercentual: rule.reducaoPercentual,
+              ufTributacao: rule.ufTributacao,
             },
           });
           updated += 1;
@@ -77,6 +83,12 @@ export async function POST(request: Request) {
               mvaPercentual: rule.mvaPercentual,
               mvaTexto: rule.mvaTexto,
               mvaKind: rule.mvaKind,
+              cest: rule.cest,
+              ipi: rule.ipi,
+              abreviacao: rule.abreviacao,
+              reducao: rule.reducao,
+              reducaoPercentual: rule.reducaoPercentual,
+              ufTributacao: rule.ufTributacao,
             })),
           });
           inserted = created.count;

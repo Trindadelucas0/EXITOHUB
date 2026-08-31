@@ -50,6 +50,20 @@ export async function PATCH(
         situacaoCodigo: patch.situacaoCodigo,
         mvaTexto: patch.mvaTexto === undefined ? existing.mvaTexto : patch.mvaTexto,
         observacao: patch.observacao === undefined ? existing.observacao : patch.observacao,
+        cest: patch.cest === undefined ? existing.cest : patch.cest,
+        ipi: patch.ipi === undefined ? existing.ipi : patch.ipi,
+        abreviacao: patch.abreviacao === undefined ? existing.abreviacao : patch.abreviacao,
+        reducao: patch.reducao === undefined ? existing.reducao : patch.reducao,
+        reducaoPercentual:
+          patch.reducaoPercentual === undefined
+            ? existing.reducaoPercentual == null
+              ? null
+              : Number(existing.reducaoPercentual)
+            : patch.reducaoPercentual,
+        ufTributacao:
+          patch.ufTributacao === undefined
+            ? (existing.ufTributacao as RuleBody["ufTributacao"])
+            : patch.ufTributacao,
       });
       await db.fiscalNcmRule.updateMany({
         where: { id: existing.id, companyId: user.companyId },
@@ -67,6 +81,12 @@ export async function PATCH(
           mvaTexto: data.mvaTexto,
           mvaKind: data.mvaKind,
           observacao: data.observacao,
+          cest: data.cest,
+          ipi: data.ipi,
+          abreviacao: data.abreviacao,
+          reducao: data.reducao,
+          reducaoPercentual: data.reducaoPercentual,
+          ufTributacao: data.ufTributacao,
         },
       });
       return db.fiscalNcmRule.findFirst({ where: ownedWhere(id, user.companyId) });
