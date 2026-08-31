@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DESTINO_KEYS } from "@/src/lib/fiscal";
+import { asUfTributacao, DESTINO_KEYS } from "@/src/lib/fiscal";
 import { HttpError } from "@/src/server/tenant";
 import { asDestinos } from "@/src/server/compare";
 import { normalizeNcm } from "@/src/server/ncm";
@@ -18,6 +18,25 @@ const destinosSchema = z
   })
   .optional();
 
+const ufCellSchema = z
+  .object({
+    original: z.string().max(40).nullable().optional(),
+    ajustada4: z.string().max(40).nullable().optional(),
+    ajustada7: z.string().max(40).nullable().optional(),
+    ajustada12: z.string().max(40).nullable().optional(),
+    aliqInterna: z.string().max(40).nullable().optional(),
+  })
+  .optional();
+
+const ufTributacaoSchema = z
+  .object({
+    DF: ufCellSchema,
+    GO: ufCellSchema,
+    MG: ufCellSchema,
+  })
+  .optional()
+  .nullable();
+
 export const ruleBodySchema = z.object({
   ncm: z.string().min(1).max(20),
   ncmOriginal: z.string().max(20).optional(),
@@ -27,12 +46,26 @@ export const ruleBodySchema = z.object({
   cfopSaida: z.string().max(20).nullable().optional(),
   destinosCst: destinosSchema,
   situacao: z.string().trim().max(80).default(""),
-  situacaoCodigo: z.enum(["REGRA_GERAL", "ST_INTERNO", "ST_NACIONAL", "REDUCAO", "INCOMPLETA"]).optional(),
+  situacaoCodigo: z
+    .enum(["REGRA_GERAL", "ST_INTERNO", "ST_NACIONAL", "REDUCAO", "TRIBUTACAO_UF", "INCOMPLETA"])
+    .optional(),
   mvaTexto: z.string().max(40).nullable().optional(),
   observacao: z.string().max(500).nullable().optional(),
+  cest: z.string().max(20).nullable().optional(),
+  ipi: z.string().max(40).nullable().optional(),
+  abreviacao: z.string().max(40).nullable().optional(),
+  reducao: z.boolean().optional(),
+  reducaoPercentual: z.number().nullable().optional(),
+  ufTributacao: ufTributacaoSchema,
 });
 
 export type RuleBody = z.infer<typeof ruleBodySchema>;
+
+function dashOrEmpty(value: string | null | undefined): string | null {
+  const text = (value ?? "").trim();
+  if (!text || text === "-" || text === "–") return null;
+  return text;
+}
 
 export function ruleWriteData(companyId: string, body: RuleBody) {
   const ncmOriginal = (body.ncmOriginal ?? body.ncm).trim();
@@ -44,8 +77,10 @@ export function ruleWriteData(companyId: string, body: RuleBody) {
   const cstSaida = body.cstSaida?.trim() || null;
   const cfopSaida = body.cfopSaida?.trim() || null;
   const situacao = body.situacao.trim();
+  const ufTributacao = asUfTributacao(body.ufTributacao ?? null);
   const situacaoCodigo =
-    body.situacaoCodigo ?? classifySituacao(situacao, cstSaida || "", cfopSaida || "");
+    body.situacaoCodigo ??
+    (ufTributacao ? "TRIBUTACAO_UF" : classifySituacao(situacao, cstSaida || "", cfopSaida || ""));
   const destinos = asDestinos(body.destinosCst ?? {});
   for (const key of DESTINO_KEYS) {
     const value = destinos[key];
@@ -67,5 +102,11 @@ export function ruleWriteData(companyId: string, body: RuleBody) {
     mvaTexto: mva.mvaTexto,
     mvaKind: mva.mvaKind,
     observacao: body.observacao?.trim() || null,
+    cest: dashOrEmpty(body.cest),
+    ipi: dashOrEmpty(body.ipi),
+    abreviacao: dashOrEmpty(body.abreviacao),
+    reducao: Boolean(body.reducao),
+    reducaoPercentual: body.reducaoPercentual ?? null,
+    ufTributacao,
   };
 }

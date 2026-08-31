@@ -1,4 +1,5 @@
 import { mvaRequiresAnalysis, normalizeCst } from "./ncm";
+import { parseMvaFields } from "./rule-classify";
 import {
   DESTINO_KEYS,
   DESTINO_LABELS,
@@ -6,6 +7,7 @@ import {
   type DestinosCst,
   type FieldDiff,
   type StatusFiscal,
+  type UfTributacao,
 } from "@/src/lib/fiscal";
 
 export type { DestinoKey, DestinosCst, FieldDiff, StatusFiscal };
@@ -25,6 +27,12 @@ export type FiscalRule = {
   mvaPercentual: number | null;
   mvaTexto: string | null;
   mvaKind: string;
+  cest?: string | null;
+  ipi?: string | null;
+  abreviacao?: string | null;
+  reducao?: boolean;
+  reducaoPercentual?: number | null;
+  ufTributacao?: UfTributacao | null;
 };
 
 export type ImportedProduct = {
@@ -182,6 +190,10 @@ export function compareProduct(
 
   const rule = completeRuleDestinos(rawRule);
 
+  if (isUnicaRule(rawRule)) {
+    return compareUnicaProduct(product, rawRule, rulesForNcm);
+  }
+
   if (!rule.cstSaida || !rule.cfopSaida || rule.situacaoCodigo === "INCOMPLETA") {
     return {
       status: "NECESSITA_ANALISE",
@@ -236,6 +248,87 @@ export function compareProduct(
     diffs: [],
     rule,
     candidates: rulesForNcm,
+    needsLink: false,
+  };
+}
+
+function isUnicaRule(rule: FiscalRule): boolean {
+  return rule.situacaoCodigo === "TRIBUTACAO_UF" || Boolean(rule.ufTributacao);
+}
+
+function foldCest(raw: string | null | undefined): string | null {
+  if (!raw) return null;
+  const digits = String(raw).replace(/\D/g, "");
+  return digits || null;
+}
+
+function compareUnicaProduct(
+  product: ImportedProduct,
+  rule: FiscalRule,
+  candidates: FiscalRule[],
+): CompareResult {
+  const hasCadastro =
+    Boolean(product.cest) || Boolean(product.aliquotaIcms) || product.ivaMvaNumero != null;
+  if (!hasCadastro) {
+    return {
+      status: "NECESSITA_ANALISE",
+      motivo:
+        "Base Unica não compara matriz CST. Importe o CSV de produtos (Cód.Item / Desc. Abrev. ICMS) para conferir CEST, alíquota e MVA.",
+      diffs: [],
+      rule,
+      candidates,
+      needsLink: false,
+    };
+  }
+
+  const diffs: FieldDiff[] = [];
+  if (product.cest && rule.cest) {
+    const atual = foldCest(product.cest);
+    const ideal = foldCest(rule.cest);
+    if (atual && ideal && atual !== ideal) {
+      diffs.push({ campo: "CEST", atual: product.cest, ideal: rule.cest });
+    }
+  }
+  const aliqIdeal = rule.ufTributacao?.DF.aliqInterna ?? null;
+  if (product.aliquotaIcms && aliqIdeal) {
+    const atual = parseMvaFields(product.aliquotaIcms).mvaPercentual;
+    const ideal = parseMvaFields(aliqIdeal).mvaPercentual;
+    if (atual != null && ideal != null && Math.abs(atual - ideal) > 0.05) {
+      diffs.push({
+        campo: "Alíquota interna DF",
+        atual: product.aliquotaIcms,
+        ideal: aliqIdeal,
+      });
+    }
+  }
+  if (rule.mvaPercentual != null && product.ivaMvaNumero != null) {
+    if (Math.abs(rule.mvaPercentual - product.ivaMvaNumero) > 0.05) {
+      diffs.push({
+        campo: "MVA / IVA",
+        atual: String(product.ivaMvaNumero),
+        ideal: String(rule.mvaPercentual),
+      });
+    }
+  }
+
+  if (diffs.length > 0) {
+    return {
+      status: "DIVERGENTE",
+      motivo:
+        "Cadastro Unica diverge da base fiscal deste NCM (CEST, alíquota DF ou MVA Original DF).",
+      diffs,
+      rule,
+      candidates,
+      needsLink: false,
+    };
+  }
+
+  return {
+    status: "CORRETO",
+    motivo: "NCM da Unica confere CEST/alíquota/MVA com a base fiscal desta empresa.",
+    diffs: [],
+    rule,
+    candidates,
     needsLink: false,
   };
 }

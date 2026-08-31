@@ -5,6 +5,7 @@ export const SITUACAO_CODIGOS = [
   "ST_INTERNO",
   "ST_NACIONAL",
   "REDUCAO",
+  "TRIBUTACAO_UF",
   "INCOMPLETA",
 ] as const;
 
@@ -51,8 +52,8 @@ export function parseMvaFields(raw: unknown): {
     .normalize("NFD")
     .replace(/\p{M}/gu, "")
     .toLowerCase();
-  if (folded === "nao") {
-    return { mvaPercentual: null, mvaTexto: text, mvaKind: "skip" };
+  if (folded === "nao" || folded === "-" || folded === "–" || folded === "—") {
+    return { mvaPercentual: null, mvaTexto: folded === "nao" ? text : null, mvaKind: "skip" };
   }
   if (folded.includes("#n/d") || folded.includes("#n/a") || folded.includes("#nd") || folded.startsWith("sim")) {
     return { mvaPercentual: null, mvaTexto: text, mvaKind: "analise" };

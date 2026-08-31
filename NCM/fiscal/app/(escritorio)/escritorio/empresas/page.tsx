@@ -31,9 +31,6 @@ export default function EscritorioEmpresasPage() {
   const [entering, setEntering] = useState("");
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
-  const [adminName, setAdminName] = useState("");
-  const [adminEmail, setAdminEmail] = useState("");
-  const [adminPassword, setAdminPassword] = useState("");
 
   async function load() {
     setLoading(true);
@@ -73,19 +70,16 @@ export default function EscritorioEmpresasPage() {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, slug, adminName, adminEmail, adminPassword }),
+        body: JSON.stringify({ name, slug }),
         signal: AbortSignal.timeout(20000),
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error?.message ?? "Não foi possível cadastrar.");
       setSuccess(
-        `Empresa “${json.data.company.name}” criada. O login é o do HUB (${json.data.admin.email}): ao entrar, cai direto nesta empresa no NCM.`,
+        `Empresa “${json.data.company.name}” criada. Cadastre o login em /admin/usuarios (módulo NCM + esta empresa).`,
       );
       setName("");
       setSlug("");
-      setAdminName("");
-      setAdminEmail("");
-      setAdminPassword("");
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível cadastrar.");
@@ -129,8 +123,15 @@ export default function EscritorioEmpresasPage() {
       <PageHeader
         kicker="Escritório"
         title="Empresas"
-        description="Cadastre a empresa. O e-mail e a senha são o login do HUB: quem entrar em /login cai direto nesta empresa no NCM, sem login separado."
+        description="Cadastre a empresa aqui. O login da equipe é criado em /admin/usuarios (HUB) com módulo NCM vinculado à empresa."
       />
+      <Notice variant="info">
+        Usuários NCM são criados em{" "}
+        <a href="/admin/usuarios" className="font-semibold text-brand underline">
+          /admin/usuarios
+        </a>
+        .
+      </Notice>
       <form
         onSubmit={onSubmit}
         className="grid w-full max-w-xl gap-4 rounded-lg bg-white p-4 shadow-panel sm:p-6"
@@ -145,34 +146,6 @@ export default function EscritorioEmpresasPage() {
           placeholder="ex.: unica"
         />
         <p className="text-xs text-ink-muted">Letras minúsculas, números e hífen.</p>
-        <Field
-          label="Nome de quem vai acessar"
-          name="adminName"
-          required
-          value={adminName}
-          onChange={(e) => setAdminName(e.target.value)}
-        />
-        <Field
-          label="E-mail (login do HUB)"
-          name="adminEmail"
-          type="email"
-          required
-          value={adminEmail}
-          onChange={(e) => setAdminEmail(e.target.value)}
-        />
-        <Field
-          label="Senha (login do HUB)"
-          name="adminPassword"
-          type="password"
-          required
-          minLength={8}
-          autoComplete="new-password"
-          value={adminPassword}
-          onChange={(e) => setAdminPassword(e.target.value)}
-        />
-        <p className="text-xs text-ink-muted">
-          Este e-mail e senha entram em http://localhost:3000/login. Depois do login, a pessoa vai direto para esta empresa no NCM.
-        </p>
         {error ? <Notice variant="error">{error}</Notice> : null}
         {success ? <Notice variant="success">{success}</Notice> : null}
         <Button type="submit" disabled={saving}>

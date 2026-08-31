@@ -203,18 +203,36 @@ async function listUsers() {
   return users.rows.map((u) => toPublicUser(u, byUser.get(u.id) || []));
 }
 
-function landingPathForModules(modules) {
+function landingPathForModules(modules, moduleMeta = {}) {
   const allowed = (modules || []).filter((m) => MODULES.includes(m));
   if (allowed.length !== 1) return null;
   if (allowed[0] === 'folha') return '/folha/modulos';
-  if (allowed[0] === 'conci') return '/conci/';
-  if (allowed[0] === 'ncm') return '/ncm/';
+  if (allowed[0] === 'conci') {
+    if (moduleMeta.conci?.role === 'admin') return '/conci/admin/empresas';
+    return '/conci/';
+  }
+  if (allowed[0] === 'ncm') {
+    if (moduleMeta.ncm?.role === 'superadmin') return '/ncm/escritorio/empresas';
+    if (moduleMeta.ncm?.companyId) return '/ncm/dashboard';
+    return '/ncm/';
+  }
   return null;
 }
 
-async function createUser({ username, email, password, displayName, isAdmin, modules }) {
+async function createUser({
+  username,
+  email,
+  password,
+  displayName,
+  isAdmin,
+  modules,
+  moduleMeta = {},
+}) {
   const allowed = (modules || []).filter((m) => MODULES.includes(m));
-  const landingPath = landingPathForModules(allowed);
+  const { validateModuleMeta, provisionUserToModules } = require('./provision-modules');
+  validateModuleMeta(allowed, moduleMeta);
+
+  const landingPath = landingPathForModules(allowed, moduleMeta);
   const hash = await bcrypt.hash(String(password), 12);
   const inserted = await query(
     `INSERT INTO hub_users (username, email, password_hash, display_name, is_admin, active, landing_path)
@@ -236,12 +254,53 @@ async function createUser({ username, email, password, displayName, isAdmin, mod
       [user.id, mod],
     );
   }
-  return toPublicUser(user, allowed);
+
+  const publicUser = toPublicUser(user, allowed);
+  try {
+    await provisionUserToModules(publicUser, {
+      modules: allowed,
+      moduleMeta,
+      passwordHash: hash,
+    });
+  } catch (err) {
+    await query('DELETE FROM hub_user_modules WHERE user_id = $1', [user.id]);
+    await query('DELETE FROM hub_users WHERE id = $1', [user.id]);
+    throw err;
+  }
+  return publicUser;
 }
 
-async function updateUserModules(userId, modules) {
-  await query('DELETE FROM hub_user_modules WHERE user_id = $1', [userId]);
+async function updateUserWithModules(userId, {
+  modules,
+  moduleMeta = {},
+  password,
+  isAdmin,
+  active,
+}) {
+  const row = await findUserById(userId);
+  if (!row) throw new Error('Usuário não encontrado.');
+
+  const currentModules = await loadModules(userId);
+  const publicUser = toPublicUser(row, currentModules);
+  const { validateModuleMeta, syncUserModules } = require('./provision-modules');
+
   const allowed = (modules || []).filter((m) => MODULES.includes(m));
+  validateModuleMeta(allowed, moduleMeta);
+
+  let passwordHash = null;
+  if (password && String(password).trim()) {
+    passwordHash = await bcrypt.hash(String(password), 12);
+    await query('UPDATE hub_users SET password_hash = $1 WHERE id = $2', [passwordHash, userId]);
+  }
+
+  if (typeof isAdmin !== 'undefined') {
+    await setUserAdmin(userId, Boolean(isAdmin));
+  }
+  if (typeof active !== 'undefined') {
+    await setUserActive(userId, Boolean(active));
+  }
+
+  await query('DELETE FROM hub_user_modules WHERE user_id = $1', [userId]);
   for (const mod of allowed) {
     await query(
       `INSERT INTO hub_user_modules (user_id, module) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
@@ -257,17 +316,30 @@ async function updateUserModules(userId, modules) {
   const preserveNcmCompany =
     allowed.length === 1
     && allowed[0] === 'ncm'
-    && (currentLanding === '/ncm/dashboard' || currentLanding === '/ncm/escritorio/empresas');
+    && (currentLanding === '/ncm/dashboard' || currentLanding === '/ncm/escritorio/empresas')
+    && moduleMeta.ncm?.companyId;
 
   let nextLanding = null;
-  if (preserveNcmCompany) {
+  if (preserveNcmCompany && moduleMeta.ncm?.role !== 'superadmin') {
     nextLanding = currentLanding;
-  } else if (allowed.length === 1) {
-    nextLanding = landingPathForModules(allowed);
+  } else {
+    nextLanding = landingPathForModules(allowed, moduleMeta);
   }
-
   await query('UPDATE hub_users SET landing_path = $1 WHERE id = $2', [nextLanding, userId]);
+
+  const refreshed = await findUserById(userId);
+  const updatedPublic = toPublicUser(refreshed, allowed);
+  await syncUserModules(updatedPublic, {
+    modules: allowed,
+    moduleMeta,
+    passwordHash,
+  });
+
   return allowed;
+}
+
+async function updateUserModules(userId, modules, moduleMeta = {}) {
+  return updateUserWithModules(userId, { modules, moduleMeta });
 }
 
 async function setUserActive(userId, active) {
@@ -293,6 +365,7 @@ module.exports = {
   listUsers,
   createUser,
   updateUserModules,
+  updateUserWithModules,
   setUserActive,
   setUserAdmin,
   findUserByUsername,

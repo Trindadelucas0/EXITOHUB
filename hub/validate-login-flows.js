@@ -228,6 +228,47 @@ async function main() {
     }
   }
 
+  // 5) Admin Conci: só conci + landing admin
+  {
+    const admins = await conci.query(
+      `SELECT username FROM users WHERE role = 'admin' AND ativo = true`,
+    );
+    for (const row of admins.rows) {
+      const hubUser = await hub.query(
+        `SELECT u.id, u.username, u.landing_path, u.is_admin,
+                ARRAY_AGG(m.module ORDER BY m.module) AS modules
+         FROM hub_users u
+         LEFT JOIN hub_user_modules m ON m.user_id = u.id
+         WHERE LOWER(u.username) = LOWER($1) AND u.active = true
+         GROUP BY u.id`,
+        [row.username],
+      );
+      if (!hubUser.rowCount) {
+        fail(`Conci admin ${row.username} sem usuário no HUB`);
+        errors.push(`conci-admin-missing:${row.username}`);
+        continue;
+      }
+      const hu = hubUser.rows[0];
+      const mods = (hu.modules || []).filter(Boolean);
+      if (hu.is_admin) {
+        ok(`Conci admin ${row.username} também é admin HUB (${mods.join(",") || "sem módulos"})`);
+        continue;
+      }
+      if (mods.length !== 1 || mods[0] !== "conci") {
+        fail(`Conci admin ${row.username} com módulos extras: ${mods.join(",") || "(vazio)"}`);
+        errors.push(`conci-admin-modules:${row.username}`);
+        continue;
+      }
+      const landing = String(hu.landing_path || "");
+      if (landing === "/conci/admin/empresas" || landing === "") {
+        ok(`Conci admin ${row.username} → landing ${landing || "(fallback)"}`);
+      } else {
+        fail(`Conci admin ${row.username} landing inesperado: ${landing}`);
+        errors.push(`conci-admin-landing:${row.username}`);
+      }
+    }
+  }
+
   await hub.end();
   await ncm.end();
   await conci.end();

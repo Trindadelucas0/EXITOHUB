@@ -3,7 +3,12 @@ import {
   DESTINO_KEYS,
   DESTINO_LABELS,
   DESTINO_SHORT_LABELS,
+  UF_KEYS,
+  emptyUfTributacao,
   type DestinosCst,
+  type UfKey,
+  type UfTributacao,
+  type UfTributacaoCell,
 } from "@/src/lib/fiscal";
 import { normalizeCfop, normalizeNcm } from "./ncm";
 import {
@@ -26,10 +31,31 @@ export type ParsedRule = {
   mvaPercentual: number | null;
   mvaTexto: string | null;
   mvaKind: string;
+  cest: string | null;
+  ipi: string | null;
+  abreviacao: string | null;
+  reducao: boolean;
+  reducaoPercentual: number | null;
+  ufTributacao: UfTributacao | null;
 };
 
 export type ParseRulesOptions = {
   companyName?: string | null;
+};
+
+type CompanyHint = "BAIFER" | "LOJA" | "UNICA" | null;
+
+type UnicaColumnMap = {
+  headerRow: number;
+  ncm: number;
+  cest: number | null;
+  segmento: number | null;
+  descricao: number | null;
+  ipi: number | null;
+  reducao: number | null;
+  reducaoPct: number | null;
+  abreviacao: number | null;
+  ufs: Partial<Record<UfKey, number>>;
 };
 
 const SKIP_SHEETS = new Set(["planilha_classes_fiscais", "ncm_geral"]);
@@ -51,6 +77,12 @@ function cellStr(value: unknown): string {
   }
   const text = String(value).trim();
   if (text.toLowerCase() === "none" || text.toLowerCase() === "nan") return "";
+  return text;
+}
+
+function dashToNull(value: unknown): string | null {
+  const text = cellStr(value);
+  if (!text || text === "-" || text === "–" || text === "—") return null;
   return text;
 }
 
@@ -91,35 +123,103 @@ function mapHeader(header: string): string | null {
 
 function looksLikeHeaderRow(cells: unknown[]): boolean {
   const folded = cells.map((c) => foldHeader(cellStr(c)));
+  if (folded.some((c) => c === "cest") && folded.some((c) => c === "ncm")) return false;
   return (
     folded.some((c) => c === "ncm") &&
     folded.some((c) => c.includes("segment") || c.includes("cfop") || c.includes("situacao"))
   );
 }
 
+function looksLikeUnicaGroupRow(cells: unknown[]): boolean {
+  const folded = cells.map((c) => foldHeader(cellStr(c)));
+  return (
+    folded.some((c) => c === "df") &&
+    folded.some((c) => c === "go") &&
+    folded.some((c) => c === "mg")
+  );
+}
+
+function looksLikeUnicaHeaderRow(cells: unknown[]): boolean {
+  const folded = cells.map((c) => foldHeader(cellStr(c)));
+  return folded.some((c) => c === "ncm") && folded.some((c) => c === "cest");
+}
+
+function findUnicaColumnMap(aoa: unknown[][]): UnicaColumnMap | null {
+  let headerRow = -1;
+  let groupRow = -1;
+  for (let i = 0; i < Math.min(aoa.length, 8); i++) {
+    const row = aoa[i] ?? [];
+    if (looksLikeUnicaGroupRow(row)) groupRow = i;
+    if (looksLikeUnicaHeaderRow(row)) headerRow = i;
+  }
+  if (headerRow < 0) return null;
+  const header = (aoa[headerRow] ?? []).map((c) => foldHeader(cellStr(c)));
+  const ncm = header.findIndex((c) => c === "ncm");
+  if (ncm < 0) return null;
+  const map: UnicaColumnMap = {
+    headerRow,
+    ncm,
+    cest: header.findIndex((c) => c === "cest"),
+    segmento: header.findIndex((c) => c === "segmento"),
+    descricao: header.findIndex((c) => c === "descricao" || c === "descrição"),
+    ipi: header.findIndex((c) => c === "ipi"),
+    reducao: header.findIndex((c) => c === "reducao" || c === "redução"),
+    reducaoPct: header.findIndex((c) => c === "%" || c === "% reducao"),
+    abreviacao: header.findIndex((c) => c.includes("abreviacao")),
+    ufs: {},
+  };
+  if (map.cest != null && map.cest < 0) map.cest = null;
+  if (map.segmento != null && map.segmento < 0) map.segmento = null;
+  if (map.descricao != null && map.descricao < 0) map.descricao = null;
+  if (map.ipi != null && map.ipi < 0) map.ipi = null;
+  if (map.reducao != null && map.reducao < 0) map.reducao = null;
+  if (map.reducaoPct != null && map.reducaoPct < 0) map.reducaoPct = null;
+  if (map.abreviacao != null && map.abreviacao < 0) map.abreviacao = null;
+
+  const group = groupRow >= 0 ? (aoa[groupRow] ?? []).map((c) => foldHeader(cellStr(c))) : [];
+  for (const uf of UF_KEYS) {
+    const idx = group.findIndex((c) => c === foldHeader(uf));
+    if (idx >= 0) map.ufs[uf] = idx;
+  }
+  if (!map.ufs.DF && !map.ufs.GO && !map.ufs.MG) {
+    const originalIdx = header
+      .map((c, i) => (c === "original" ? i : -1))
+      .filter((i) => i >= 0);
+    if (originalIdx.length >= 3) {
+      map.ufs.DF = originalIdx[0];
+      map.ufs.GO = originalIdx[1];
+      map.ufs.MG = originalIdx[2];
+    }
+  }
+  return map;
+}
+
+function looksLikeUnicaAoa(aoa: unknown[][]): boolean {
+  return findUnicaColumnMap(aoa) != null;
+}
+
 function looksLikeRulesSheet(sheet: XLSX.WorkSheet): boolean {
   const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw: false });
   if (aoa.length === 0) return false;
-  if (looksLikeHeaderRow(aoa[0] ?? [])) return true;
+  if (looksLikeUnicaAoa(aoa)) return true;
+  for (let i = 0; i < Math.min(aoa.length, 5); i++) {
+    if (looksLikeHeaderRow(aoa[i] ?? [])) return true;
+  }
   const firstNcm = normalizeNcm(cellStr((aoa[0] ?? [])[0]));
   return firstNcm.length === 8;
 }
 
 function shouldSkipSheetName(name: string): boolean {
-  const trimmed = name.trim();
-  const folded = trimmed.toLowerCase();
+  const folded = name.trim().toLowerCase();
   if (SKIP_SHEETS.has(folded)) return true;
   if (folded.startsWith("file://") || folded.includes("#")) return true;
-  if (folded.startsWith("planilha") && folded !== "planilha_classes_fiscais") {
-    // Planilha4 e similares vazias
-    if (/^planilha\d+$/i.test(trimmed)) return true;
-  }
   return false;
 }
 
-function companySheetHint(companyName: string | null | undefined): "BAIFER" | "LOJA" | null {
+function companySheetHint(companyName: string | null | undefined): CompanyHint {
   const folded = foldHeader(companyName || "");
   if (!folded) return null;
+  if (folded.includes("unica")) return "UNICA";
   if (folded.includes("loja")) return "LOJA";
   if (folded.includes("baifer")) return "BAIFER";
   return null;
@@ -128,6 +228,20 @@ function companySheetHint(companyName: string | null | undefined): "BAIFER" | "L
 function deriveCstSaida(mappedCst: string | null, destinos: DestinosCst): string | null {
   if (mappedCst) return mappedCst;
   return destinos.atacado || destinos.revenda || destinos.contribuinte || null;
+}
+
+function unicaExtras(): Pick<
+  ParsedRule,
+  "cest" | "ipi" | "abreviacao" | "reducao" | "reducaoPercentual" | "ufTributacao"
+> {
+  return {
+    cest: null,
+    ipi: null,
+    abreviacao: null,
+    reducao: false,
+    reducaoPercentual: null,
+    ufTributacao: null,
+  };
 }
 
 function buildRule(input: {
@@ -159,6 +273,7 @@ function buildRule(input: {
     mvaPercentual: mva.mvaPercentual,
     mvaTexto: mva.mvaTexto,
     mvaKind: mva.mvaKind,
+    ...unicaExtras(),
   };
 }
 
@@ -225,6 +340,78 @@ function rowToRulePositionalLoja(raw: unknown[]): ParsedRule | null {
   });
 }
 
+function parseReducaoFlag(raw: string | null): boolean {
+  if (!raw) return false;
+  const folded = foldHeader(raw);
+  if (!folded || folded === "-" || folded === "nao" || folded === "0") return false;
+  return true;
+}
+
+function ufCellFromRow(cells: unknown[], start: number | undefined): UfTributacaoCell {
+  if (start == null || start < 0) {
+    return { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: null };
+  }
+  return {
+    original: dashToNull(cells[start]),
+    ajustada4: dashToNull(cells[start + 1]),
+    ajustada7: dashToNull(cells[start + 2]),
+    ajustada12: dashToNull(cells[start + 3]),
+    aliqInterna: dashToNull(cells[start + 4]),
+  };
+}
+
+function ufTributacaoFilled(uf: UfTributacao): boolean {
+  return UF_KEYS.some((key) => Object.values(uf[key]).some(Boolean));
+}
+
+function rowToUnicaRule(raw: unknown[], map: UnicaColumnMap): ParsedRule | null {
+  const ncmOriginal = cellStr(raw[map.ncm]);
+  const ncm = normalizeNcm(ncmOriginal);
+  if (ncm.length !== 8) return null;
+  const uf = emptyUfTributacao();
+  for (const key of UF_KEYS) {
+    uf[key] = ufCellFromRow(raw, map.ufs[key]);
+  }
+  const mva = parseMvaFields(uf.DF.original);
+  const reducaoRaw = map.reducao != null ? dashToNull(raw[map.reducao]) : null;
+  const reducaoPctRaw = map.reducaoPct != null ? dashToNull(raw[map.reducaoPct]) : null;
+  const reducao = parseReducaoFlag(reducaoRaw);
+  const reducaoMva = parseMvaFields(reducaoPctRaw);
+  const segmento =
+    (map.segmento != null ? dashToNull(raw[map.segmento]) : null) ||
+    (map.descricao != null ? dashToNull(raw[map.descricao]) : null) ||
+    "";
+  return {
+    ncm,
+    ncmOriginal: ncmOriginal.trim(),
+    segmento,
+    cstEntrada: null,
+    cstSaida: null,
+    cfopSaida: null,
+    destinosCst: emptyDestinos(),
+    situacao: reducao ? "Redução" : "Tributação por UF",
+    situacaoCodigo: reducao ? "REDUCAO" : "TRIBUTACAO_UF",
+    mvaPercentual: mva.mvaPercentual,
+    mvaTexto: mva.mvaTexto,
+    mvaKind: mva.mvaKind,
+    cest: map.cest != null ? dashToNull(raw[map.cest]) : null,
+    ipi: map.ipi != null ? dashToNull(raw[map.ipi]) : null,
+    abreviacao: map.abreviacao != null ? dashToNull(raw[map.abreviacao]) : null,
+    reducao,
+    reducaoPercentual: reducaoMva.mvaPercentual,
+    ufTributacao: ufTributacaoFilled(uf) ? uf : null,
+  };
+}
+
+function parseUnicaAoa(aoa: unknown[][]): ParsedRule[] {
+  const map = findUnicaColumnMap(aoa);
+  if (!map) return [];
+  return aoa
+    .slice(map.headerRow + 1)
+    .map((row) => rowToUnicaRule(row ?? [], map))
+    .filter((item): item is ParsedRule => item != null);
+}
+
 export function pickRulesSheet(
   workbook: XLSX.WorkBook,
   companyName?: string | null,
@@ -235,13 +422,31 @@ export function pickRulesSheet(
   }
 
   const hint = companySheetHint(companyName);
-  if (hint) {
+
+  if (hint === "UNICA") {
+    const named = candidates.find((n) => {
+      const folded = foldHeader(n);
+      return folded.includes("ncm atualizado") || folded.includes("unica");
+    });
+    if (named && looksLikeRulesSheet(workbook.Sheets[named])) return named;
+    for (const name of candidates) {
+      const aoa = XLSX.utils.sheet_to_json<unknown[]>(workbook.Sheets[name], {
+        header: 1,
+        defval: "",
+        raw: false,
+      });
+      if (looksLikeUnicaAoa(aoa)) return name;
+    }
+  }
+
+  if (hint === "BAIFER" || hint === "LOJA") {
     const exact = candidates.find((n) => n.trim().toUpperCase() === hint);
     if (exact && looksLikeRulesSheet(workbook.Sheets[exact])) return exact;
   }
 
   for (const preferred of ["BAIFER", "LOJA"] as const) {
-    if (hint && preferred !== hint) continue;
+    if (hint && hint !== "UNICA" && preferred !== hint) continue;
+    if (hint === "UNICA") continue;
     const match = candidates.find((n) => n.trim().toUpperCase() === preferred);
     if (match && looksLikeRulesSheet(workbook.Sheets[match])) return match;
   }
@@ -260,10 +465,15 @@ export function parseRulesBuffer(buffer: Buffer, options: ParseRulesOptions = {}
   const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw: false });
   if (aoa.length === 0) return [];
 
+  if (looksLikeUnicaAoa(aoa)) {
+    return parseUnicaAoa(aoa);
+  }
+
   const isLoja = sheetName.trim().toUpperCase() === "LOJA";
-  const header = looksLikeHeaderRow(aoa[0] ?? []);
-  if (header) {
+  const headerIndex = aoa.findIndex((row) => looksLikeHeaderRow(row ?? []));
+  if (headerIndex >= 0) {
     const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
+      range: headerIndex,
       defval: "",
       raw: false,
     });

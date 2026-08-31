@@ -31,7 +31,7 @@ function apiUrl(path: string) {
 export function HubSystemsMenu({ active = "ncm", showAdmin = false }: Props) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [modules, setModules] = useState<HubModules>({ folha: false, conci: false, ncm: true });
+  const [modules, setModules] = useState<HubModules>({ folha: false, conci: false, ncm: false });
   const [isHubAdmin, setIsHubAdmin] = useState(false);
 
   useEffect(() => {

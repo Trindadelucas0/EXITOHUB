@@ -32,6 +32,18 @@ async function findHubIdentities(username, email) {
  * Nunca promove a admin do HUB. Senha só é alterada quando password ou
  * updatePassword+passwordHash vierem de um cadastro novo.
  */
+async function setHubUserModulesExact(userId, modules) {
+  const allowed = (modules || []).filter((m) => MODULES.includes(m));
+  await query("DELETE FROM hub_user_modules WHERE user_id = $1", [userId]);
+  for (const mod of allowed) {
+    await query(
+      `INSERT INTO hub_user_modules (user_id, module) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+      [userId, mod],
+    );
+  }
+  return allowed;
+}
+
 async function upsertHubUser({
   username,
   email,
@@ -39,6 +51,7 @@ async function upsertHubUser({
   passwordHash,
   displayName,
   modules,
+  modulesExact = false,
   updatePassword = true,
   landingPath,
 }) {
@@ -105,11 +118,15 @@ async function upsertHubUser({
     }
   }
 
-  for (const mod of allowed) {
-    await query(
-      `INSERT INTO hub_user_modules (user_id, module) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-      [userId, mod],
-    );
+  if (modulesExact) {
+    await setHubUserModulesExact(userId, allowed);
+  } else {
+    for (const mod of allowed) {
+      await query(
+        `INSERT INTO hub_user_modules (user_id, module) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+        [userId, mod],
+      );
+    }
   }
 
   return { id: userId, username: user, email: mail, created: !existing };
@@ -117,6 +134,7 @@ async function upsertHubUser({
 
 module.exports = {
   upsertHubUser,
+  setHubUserModulesExact,
   findHubIdentities,
   conciHubEmail,
   normalizeUsername,

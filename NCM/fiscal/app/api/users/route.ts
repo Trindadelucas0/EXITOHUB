@@ -49,6 +49,13 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    if (process.env.HUB_MODE === "1") {
+      throw new HttpError(
+        403,
+        "HUB_MANAGED",
+        "Cadastro de usuários centralizado no EXITO HUB: use /admin/usuarios.",
+      );
+    }
     const actor = await requireUser();
     requireSuperAdmin(actor);
     const body = createSchema.parse(await request.json());

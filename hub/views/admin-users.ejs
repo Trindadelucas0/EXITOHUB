@@ -15,7 +15,7 @@
   <main class="hub-main hub-main-wide">
     <header class="hub-hero">
       <h1>Usuários do HUB</h1>
-      <p class="hub-muted">Defina quem acessa Folha, Conciliação e NCM. Dentro de cada sistema, empresas e papéis continuam como hoje.</p>
+      <p class="hub-muted">Única fonte de login: cadastre aqui e vincule Conciliação/NCM às empresas já criadas nos módulos. Empresas continuam em <code>/conci/admin/empresas</code> e <code>/ncm/escritorio/empresas</code>.</p>
     </header>
 
     <% if (flash) { %>
@@ -27,14 +27,14 @@
 
     <section class="hub-card">
       <h2>Novo usuário</h2>
-      <form method="post" action="/admin/usuarios" class="hub-form hub-form-create">
+      <form method="post" action="/admin/usuarios" class="hub-form hub-form-create" data-hub-user-form>
         <div class="hub-form-fields">
           <label class="hub-field">
-            <span>Usuário</span>
+            <span>Usuário (login Conciliação)</span>
             <input name="username" required autocomplete="off" />
           </label>
           <label class="hub-field">
-            <span>E-mail (usado no NCM)</span>
+            <span>E-mail (login NCM)</span>
             <input name="email" type="email" required autocomplete="off" />
           </label>
           <label class="hub-field">
@@ -49,13 +49,62 @@
         <div class="hub-form-footer">
           <fieldset class="hub-fieldset">
             <legend>Módulos</legend>
-            <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" /> Folha</label>
-            <label class="hub-check"><input type="checkbox" name="mod_conci" value="1" /> Conciliação</label>
-            <label class="hub-check"><input type="checkbox" name="mod_ncm" value="1" /> NCM</label>
+            <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" data-mod-toggle="folha" /> Folha</label>
+            <label class="hub-check"><input type="checkbox" name="mod_conci" value="1" data-mod-toggle="conci" /> Conciliação</label>
+            <label class="hub-check"><input type="checkbox" name="mod_ncm" value="1" data-mod-toggle="ncm" /> NCM</label>
           </fieldset>
+
+          <div class="hub-module-panel" data-mod-panel="folha" hidden>
+            <p class="hub-muted hub-module-hint">Folha não tem cadastro separado: quem tem o módulo entra em <code>/folha/modulos</code>. Admin Folha = checkbox Admin HUB abaixo.</p>
+          </div>
+
+          <div class="hub-module-panel" data-mod-panel="conci" hidden>
+            <fieldset class="hub-fieldset">
+              <legend>Conciliação</legend>
+              <label class="hub-field">
+                <span>Papel</span>
+                <select name="conci_role" data-conci-role>
+                  <option value="empresa">Empresa</option>
+                  <option value="admin">Admin Conciliação</option>
+                </select>
+              </label>
+              <label class="hub-field" data-conci-empresa-wrap>
+                <span>Empresa</span>
+                <select name="conci_empresa_id">
+                  <option value="">Selecione…</option>
+                  <% conciEmpresas.forEach(function(e) { %>
+                    <option value="<%= e.id %>" <%= e.ativo ? '' : 'disabled' %>><%= e.nome %><%= e.ativo ? '' : ' (inativa)' %></option>
+                  <% }) %>
+                </select>
+              </label>
+            </fieldset>
+          </div>
+
+          <div class="hub-module-panel" data-mod-panel="ncm" hidden>
+            <fieldset class="hub-fieldset">
+              <legend>NCM</legend>
+              <label class="hub-field">
+                <span>Empresa</span>
+                <select name="ncm_company_id">
+                  <option value="">Selecione…</option>
+                  <% ncmCompanies.forEach(function(c) { %>
+                    <option value="<%= c.id %>"><%= c.name %></option>
+                  <% }) %>
+                </select>
+              </label>
+              <label class="hub-field">
+                <span>Papel</span>
+                <select name="ncm_role">
+                  <option value="consulta">Consulta</option>
+                  <option value="admin">Admin da empresa</option>
+                </select>
+              </label>
+            </fieldset>
+          </div>
+
           <label class="hub-check hub-check-admin">
             <input type="checkbox" name="is_admin" value="1" />
-            <span>Admin do HUB</span>
+            <span>Admin do HUB (gerencia usuários e vê menu Administração)</span>
           </label>
           <button type="submit" class="hub-btn hub-btn-primary">Criar</button>
         </div>
@@ -72,12 +121,16 @@
               <th>E-mail</th>
               <th>Admin</th>
               <th>Ativo</th>
-              <th>Módulos</th>
+              <th>Módulos e vínculos</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            <% users.forEach(function(user) { %>
+            <% users.forEach(function(user) {
+              const meta = userMeta[user.id] || {};
+              const conciMeta = meta.conci || {};
+              const ncmMeta = meta.ncm || {};
+            %>
               <tr>
                 <td>
                   <strong><%= user.username %></strong>
@@ -95,10 +148,56 @@
                   </span>
                 </td>
                 <td>
-                  <form method="post" action="/admin/usuarios/<%= user.id %>/modulos" class="hub-inline-mods">
-                    <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" <%= user.canFolha ? 'checked' : '' %> /> Folha</label>
-                    <label class="hub-check"><input type="checkbox" name="mod_conci" value="1" <%= user.canConci ? 'checked' : '' %> /> Conci</label>
-                    <label class="hub-check"><input type="checkbox" name="mod_ncm" value="1" <%= user.canNcm ? 'checked' : '' %> /> NCM</label>
+                  <form method="post" action="/admin/usuarios/<%= user.id %>/modulos" class="hub-user-edit-form" data-hub-user-form>
+                    <div class="hub-inline-mods">
+                      <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" data-mod-toggle="folha" <%= user.canFolha ? 'checked' : '' %> /> Folha</label>
+                      <label class="hub-check"><input type="checkbox" name="mod_conci" value="1" data-mod-toggle="conci" <%= user.canConci ? 'checked' : '' %> /> Conci</label>
+                      <label class="hub-check"><input type="checkbox" name="mod_ncm" value="1" data-mod-toggle="ncm" <%= user.canNcm ? 'checked' : '' %> /> NCM</label>
+                    </div>
+
+                    <div class="hub-module-panel" data-mod-panel="conci" <%= user.canConci ? '' : 'hidden' %>>
+                      <label class="hub-field hub-field-sm">
+                        <span>Papel Conci</span>
+                        <select name="conci_role" data-conci-role>
+                          <option value="empresa" <%= conciMeta.role === 'empresa' ? 'selected' : '' %>>Empresa</option>
+                          <option value="admin" <%= conciMeta.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                        </select>
+                      </label>
+                      <label class="hub-field hub-field-sm" data-conci-empresa-wrap>
+                        <span>Empresa</span>
+                        <select name="conci_empresa_id">
+                          <option value="">—</option>
+                          <% conciEmpresas.forEach(function(e) { %>
+                            <option value="<%= e.id %>" <%= String(conciMeta.empresaId || '') === String(e.id) ? 'selected' : '' %>><%= e.nome %></option>
+                          <% }) %>
+                        </select>
+                      </label>
+                    </div>
+
+                    <div class="hub-module-panel" data-mod-panel="ncm" <%= user.canNcm ? '' : 'hidden' %>>
+                      <label class="hub-field hub-field-sm">
+                        <span>Empresa NCM</span>
+                        <select name="ncm_company_id">
+                          <option value="">—</option>
+                          <% ncmCompanies.forEach(function(c) { %>
+                            <option value="<%= c.id %>" <%= String(ncmMeta.companyId || '') === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+                          <% }) %>
+                        </select>
+                      </label>
+                      <label class="hub-field hub-field-sm">
+                        <span>Papel NCM</span>
+                        <select name="ncm_role">
+                          <option value="consulta" <%= ncmMeta.role === 'consulta' ? 'selected' : '' %>>Consulta</option>
+                          <option value="admin" <%= ncmMeta.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                        </select>
+                      </label>
+                    </div>
+
+                    <label class="hub-field hub-field-sm">
+                      <span>Nova senha (opcional)</span>
+                      <input name="password" type="password" minlength="6" autocomplete="new-password" placeholder="Deixe em branco para manter" />
+                    </label>
+
                     <input type="hidden" name="is_admin" value="<%= user.isAdmin ? '1' : '0' %>" />
                     <input type="hidden" name="active" value="<%= user.active ? '1' : '0' %>" />
                     <button type="submit" class="hub-btn hub-btn-sm hub-btn-primary">Salvar</button>
@@ -119,5 +218,6 @@
       </div>
     </section>
   </main>
+  <script src="/hub-assets/hub-admin-users.js"></script>
 </body>
 </html>

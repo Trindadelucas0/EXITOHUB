@@ -57,6 +57,7 @@ async function syncNcmUsers() {
           passwordHash: row.password_hash,
           displayName: row.name,
           modules: ["ncm"],
+          modulesExact: true,
           updatePassword: false,
           landingPath: row.role === "superadmin" ? "/ncm/escritorio/empresas" : "/ncm/dashboard",
         });
@@ -93,6 +94,7 @@ async function syncConciUsers() {
           passwordHash: row.password_hash,
           displayName: username,
           modules: ["conci"],
+          modulesExact: true,
           updatePassword: false,
           landingPath: row.role === "admin" ? "/conci/admin/empresas" : "/conci/",
         });

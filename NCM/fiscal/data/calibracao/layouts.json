@@ -52,10 +52,12 @@
       "ajustes": [
         "rótulos curtos Santri nos 8 destinos",
         "ALIQUOTA não grava na regra (só no cadastro)",
-        "pickSheet por companyName BAIFER"
+        "pickSheet por companyName BAIFER",
+        "XLSX TRIBUTACAO NCM BAIFER usa aba Planilha1 com o mesmo cabeçalho — não ignorar PlanilhaN se a aba tiver NCM"
       ],
       "fixture": "tests/fixtures/ncm-atualizado.ods",
-      "aprendidoEm": "2026-08-26"
+      "xlsxFixture": "tests/fixtures/tributacao-ncm-baifer-2026-08-07.xlsx",
+      "aprendidoEm": "2026-08-31"
     },
     {
       "tipo": "regras",
@@ -78,16 +80,47 @@
       ],
       "ajustes": [
         "sem coluna CST BAIFER — CST saída deriva de atacado/revenda/contribuinte",
-        "CFOP 5.405 → 5405",
-        "pickSheet por companyName Loja"
+        "CFOP 5.405 e 5,405 → 5405",
+        "pickSheet por companyName Loja",
+        "XLSX TRIBUTACAO NCM LOJAO usa aba Planilha1"
       ],
       "fixture": "tests/fixtures/ncm-atualizado.ods",
-      "aprendidoEm": "2026-08-26"
+      "xlsxFixture": "tests/fixtures/tributacao-ncm-lojao-2026-06-28.xlsx",
+      "aprendidoEm": "2026-08-31"
+    },
+    {
+      "tipo": "regras",
+      "bancoOuOrigem": "Unica",
+      "aba": "NCM ATUALIZADO ",
+      "cabecalhosChave": [
+        "ncm",
+        "cest",
+        "segmento",
+        "descrição",
+        "ipi",
+        "redução",
+        "%",
+        "original",
+        "ajustada 4%",
+        "ajustada 7%",
+        "ajustada 12%",
+        "aliq. interna"
+      ],
+      "ajustes": [
+        "linha 0 agrupa UFs DF / GO / MG; cabeçalho na linha 1",
+        "CEST '-' vira null",
+        "MVA gravado no campo mva* vem do Original DF; o restante fica em ufTributacao",
+        "situação TRIBUTACAO_UF (sem CST/CFOP/8 destinos)",
+        "variante TRIBUTACAO NCM UNICA ATACADISTA tem coluna ABREVIACAO e aba Planilha3"
+      ],
+      "fixture": "tests/fixtures/planilha-regra-fiscal-unica.xlsx",
+      "xlsxFixture": "tests/fixtures/tributacao-ncm-unica-atacadista-2026-08-27.xlsx",
+      "aprendidoEm": "2026-08-31"
     }
   ],
   "ignorarAbas": [
     "NCM_GERAL",
-    "Planilha4",
+    "Planilha4 vazia (só se não tiver NCM)",
     "abas file:// e # (links externos vazios)"
   ],
   "ouro": {
@@ -105,6 +138,18 @@
       "cfopSaida": "5102",
       "situacaoCodigo": "ST_INTERNO",
       "destinos": ["0", "0", "0", "0", "0", "0", "0", "0"]
+    },
+    "unica": {
+      "25202090": {
+        "cest": null,
+        "aliq": { "DF": "20%", "GO": "19%", "MG": "18%" },
+        "mvaOriginal": { "DF": null, "GO": null, "MG": null }
+      },
+      "32041700": {
+        "cest": "24000200",
+        "aliq": { "DF": "20%", "GO": "19%", "MG": "18%" },
+        "mvaOriginal": { "DF": "50%", "GO": "50%", "MG": "64.68%" }
+      }
     }
   }
 }

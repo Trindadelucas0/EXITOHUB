@@ -7,15 +7,28 @@ const {
   setSessionCookie,
   listUsers,
   createUser,
-  updateUserModules,
+  updateUserWithModules,
   setUserActive,
-  setUserAdmin,
   postLoginPath,
   MODULES,
 } = require('./auth');
+const {
+  listConciEmpresas,
+  listNcmCompanies,
+  loadUsersModuleMeta,
+  parseModuleMeta,
+} = require('./provision-modules');
 const { requireHubAuth, requireHubAdmin, logoutHub } = require('./middleware');
 
 const router = express.Router();
+
+function parseModules(body) {
+  const modules = [];
+  if (body.mod_folha) modules.push('folha');
+  if (body.mod_conci) modules.push('conci');
+  if (body.mod_ncm) modules.push('ncm');
+  return modules;
+}
 
 router.get('/login', (req, res) => {
   if (req.hubUser) return res.redirect(postLoginPath(req.hubUser));
@@ -70,10 +83,19 @@ router.get('/', requireHubAuth, (req, res) => {
 
 router.get('/admin/usuarios', requireHubAdmin, async (req, res) => {
   const users = await listUsers();
+  const userMetaMap = await loadUsersModuleMeta(users);
+  const userMeta = Object.fromEntries(userMetaMap);
+  const [conciEmpresas, ncmCompanies] = await Promise.all([
+    listConciEmpresas().catch(() => []),
+    listNcmCompanies().catch(() => []),
+  ]);
   return res.render('admin-users', {
     title: 'Usuários — EXITO HUB',
     hubUser: req.hubUser,
     users,
+    userMeta,
+    conciEmpresas,
+    ncmCompanies,
     modules: MODULES,
     flash: req.query.ok || null,
     error: req.query.erro || null,
@@ -82,10 +104,8 @@ router.get('/admin/usuarios', requireHubAdmin, async (req, res) => {
 
 router.post('/admin/usuarios', requireHubAdmin, async (req, res) => {
   try {
-    const modules = [];
-    if (req.body.mod_folha) modules.push('folha');
-    if (req.body.mod_conci) modules.push('conci');
-    if (req.body.mod_ncm) modules.push('ncm');
+    const modules = parseModules(req.body);
+    const moduleMeta = parseModuleMeta(req.body);
 
     await createUser({
       username: req.body.username,
@@ -94,6 +114,7 @@ router.post('/admin/usuarios', requireHubAdmin, async (req, res) => {
       displayName: req.body.displayName,
       isAdmin: Boolean(req.body.is_admin),
       modules,
+      moduleMeta,
     });
     return res.redirect('/admin/usuarios?ok=criado');
   } catch (err) {
@@ -104,17 +125,17 @@ router.post('/admin/usuarios', requireHubAdmin, async (req, res) => {
 
 router.post('/admin/usuarios/:id/modulos', requireHubAdmin, async (req, res) => {
   try {
-    const modules = [];
-    if (req.body.mod_folha) modules.push('folha');
-    if (req.body.mod_conci) modules.push('conci');
-    if (req.body.mod_ncm) modules.push('ncm');
-    await updateUserModules(req.params.id, modules);
-    if (typeof req.body.is_admin !== 'undefined') {
-      await setUserAdmin(req.params.id, req.body.is_admin === '1' || req.body.is_admin === 'on');
-    }
-    if (typeof req.body.active !== 'undefined') {
-      await setUserActive(req.params.id, req.body.active === '1' || req.body.active === 'on');
-    }
+    const modules = parseModules(req.body);
+    const moduleMeta = parseModuleMeta(req.body);
+    const password = String(req.body.password || '').trim() || undefined;
+
+    await updateUserWithModules(req.params.id, {
+      modules,
+      moduleMeta,
+      password,
+      isAdmin: req.body.is_admin === '1' || req.body.is_admin === 'on',
+      active: req.body.active === '1' || req.body.active === 'on',
+    });
     return res.redirect('/admin/usuarios?ok=atualizado');
   } catch (err) {
     return res.redirect(`/admin/usuarios?erro=${encodeURIComponent(err.message)}`);

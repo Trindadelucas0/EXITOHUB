@@ -444,6 +444,39 @@ body.hub-body .hub-table-users td:last-child {
   white-space: nowrap;
 }
 
+body.hub-body .hub-module-panel {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--hub-line);
+  border-radius: 10px;
+  background: var(--exito-input, #f8faf9);
+}
+
+body.hub-body .hub-module-hint {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+body.hub-body .hub-user-edit-form {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 14rem;
+}
+
+body.hub-body .hub-field-sm {
+  gap: 0.25rem;
+}
+
+body.hub-body .hub-field-sm span {
+  font-size: 0.75rem;
+}
+
+body.hub-body .hub-field-sm select,
+body.hub-body .hub-field-sm input {
+  min-height: 2.25rem;
+  font-size: 0.85rem;
+}
+
 @media (max-width: 900px) {
   body.hub-body .hub-form-fields {
     grid-template-columns: repeat(2, minmax(0, 1fr));

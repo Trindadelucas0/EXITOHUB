@@ -40,8 +40,6 @@ router.post('/admin/empresas', requireAdmin, async (req, res) => {
   try {
     await createEmpresa({
       nome: req.body.nome,
-      username: req.body.username,
-      password: req.body.password,
     });
     return res.redirect('/admin/empresas?ok=criada');
   } catch (err) {
@@ -69,7 +67,6 @@ router.post('/admin/empresas/:id', requireAdmin, async (req, res) => {
     }
     await updateEmpresa(req.params.id, {
       nome: req.body.nome,
-      password: req.body.password,
     });
     return res.redirect('/admin/empresas?ok=atualizada');
   } catch (err) {

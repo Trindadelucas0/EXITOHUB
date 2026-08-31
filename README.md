@@ -23,10 +23,12 @@ Login inicial (seed via `.env`):
 |---------|--------|
 | `/` | Home do HUB |
 | `/login` | Login único (usuário ou e-mail) |
-| `/admin/usuarios` | Cadastro HUB / Folha e permissões |
+| `/admin/usuarios` | **Cadastro único de usuários** + permissões |
 | `/folha` | Folha & Fiscal |
 | `/conci` | Conciliação |
 | `/ncm` | Auditor NCM |
+
+Documentação completa: [`DOCUMENTACAO-SISTEMA.md`](DOCUMENTACAO-SISTEMA.md)
 
 ## Bancos (separados)
 
@@ -35,42 +37,47 @@ Login inicial (seed via `.env`):
 - `CONCI` — Conciliação
 - `fiscal-p` — NCM
 
-## Login único (mesmo contrato nos três)
+## Login único — cadastro centralizado no HUB
 
-O ponto de acesso é só `/login`. Cadastro no sistema de origem; a senha é a do HUB; o destino segue **onde a pessoa foi criada**. O menu e as rotas só mostram/liberam o que o HUB marcou — usuário de empresa **não** vê Folha/Conci/NCM além do próprio sistema.
+1. **Empresa** → cadastre em `/conci/admin/empresas` ou `/ncm/escritorio/empresas` (só nome/dados da empresa).
+2. **Usuário** → cadastre em `/admin/usuarios`: marque módulo(s), escolha empresa Conci/NCM e papel.
+3. **Login** → `/login` com usuário (Conci/Folha) ou e-mail (NCM) + senha do HUB.
 
-| Onde cadastrou | O que digita no `/login` | Para onde vai | Menu |
-|----------------|--------------------------|---------------|------|
-| HUB `/admin/usuarios` só com Folha | usuário + senha | `/folha/modulos` | só Folha |
-| Conciliação → Nova empresa | usuário + senha da empresa | `/conci/` daquela empresa | só Conci |
-| NCM → Empresas / Usuários | e-mail + senha | `/ncm/dashboard` daquela empresa | só NCM |
-| HUB com 2+ módulos (ex.: admin) | usuário + senha | Home do HUB | módulos marcados |
+O HUB provisiona Conciliação e NCM automaticamente. O menu e as rotas só mostram o que está em `hub_user_modules`.
+
+| Persona | O que digita no `/login` | Para onde vai | Menu |
+|---------|--------------------------|---------------|------|
+| Admin Conciliação | username | `/conci/admin/empresas` | só Conci |
+| Empresa Conci | username | `/conci/` da empresa | só Conci |
+| Empresa NCM | e-mail | `/ncm/dashboard` | só NCM |
+| Só Folha | usuário | `/folha/modulos` | só Folha |
+| Admin HUB (2+ módulos) | usuário ou e-mail | Home `/` | módulos marcados |
 
 ### Folha
 
-Não tem tela de usuários dentro do módulo. Criar usuário Folha = `/admin/usuarios` com o checkbox **Folha**.
+Sem tela de usuários no módulo. Marque **Folha** em `/admin/usuarios`. Admin Folha = checkbox **Admin HUB**.
 
 ### Conciliação
 
-Em `/conci/admin/empresas`, usuário e senha da empresa são o login do HUB. Ao entrar, a pessoa cai na conciliação daquela empresa (sem segunda senha).
+Empresas em `/conci/admin/empresas`. Usuários **somente** em `/admin/usuarios` (módulo Conciliação + empresa + papel).
 
 ### NCM
 
-Em `/ncm/escritorio/empresas` (ou Usuários), e-mail e senha são o login do HUB. Ao entrar, a pessoa cai no NCM daquela empresa. O escritório (vários módulos) abre empresas pela lista **Entrar**.
-
-Ao cadastrar no NCM ou na Conciliação, o HUB recebe a mesma senha automaticamente. Usuários que já existiam nesses bancos são importados na subida do servidor.
+Empresas em `/ncm/escritorio/empresas`. Usuários **somente** em `/admin/usuarios` (módulo NCM + empresa + papel). Tela `/ncm/escritorio/usuarios` é consulta.
 
 ### Checklist manual
 
-1. Empresa NCM (ex. BAIFER): `/login` com e-mail → dashboard da empresa; menu **sem** Folha/Conci; `/folha` ou `/conci` → 403.
-2. Empresa Conci: `/login` com username → conciliação da empresa; menu sem Folha/NCM.
-3. HUB só Folha: `/login` → `/folha/modulos`; menu sem Conci/NCM.
-4. Admin HUB (3 módulos): home + menu completo; no NCM precisa **Entrar** na empresa.
+1. Admin Conciliação: login → `/conci/admin/empresas`; menu **sem** Folha/NCM; `/folha` e `/ncm` → 403.
+2. Empresa Conci: login → conciliação da empresa; menu só Conci.
+3. Empresa NCM: login com e-mail → dashboard; menu só NCM.
+4. Criar usuário novo só pelo HUB e confirmar acesso no módulo sem cadastro manual no Conci/NCM.
 
-### Validação no banco
+### Validação e reconciliação
 
 ```bash
 npm run validate:login
+npm run reconcile:modules:dry   # ver o que seria corrigido
+npm run reconcile:modules       # remove módulos fantasmas (ex.: admin Conci com NCM)
 ```
 
 Copia `.env.example` para `.env` e ajuste as senhas.

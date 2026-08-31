@@ -80,9 +80,15 @@ model FiscalNcmRule {
   situacaoCodigo  String   @map("situacao_codigo")
   mvaPercentual   Decimal? @map("mva_percentual") @db.Decimal(8, 4)
   mvaTexto        String?  @map("mva_texto")
-  mvaKind         String   @default("skip") @map("mva_kind")
-  observacao      String?
-  createdAt       DateTime @default(now()) @map("created_at")
+  mvaKind           String   @default("skip") @map("mva_kind")
+  observacao        String?
+  cest              String?
+  ipi               String?
+  abreviacao        String?
+  reducao           Boolean  @default(false)
+  reducaoPercentual Decimal? @map("reducao_percentual") @db.Decimal(8, 4)
+  ufTributacao      Json?    @map("uf_tributacao")
+  createdAt         DateTime @default(now()) @map("created_at")
 
   company Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
   links   ProductRuleLink[]

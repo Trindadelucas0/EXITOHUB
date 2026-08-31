@@ -9,7 +9,7 @@
 
 <div class="page-header">
   <h2>Empresas</h2>
-  <p>Cadastre a empresa. O usuário e a senha são o login do HUB: ao entrar, a pessoa cai direto na conciliação desta empresa.</p>
+  <p>Cadastre a empresa aqui. O login da equipe é criado em <a href="/admin/usuarios">/admin/usuarios</a> (HUB) com módulo Conciliação e vínculo a esta empresa.</p>
 </div>
 
 <%- include('partials/flash') %>
@@ -35,19 +35,11 @@
       <label class="field-label" for="nome">Nome</label>
       <input id="nome" name="nome" required placeholder="Ex.: LOJAO" class="field-input" />
     </div>
-    <div>
-      <label class="field-label" for="username">Usuário (login do HUB)</label>
-      <input id="username" name="username" required placeholder="login" class="field-input" autocomplete="off" />
-    </div>
-    <div>
-      <label class="field-label" for="password">Senha (login do HUB)</label>
-      <input id="password" name="password" type="password" required minlength="4" placeholder="mín. 4 caracteres" class="field-input" autocomplete="new-password" />
-    </div>
     <div class="empresa-create-submit">
-      <button type="submit" class="btn btn-primary">Criar</button>
+      <button type="submit" class="btn btn-primary">Criar empresa</button>
     </div>
   </div>
-  <p class="muted muted-sm empresa-create-hint">Este usuário e senha entram no login do HUB e abrem direto a conciliação desta empresa.</p>
+  <p class="muted muted-sm empresa-create-hint">Depois de criar, cadastre o usuário em <a href="/admin/usuarios">Gerenciar usuários do HUB</a>.</p>
 </form>
 
 <div class="card empresa-list-card">
@@ -110,12 +102,10 @@
 <div id="empresa-edit-modal" class="modal-backdrop" aria-hidden="true">
   <div class="modal-panel" role="dialog" aria-labelledby="empresa-edit-title">
     <h2 id="empresa-edit-title">Editar empresa</h2>
-    <p class="muted muted-sm" style="margin: 0 0 0.85rem;">Altere o nome ou a senha do login do HUB. Deixe a senha em branco para manter a atual.</p>
+    <p class="muted muted-sm" style="margin: 0 0 0.85rem;">Altere o nome da empresa. Login e senha são gerenciados em <a href="/admin/usuarios">/admin/usuarios</a>.</p>
     <form id="empresa-edit-form" method="post" action="">
       <label class="field-label" for="edit-nome">Nome</label>
       <input id="edit-nome" name="nome" required class="field-input" />
-      <label class="field-label" for="edit-password" style="margin-top: 0.75rem;">Nova senha (login do HUB)</label>
-      <input id="edit-password" name="password" type="password" minlength="4" placeholder="Deixe em branco para manter" class="field-input" autocomplete="new-password" />
       <div class="row-actions" style="justify-content: flex-end; margin-top: 1rem;">
         <button type="button" id="empresa-edit-cancel" class="btn btn-ghost">Cancelar</button>
         <button type="submit" class="btn btn-primary">Salvar</button>
@@ -129,14 +119,12 @@
     const modal = document.getElementById('empresa-edit-modal');
     const form = document.getElementById('empresa-edit-form');
     const nomeInput = document.getElementById('edit-nome');
-    const passInput = document.getElementById('edit-password');
     const cancelBtn = document.getElementById('empresa-edit-cancel');
     if (!modal || !form) return;
 
     function openModal(id, nome) {
       form.action = '/admin/empresas/' + id;
       nomeInput.value = nome || '';
-      passInput.value = '';
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');
       nomeInput.focus();
@@ -145,7 +133,6 @@
     function closeModal() {
       modal.classList.remove('is-open');
       modal.setAttribute('aria-hidden', 'true');
-      passInput.value = '';
     }
 
     document.querySelectorAll('[data-edit-empresa]').forEach(function (btn) {

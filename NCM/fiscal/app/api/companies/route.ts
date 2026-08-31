@@ -11,9 +11,14 @@ import { HttpError, requireSuperAdmin, requireUser } from "@/src/server/tenant";
 const createSchema = z.object({
   name: z.string().trim().min(2).max(120),
   slug: z.string().trim().min(2).max(40),
-  adminName: z.string().trim().min(2).max(120),
-  adminEmail: z.string().email().max(180),
-  adminPassword: z.string().min(8).max(200),
+  adminName: z.string().trim().min(2).max(120).optional(),
+  adminEmail: z.string().email().max(180).optional(),
+  adminPassword: z.string().min(8).max(200).optional(),
+});
+
+const hubCompanySchema = z.object({
+  name: z.string().trim().min(2).max(120),
+  slug: z.string().trim().min(2).max(40),
 });
 
 export async function GET() {
@@ -34,7 +39,33 @@ export async function POST(request: Request) {
   try {
     const actor = await requireUser();
     requireSuperAdmin(actor);
-    const body = createSchema.parse(await request.json());
+    const raw = await request.json();
+    const hubMode = process.env.HUB_MODE === "1";
+
+    if (hubMode) {
+      const body = hubCompanySchema.parse(raw);
+      const slug = normalizeSlug(body.slug);
+      if (!isValidSlug(slug)) {
+        throw new HttpError(400, "VALIDATION", "Slug inválido. Use letras, números e hífen.");
+      }
+      const existing = await prisma.company.findFirst({ where: { slug }, select: { id: true } });
+      if (existing) {
+        throw new HttpError(409, "CONFLICT", "Já existe uma empresa com este identificador.");
+      }
+      const companyId = `c${randomBytes(12).toString("hex")}`;
+      const company = await withTenant(companyId, async (db) =>
+        db.company.create({
+          data: { id: companyId, name: body.name.trim(), slug },
+          select: { id: true, name: true, slug: true },
+        }),
+      );
+      return jsonOk({ company }, 201);
+    }
+
+    const body = createSchema.parse(raw);
+    if (!body.adminName || !body.adminEmail || !body.adminPassword) {
+      throw new HttpError(400, "VALIDATION", "Informe nome, e-mail e senha do administrador.");
+    }
     const slug = normalizeSlug(body.slug);
     if (!isValidSlug(slug)) {
       throw new HttpError(400, "VALIDATION", "Slug inválido. Use letras, números e hífen.");
