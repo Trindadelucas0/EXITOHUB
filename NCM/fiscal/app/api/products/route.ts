@@ -1,4 +1,4 @@
-import { listAuditedProducts } from "@/src/server/audit";
+import { listAuditedProducts, productSheetLayout } from "@/src/server/audit";
 import { activeBatchForRequest } from "@/src/server/batch";
 import { jsonError, jsonOk } from "@/src/server/http";
 import { requireCompanySession } from "@/src/server/tenant";
@@ -8,6 +8,7 @@ export async function GET(request: Request) {
     const user = await requireCompanySession();
     const batch = await activeBatchForRequest(user.companyId, request);
     if (!batch) {
+      const layout = await productSheetLayout(user.companyId);
       return jsonOk({
         items: [],
         summary: { total: 0, corretos: 0, divergentes: 0, analise: 0 },
@@ -16,6 +17,7 @@ export async function GET(request: Request) {
         page: 1,
         pageSize: 25,
         pageCount: 1,
+        layout,
         batch: null,
       });
     }

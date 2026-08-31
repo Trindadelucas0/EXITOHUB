@@ -67,6 +67,67 @@ describe("aplicar valores corretos ao tratar", () => {
     expect(applied.destinosCst).toEqual(destStInterno);
   });
 
+  it("Unica copia Abreviação, CEST e alíquota DF da regra", () => {
+    const fiscal = rule({
+      id: "u1",
+      situacaoCodigo: "TRIBUTACAO_UF",
+      situacao: "Tributação UF",
+      cstEntrada: null,
+      cstSaida: null,
+      cfopSaida: null,
+      destinosCst: {
+        naoContribuinte: null,
+        contribuinte: null,
+        revenda: null,
+        construtora: null,
+        hospClinica: null,
+        orgaoPublico: null,
+        produtorRural: null,
+        atacado: null,
+      },
+      mvaPercentual: 40,
+      mvaTexto: "40",
+      abreviacao: "4",
+      cest: "24000200",
+      ufTributacao: {
+        DF: {
+          original: "40",
+          ajustada4: null,
+          ajustada7: null,
+          ajustada12: null,
+          aliqInterna: "20%",
+        },
+        GO: {
+          original: null,
+          ajustada4: null,
+          ajustada7: null,
+          ajustada12: null,
+          aliqInterna: null,
+        },
+        MG: {
+          original: null,
+          ajustada4: null,
+          ajustada7: null,
+          ajustada12: null,
+          aliqInterna: null,
+        },
+      },
+    });
+    const applied = applyRuleValuesToProduct(
+      product({
+        destinosCst: null,
+        abreviacao: "003",
+        cest: "1301100",
+        aliquotaIcms: "18",
+      }),
+      fiscal,
+    );
+    expect(applied.abreviacao).toBe("4");
+    expect(applied.cest).toBe("24000200");
+    expect(applied.aliquotaIcms).toBe("20%");
+    expect(compareProduct(applied, [fiscal], null).status).toBe("CORRETO");
+  });
+
   it("depois de aplicar, a conferência passa a CORRETO", () => {
     const fiscal = rule({ id: "r1" });
     const before = compareProduct(product(), [fiscal], null);

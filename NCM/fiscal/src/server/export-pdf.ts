@@ -8,6 +8,7 @@ import {
   allProducts,
   cellMismatch,
   formatExportDate,
+  reportUsesUnicaLayout,
   showCst,
   type ExportMeta,
   type ExportProduct,
@@ -38,7 +39,19 @@ function safe(value: string | null | undefined): string {
   return escapeHtml(value ?? "");
 }
 
-function gridColumns(): { id: string; header: string; width: number }[] {
+function gridColumns(unica: boolean): { id: string; header: string; width: number }[] {
+  if (unica) {
+    return [
+      { id: "codigo", header: "Código", width: 52 },
+      { id: "descricao", header: "Descrição", width: 180 },
+      { id: "ncm", header: "NCM", width: 50 },
+      { id: "status", header: "Status", width: 58 },
+      { id: "situacao", header: "Situação", width: 70 },
+      { id: "abreviacao", header: "Abrev.", width: 44 },
+      { id: "cest", header: "CEST", width: 58 },
+      { id: "mva", header: "MVA", width: 40 },
+    ];
+  }
   const dest = DESTINO_KEYS.map((key) => ({
     id: key,
     header: DESTINO_SHORT_LABELS[key],
@@ -58,9 +71,46 @@ function gridColumns(): { id: string; header: string; width: number }[] {
   ];
 }
 
-function productCells(product: ExportProduct): Cell[] {
+function productCells(product: ExportProduct, unica: boolean): Cell[] {
   const mismatchFill = (atual: string | null | undefined, ideal: string | null | undefined): Partial<Cell> =>
     cellMismatch(atual, ideal) ? { fill: C.badBg, color: C.bad } : {};
+
+  const identity: Cell[] = [
+    { text: safe(product.codigo), width: unica ? 52 : 52 },
+    { text: safe(product.descricao), width: unica ? 180 : 138 },
+    { text: safe(product.ncm || "(vazio)"), width: 50 },
+    {
+      text: safe(product.status),
+      width: 58,
+      fill: product.status === "DIVERGENTE" ? C.badBg : product.status === "NECESSITA_ANALISE" ? C.warnBg : C.okBg,
+      color: product.status === "DIVERGENTE" ? C.bad : product.status === "NECESSITA_ANALISE" ? C.warn : C.ok,
+    },
+    { text: safe(product.situacao || "—"), width: unica ? 70 : 50 },
+  ];
+
+  if (unica) {
+    return [
+      ...identity,
+      {
+        text: safe(showCst(product.abreviacaoAtual)),
+        width: 44,
+        align: "center",
+        ...mismatchFill(product.abreviacaoAtual, product.abreviacaoIdeal),
+      },
+      {
+        text: safe(showCst(product.cestAtual)),
+        width: 58,
+        align: "center",
+        ...mismatchFill(product.cestAtual, product.cestIdeal),
+      },
+      {
+        text: safe(showCst(product.mvaAtual)),
+        width: 40,
+        align: "center",
+        ...mismatchFill(product.mvaAtual, product.mvaIdeal),
+      },
+    ];
+  }
 
   const destinos = DESTINO_KEYS.map((key) => {
     const atual = product.destinosAtual?.[key] ?? null;
@@ -74,16 +124,7 @@ function productCells(product: ExportProduct): Cell[] {
   });
 
   return [
-    { text: safe(product.codigo), width: 52 },
-    { text: safe(product.descricao), width: 138 },
-    { text: safe(product.ncm || "(vazio)"), width: 50 },
-    {
-      text: safe(product.status),
-      width: 58,
-      fill: product.status === "DIVERGENTE" ? C.badBg : product.status === "NECESSITA_ANALISE" ? C.warnBg : C.okBg,
-      color: product.status === "DIVERGENTE" ? C.bad : product.status === "NECESSITA_ANALISE" ? C.warn : C.ok,
-    },
-    { text: safe(product.situacao || "—"), width: 50 },
+    ...identity,
     {
       text: safe(showCst(product.cstEntradaAtual)),
       width: 36,
@@ -181,7 +222,8 @@ export async function buildPdf(report: ExportReport): Promise<Buffer> {
   });
 
   const meta = report.meta;
-  const cols = gridColumns();
+  const unica = reportUsesUnicaLayout(report);
+  const cols = gridColumns(unica);
   const tableWidth = cols.reduce((sum, col) => sum + col.width, 0);
   const products = allProducts(report);
   let page = 1;
@@ -265,7 +307,7 @@ export async function buildPdf(report: ExportReport): Promise<Buffer> {
 
   for (const product of products) {
     ensureSpace(ROW_H, true);
-    drawRow(doc, MARGIN, y, ROW_H, productCells(product));
+    drawRow(doc, MARGIN, y, ROW_H, productCells(product, unica));
     y += ROW_H;
   }
 

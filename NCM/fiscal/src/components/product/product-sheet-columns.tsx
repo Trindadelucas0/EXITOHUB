@@ -1,10 +1,10 @@
 import { CstCell } from "@/src/components/grid/cst-cell";
 import type { FiscalColumn } from "@/src/components/grid/fiscal-grid";
 import { StatusBadge } from "@/src/components/ui/status-badge";
-import { DESTINO_KEYS, DESTINO_SHORT_LABELS } from "@/src/lib/fiscal";
+import { DESTINO_KEYS, DESTINO_SHORT_LABELS, isUnicaSituacao } from "@/src/lib/fiscal";
 import type { ProductSheetItem } from "./product-sheet-types";
 
-export const PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
+const identityColumns: FiscalColumn<ProductSheetItem>[] = [
   {
     id: "codigo",
     header: "Código",
@@ -46,6 +46,10 @@ export const PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
     show: "md",
     cell: (row) => row.situacaoCodigo || row.situacao || "—",
   },
+];
+
+export const PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
+  ...identityColumns,
   {
     id: "cstEntrada",
     header: "CST entrada",
@@ -92,3 +96,50 @@ export const PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
     }),
   ),
 ];
+
+export const UNICA_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
+  ...identityColumns,
+  {
+    id: "abreviacao",
+    header: "Abreviação",
+    className: "tabular",
+    cell: (row) => (
+      <CstCell compare atual={row.importado.abreviacao} ideal={row.correto?.abreviacao} />
+    ),
+  },
+  {
+    id: "cest",
+    header: "CEST",
+    show: "md",
+    className: "tabular",
+    cell: (row) => <CstCell compare atual={row.importado.cest} ideal={row.correto?.cest} />,
+  },
+  {
+    id: "aliquota",
+    header: "Aliq. DF",
+    show: "lg",
+    cell: (row) => (
+      <CstCell compare atual={row.importado.aliquotaIcms} ideal={row.correto?.aliquotaIcms} />
+    ),
+  },
+  {
+    id: "mva",
+    header: "MVA",
+    show: "lg",
+    cell: (row) => (
+      <CstCell compare atual={row.importado.ivaMva} ideal={row.correto?.mva} />
+    ),
+  },
+];
+
+export function productUsesUnicaLayout(
+  layout: "unica" | "matriz" | undefined,
+  rows: ProductSheetItem[],
+): boolean {
+  if (layout === "unica") return true;
+  return rows.some((row) => isUnicaSituacao(row.situacaoCodigo));
+}
+
+export function productSheetColumns(layout: "unica" | "matriz"): FiscalColumn<ProductSheetItem>[] {
+  return layout === "unica" ? UNICA_PRODUCT_SHEET_COLUMNS : PRODUCT_SHEET_COLUMNS;
+}

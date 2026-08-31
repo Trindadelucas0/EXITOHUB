@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.2 — 31/08/2026
+
+Corrigido:
+
+- Consulta e Divergências da Unica passam a mostrar **Abreviação**, CEST, Aliq. DF e MVA (a lista usava a grade BAIFER e a API não enviava `products.abreviacao`).
+- Marcar como tratado na Unica copia Abreviação, CEST e alíquota DF da regra.
+- Excel e PDF da Unica incluem Abreviação e CEST.
+
 ## v1.6.1 — 31/08/2026
 
 Alterado:

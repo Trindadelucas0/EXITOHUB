@@ -21,6 +21,8 @@ import {
 import type { StatusFiscal } from "@/src/lib/fiscal";
 import { HttpError } from "./tenant";
 
+export type ProductSheetLayout = "unica" | "matriz";
+
 export { productFromDb, ruleFromDb };
 
 const productSelect = {
@@ -46,12 +48,41 @@ const productSelect = {
   treatedStale: true,
 } satisfies Prisma.ProductSelect;
 
+function sheetFiscalPair(product: ImportedProduct, rule: FiscalRule | null) {
+  return {
+    importado: {
+      cstCompra: product.cstCompra ?? null,
+      cstUnico: product.cstUnico ?? null,
+      ivaMva: product.ivaMva ?? null,
+      destinosCst: product.destinosCst ?? null,
+      abreviacao: product.abreviacao ?? null,
+      cest: product.cest ?? null,
+      aliquotaIcms: product.aliquotaIcms ?? null,
+    },
+    correto: rule
+      ? {
+          ncm: rule.ncm,
+          cstEntrada: rule.cstEntrada,
+          cstSaida: rule.cstSaida,
+          cfopSaida: rule.cfopSaida,
+          destinosCst: rule.destinosCst,
+          mva: rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto,
+          situacao: rule.situacao || rule.situacaoCodigo,
+          abreviacao: rule.abreviacao ?? null,
+          cest: rule.cest ?? null,
+          aliquotaIcms: rule.ufTributacao?.DF.aliqInterna ?? null,
+        }
+      : null,
+  };
+}
+
 export function sheetItemFromCompare(
   product: ImportedProduct & { id: string },
   compare: CompareResult,
   includeDiffs: boolean,
   treated?: { treated: boolean; treatedStale: boolean; treatedNote: string | null },
 ) {
+  const pair = sheetFiscalPair(product, compare.rule);
   return {
     id: product.id,
     codigo: product.codigo,
@@ -67,26 +98,7 @@ export function sheetItemFromCompare(
     treated: treated?.treated ?? false,
     treatedStale: treated?.treatedStale ?? false,
     treatedNote: treated?.treatedNote ?? null,
-    importado: {
-      cstCompra: product.cstCompra ?? null,
-      cstUnico: product.cstUnico ?? null,
-      ivaMva: product.ivaMva ?? null,
-      destinosCst: product.destinosCst,
-    },
-    correto: compare.rule
-      ? {
-          ncm: compare.rule.ncm,
-          cstEntrada: compare.rule.cstEntrada,
-          cstSaida: compare.rule.cstSaida,
-          cfopSaida: compare.rule.cfopSaida,
-          destinosCst: compare.rule.destinosCst,
-          mva:
-            compare.rule.mvaPercentual != null
-              ? String(compare.rule.mvaPercentual)
-              : compare.rule.mvaTexto,
-          situacao: compare.rule.situacao || compare.rule.situacaoCodigo,
-        }
-      : null,
+    ...pair,
     candidates: includeDiffs
       ? compare.candidates.map((candidate) => ({
           id: candidate.id,
@@ -120,6 +132,7 @@ export function sheetItemFromPersisted(
     rulesForNcm.find((item) => item.id === linkedRuleId) ??
     (rulesForNcm.length === 1 ? rulesForNcm[0] : null);
   const rule = rawRule ? completeRuleDestinos(rawRule) : null;
+  const pair = sheetFiscalPair(product, rule);
   return {
     id: product.id,
     codigo: product.codigo,
@@ -135,25 +148,19 @@ export function sheetItemFromPersisted(
     treated: Boolean(product.treatedAt),
     treatedStale: product.treatedStale,
     treatedNote: product.treatedNote,
-    importado: {
-      cstCompra: product.cstCompra ?? null,
-      cstUnico: product.cstUnico ?? null,
-      ivaMva: product.ivaMva ?? null,
-      destinosCst: product.destinosCst,
-    },
-    correto: rule
-      ? {
-          ncm: rule.ncm,
-          cstEntrada: rule.cstEntrada,
-          cstSaida: rule.cstSaida,
-          cfopSaida: rule.cfopSaida,
-          destinosCst: rule.destinosCst,
-          mva: rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto,
-          situacao: rule.situacao || rule.situacaoCodigo,
-        }
-      : null,
+    ...pair,
     candidates: [],
   };
+}
+
+export async function productSheetLayout(companyId: string): Promise<ProductSheetLayout> {
+  return withTenant(companyId, async (db) => {
+    const unica = await db.fiscalNcmRule.findFirst({
+      where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
+      select: { id: true },
+    });
+    return unica ? "unica" : "matriz";
+  });
 }
 
 async function loadRulesAndLinks(
@@ -387,7 +394,7 @@ export async function listAuditedProducts(companyId: string, batchId: string, re
       ...baseWhere,
       ...(params.status ? { auditStatus: params.status } : { auditStatus: { not: null } }),
     };
-    const [catalogTotal, grouped, total, rows] = await Promise.all([
+    const [catalogTotal, grouped, total, rows, unicaRule] = await Promise.all([
       db.product.count({
         where: { companyId, importBatchId: batchId, auditStatus: { not: null } },
       }),
@@ -404,7 +411,12 @@ export async function listAuditedProducts(companyId: string, batchId: string, re
         take: params.pageSize,
         select: productSelect,
       }),
+      db.fiscalNcmRule.findFirst({
+        where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
+        select: { id: true },
+      }),
     ]);
+    const layout: ProductSheetLayout = unicaRule ? "unica" : "matriz";
     const summary = {
       total: grouped.reduce((acc, row) => acc + row._count._all, 0),
       corretos: grouped.find((row) => row.auditStatus === "CORRETO")?._count._all ?? 0,
@@ -419,6 +431,7 @@ export async function listAuditedProducts(companyId: string, batchId: string, re
       page: params.page,
       pageSize: params.pageSize,
       pageCount: Math.max(1, Math.ceil(total / params.pageSize)),
+      layout,
     };
     if (rows.length === 0) {
       return empty;
@@ -456,6 +469,7 @@ export async function listAuditedProducts(companyId: string, batchId: string, re
       page: params.page,
       pageSize: params.pageSize,
       pageCount: Math.max(1, Math.ceil(total / params.pageSize)),
+      layout,
     };
   });
 }

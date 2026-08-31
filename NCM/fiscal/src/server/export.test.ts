@@ -90,6 +90,8 @@ describe("export", () => {
     const headers = Array.isArray(rowValues) ? rowValues.map((value) => String(value ?? "")) : [];
     expect(headers.join(" ")).toContain("Não contr (imp.)");
     expect(headers.join(" ")).toContain("Não contr (regra)");
+    expect(headers.join(" ")).toContain("Abreviação (imp.)");
+    expect(headers.join(" ")).toContain("CEST (regra)");
     expect(headers.join(" ")).not.toContain("Não contribuinte:00 |");
     const banner = String(porRegra?.getRow(2).getCell(1).value ?? "");
     expect(banner).toContain("NCM 32141010");

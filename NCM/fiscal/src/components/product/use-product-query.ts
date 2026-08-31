@@ -38,6 +38,7 @@ export function useProductQuery(
   const [pageCount, setPageCount] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [layout, setLayout] = useState<"unica" | "matriz">("matriz");
 
   const q = filters.q;
   const ncm = filters.ncm;
@@ -75,6 +76,9 @@ export function useProductQuery(
           setCatalogTotal(json.data.catalogTotal ?? 0);
           setTotal(json.data.total ?? json.data.items.length);
           setPageCount(json.data.pageCount ?? 1);
+          if (json.data.layout === "unica" || json.data.layout === "matriz") {
+            setLayout(json.data.layout);
+          }
         })
         .catch((err: Error) => {
           if (err.name === "AbortError") return;
@@ -90,5 +94,5 @@ export function useProductQuery(
     };
   }, [q, ncm, status, tratado, lote, enabled, page, pageSize, reloadKey]);
 
-  return { rows, summary, catalogTotal, total, pageCount, loading: !enabled || loading, error };
+  return { rows, summary, catalogTotal, total, pageCount, loading: !enabled || loading, error, layout };
 }

@@ -18,6 +18,7 @@ const productSelect = {
   ivaMva: true,
   ivaMvaNumero: true,
   cest: true,
+  abreviacao: true,
   cstCompra: true,
   cstUnico: true,
   destinosCst: true,
@@ -87,6 +88,9 @@ export async function markProductsTreated(params: {
                 destinosCst: nextProduct.destinosCst as Prisma.InputJsonValue,
                 ivaMva: nextProduct.ivaMva ?? null,
                 ivaMvaNumero: nextProduct.ivaMvaNumero,
+                abreviacao: nextProduct.abreviacao ?? null,
+                cest: nextProduct.cest ?? null,
+                aliquotaIcms: nextProduct.aliquotaIcms ?? null,
               }
             : {};
         await db.product.updateMany({

@@ -6,7 +6,10 @@ import { useEffect, useState, type ReactNode } from "react";
 import { FiscalGrid } from "@/src/components/grid/fiscal-grid";
 import { DiffTable } from "@/src/components/product/diff-table";
 import { BatchSelector, type BatchOption } from "@/src/components/product/batch-selector";
-import { PRODUCT_SHEET_COLUMNS } from "@/src/components/product/product-sheet-columns";
+import {
+  productSheetColumns,
+  productUsesUnicaLayout,
+} from "@/src/components/product/product-sheet-columns";
 import type { ProductSheetItem } from "@/src/components/product/product-sheet-types";
 import { NcmSummary } from "@/src/components/product/ncm-summary";
 import {
@@ -72,7 +75,7 @@ export function ProductCatalog({
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [queueTick, setQueueTick] = useState(0);
   const [canWrite, setCanWrite] = useState(false);
-  const { rows, summary, catalogTotal, total, pageCount, loading, error } = useProductQuery(
+  const { rows, summary, catalogTotal, total, pageCount, loading, error, layout } = useProductQuery(
     filters,
     batchId,
     batchBooted || Boolean(loteFromUrl),
@@ -167,7 +170,9 @@ export function ProductCatalog({
           </p>
           <FiscalGrid
             caption={title}
-            columns={PRODUCT_SHEET_COLUMNS}
+            columns={productSheetColumns(
+              productUsesUnicaLayout(layout, rows) ? "unica" : "matriz",
+            )}
             rows={rows}
             getRowId={(row) => row.id}
             loading={loading}

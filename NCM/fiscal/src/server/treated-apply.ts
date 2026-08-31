@@ -15,6 +15,7 @@ export function applyRuleValuesToProduct(
   rule: FiscalRule,
 ): ImportedProduct {
   const completed = completeRuleDestinos(rule);
+  const unica = rule.situacaoCodigo === "TRIBUTACAO_UF" || Boolean(rule.ufTributacao);
   return {
     ...product,
     cstCompra: completed.cstEntrada,
@@ -22,5 +23,12 @@ export function applyRuleValuesToProduct(
     destinosCst: { ...completed.destinosCst },
     ivaMva: completed.mvaPercentual != null ? String(completed.mvaPercentual) : completed.mvaTexto,
     ivaMvaNumero: completed.mvaPercentual,
+    ...(unica
+      ? {
+          abreviacao: completed.abreviacao ?? product.abreviacao,
+          cest: completed.cest ?? product.cest,
+          aliquotaIcms: completed.ufTributacao?.DF.aliqInterna ?? product.aliquotaIcms,
+        }
+      : {}),
   };
 }

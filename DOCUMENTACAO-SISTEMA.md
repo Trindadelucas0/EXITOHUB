@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.3.1 — Unica: conferência de Abreviação fiscal (cadastro × base).
+> Versão: 1.3.2 — Unica: Abreviação na grade de Consulta e Divergências.
 
 ## 1. Visão geral
 
@@ -84,6 +84,8 @@ npm run reconcile:modules         # aplica correção (Conci/NCM módulo único)
 | Empresas Conci | `/conci/admin/empresas` | [`adminEmpresas.ejs`](CONCI/CONCI/conciliação/views/adminEmpresas.ejs) |
 | Empresas NCM | `/ncm/escritorio/empresas` | NCM escritório |
 | Base fiscal NCM | `/ncm/base-fiscal` | Importa regras da empresa aberta |
+| Consulta NCM | `/ncm/consulta` | Grade do lote; Unica: Abreviação/CEST |
+| Divergências NCM | `/ncm/divergencias` | Fila Unica com coluna Abreviação |
 | Auth/me NCM | `/ncm/api/auth/me` | [`route.ts`](NCM/fiscal/app/api/auth/me/route.ts) |
 
 Empresas NCM no seed: **BAIFER**, **Loja das Máquinas**, **Unica** (`slug` `unica`). Login da equipe Unica continua em `/admin/usuarios` (HUB), não no seed do HUB.
@@ -99,7 +101,7 @@ Tela **Base fiscal** (`POST /ncm/api/rules/import`). Parser: [`import-rules.ts`]
 | Unica (oficial / seed) | `TRIBUTACAO NCM UNICA ATACADISTA` (`Planilha3`) | NCM, CEST, **ABREVIACAO**, MVA/alíquota DF·GO·MG | situação `TRIBUTACAO_UF` + Abrev. na Base fiscal |
 | Unica (variante) | `PLANILHA REGRA FISCAL UNICA.xlsx` | mesmos campos **sem** `ABREVIACAO` | no update, coluna ausente **não apaga** abreviação já gravada |
 
-Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `Novo Abreviação Fiscal`, `Desc. Abrev. ICMS`) na tela **Planilhas** — não veio nestas planilhas de tributação. A coluna **Abrev.** da Base fiscal Unica vem da `ABREVIACAO` da planilha Atacadista (ex.: NCM `25202090` → `4`). Na conferência Unica (`TRIBUTACAO_UF`), se cadastro e base tiverem Abreviação e forem diferentes após normalizar zeros à esquerda (`004` = `4`), o item fica **DIVERGENTE** no campo Abreviação. **BAIFER/Loja não comparam Abreviação.** `Desc. Abrev. ICMS` continua sendo só CST/alíquota.
+Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `Novo Abreviação Fiscal`, `Desc. Abrev. ICMS`) na tela **Planilhas** — não veio nestas planilhas de tributação. A coluna **Abrev.** da Base fiscal Unica vem da `ABREVIACAO` da planilha Atacadista (ex.: NCM `25202090` → `4`). Na conferência Unica (`TRIBUTACAO_UF`), se cadastro e base tiverem Abreviação e forem diferentes após normalizar zeros à esquerda (`004` = `4`), o item fica **DIVERGENTE** no campo Abreviação. **Consulta e Divergências** da Unica mostram as colunas Abreviação, CEST, Aliq. DF e MVA (não a matriz de 8 destinatários). **BAIFER/Loja não comparam Abreviação.** `Desc. Abrev. ICMS` continua sendo só CST/alíquota.
 
 ### Import de cadastro (Planilhas)
 
@@ -120,7 +122,7 @@ A conferência compara o lote com a **base fiscal da empresa da sessão**. Ainda
 2. Em `/admin/usuarios`, crie o login: marque Conciliação ou NCM, escolha empresa e papel.
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu sem Folha/NCM.
 4. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar.
-5. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG (125 NCMs no seed; Abrev. preenchida a partir da Atacadista). Importe o CSV de produtos em **Planilhas**; a conferência marca **DIVERGENTE** se a Abreviação do cadastro diferir da Abrev. da base (ex.: `003` ≠ `4`).
+5. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG (125 NCMs no seed; Abrev. preenchida a partir da Atacadista). Importe o CSV de produtos em **Planilhas**; em **Consulta** e **Divergências** a grade Unica mostra **Abreviação** (cadastro × base). A conferência marca **DIVERGENTE** se a Abreviação do cadastro diferir da Abrev. da base (ex.: `003` ≠ `4`).
 6. Cadastro Egaplast: em **Planilhas**, envie o `.xls` de listagem ou o relatório `.xlsx` (aceita `.xls`). Sem empresa/base Egaplast, a conferência só mostra o lote contra a base da empresa aberta.
 
 Guia expandido: [`README.md`](README.md). Detalhe do auditor: [`NCM/fiscal/README.md`](NCM/fiscal/README.md).

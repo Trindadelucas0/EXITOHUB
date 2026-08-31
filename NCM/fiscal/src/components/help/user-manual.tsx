@@ -115,7 +115,9 @@ export function UserManual() {
           </p>
           <p>
             Clique na linha para abrir a ficha. Lá aparece o cadastro importado ao lado do que a
-            regra manda. A tributação correta não vem do cadastro: vem da regra daquele NCM.
+            regra manda. Na Unica a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz
+            de destinatários da BAIFER). A tributação correta não vem do cadastro: vem da regra
+            daquele NCM.
           </p>
           <p>
             Se o NCM tiver duas regras, a ficha pede para vincular a hipótese. Só o administrador
@@ -130,8 +132,9 @@ export function UserManual() {
             você trabalhar a fila.
           </p>
           <p>
-            Clique na linha para expandir: o que veio errado no importado e como deve ficar. No topo
-            há um resumo por NCM. Clique em um NCM para filtrar a fila só daquele código.
+            Clique na linha para expandir: o que veio errado no importado e como deve ficar. Na Unica
+            a coluna Abreviação compara o cadastro com a Abrev. da base. No topo há um resumo por
+            NCM. Clique em um NCM para filtrar a fila só daquele código.
           </p>
           <p>
             Quando a regra daquele NCM estiver certa para todos os itens da fila, dá para marcar o
@@ -147,7 +150,7 @@ export function UserManual() {
           </p>
           <p className="font-medium text-ink">O que o sistema faz na hora:</p>
           <ul className="list-disc space-y-1 pl-5">
-            <li>Copia da regra para o produto: CST de compra, CST de saída, CST por destinatário e MVA.</li>
+            <li>Copia da regra para o produto: CST de compra, CST de saída, CST por destinatário e MVA. Na Unica também copia Abreviação, CEST e alíquota DF.</li>
             <li>Recalcula a situação. Em geral o item passa a correto.</li>
             <li>A linha ganha a marca tratado.</li>
             <li>Os números do Panorama (corretos, divergentes, análise) são atualizados.</li>

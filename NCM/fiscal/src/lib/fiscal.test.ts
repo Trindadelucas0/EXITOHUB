@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { cstCellsDiverge, displayCst, labelCampoFiscal } from "./fiscal";
+import { cstCellsDiverge, displayCst, isUnicaSituacao, labelCampoFiscal } from "./fiscal";
 
 describe("rótulos da divergência", () => {
   it("traduz CST da empresa e CST de compra para o relatório", () => {
     expect(labelCampoFiscal("CST BAIFER")).toBe("CST da empresa (saída)");
     expect(labelCampoFiscal("CST compra / nota de entrada")).toBe("CST de compra (entrada)");
-    expect(labelCampoFiscal("Revenda")).toBe("Revenda");
+    expect(labelCampoFiscal("Abreviação")).toBe("Abreviação fiscal");
+  });
+
+  it("reconhece situação Unica", () => {
+    expect(isUnicaSituacao("TRIBUTACAO_UF")).toBe(true);
+    expect(isUnicaSituacao("ST_INTERNO")).toBe(false);
   });
 
   it("marca célula divergente na grade", () => {

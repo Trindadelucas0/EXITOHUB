@@ -17,6 +17,9 @@ export type ProductSheetItem = {
     cstUnico: string | null;
     ivaMva: string | null;
     destinosCst: DestinosCst | null;
+    abreviacao: string | null;
+    cest: string | null;
+    aliquotaIcms: string | null;
   };
   correto: {
     ncm: string;
@@ -26,6 +29,9 @@ export type ProductSheetItem = {
     mva: string | null;
     situacao: string;
     destinosCst: DestinosCst;
+    abreviacao: string | null;
+    cest: string | null;
+    aliquotaIcms: string | null;
   } | null;
   candidates: {
     id: string;

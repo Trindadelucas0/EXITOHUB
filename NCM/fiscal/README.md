@@ -54,7 +54,7 @@ npm run import:cadastro
 ## O que o MVP responde
 
 1. O cadastro está coerente com a matriz NCM (BAIFER/Loja) ou com CEST/alíquota/MVA/Abreviação (Unica, quando o CSV de produtos existir)?
-2. Onde diverge (destinatário a destinatário, ou CEST/alíquota/Abreviação Unica)?
+2. Onde diverge (destinatário a destinatário, ou CEST/alíquota/Abreviação Unica)? A grade de Consulta/Divergências da Unica mostra Abreviação, CEST, Aliq. DF e MVA.
 3. Como dar entrada — só com o que existe na regra (CST entrada, CST BAIFER, CFOP de saída, MVA). Na Unica a conferência de cadastro fica limitada até o CSV de itens.
 
 ## Regras da aba BAIFER

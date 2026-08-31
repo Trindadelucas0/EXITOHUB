@@ -25,6 +25,10 @@ export type ExportProduct = {
   cfopSaida: string | null;
   mvaAtual: string | null;
   mvaIdeal: string | null;
+  abreviacaoAtual: string | null;
+  abreviacaoIdeal: string | null;
+  cestAtual: string | null;
+  cestIdeal: string | null;
   destinosAtual: DestinosCst | null;
   destinosIdeal: DestinosCst | null;
   diffs: FieldDiff[];
@@ -40,6 +44,8 @@ export type ExportRuleSnap = {
   situacao: string;
   situacaoCodigo: string;
   mvaTexto: string | null;
+  abreviacao: string | null;
+  cest: string | null;
 };
 
 export type ExportGroup = {
@@ -71,6 +77,8 @@ export type ExportItemInput = {
   cstCompra?: string | null;
   cstUnico?: string | null;
   ivaMva?: string | null;
+  abreviacao?: string | null;
+  cest?: string | null;
   destinosCst?: DestinosCst | null;
   compare: CompareResult;
 };
@@ -108,6 +116,8 @@ export function snapRule(rule: FiscalRule): ExportRuleSnap {
     situacao: rule.situacao,
     situacaoCodigo: rule.situacaoCodigo,
     mvaTexto: ruleMva(rule),
+    abreviacao: rule.abreviacao ?? null,
+    cest: rule.cest ?? null,
   };
 }
 
@@ -173,6 +183,10 @@ export function buildReport(input: {
       cfopSaida: rule?.cfopSaida ?? null,
       mvaAtual: item.ivaMva ?? null,
       mvaIdeal: ruleMva(rule),
+      abreviacaoAtual: item.abreviacao ?? null,
+      abreviacaoIdeal: rule?.abreviacao ?? null,
+      cestAtual: item.cest ?? null,
+      cestIdeal: rule?.cest ?? null,
       destinosAtual: item.destinosCst ?? null,
       destinosIdeal: rule?.destinosCst ?? null,
       diffs: item.compare.diffs,
@@ -206,6 +220,8 @@ export function buildReportFromCompared(input: {
       cstCompra?: string | null;
       cstUnico?: string | null;
       ivaMva?: string | null;
+      abreviacao?: string | null;
+      cest?: string | null;
       destinosCst?: DestinosCst | null;
     };
     compare: CompareResult;
@@ -223,6 +239,8 @@ export function buildReportFromCompared(input: {
       cstCompra: item.product.cstCompra,
       cstUnico: item.product.cstUnico,
       ivaMva: item.product.ivaMva,
+      abreviacao: item.product.abreviacao,
+      cest: item.product.cest,
       destinosCst: item.product.destinosCst,
       compare: item.compare,
     })),
@@ -246,9 +264,25 @@ export function rulesOfReport(report: ExportReport): ExportRuleSnap[] {
   return rules;
 }
 
+export function reportUsesUnicaLayout(report: ExportReport): boolean {
+  return report.groups.some(
+    (group) => group.rule?.situacaoCodigo === "TRIBUTACAO_UF" || group.products.some((p) => p.situacao === "TRIBUTACAO_UF"),
+  );
+}
+
 export function ruleBannerText(rule: ExportRuleSnap | null, ncm: string): string {
   if (!rule) {
     return `NCM ${ncm} — Sem regra na base fiscal`;
+  }
+  if (rule.situacaoCodigo === "TRIBUTACAO_UF") {
+    return [
+      `NCM ${rule.ncm}`,
+      rule.segmento,
+      rule.situacaoCodigo,
+      `Abrev. ${showCst(rule.abreviacao)}`,
+      `CEST ${showCst(rule.cest)}`,
+      `MVA ${showCst(rule.mvaTexto)}`,
+    ].join("  ·  ");
   }
   const destinos = DESTINO_KEYS.map((key) => `${showCst(rule.destinosCst[key])}`).join("  ");
   return [

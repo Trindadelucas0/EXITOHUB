@@ -9,7 +9,7 @@ import { Button } from "@/src/components/ui/button";
 import { PageHeader } from "@/src/components/ui/page-header";
 import { StatusBadge } from "@/src/components/ui/status-badge";
 import { ncmApiUrl } from "@/src/lib/base-path";
-import { DESTINO_KEYS, type DestinosCst, type FieldDiff, type StatusFiscal } from "@/src/lib/fiscal";
+import { DESTINO_KEYS, isUnicaSituacao, type DestinosCst, type FieldDiff, type StatusFiscal } from "@/src/lib/fiscal";
 
 type Payload = {
   product: {
@@ -21,6 +21,9 @@ type Payload = {
     cstUnico: string | null;
     cstCompra: string | null;
     ivaMva: string | null;
+    cest?: string | null;
+    abreviacao?: string | null;
+    aliquotaIcms?: string | null;
     treated: boolean;
     treatedStale: boolean;
     treatedNote: string | null;
@@ -39,6 +42,9 @@ type Payload = {
       destinosCst: DestinosCst;
       mvaTexto: string | null;
       mvaPercentual: number | null;
+      cest?: string | null;
+      abreviacao?: string | null;
+      ufTributacao?: { DF?: { aliqInterna?: string | null } } | null;
     } | null;
     candidates: { id: string; situacaoCodigo: string; cstSaida: string | null }[];
   };
@@ -133,6 +139,9 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
   }
 
   const title = mode === "entrada" ? "Como dar entrada?" : "Consulta fiscal do produto";
+  const unica = isUnicaSituacao(data.compare.rule?.situacaoCodigo);
+  const showDestinos =
+    !unica && (hasDestinos(data.product.destinosCst) || Boolean(data.compare.rule?.destinosCst));
 
   return (
     <div className="grid gap-6">
@@ -177,7 +186,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
           <p className="text-sm text-ink-muted">
             {data.product.treatedStale
               ? "Tratado no lote anterior — a situação fiscal mudou. Confira de novo ou desmarque."
-              : "Já tratado: CST, MVA e destinos foram alinhados com a regra e o status passou a correto."}
+              : "Já tratado: os valores da regra foram copiados para este produto e o status passou a correto."}
           </p>
         ) : (
           <p className="text-sm text-ink-muted">
@@ -228,7 +237,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
               atual={data.product.destinosCst}
               extras={fichaExtras(data)}
               showAtual
-              showDestinos={hasDestinos(data.product.destinosCst) || Boolean(data.compare.rule?.destinosCst)}
+              showDestinos={showDestinos}
             />
           </div>
           <div className="hidden md:block">
@@ -237,7 +246,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
               atual={data.product.destinosCst}
               extras={fichaExtras(data)}
               showAtual
-              showDestinos={hasDestinos(data.product.destinosCst) || Boolean(data.compare.rule?.destinosCst)}
+              showDestinos={showDestinos}
             />
           </div>
         </section>
@@ -262,10 +271,10 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
             <Item label="CFOP de entrada" value={data.guide?.cfopEntradaNota ?? "—"} emphasis />
           </dl>
           <div className="md:hidden">
-            <CstMatrix layout="stacked" ideal={data.compare.rule?.destinosCst} />
+            <CstMatrix layout="stacked" ideal={data.compare.rule?.destinosCst} showDestinos={showDestinos} extras={unica ? fichaExtras(data) : []} />
           </div>
           <div className="hidden md:block">
-            <CstMatrix ideal={data.compare.rule?.destinosCst} />
+            <CstMatrix ideal={data.compare.rule?.destinosCst} showDestinos={showDestinos} extras={unica ? fichaExtras(data) : []} />
           </div>
           <div>
             <h2 className="font-medium text-ink">Checklist na NF do fornecedor</h2>
@@ -313,8 +322,39 @@ function fichaExtras(data: Payload): MatrixExtraRow[] {
   const compraDiff = diffs.find((diff) => diff.campo === "CST compra / nota de entrada");
   const saidaDiff = diffs.find((diff) => diff.campo === "CST BAIFER");
   const mvaDiff = diffs.find((diff) => diff.campo === "MVA / IVA");
+  const abrevDiff = diffs.find((diff) => diff.campo === "Abreviação");
+  const cestDiff = diffs.find((diff) => diff.campo === "CEST");
+  const aliqDiff = diffs.find((diff) => diff.campo === "Alíquota interna DF");
+  const unica = isUnicaSituacao(rule?.situacaoCodigo);
 
-  if (compraDiff || product.cstCompra || rule?.cstEntrada) {
+  if (unica || abrevDiff || product.abreviacao || rule?.abreviacao) {
+    extras.push({
+      key: "abreviacao",
+      label: "Abreviação fiscal",
+      atual: abrevDiff?.atual ?? product.abreviacao,
+      ideal: abrevDiff?.ideal ?? rule?.abreviacao ?? product.abreviacao,
+    });
+  }
+
+  if (unica || cestDiff || product.cest || rule?.cest) {
+    extras.push({
+      key: "cest",
+      label: "CEST",
+      atual: cestDiff?.atual ?? product.cest,
+      ideal: cestDiff?.ideal ?? rule?.cest ?? product.cest,
+    });
+  }
+
+  if (unica || aliqDiff || product.aliquotaIcms) {
+    extras.push({
+      key: "aliquota",
+      label: "Alíquota interna DF",
+      atual: aliqDiff?.atual ?? product.aliquotaIcms,
+      ideal: aliqDiff?.ideal ?? rule?.ufTributacao?.DF?.aliqInterna ?? product.aliquotaIcms,
+    });
+  }
+
+  if (!unica && (compraDiff || product.cstCompra || rule?.cstEntrada)) {
     extras.push({
       key: "cstCompra",
       label: "CST de compra (entrada)",
@@ -324,7 +364,11 @@ function fichaExtras(data: Payload): MatrixExtraRow[] {
     });
   }
 
-  if (!hasDestinos(product.destinosCst) && (saidaDiff || product.cstUnico || rule?.cstSaida)) {
+  if (
+    !unica &&
+    !hasDestinos(product.destinosCst) &&
+    (saidaDiff || product.cstUnico || rule?.cstSaida)
+  ) {
     extras.push({
       key: "cstSaida",
       label: "CST da empresa (saída)",

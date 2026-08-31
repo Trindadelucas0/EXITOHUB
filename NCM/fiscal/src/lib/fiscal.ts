@@ -73,6 +73,10 @@ export function labelCampoFiscal(campo: string): string {
   return campo;
 }
 
+export function isUnicaSituacao(situacaoCodigo: string | null | undefined): boolean {
+  return situacaoCodigo === "TRIBUTACAO_UF";
+}
+
 export const UF_KEYS = ["DF", "GO", "MG"] as const;
 export type UfKey = (typeof UF_KEYS)[number];
 

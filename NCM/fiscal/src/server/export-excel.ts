@@ -57,6 +57,10 @@ function pairHeaders(): { header: string; width: number; key: string }[] {
     { header: "Status", width: 18, key: "status" },
     { header: "Situação", width: 14, key: "situacao" },
     { header: "Motivo", width: 48, key: "motivo" },
+    { header: "Abreviação (imp.)", width: 14, key: "abrev_imp" },
+    { header: "Abreviação (regra)", width: 14, key: "abrev_regra" },
+    { header: "CEST (imp.)", width: 14, key: "cest_imp" },
+    { header: "CEST (regra)", width: 14, key: "cest_regra" },
     { header: "CST entrada (imp.)", width: 16, key: "cstE_imp" },
     { header: "CST entrada (regra)", width: 16, key: "cstE_regra" },
     { header: "CST saída (imp.)", width: 14, key: "cstS_imp" },
@@ -100,6 +104,10 @@ function writeProductRow(sheet: Sheet, product: ExportProduct, outlineLevel: num
     product.status,
     product.situacao || "—",
     product.motivo,
+    showCst(product.abreviacaoAtual),
+    showCst(product.abreviacaoIdeal),
+    showCst(product.cestAtual),
+    showCst(product.cestIdeal),
     showCst(product.cstEntradaAtual),
     showCst(product.cstEntradaIdeal),
     showCst(product.cstSaidaAtual),
@@ -124,12 +132,14 @@ function writeProductRow(sheet: Sheet, product: ExportProduct, outlineLevel: num
   row.getCell(4).font = font({ size: 9, bold: true, color: { argb: argb(statusColor(product.status)) } });
 
   const pairs: [number, number, boolean][] = [
-    [7, 8, cellMismatch(product.cstEntradaAtual, product.cstEntradaIdeal)],
-    [9, 10, cellMismatch(product.cstSaidaAtual, product.cstSaidaIdeal)],
-    [12, 13, cellMismatch(product.mvaAtual, product.mvaIdeal)],
+    [7, 8, cellMismatch(product.abreviacaoAtual, product.abreviacaoIdeal)],
+    [9, 10, cellMismatch(product.cestAtual, product.cestIdeal)],
+    [11, 12, cellMismatch(product.cstEntradaAtual, product.cstEntradaIdeal)],
+    [13, 14, cellMismatch(product.cstSaidaAtual, product.cstSaidaIdeal)],
+    [16, 17, cellMismatch(product.mvaAtual, product.mvaIdeal)],
   ];
   DESTINO_KEYS.forEach((key, index) => {
-    const atualCol = 14 + index * 2;
+    const atualCol = 18 + index * 2;
     const idealCol = atualCol + 1;
     pairs.push([
       atualCol,
@@ -229,6 +239,8 @@ function writeRegras(wb: ExcelJS.Workbook, report: ExportReport) {
     "CFOP",
     ...DESTINO_KEYS.map((key) => DESTINO_SHORT_LABELS[key]),
     "Situação",
+    "Abrev.",
+    "CEST",
     "MVA",
   ];
   sheet.columns = [
@@ -239,6 +251,8 @@ function writeRegras(wb: ExcelJS.Workbook, report: ExportReport) {
     { width: 10 },
     ...DESTINO_KEYS.map(() => ({ width: 12 })),
     { width: 16 },
+    { width: 10 },
+    { width: 14 },
     { width: 12 },
   ];
   const headerRow = sheet.addRow(headers);
@@ -252,6 +266,8 @@ function writeRegras(wb: ExcelJS.Workbook, report: ExportReport) {
       showCst(rule.cfopSaida),
       ...DESTINO_KEYS.map((key) => showCst(rule.destinosCst[key])),
       rule.situacaoCodigo || rule.situacao,
+      showCst(rule.abreviacao),
+      showCst(rule.cest),
       showCst(rule.mvaTexto),
     ]);
     row.font = font({ size: 9 });
