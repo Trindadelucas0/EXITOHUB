@@ -11,6 +11,8 @@ Sistema web para o escritório conferir o cadastro importado contra a **base fis
 | Atacadista Unica (`Planilha3`, com `ABREVIACAO`) | Base fiscal oficial da Unica no seed (CEST + Abrev. + MVA/alíquota DF·GO·MG) |
 | `PLANILHA REGRA FISCAL UNICA.xlsx` | Variante sem coluna `ABREVIACAO` — import no update não apaga Abrev. já gravada |
 | `Planilha_Classes_Fiscais` | Cadastro Santri (tela **Planilhas**) — não vira base fiscal |
+| Listagem Egaplast `ncm.xls` (aba `Dados`) | Cadastro: CÓDIGO, NOME, NCM |
+| Relatório Egaplast de produtos (blocos) | Cadastro: SIT.TRIBUTÁRIA + IVA/ICM por UF (dedupe por código) |
 | `NCM_GERAL` / links | Ignoradas |
 
 As bases **não se misturam** (`companyId` em toda query). Em **Base fiscal → Importar regras**, o layout segue a empresa da sessão.
@@ -43,7 +45,7 @@ npm run dev
 
 Senha das empresas: `SEED_ADMIN_PASSWORD`. Senha do escritório: `SEED_SUPERADMIN_PASSWORD`. O seed **não apaga** planilhas já importadas. Para zerar só o cadastro: `SEED_RESET_CADASTRO=1 npm run db:seed`.
 
-4. Cadastro do cliente (export Santri, CSV Unica ou a aba `Planilha_Classes_Fiscais` do ODS) importa **um lote por arquivo** na empresa logada. Lotes anteriores ficam no histórico:
+4. Cadastro do cliente (export Santri, CSV Unica, listagem/relatório Egaplast ou a aba `Planilha_Classes_Fiscais` do ODS) importa **um lote por arquivo** na empresa logada. Aceita `.xlsx`, `.xls`, `.csv` e `.ods`. Lotes anteriores ficam no histórico:
 
 ```bash
 npm run import:cadastro

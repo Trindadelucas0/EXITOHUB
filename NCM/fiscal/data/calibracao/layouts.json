@@ -28,6 +28,47 @@
       "aprendidoEm": "2026-08-26"
     },
     {
+      "tipo": "cadastro",
+      "bancoOuOrigem": "Egaplast listagem NCM (.xls)",
+      "aba": "Dados",
+      "cabecalhosChave": [
+        "código",
+        "nome",
+        "origem",
+        "ncm"
+      ],
+      "ajustes": [
+        "upload .xls permitido só no cadastro (Planilhas)",
+        "pular títulos EGAPLAST / LISTAGEM CADASTRAL / TOTAL DE PRODUTOS",
+        "cabeçalho NOME mapeia para descricao",
+        "NCM célula 0 vira vazio (não 00000000)",
+        "aba Planilha1 vazia — usar Dados"
+      ],
+      "fixture": "tests/fixtures/cadastro-egaplast-ncm-2026-08-27.xls",
+      "aprendidoEm": "2026-08-31"
+    },
+    {
+      "tipo": "cadastro",
+      "bancoOuOrigem": "Egaplast relatório de produtos",
+      "aba": "Planilha1",
+      "cabecalhosChave": [
+        "código",
+        "origem",
+        "sit.tributária",
+        "ncm",
+        "iva/icm por uf"
+      ],
+      "ajustes": [
+        "layout em blocos: 1 linha produto + 4 linhas IVA/ICM (27 UFs)",
+        "sem coluna de nome — descricao = codigo",
+        "CST de SIT.TRIBUTÁRIA (00/10/51)",
+        "grava um MVA: SP se >0, senão primeiro UF >0 (parseIvaDecimal preserva ponto)",
+        "dedupe codigo+ncm+cst — ~1127 produtos únicos"
+      ],
+      "fixture": "tests/fixtures/cadastro-egaplast-relatorio-produtos.xlsx",
+      "aprendidoEm": "2026-08-31"
+    },
+    {
       "tipo": "regras",
       "bancoOuOrigem": "BAIFER",
       "aba": "BAIFER",
@@ -140,6 +181,19 @@
       "cfopSaida": "5102",
       "situacaoCodigo": "ST_INTERNO",
       "destinos": ["0", "0", "0", "0", "0", "0", "0", "0"]
+    },
+    "egaplastListagem": {
+      "10100": {
+        "ncm": "84818019",
+        "descricao": "KIT P/CX ACOP. EGAPRO ACION SUP UNIV"
+      },
+      "totalProdutos": 4153
+    },
+    "egaplastRelatorio": {
+      "950018": { "ncm": "32064990", "cstUnico": "0" },
+      "30790": { "ncm": "39172900", "cstUnico": "10" },
+      "990363": { "ncm": "", "cstUnico": "0" },
+      "totalUnicos": 1127
     },
     "unica": {
       "25202090": {

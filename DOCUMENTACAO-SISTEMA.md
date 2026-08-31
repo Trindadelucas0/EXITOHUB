@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.2.1 — Abrev. Unica na Base fiscal (seed Atacadista + ABREVIACAO).
+> Versão: 1.3 — parsers de cadastro Egaplast (.xls listagem + relatório em blocos).
 
 ## 1. Visão geral
 
@@ -101,6 +101,19 @@ Tela **Base fiscal** (`POST /ncm/api/rules/import`). Parser: [`import-rules.ts`]
 
 Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `Desc. Abrev. ICMS`) na tela **Planilhas** — não veio nestas planilhas de tributação. A coluna **Abrev.** da Base fiscal Unica vem da `ABREVIACAO` da planilha Atacadista (ex.: NCM `25202090` → `4`).
 
+### Import de cadastro (Planilhas)
+
+Tela **Planilhas** (`POST /ncm/api/import`). Parser: [`import-cadastro.ts`](NCM/fiscal/src/server/import-cadastro.ts). Extensões: `.xlsx`, `.xls`, `.csv`, `.ods` (até 8 MB).
+
+| Origem | Arquivo típico | O que lê |
+|--------|----------------|----------|
+| Santri | Relação de Classes Fiscais / aba `Planilha_Classes_Fiscais` | código, nome, NCM, 8 destinos, IVA compra |
+| Unica | CSV `Cód.Item` | NCM + CST/alíquota via Desc. Abrev. ICMS |
+| Egaplast listagem | `ncm.xls` (aba `Dados`) | CÓDIGO, NOME, NCM (NCM `0` → vazio); ~4153 produtos |
+| Egaplast relatório | `relatorio de produtos.xlsx` | blocos com SIT.TRIBUTÁRIA + IVA/ICM por UF; dedupe → ~1127 códigos |
+
+A conferência compara o lote com a **base fiscal da empresa da sessão**. Ainda **não** há empresa Egaplast nem base fiscal extraída dessas planilhas — importar o cadastro Egaplast numa empresa BAIFER/Loja/Unica classifica contra as regras daquela empresa.
+
 ## 8. Guia rápido
 
 1. Crie empresas nos módulos Conci e NCM.
@@ -108,5 +121,6 @@ Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `D
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu sem Folha/NCM.
 4. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar.
 5. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG (125 NCMs no seed; Abrev. preenchida a partir da Atacadista).
+6. Cadastro Egaplast: em **Planilhas**, envie o `.xls` de listagem ou o relatório `.xlsx` (aceita `.xls`). Sem empresa/base Egaplast, a conferência só mostra o lote contra a base da empresa aberta.
 
 Guia expandido: [`README.md`](README.md). Detalhe do auditor: [`NCM/fiscal/README.md`](NCM/fiscal/README.md).

@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.6.0 — 31/08/2026
+
+Adicionado:
+
+- Parsers de **cadastro Egaplast** (sem criar empresa nem base fiscal):
+  - listagem `.xls` (aba `Dados`: CÓDIGO, NOME, NCM; NCM `0` → vazio; ~4153 produtos);
+  - relatório `.xlsx` em blocos (SIT.TRIBUTÁRIA + IVA/ICM por UF; MVA grava SP ou primeiro UF > 0; dedupe → ~1127 códigos).
+- Upload de cadastro aceita `.xls` (allowlist + tela Planilhas).
+- Fixtures `cadastro-egaplast-ncm-2026-08-27.xls` e `cadastro-egaplast-relatorio-produtos.xlsx` + registro em `data/calibracao/layouts.json`.
+
 ## v1.5.1 — 31/08/2026
 
 Alterado:

@@ -8,7 +8,7 @@ Implementado neste MVP:
 - Tenant: `companyId` em toda query de negócio; IDOR → 404. O tenant é resolvido no servidor (`resolveCompanyScope`), nunca pelo cliente.
 - Escritório só lê produtos/regras da empresa que abriu explicitamente; sem empresa aberta as rotas fiscais devolvem `403`. Usuário de empresa ignora qualquer empresa ativa na sessão.
 - Cadastro de empresas e de usuários só para `superadmin`. Lista pública de empresas no login foi removida.
-- Upload: allowlist `.xlsx/.csv/.ods`, limite 8 MB, nome sanitizado.
+- Upload: allowlist `.xlsx/.xls/.csv/.ods`, limite 8 MB, nome sanitizado. (Base fiscal de regras continua tipicamente `.xlsx/.csv/.ods`; o `.xls` foi liberado para cadastro Egaplast.)
 - SQL via Prisma parametrizado; sem concatenação de input.
 - XSS: React escapa texto; PDF usa `escapeHtml` antes de interpolar.
 - CSRF: cookie SameSite=Lax + mesmas origens; não há cookie em domínio cruzado.

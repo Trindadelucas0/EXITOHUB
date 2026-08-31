@@ -8,6 +8,8 @@
 | `planilha-regra-fiscal-unica.xlsx` | Regras Unica canônicas (aba `NCM ATUALIZADO `; MVA/alíquota DF·GO·MG) |
 | `tributacao-ncm-unica-atacadista-2026-08-27.xlsx` | Mesmas regras Unica + coluna `ABREVIACAO` (aba `Planilha3`) |
 | `cadastro-teste.csv` | Cadastro mínimo para testes de import |
+| `cadastro-egaplast-ncm-2026-08-27.xls` | Listagem Egaplast (aba `Dados`: CÓDIGO, NOME, ORIGEM, NCM) |
+| `cadastro-egaplast-relatorio-produtos.xlsx` | Relatório Egaplast em blocos (SIT.TRIBUTÁRIA + IVA/ICM por UF) |
 
 Registro: `data/calibracao/layouts.json`.
 

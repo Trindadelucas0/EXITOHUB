@@ -1,7 +1,29 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import ExcelJS from "exceljs";
 import { describe, expect, it } from "vitest";
-import { parseCadastroBuffer, isJunkRow, parseDescAbrevIcms } from "./import-cadastro";
+import {
+  assertSafeUpload,
+  parseCadastroBuffer,
+  isJunkRow,
+  parseDescAbrevIcms,
+  parseIvaDecimal,
+  ncmFromCadastroCell,
+} from "./import-cadastro";
 import { normalizeNcm } from "./ncm";
+
+const EGAPLAST_XLS = path.join(
+  process.cwd(),
+  "tests",
+  "fixtures",
+  "cadastro-egaplast-ncm-2026-08-27.xls",
+);
+const EGAPLAST_RELATORIO = path.join(
+  process.cwd(),
+  "tests",
+  "fixtures",
+  "cadastro-egaplast-relatorio-produtos.xlsx",
+);
 
 describe("import cadastro", () => {
   it("lê fixture XLSX e não depende da aba Classes Fiscais", async () => {
@@ -189,5 +211,51 @@ describe("import cadastro", () => {
       cstUnico: null,
       aliquotaIcms: null,
     });
+  });
+
+  it("aceita extensão .xls no upload de cadastro", () => {
+    expect(assertSafeUpload("ncm.xls", 1000, "application/vnd.ms-excel")).toBe(".xls");
+    expect(assertSafeUpload("ncm.xls", 1000, "application/octet-stream")).toBe(".xls");
+  });
+
+  it("NCM 0/vazio não vira 00000000", () => {
+    expect(ncmFromCadastroCell("0")).toEqual({ ncm: "", ncmOriginal: "" });
+    expect(ncmFromCadastroCell("")).toEqual({ ncm: "", ncmOriginal: "" });
+    expect(ncmFromCadastroCell("84818019").ncm).toBe("84818019");
+  });
+
+  it("parseIvaDecimal preserva ponto decimal (não trata como milhar)", () => {
+    expect(parseIvaDecimal("1.5763")).toBeCloseTo(1.5763, 4);
+    expect(parseIvaDecimal("1.9551")).toBeCloseTo(1.9551, 4);
+    expect(parseIvaDecimal("0")).toBe(0);
+  });
+
+  it("lê listagem Egaplast ncm.xls (aba Dados)", () => {
+    const rows = parseCadastroBuffer(readFileSync(EGAPLAST_XLS), ".xls");
+    expect(rows.length).toBe(4153);
+    const gold = rows.find((r) => r.codigo === "10100");
+    expect(gold).toBeTruthy();
+    expect(gold?.ncm).toBe("84818019");
+    expect(gold?.descricao).toContain("KIT P/CX ACOP");
+    const semNcm = rows.filter((r) => !r.ncm);
+    expect(semNcm.length).toBeGreaterThanOrEqual(20);
+    expect(semNcm.every((r) => r.ncmOriginal === "")).toBe(true);
+  });
+
+  it("lê relatório Egaplast em blocos e deduplica códigos", () => {
+    const rows = parseCadastroBuffer(readFileSync(EGAPLAST_RELATORIO), ".xlsx");
+    expect(rows.length).toBe(1127);
+    const tributado = rows.find((r) => r.codigo === "950018");
+    expect(tributado?.ncm).toBe("32064990");
+    expect(tributado?.cstUnico).toBe("0");
+    const st = rows.find((r) => r.codigo === "30790");
+    expect(st?.ncm).toBe("39172900");
+    expect(st?.cstUnico).toBe("10");
+    expect(st?.ivaMvaNumero).toBeTruthy();
+    expect(st?.ivaMvaNumero ?? 0).toBeGreaterThan(0);
+    expect(st?.ivaMvaNumero ?? 0).toBeLessThan(100);
+    const semNcm = rows.find((r) => r.codigo === "990363");
+    expect(semNcm?.ncm).toBe("");
+    expect(semNcm?.cstUnico).toBe("0");
   });
 });

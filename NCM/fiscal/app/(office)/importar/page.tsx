@@ -38,7 +38,7 @@ export default function ImportarPage() {
     if (!canWrite) return;
     if (!file) {
       setStatus("error");
-      setMessage("Selecione um arquivo XLSX, CSV ou ODS.");
+      setMessage("Selecione um arquivo XLSX, XLS, CSV ou ODS.");
       return;
     }
     setStatus("loading");
@@ -115,20 +115,22 @@ export default function ImportarPage() {
           className="w-full max-w-xl rounded-lg border border-line bg-white p-4 shadow-panel sm:p-6"
         >
           <label htmlFor="arquivo" className="text-sm font-medium text-ink">
-            Arquivo (XLSX, CSV ou ODS, até 8 MB)
+            Arquivo (XLSX, XLS, CSV ou ODS, até 8 MB)
           </label>
           <input
             id="arquivo"
             name="arquivo"
             type="file"
-            accept=".xlsx,.csv,.ods"
+            accept=".xlsx,.xls,.csv,.ods"
             className="mt-2 block w-full text-base md:text-sm"
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
           />
           <p className="mt-3 text-xs text-ink-muted">
             Aceita vários layouts no mesmo fluxo: Santri/genérico (codigo, descricao, ncm, CST por
-            destinatário, CST compra, alíquota, IVA/MVA, CEST) e CSV Unica (Cód.Item, Novo NCM /
-            Classif. IPI, Desc. Abrev. ICMS). Cada arquivo vira um lote separado na conferência.
+            destinatário, CST compra, alíquota, IVA/MVA, CEST), listagem Egaplast (.xls com CÓDIGO /
+            NOME / NCM), relatório Egaplast em blocos (SIT.TRIBUTÁRIA + IVA por UF) e CSV Unica
+            (Cód.Item, Novo NCM / Classif. IPI, Desc. Abrev. ICMS). Cada arquivo vira um lote
+            separado na conferência.
           </p>
           {batches.length > 0 ? (
             <label className="mt-4 flex items-start gap-2 text-sm text-ink">
