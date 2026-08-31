@@ -3,8 +3,10 @@ import path from "node:path";
 import { dedupeParsedRules, parseRulesBuffer } from "../src/server/import-rules";
 
 const ROOT = process.cwd();
+const DEFAULT_SOURCE_SHEET = "Planilha3";
 const FIXTURE =
-  process.argv[2] || path.join(ROOT, "tests", "fixtures", "planilha-regra-fiscal-unica.xlsx");
+  process.argv[2] ||
+  path.join(ROOT, "tests", "fixtures", "tributacao-ncm-unica-atacadista-2026-08-27.xlsx");
 const DEST = process.argv[3] || path.join(ROOT, "data", "base-unica.json");
 
 function main() {
@@ -17,11 +19,12 @@ function main() {
   for (const rule of parsed) {
     counts[rule.situacaoCodigo] = (counts[rule.situacaoCodigo] ?? 0) + 1;
   }
+  const sourceSheet = DEFAULT_SOURCE_SHEET;
   const payload = {
     company: "unica",
     source: path.basename(FIXTURE),
-    sheet: "NCM ATUALIZADO ",
-    extractedSheets: ["NCM ATUALIZADO "],
+    sheet: sourceSheet,
+    extractedSheets: [sourceSheet],
     ignoredSheets: [],
     totalRules: parsed.length,
     uniqueNcm: new Set(parsed.map((r) => r.ncm)).size,
@@ -29,7 +32,7 @@ function main() {
     rules: parsed.map((rule) => ({
       company: "unica",
       sourceFile: path.basename(FIXTURE),
-      sourceSheet: "NCM ATUALIZADO ",
+      sourceSheet,
       ncm: rule.ncm,
       ncmOriginal: rule.ncmOriginal,
       segmento: rule.segmento,
@@ -45,7 +48,7 @@ function main() {
       observacao: null,
       cest: rule.cest,
       ipi: rule.ipi,
-      abreviacao: rule.abreviacao,
+      abreviacao: rule.abreviacao ?? null,
       reducao: rule.reducao,
       reducaoPercentual: rule.reducaoPercentual,
       ufTributacao: rule.ufTributacao,

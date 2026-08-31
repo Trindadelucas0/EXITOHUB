@@ -177,6 +177,7 @@ describe("calibração planilha Unica UF", () => {
 
     const emptyCest = rules.find((r) => r.ncm === "25202090");
     expect(emptyCest?.cest).toBeNull();
+    expect(emptyCest?.abreviacao).toBeUndefined();
     expect(emptyCest?.situacaoCodigo).toBe("TRIBUTACAO_UF");
     expect(emptyCest?.cstSaida).toBeNull();
     expect(emptyCest?.cfopSaida).toBeNull();
@@ -194,6 +195,12 @@ describe("calibração planilha Unica UF", () => {
     expect(tinta?.mvaPercentual).toBeCloseTo(50, 1);
   });
 
+  it("planilha Unica sem coluna ABREVIACAO deixa abreviacao undefined", () => {
+    const rules = parseRulesBuffer(readFileSync(UNICA_XLSX), { companyName: "Unica" });
+    expect(rules.length).toBe(125);
+    expect(rules.every((r) => r.abreviacao === undefined)).toBe(true);
+  });
+
   it("variante atacadista traz ABREVIACAO e os mesmos NCMs", () => {
     const canon = parseRulesBuffer(readFileSync(UNICA_XLSX), { companyName: "Unica" });
     const atac = parseRulesBuffer(readFileSync(UNICA_ATACADISTA_XLSX), { companyName: "Unica" });
@@ -204,6 +211,8 @@ describe("calibração planilha Unica UF", () => {
     expect(atac.map((r) => r.ncm).sort()).toEqual(canon.map((r) => r.ncm).sort());
     const first = atac.find((r) => r.ncm === "25202090");
     expect(first?.abreviacao).toBe("4");
+    expect(atac.find((r) => r.ncm === "27101230")?.abreviacao).toBe("3");
+    expect(atac.find((r) => r.ncm === "27150000")?.abreviacao).toBe("2");
     expect(first?.cest).toBeNull();
     expect(first?.ufTributacao?.MG.aliqInterna).toBe("18%");
   });

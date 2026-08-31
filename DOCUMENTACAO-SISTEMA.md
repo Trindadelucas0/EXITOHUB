@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.2 — empresa Unica no Auditor NCM e import de regras calibrado.
+> Versão: 1.2.1 — Abrev. Unica na Base fiscal (seed Atacadista + ABREVIACAO).
 
 ## 1. Visão geral
 
@@ -94,11 +94,12 @@ Tela **Base fiscal** (`POST /ncm/api/rules/import`). Parser: [`import-rules.ts`]
 
 | Empresa | Arquivo típico | Aba | O que grava |
 |---------|----------------|-----|-------------|
-| BAIFER | ODS aba `BAIFER` ou XLSX `TRIBUTACAO NCM BAIFER` (`Planilha1`) | matriz 8 destinos | CST/CFOP/MVA |
-| Loja | ODS aba `LOJA` ou XLSX Lojão (`Planilha1`) | matriz 8 destinos sem CST BAIFER | CFOP `5,405` → `5405` |
-| Unica | `PLANILHA REGRA FISCAL UNICA.xlsx` ou `TRIBUTACAO NCM UNICA ATACADISTA` (`Planilha3`) | NCM, CEST, MVA/alíquota DF·GO·MG | situação `TRIBUTACAO_UF` |
+| BAIFER | ODS aba `BAIFER` ou XLSX `TRIBUTACAO NCM BAIFER` (`Planilha1`) | matriz 8 destinos | CST/CFOP/MVA (sem coluna de abreviação) |
+| Loja | ODS aba `LOJA` ou XLSX Lojão (`Planilha1`) | matriz 8 destinos sem CST BAIFER | CFOP `5,405` → `5405` (sem coluna de abreviação) |
+| Unica (oficial / seed) | `TRIBUTACAO NCM UNICA ATACADISTA` (`Planilha3`) | NCM, CEST, **ABREVIACAO**, MVA/alíquota DF·GO·MG | situação `TRIBUTACAO_UF` + Abrev. na Base fiscal |
+| Unica (variante) | `PLANILHA REGRA FISCAL UNICA.xlsx` | mesmos campos **sem** `ABREVIACAO` | no update, coluna ausente **não apaga** abreviação já gravada |
 
-Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `Desc. Abrev. ICMS`) na tela **Planilhas** — não veio nestas planilhas de tributação.
+Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `Desc. Abrev. ICMS`) na tela **Planilhas** — não veio nestas planilhas de tributação. A coluna **Abrev.** da Base fiscal Unica vem da `ABREVIACAO` da planilha Atacadista (ex.: NCM `25202090` → `4`).
 
 ## 8. Guia rápido
 
@@ -106,6 +107,6 @@ Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `D
 2. Em `/admin/usuarios`, crie o login: marque Conciliação ou NCM, escolha empresa e papel.
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu sem Folha/NCM.
 4. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar.
-5. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST e alíquotas DF/GO/MG (125 NCMs no seed).
+5. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG (125 NCMs no seed; Abrev. preenchida a partir da Atacadista).
 
 Guia expandido: [`README.md`](README.md). Detalhe do auditor: [`NCM/fiscal/README.md`](NCM/fiscal/README.md).

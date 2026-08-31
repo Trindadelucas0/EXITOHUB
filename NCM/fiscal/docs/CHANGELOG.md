@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.5.1 — 31/08/2026
+
+Alterado:
+
+- Seed Unica passa a usar a planilha **Atacadista** (`Planilha3`) como fonte oficial → `base-unica.json` com as 125 `ABREVIACAO` preenchidas (ex.: `25202090` → `4`).
+- Parser: se a coluna `ABREVIACAO` não existir no arquivo, `abreviacao` fica `undefined`; no update de import, campo ausente **não apaga** abreviação já gravada.
+- BAIFER e Lojão continuam sem coluna de abreviação.
+
 ## v1.5.0 — 31/08/2026
 
 Adicionado:

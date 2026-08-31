@@ -111,10 +111,12 @@
         "CEST '-' vira null",
         "MVA gravado no campo mva* vem do Original DF; o restante fica em ufTributacao",
         "situação TRIBUTACAO_UF (sem CST/CFOP/8 destinos)",
-        "variante TRIBUTACAO NCM UNICA ATACADISTA tem coluna ABREVIACAO e aba Planilha3"
+        "fonte oficial do seed: TRIBUTACAO NCM UNICA ATACADISTA (Planilha3) com coluna ABREVIACAO",
+        "variante PLANILHA REGRA FISCAL UNICA.xlsx não tem ABREVIACAO — parse deixa undefined e import no update não apaga",
+        "BAIFER e Lojão não têm coluna de abreviação"
       ],
-      "fixture": "tests/fixtures/planilha-regra-fiscal-unica.xlsx",
-      "xlsxFixture": "tests/fixtures/tributacao-ncm-unica-atacadista-2026-08-27.xlsx",
+      "fixture": "tests/fixtures/tributacao-ncm-unica-atacadista-2026-08-27.xlsx",
+      "xlsxFixtureSemAbreviacao": "tests/fixtures/planilha-regra-fiscal-unica.xlsx",
       "aprendidoEm": "2026-08-31"
     }
   ],
@@ -142,9 +144,12 @@
     "unica": {
       "25202090": {
         "cest": null,
+        "abreviacao": "4",
         "aliq": { "DF": "20%", "GO": "19%", "MG": "18%" },
         "mvaOriginal": { "DF": null, "GO": null, "MG": null }
       },
+      "27101230": { "abreviacao": "3" },
+      "27150000": { "abreviacao": "2" },
       "32041700": {
         "cest": "24000200",
         "aliq": { "DF": "20%", "GO": "19%", "MG": "18%" },

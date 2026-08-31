@@ -33,7 +33,8 @@ export type ParsedRule = {
   mvaKind: string;
   cest: string | null;
   ipi: string | null;
-  abreviacao: string | null;
+  /** undefined = coluna ABREVIACAO ausente no arquivo (não apagar no update). */
+  abreviacao: string | null | undefined;
   reducao: boolean;
   reducaoPercentual: number | null;
   ufTributacao: UfTributacao | null;
@@ -237,7 +238,7 @@ function unicaExtras(): Pick<
   return {
     cest: null,
     ipi: null,
-    abreviacao: null,
+    abreviacao: undefined,
     reducao: false,
     reducaoPercentual: null,
     ufTributacao: null,
@@ -396,7 +397,7 @@ function rowToUnicaRule(raw: unknown[], map: UnicaColumnMap): ParsedRule | null 
     mvaKind: mva.mvaKind,
     cest: map.cest != null ? dashToNull(raw[map.cest]) : null,
     ipi: map.ipi != null ? dashToNull(raw[map.ipi]) : null,
-    abreviacao: map.abreviacao != null ? dashToNull(raw[map.abreviacao]) : null,
+    abreviacao: map.abreviacao != null ? dashToNull(raw[map.abreviacao]) : undefined,
     reducao,
     reducaoPercentual: reducaoMva.mvaPercentual,
     ufTributacao: ufTributacaoFilled(uf) ? uf : null,

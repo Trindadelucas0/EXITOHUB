@@ -8,7 +8,8 @@ Sistema web para o escritório conferir o cadastro importado contra a **base fis
 | --- | --- |
 | `BAIFER` (ODS) ou XLSX `TRIBUTACAO NCM BAIFER` (`Planilha1`) | Base fiscal da BAIFER |
 | `LOJA` (ODS) ou XLSX Lojão (`Planilha1`) | Base fiscal da Loja das Máquinas |
-| `PLANILHA REGRA FISCAL UNICA.xlsx` / atacadista (`Planilha3`) | Base fiscal da Unica (CEST + MVA/alíquota DF·GO·MG) |
+| Atacadista Unica (`Planilha3`, com `ABREVIACAO`) | Base fiscal oficial da Unica no seed (CEST + Abrev. + MVA/alíquota DF·GO·MG) |
+| `PLANILHA REGRA FISCAL UNICA.xlsx` | Variante sem coluna `ABREVIACAO` — import no update não apaga Abrev. já gravada |
 | `Planilha_Classes_Fiscais` | Cadastro Santri (tela **Planilhas**) — não vira base fiscal |
 | `NCM_GERAL` / links | Ignoradas |
 
@@ -63,11 +64,11 @@ npm run import:cadastro
 | ST nacional | CST 60 em todos, CFOP 5405; a entrada costuma ser 10 |
 | Redução | Entrada 20, CST 20, CFOP 5102; na base só Atacado costuma vir preenchido — a conferência completa os demais com o CST de saída |
 | Incompleta | CST/CFOP vazios → necessita análise |
-| Tributação por UF | Unica: NCM + CEST + MVA/alíquota DF, GO, MG (sem matriz de 8 destinos) |
+| Tributação por UF | Unica: NCM + CEST + Abrev. (Atacadista) + MVA/alíquota DF, GO, MG (sem matriz de 8 destinos; BAIFER/Lojão sem Abrev.) |
 | NCM com duas regras | Amarelo até vincular |
 | NCM mascarado | `82032010-2` e `82.03.20.10` → `82032010` |
 
-**Fonte BAIFER/Loja:** `ncm-atualizado.ods`. **Fonte Unica:** `tests/fixtures/planilha-regra-fiscal-unica.xlsx` → `data/base-unica.json`. Layout calibrado em `data/calibracao/layouts.json`.
+**Fonte BAIFER/Loja:** `ncm-atualizado.ods`. **Fonte Unica (seed):** `tests/fixtures/tributacao-ncm-unica-atacadista-2026-08-27.xlsx` (`Planilha3`) → `data/base-unica.json` (125 regras com `ABREVIACAO`). Layout calibrado em `data/calibracao/layouts.json`.
 
 ## Testes
 
