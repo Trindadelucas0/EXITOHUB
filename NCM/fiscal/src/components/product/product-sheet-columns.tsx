@@ -105,7 +105,7 @@ export const UNICA_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
     show: "md",
     className: "min-w-[9rem] max-w-[14rem] truncate",
     cell: (row) => <span title={row.segmento ?? ""}>{row.segmento || "—"}</span>,
-  },,
+  },
   {
     id: "abreviacao",
     header: "Abreviação",
