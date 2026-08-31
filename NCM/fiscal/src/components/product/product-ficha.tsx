@@ -336,7 +336,7 @@ function fichaExtras(data: Payload): MatrixExtraRow[] {
     });
   }
 
-  if (unica || cestDiff || product.cest || rule?.cest) {
+  if (cestDiff || product.cest) {
     extras.push({
       key: "cest",
       label: "CEST",
@@ -345,12 +345,12 @@ function fichaExtras(data: Payload): MatrixExtraRow[] {
     });
   }
 
-  if (unica || aliqDiff || product.aliquotaIcms) {
+  if (aliqDiff) {
     extras.push({
       key: "aliquota",
       label: "Alíquota interna DF",
-      atual: aliqDiff?.atual ?? product.aliquotaIcms,
-      ideal: aliqDiff?.ideal ?? rule?.ufTributacao?.DF?.aliqInterna ?? product.aliquotaIcms,
+      atual: aliqDiff.atual,
+      ideal: aliqDiff.ideal,
     });
   }
 
@@ -377,7 +377,7 @@ function fichaExtras(data: Payload): MatrixExtraRow[] {
     });
   }
 
-  if (mvaDiff || product.ivaMva || rule?.mvaTexto || rule?.mvaPercentual != null) {
+  if (mvaDiff || product.ivaMva || (!unica && (rule?.mvaTexto || rule?.mvaPercentual != null))) {
     const ruleMva =
       rule?.mvaPercentual != null ? String(rule.mvaPercentual) : rule?.mvaTexto ?? null;
     extras.push({

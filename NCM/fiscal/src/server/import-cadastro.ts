@@ -452,7 +452,7 @@ function toProduct(row: Record<string, unknown>): ParsedProduct | null {
   if (!codigo) return null;
 
   const fromAbrev = parseDescAbrevIcms(mapped.descAbrevIcms);
-  const aliquotaIcms = mapped.aliquotaIcms || fromAbrev.aliquotaIcms || null;
+  const aliquotaIcms = mapped.aliquotaIcms || null;
   const cstUnico = normalizeCst(mapped.cstUnico) ?? fromAbrev.cstUnico;
   const { ncm, ncmOriginal } = ncmFromCadastroCell(ncmCell);
 

@@ -331,4 +331,35 @@ describe("motor de comparação", () => {
     expect(bad.diffs.some((d) => d.campo === "Abreviação")).toBe(true);
     expect(bad.motivo).toMatch(/Abreviação/);
   });
+
+  it("Unica Desc. Abrev. ICMS 18 vs Aliq. DF 20% com Abreviação igual → CORRETO", () => {
+    const unica = rule({
+      id: "u1",
+      situacaoCodigo: "TRIBUTACAO_UF",
+      cstSaida: null,
+      cfopSaida: null,
+      cest: "1301100",
+      abreviacao: "2",
+      mvaPercentual: 41.34,
+      mvaTexto: "41.34%",
+      ufTributacao: {
+        DF: { original: "41.34%", ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "20%" },
+        GO: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "19%" },
+        MG: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "18%" },
+      },
+    });
+    const result = compareProduct(
+      product({
+        destinosCst: null,
+        cest: null,
+        aliquotaIcms: "18",
+        ivaMvaNumero: null,
+        abreviacao: "002",
+      }),
+      [unica],
+      null,
+    );
+    expect(result.status).toBe("CORRETO");
+    expect(result.diffs).toEqual([]);
+  });
 });

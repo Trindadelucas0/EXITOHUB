@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.3.2 — Unica: Abreviação na grade de Consulta e Divergências.
+> Versão: 1.3.3 — Unica: conferência de Abreviação sem confundir Desc. Abrev. ICMS com Aliq. DF.
 
 ## 1. Visão geral
 
@@ -101,7 +101,7 @@ Tela **Base fiscal** (`POST /ncm/api/rules/import`). Parser: [`import-rules.ts`]
 | Unica (oficial / seed) | `TRIBUTACAO NCM UNICA ATACADISTA` (`Planilha3`) | NCM, CEST, **ABREVIACAO**, MVA/alíquota DF·GO·MG | situação `TRIBUTACAO_UF` + Abrev. na Base fiscal |
 | Unica (variante) | `PLANILHA REGRA FISCAL UNICA.xlsx` | mesmos campos **sem** `ABREVIACAO` | no update, coluna ausente **não apaga** abreviação já gravada |
 
-Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `Novo Abreviação Fiscal`, `Desc. Abrev. ICMS`) na tela **Planilhas** — não veio nestas planilhas de tributação. A coluna **Abrev.** da Base fiscal Unica vem da `ABREVIACAO` da planilha Atacadista (ex.: NCM `25202090` → `4`). Na conferência Unica (`TRIBUTACAO_UF`), se cadastro e base tiverem Abreviação e forem diferentes após normalizar zeros à esquerda (`004` = `4`), o item fica **DIVERGENTE** no campo Abreviação. **Consulta e Divergências** da Unica mostram as colunas Abreviação, CEST, Aliq. DF e MVA (não a matriz de 8 destinatários). **BAIFER/Loja não comparam Abreviação.** `Desc. Abrev. ICMS` continua sendo só CST/alíquota.
+Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `Novo Abreviação Fiscal`, `Desc. Abrev. ICMS`) na tela **Planilhas** — não veio nestas planilhas de tributação. A coluna **Abrev.** da Base fiscal Unica vem da `ABREVIACAO` da planilha Atacadista (ex.: NCM `25202090` → `4`). Na conferência Unica (`TRIBUTACAO_UF`), o item fica **CORRETO** quando a Abreviação do cadastro bate com a da base (`004` = `4`); CEST e MVA só entram se o CSV trouxer esses campos. `Desc. Abrev. ICMS` (ex.: `000 18 0`) grava só o CST — **não** é comparado com a alíquota interna DF da base (senão o lote inteiro virava divergente). **Consulta e Divergências** da Unica mostram Abreviação, CEST, Aliq. DF (da base) e MVA. **BAIFER/Loja não comparam Abreviação.** Os corretos aparecem no **Panorama** e no filtro **Correto** da Consulta; a tela **Divergências** lista só o que não bateu.
 
 ### Import de cadastro (Planilhas)
 
@@ -122,7 +122,7 @@ A conferência compara o lote com a **base fiscal da empresa da sessão**. Ainda
 2. Em `/admin/usuarios`, crie o login: marque Conciliação ou NCM, escolha empresa e papel.
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu sem Folha/NCM.
 4. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar.
-5. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG (125 NCMs no seed; Abrev. preenchida a partir da Atacadista). Importe o CSV de produtos em **Planilhas**; em **Consulta** e **Divergências** a grade Unica mostra **Abreviação** (cadastro × base). A conferência marca **DIVERGENTE** se a Abreviação do cadastro diferir da Abrev. da base (ex.: `003` ≠ `4`).
+5. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG. Importe o CSV em **Planilhas**. No **Panorama**, o card **Corretos** são os itens cuja Abreviação bate com a base (`004` = `4`). **Divergências** mostra só o que não bateu (Abreviação diferente ou NCM fora da base).
 6. Cadastro Egaplast: em **Planilhas**, envie o `.xls` de listagem ou o relatório `.xlsx` (aceita `.xls`). Sem empresa/base Egaplast, a conferência só mostra o lote contra a base da empresa aberta.
 
 Guia expandido: [`README.md`](README.md). Detalhe do auditor: [`NCM/fiscal/README.md`](NCM/fiscal/README.md).

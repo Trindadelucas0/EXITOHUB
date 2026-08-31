@@ -189,13 +189,13 @@ describe("import cadastro", () => {
     expect(rows[0].ncm).toBe("32089039");
     expect(rows[0].abreviacao).toBe("004");
     expect(rows[0].cstUnico).toBe("10");
-    expect(rows[0].aliquotaIcms).toBe("18");
+    expect(rows[0].aliquotaIcms).toBeNull();
     expect(String(rows[0].cstUnico)).not.toMatch(/\//);
 
     expect(rows[1].codigo).toBe("23140");
     expect(rows[1].abreviacao).toBe("002");
     expect(rows[1].cstUnico).toBe("0");
-    expect(rows[1].aliquotaIcms).toBe("18");
+    expect(rows[1].aliquotaIcms).toBeNull();
 
     expect(rows[2].codigo).toBe("99999");
     expect(rows[2].abreviacao).toBe("017");
@@ -205,7 +205,7 @@ describe("import cadastro", () => {
     expect(rows[3].codigo).toBe("86566");
     expect(rows[3].abreviacao).toBe("003");
     expect(rows[3].cstUnico).toBe("60");
-    expect(rows[3].aliquotaIcms).toBe("0");
+    expect(rows[3].aliquotaIcms).toBeNull();
   });
 
   it("parseDescAbrevIcms extrai CST e alíquota do padrão Unica", () => {

@@ -112,22 +112,30 @@ export const UNICA_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
     header: "CEST",
     show: "md",
     className: "tabular",
-    cell: (row) => <CstCell compare atual={row.importado.cest} ideal={row.correto?.cest} />,
+    cell: (row) => (
+      <CstCell
+        compare={Boolean(row.importado.cest)}
+        atual={row.importado.cest}
+        ideal={row.correto?.cest}
+      />
+    ),
   },
   {
     id: "aliquota",
     header: "Aliq. DF",
     show: "lg",
-    cell: (row) => (
-      <CstCell compare atual={row.importado.aliquotaIcms} ideal={row.correto?.aliquotaIcms} />
-    ),
+    cell: (row) => row.correto?.aliquotaIcms ?? "—",
   },
   {
     id: "mva",
     header: "MVA",
     show: "lg",
     cell: (row) => (
-      <CstCell compare atual={row.importado.ivaMva} ideal={row.correto?.mva} />
+      <CstCell
+        compare={Boolean(row.importado.ivaMva)}
+        atual={row.importado.ivaMva}
+        ideal={row.correto?.mva}
+      />
     ),
   },
 ];

@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.6.3 — 31/08/2026
+
+Corrigido:
+
+- Conferência Unica **não** compara `Desc. Abrev. ICMS` (`000 18 0`) com a alíquota interna DF da base. Isso classificava o lote quase inteiro como **DIVERGENTE** e zerava os **Corretos**. Agora o CSV confere **Abreviação** (`004` = `4`); CEST e MVA só se o arquivo trouxer esses campos.
+- `Desc. Abrev. ICMS` continua gravando só o CST. Aliq. DF na grade Unica mostra o valor da base, sem marcar vermelho por causa do `18` do ERP.
+
 ## v1.6.2 — 31/08/2026
 
 Corrigido:

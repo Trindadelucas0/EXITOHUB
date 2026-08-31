@@ -1,5 +1,4 @@
 import { mvaRequiresAnalysis, normalizeCst } from "./ncm";
-import { parseMvaFields } from "./rule-classify";
 import {
   DESTINO_KEYS,
   DESTINO_LABELS,
@@ -305,18 +304,8 @@ function compareUnicaProduct(
       diffs.push({ campo: "CEST", atual: product.cest, ideal: rule.cest });
     }
   }
-  const aliqIdeal = rule.ufTributacao?.DF.aliqInterna ?? null;
-  if (product.aliquotaIcms && aliqIdeal) {
-    const atual = parseMvaFields(product.aliquotaIcms).mvaPercentual;
-    const ideal = parseMvaFields(aliqIdeal).mvaPercentual;
-    if (atual != null && ideal != null && Math.abs(atual - ideal) > 0.05) {
-      diffs.push({
-        campo: "Alíquota interna DF",
-        atual: product.aliquotaIcms,
-        ideal: aliqIdeal,
-      });
-    }
-  }
+  // Desc. Abrev. ICMS (ex. "000 18 0") é CST/alíquota do ERP, não a alíquota interna DF da base.
+  // Comparar os dois marcava o lote inteiro como DIVERGENTE.
   if (rule.mvaPercentual != null && product.ivaMvaNumero != null) {
     if (Math.abs(rule.mvaPercentual - product.ivaMvaNumero) > 0.05) {
       diffs.push({
