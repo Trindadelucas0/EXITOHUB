@@ -39,13 +39,14 @@ async function main() {
   }
   const company = await prisma.company.findFirst({ where: { slug: "egaplast" } });
   if (!company) throw new Error("Empresa Egaplast não encontrada");
+  const companyId = company.id;
 
-  await prisma.$executeRaw`SELECT set_config('app.company_id', ${company.id}, false)`;
+  await prisma.$executeRaw`SELECT set_config('app.company_id', ${companyId}, false)`;
 
   const incomingByKey = new Map(raw.rules.map((rule) => [`${rule.ncm}::${rule.situacaoCodigo}`, rule]));
   const uniqueIncoming = [...incomingByKey.values()];
   const existingRows = await prisma.fiscalNcmRule.findMany({
-    where: { companyId: company.id },
+    where: { companyId },
     select: { id: true, ncm: true, situacaoCodigo: true, _count: { select: { links: true } } },
   });
   const existing = existingRows.map((row) => ({
@@ -62,7 +63,7 @@ async function main() {
 
   function ruleData(rule: IncomingRule) {
     return {
-      companyId: company.id,
+      companyId,
       ncm: rule.ncm,
       ncmOriginal: rule.ncmOriginal,
       segmento: rule.segmento,
@@ -105,12 +106,12 @@ async function main() {
   }
 
   const ncm4012 = await prisma.fiscalNcmRule.findMany({
-    where: { companyId: company.id, ncm: "40129090" },
+    where: { companyId, ncm: "40129090" },
     select: { situacaoCodigo: true, cstSaida: true, ivaPorUf: true },
   });
   const counts = await prisma.fiscalNcmRule.groupBy({
     by: ["situacaoCodigo"],
-    where: { companyId: company.id },
+    where: { companyId },
     _count: true,
   });
   console.log(
