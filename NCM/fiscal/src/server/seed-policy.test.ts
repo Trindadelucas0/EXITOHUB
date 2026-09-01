@@ -48,4 +48,18 @@ describe("seed seguro", () => {
     expect(result.toDelete.map((item) => item.id)).toEqual(["gone"]);
     expect(result.toKeepOrphan.map((item) => item.id)).toEqual(["orphan"]);
   });
+
+  it("na Egaplast não apaga TRIBUTACAO_UF ao sincronizar o JSON CST+IVA", () => {
+    const result = classifyRuleSync(
+      [{ ncm: "40129090", situacaoCodigo: "ST_INTERNO" }],
+      [
+        { id: "cst", ncm: "40129090", situacaoCodigo: "ST_INTERNO", linked: false },
+        { id: "uf", ncm: "84818019", situacaoCodigo: "TRIBUTACAO_UF", linked: false },
+      ],
+      { keepSituacaoCodigos: ["TRIBUTACAO_UF"] },
+    );
+    expect(result.toUpdate.map((item) => item.id)).toEqual(["cst"]);
+    expect(result.toDelete).toEqual([]);
+    expect(result.toKeepOrphan.map((item) => item.id)).toEqual(["uf"]);
+  });
 });

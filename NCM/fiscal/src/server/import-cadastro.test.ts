@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import path from "node:path";
 import ExcelJS from "exceljs";
 import * as XLSX from "xlsx";
@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import {
   assertSafeUpload,
   parseCadastroBuffer,
+  parseEgaplastRelatorioAoa,
   isJunkRow,
   parseDescAbrevIcms,
   parseIvaDecimal,
@@ -307,5 +308,37 @@ describe("import cadastro", () => {
     expect(kit?.ivaPorUf?.SP).toBe("1.9424");
     expect(kit?.ivaPorUf?.AC).toBe("0");
     expect(egaplast.find((r) => r.codigo === "99999")?.cstUnico).toBeNull();
+  });
+
+  it("bloco IVA com linha em branco no meio lê RR–TO e SP", () => {
+    const rows = parseEgaplastRelatorioAoa([
+      ["CÓDIGO", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "ORIGEM", "SIT.TRIBUTÁRIA", "NCM"],
+      ["190001", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "0-NACIONAL", "10-TRIB.C/ SUBST", "40129090"],
+      ["", "IVA/ICM:", "AC", "1.5753", "AL", "1.5", "AM", "1.5", "AP", "1.5", "BA", "1.5", "CE", "1.5", "DF", "0"],
+      [],
+      ["", "IVA/ICM:", "ES", "1.5", "GO", "1.5", "MA", "1.5", "MG", "1.5", "MS", "1.5", "MT", "1.5", "PA", "1.5"],
+      ["", "IVA/ICM:", "PB", "1.5", "PE", "1.5", "PI", "1.5", "PR", "1.5", "RJ", "1.5", "RN", "1.5", "RO", "1.5"],
+      ["", "IVA/ICM:", "RR", "1.599", "RS", "1.6461", "SE", "1.5373", "SC", "1.595", "SP", "2.169", "TO", "1.5561"],
+    ]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].codigo).toBe("190001");
+    expect(rows[0].ncm).toBe("40129090");
+    expect(Number(rows[0].ivaPorUf?.SP)).toBeCloseTo(2.169, 3);
+    expect(rows[0].ivaPorUf?.RR).toBe("1.599");
+    expect(rows[0].ivaPorUf?.TO).toBe("1.5561");
+    expect(rows[0].ivaPorUf?.AC).toBe("1.5753");
+  });
+});
+
+const EGAPLAST_DESKTOP = path.join("C:", "Users", "trind", "Desktop", "planilha egaplast.xls");
+const describeDesktop = existsSync(EGAPLAST_DESKTOP) ? describe : describe.skip;
+
+describeDesktop("cadastro Egaplast no Desktop", () => {
+  it("produto 190001 / NCM 40129090 tem SP 2.169", () => {
+    const rows = parseCadastroBuffer(readFileSync(EGAPLAST_DESKTOP), ".xls", { companyName: "Egaplast" });
+    const p = rows.find((r) => r.codigo === "190001");
+    expect(p?.ncm).toBe("40129090");
+    expect(p?.cstUnico).toBe("10");
+    expect(Number(p?.ivaPorUf?.SP)).toBeCloseTo(2.169, 3);
   });
 });

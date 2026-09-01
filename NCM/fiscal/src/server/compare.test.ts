@@ -512,6 +512,40 @@ describe("conferência Egaplast", () => {
     expect(ok.diffs.some((d) => d.campo === "MVA / IVA")).toBe(false);
   });
 
+  it("CST+IVA 40129090 com SP 2.169 confere sem TRIBUTACAO_UF", () => {
+    const fiscal = egaplastRule({
+      id: "cst-iva",
+      ncm: "40129090",
+      ivaPorUf: { SP: "2.169", AC: "1.5753" },
+    });
+    const ok = compareProduct(
+      product({
+        ncm: "40129090",
+        destinosCst: null,
+        cstUnico: "10",
+        ivaMvaNumero: 2.169,
+        ivaPorUf: { SP: "2.169", AC: "1.5753" },
+      }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(ok.status).toBe("CORRETO");
+  });
+
+  it("Egaplast sem regra: o errado é o NCM", () => {
+    const fora = compareProduct(
+      product({ ncm: "40129090", ncmOriginal: "40129090", destinosCst: null, cstUnico: "10" }),
+      [],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(fora.status).toBe("DIVERGENTE");
+    expect(fora.motivo).toContain("O errado é o NCM");
+    expect(fora.motivo).toContain("40129090");
+    expect(fora.diffs[0]?.campo).toBe("NCM");
+  });
+
   it("CST+IVA: SP 1.9 vs 1.955 diverge na mesma unidade", () => {
     const fiscal = egaplastRule({
       id: "e1",

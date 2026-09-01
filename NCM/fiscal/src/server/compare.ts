@@ -155,6 +155,23 @@ export function compareProduct(
   }
 
   if (rulesForNcm.length === 0) {
+    const ncmAtual = product.ncm || product.ncmOriginal;
+    if (isEgaplastCompany(options.companySlug)) {
+      return {
+        status: "DIVERGENTE",
+        motivo: `O errado é o NCM. Como está: ${ncmAtual}. Como deve ficar: um NCM da Base fiscal.`,
+        diffs: [
+          {
+            campo: "NCM",
+            atual: ncmAtual,
+            ideal: "um NCM da Base fiscal",
+          },
+        ],
+        rule: null,
+        candidates: [],
+        needsLink: false,
+      };
+    }
     return {
       status: "DIVERGENTE",
       motivo:
@@ -162,7 +179,7 @@ export function compareProduct(
       diffs: [
         {
           campo: "NCM",
-          atual: product.ncmOriginal || product.ncm,
+          atual: ncmAtual,
           ideal: "NCM da base fiscal (este código não está na regra da empresa)",
         },
       ],

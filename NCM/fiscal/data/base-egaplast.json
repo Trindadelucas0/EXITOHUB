@@ -224,8 +224,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.4449,
-      "mvaTexto": "1.4449",
+      "mvaPercentual": 1.7922,
+      "mvaTexto": "1.7922",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -256,12 +256,12 @@
         "RJ": "1.5344",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.9402",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7922",
+        "TO": "0"
       }
     },
     {
@@ -286,8 +286,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.4449,
-      "mvaTexto": "1.4449",
+      "mvaPercentual": 1.7922,
+      "mvaTexto": "1.7922",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -318,12 +318,12 @@
         "RJ": "1.5344",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.9402",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7922",
+        "TO": "0"
       }
     },
     {
@@ -348,8 +348,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.4449,
-      "mvaTexto": "1.4449",
+      "mvaPercentual": 1.7922,
+      "mvaTexto": "1.7922",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -380,12 +380,12 @@
         "RJ": "1.5344",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.9402",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7922",
+        "TO": "0"
       }
     },
     {
@@ -442,12 +442,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -472,8 +472,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.6474,
-      "mvaTexto": "1.6474",
+      "mvaPercentual": 1.8732,
+      "mvaTexto": "1.8732",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -504,12 +504,12 @@
         "RJ": "1.9446",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.9546",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8732",
+        "TO": "0"
       }
     },
     {
@@ -596,8 +596,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.5319,
-      "mvaTexto": "1.5319",
+      "mvaPercentual": 2.082,
+      "mvaTexto": "2.082",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -628,12 +628,12 @@
         "RJ": "1.681",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.7918",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.082",
+        "TO": "0"
       }
     },
     {
@@ -658,8 +658,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.5319,
-      "mvaTexto": "1.5319",
+      "mvaPercentual": 2.082,
+      "mvaTexto": "2.082",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -690,12 +690,12 @@
         "RJ": "1.681",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.7918",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.082",
+        "TO": "0"
       }
     },
     {
@@ -720,8 +720,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.5319,
-      "mvaTexto": "1.5319",
+      "mvaPercentual": 2.082,
+      "mvaTexto": "2.082",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -752,12 +752,12 @@
         "RJ": "1.681",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.7918",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.082",
+        "TO": "0"
       }
     },
     {
@@ -814,12 +814,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -876,12 +876,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -968,8 +968,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.4775,
-      "mvaTexto": "1.4775",
+      "mvaPercentual": 2.1463,
+      "mvaTexto": "2.1463",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -1000,12 +1000,12 @@
         "RJ": "1.6359",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.7918",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.1463",
+        "TO": "0"
       }
     },
     {
@@ -1030,8 +1030,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.6119,
-      "mvaTexto": "1.6119",
+      "mvaPercentual": 2.3415,
+      "mvaTexto": "2.3415",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -1062,12 +1062,12 @@
         "RJ": "1.7846",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.9546",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.3415",
+        "TO": "0"
       }
     },
     {
@@ -1124,12 +1124,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -1154,8 +1154,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.5753,
-      "mvaTexto": "1.5753",
+      "mvaPercentual": 2.169,
+      "mvaTexto": "2.169",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -1186,12 +1186,12 @@
         "RJ": "1.595",
         "RN": "1.5561",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "1.599",
+        "RS": "1.6461",
+        "SE": "1.5373",
+        "SC": "1.595",
+        "SP": "2.169",
+        "TO": "1.5561"
       }
     },
     {
@@ -1372,12 +1372,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -1434,12 +1434,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -1496,12 +1496,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -1558,12 +1558,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -1682,12 +1682,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -1712,8 +1712,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.5319,
-      "mvaTexto": "1.5319",
+      "mvaPercentual": 2.082,
+      "mvaTexto": "2.082",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -1744,12 +1744,12 @@
         "RJ": "1.681",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.7918",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.082",
+        "TO": "0"
       }
     },
     {
@@ -1806,12 +1806,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -1836,8 +1836,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.7912,
+      "mvaTexto": "1.7912",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -1868,12 +1868,12 @@
         "RJ": "1.8831",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7912",
+        "TO": "0"
       }
     },
     {
@@ -1960,8 +1960,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.7912,
+      "mvaTexto": "1.7912",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -1992,12 +1992,12 @@
         "RJ": "1.8831",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7912",
+        "TO": "0"
       }
     },
     {
@@ -2054,12 +2054,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -2116,12 +2116,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -2178,12 +2178,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -2270,8 +2270,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.6711,
-      "mvaTexto": "1.6711",
+      "mvaPercentual": 1.9668,
+      "mvaTexto": "1.9668",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -2302,12 +2302,12 @@
         "RJ": "1.7723",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.92",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9668",
+        "TO": "0"
       }
     },
     {
@@ -2332,8 +2332,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.5319,
-      "mvaTexto": "1.5319",
+      "mvaPercentual": 1.8029,
+      "mvaTexto": "1.8029",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -2364,12 +2364,12 @@
         "RJ": "1.6246",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.76",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8029",
+        "TO": "0"
       }
     },
     {
@@ -2426,12 +2426,12 @@
         "RJ": "1.7036",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.7918",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -2488,12 +2488,12 @@
         "RJ": "1.7036",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.7918",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -2550,12 +2550,12 @@
         "RJ": "1.7036",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.7918",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -2612,12 +2612,12 @@
         "RJ": "1.7036",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.7918",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -2674,12 +2674,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -2828,8 +2828,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.8015,
-      "mvaTexto": "1.8015",
+      "mvaPercentual": 2.9151,
+      "mvaTexto": "2.9151",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -2860,12 +2860,12 @@
         "RJ": "2.2154",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "2.3479",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.9151",
+        "TO": "0"
       }
     },
     {
@@ -2890,8 +2890,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.6514,
-      "mvaTexto": "1.6514",
+      "mvaPercentual": 2.6722,
+      "mvaTexto": "2.6722",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -2922,12 +2922,12 @@
         "RJ": "2.0308",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "2.1522",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.6722",
+        "TO": "0"
       }
     },
     {
@@ -2952,8 +2952,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.4232,
-      "mvaTexto": "1.4232",
+      "mvaPercentual": 1.9102,
+      "mvaTexto": "1.9102",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -2984,12 +2984,12 @@
         "RJ": "1.5005",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.6221",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9102",
+        "TO": "0"
       }
     },
     {
@@ -3014,8 +3014,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.4232,
-      "mvaTexto": "1.4232",
+      "mvaPercentual": 1.9102,
+      "mvaTexto": "1.9102",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3046,12 +3046,12 @@
         "RJ": "1.5005",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.6221",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9102",
+        "TO": "0"
       }
     },
     {
@@ -3076,8 +3076,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.7778,
-      "mvaTexto": "1.7778",
+      "mvaPercentual": 1.56,
+      "mvaTexto": "1.56",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3108,12 +3108,12 @@
         "RJ": "1.7723",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.56",
+        "TO": "0"
       }
     },
     {
@@ -3138,8 +3138,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.7778,
-      "mvaTexto": "1.7778",
+      "mvaPercentual": 1.56,
+      "mvaTexto": "1.56",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3170,12 +3170,12 @@
         "RJ": "1.7723",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.56",
+        "TO": "0"
       }
     },
     {
@@ -3262,8 +3262,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.8029,
+      "mvaTexto": "1.8029",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3294,12 +3294,12 @@
         "RJ": "1.8338",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8029",
+        "TO": "0"
       }
     },
     {
@@ -3356,12 +3356,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -3386,8 +3386,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.8029,
+      "mvaTexto": "1.8029",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3418,12 +3418,12 @@
         "RJ": "1.8338",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8029",
+        "TO": "0"
       }
     },
     {
@@ -3448,8 +3448,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.8263,
+      "mvaTexto": "1.8263",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3480,12 +3480,12 @@
         "RJ": "1.8215",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8263",
+        "TO": "0"
       }
     },
     {
@@ -3572,8 +3572,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.7678,
+      "mvaTexto": "1.7678",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3604,12 +3604,12 @@
         "RJ": "1.92",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7678",
+        "TO": "0"
       }
     },
     {
@@ -3634,8 +3634,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.8263,
+      "mvaTexto": "1.8263",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3666,12 +3666,12 @@
         "RJ": "1.9692",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8263",
+        "TO": "0"
       }
     },
     {
@@ -3696,8 +3696,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.8263,
+      "mvaTexto": "1.8263",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3728,12 +3728,12 @@
         "RJ": "1.9692",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8263",
+        "TO": "0"
       }
     },
     {
@@ -3758,8 +3758,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.8263,
+      "mvaTexto": "1.8263",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3790,12 +3790,12 @@
         "RJ": "1.9692",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8263",
+        "TO": "0"
       }
     },
     {
@@ -3820,8 +3820,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.165,
-      "mvaTexto": "1.165",
+      "mvaPercentual": 1.6741,
+      "mvaTexto": "1.6741",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -3852,12 +3852,12 @@
         "RJ": "1.8051",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.6741",
+        "TO": "0"
       }
     },
     {
@@ -3976,12 +3976,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -4006,8 +4006,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.7778,
-      "mvaTexto": "1.7778",
+      "mvaPercentual": 1.9317,
+      "mvaTexto": "1.9317",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -4038,12 +4038,12 @@
         "RJ": "1.9977",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9317",
+        "TO": "0"
       }
     },
     {
@@ -4068,8 +4068,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.7778,
-      "mvaTexto": "1.7778",
+      "mvaPercentual": 1.9317,
+      "mvaTexto": "1.9317",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -4100,12 +4100,12 @@
         "RJ": "1.9977",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9317",
+        "TO": "0"
       }
     },
     {
@@ -4130,8 +4130,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.7795,
+      "mvaTexto": "1.7795",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -4162,12 +4162,12 @@
         "RJ": "1.8338",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7795",
+        "TO": "0"
       }
     },
     {
@@ -4224,12 +4224,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -4348,12 +4348,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -4378,8 +4378,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.6119,
-      "mvaTexto": "1.6119",
+      "mvaPercentual": 2.2595,
+      "mvaTexto": "2.2595",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -4410,12 +4410,12 @@
         "RJ": "1.8092",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "2.0934",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.2595",
+        "TO": "0"
       }
     },
     {
@@ -4440,8 +4440,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.4775,
-      "mvaTexto": "1.4775",
+      "mvaPercentual": 2.0712,
+      "mvaTexto": "2.0712",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -4472,12 +4472,12 @@
         "RJ": "1.6585",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.919",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.0712",
+        "TO": "0"
       }
     },
     {
@@ -4534,12 +4534,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -4658,12 +4658,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -4720,12 +4720,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -4782,12 +4782,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -4844,12 +4844,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -4968,12 +4968,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -4998,8 +4998,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.7778,
-      "mvaTexto": "1.7778",
+      "mvaPercentual": 1.7561,
+      "mvaTexto": "1.7561",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -5030,12 +5030,12 @@
         "RJ": "1.7777",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7561",
+        "TO": "0"
       }
     },
     {
@@ -5092,12 +5092,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -5122,8 +5122,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.4558,
-      "mvaTexto": "1.4558",
+      "mvaPercentual": 1.9424,
+      "mvaTexto": "1.9424",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -5154,12 +5154,12 @@
         "RJ": "1.6585",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.813",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9424",
+        "TO": "0"
       }
     },
     {
@@ -5184,8 +5184,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.5881,
-      "mvaTexto": "1.5881",
+      "mvaPercentual": 2.119,
+      "mvaTexto": "2.119",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -5216,12 +5216,12 @@
         "RJ": "1.8092",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.9778",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.119",
+        "TO": "0"
       }
     },
     {
@@ -5370,8 +5370,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.5763,
-      "mvaTexto": "1.5763",
+      "mvaPercentual": 1.9551,
+      "mvaTexto": "1.9551",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -5402,12 +5402,12 @@
         "RJ": "1.6738",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "2.1166",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9551",
+        "TO": "0"
       }
     },
     {
@@ -5432,8 +5432,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.5881,
-      "mvaTexto": "1.5881",
+      "mvaPercentual": 2.119,
+      "mvaTexto": "2.119",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -5464,12 +5464,12 @@
         "RJ": "1.8092",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.9778",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.119",
+        "TO": "0"
       }
     },
     {
@@ -5494,8 +5494,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.4558,
-      "mvaTexto": "1.4558",
+      "mvaPercentual": 1.9424,
+      "mvaTexto": "1.9424",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -5526,12 +5526,12 @@
         "RJ": "1.6585",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.813",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9424",
+        "TO": "0"
       }
     },
     {
@@ -5556,8 +5556,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.5881,
-      "mvaTexto": "1.5881",
+      "mvaPercentual": 2.119,
+      "mvaTexto": "2.119",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -5588,12 +5588,12 @@
         "RJ": "1.8092",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.9778",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.119",
+        "TO": "0"
       }
     },
     {
@@ -5650,12 +5650,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -5680,8 +5680,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.4558,
-      "mvaTexto": "1.4558",
+      "mvaPercentual": 1.9424,
+      "mvaTexto": "1.9424",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -5712,12 +5712,12 @@
         "RJ": "1.6585",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.813",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9424",
+        "TO": "0"
       }
     },
     {
@@ -5742,8 +5742,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.4558,
-      "mvaTexto": "1.4558",
+      "mvaPercentual": 1.9424,
+      "mvaTexto": "1.9424",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -5774,12 +5774,12 @@
         "RJ": "1.6585",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "1.813",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9424",
+        "TO": "0"
       }
     },
     {
@@ -5836,12 +5836,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -5960,12 +5960,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -6022,12 +6022,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -6084,12 +6084,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -6146,12 +6146,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "1.6099",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -6270,12 +6270,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "1.6099",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -6332,12 +6332,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -6394,12 +6394,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -6456,12 +6456,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -6548,8 +6548,8 @@
       },
       "situacao": "Regra geral",
       "situacaoCodigo": "REGRA_GERAL",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.8966,
+      "mvaTexto": "1.8966",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -6580,12 +6580,12 @@
         "RJ": "1.92",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8966",
+        "TO": "0"
       }
     },
     {
@@ -6610,8 +6610,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.245,
-      "mvaTexto": "1.245",
+      "mvaPercentual": 1.8966,
+      "mvaTexto": "1.8966",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -6642,12 +6642,12 @@
         "RJ": "1.92",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8966",
+        "TO": "0"
       }
     },
     {
@@ -6672,8 +6672,8 @@
       },
       "situacao": "ST interno",
       "situacaoCodigo": "ST_INTERNO",
-      "mvaPercentual": 1.5763,
-      "mvaTexto": "1.5763",
+      "mvaPercentual": 2.0839,
+      "mvaTexto": "2.0839",
       "mvaKind": "numeric",
       "observacao": null,
       "cest": null,
@@ -6704,12 +6704,12 @@
         "RJ": "1.8632",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.0839",
+        "TO": "0"
       }
     },
     {
@@ -6766,12 +6766,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "1.6099",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -6828,12 +6828,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -6952,12 +6952,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -7014,12 +7014,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -7076,12 +7076,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -7138,12 +7138,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -7262,12 +7262,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {
@@ -7324,12 +7324,12 @@
         "RJ": "0",
         "RN": "0",
         "RO": "0",
-        "RR": null,
-        "RS": null,
-        "SE": null,
-        "SC": null,
-        "SP": null,
-        "TO": null
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
       }
     },
     {

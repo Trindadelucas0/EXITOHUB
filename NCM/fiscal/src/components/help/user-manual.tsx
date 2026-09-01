@@ -116,10 +116,13 @@ export function UserManual() {
           <p>
             Clique na linha para abrir a ficha. Lá aparece o cadastro importado ao lado do que a
             regra manda. Na Unica a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz
-            de destinatários da BAIFER). Na Egaplast mostra segmento, CST, origem e o bloco IVA/ICMS
-            das 27 UFs. Com TRIBUTACAO NCM o NCM na base fica correto; o fator IVA do cadastro não é
-            comparado com o percentual MVA da planilha. A tributação correta não vem do cadastro:
-            vem da regra daquele NCM.
+            de destinatários da BAIFER). Na Egaplast a ficha lista IVA/ICMS em 27 linhas (UF,
+            Importado, Como deve ficar). Consulta e Divergências mostram só SP e pedem para abrir a
+            ficha. Com TRIBUTACAO NCM o NCM na base fica correto; o fator IVA do cadastro não é
+            comparado com o percentual MVA da planilha. Se o NCM estiver só na Planilha1, CST e IVA
+            corretos vêm dessa regra. Se o NCM não existir em nenhuma base, o errado é o NCM — busque
+            o código certo em Base fiscal. A tributação correta não vem do cadastro: vem da regra
+            daquele NCM.
           </p>
           <p>
             Se o NCM tiver duas regras, a ficha pede para vincular a hipótese. Só o administrador
@@ -135,7 +138,8 @@ export function UserManual() {
           </p>
           <p>
             Clique na linha para expandir: o que veio errado no importado e como deve ficar. Na Unica
-            a coluna Abreviação compara o cadastro com a Abrev. da base. Na Egaplast, com TRIBUTACAO NCM, o NCM na base fica correto; o bloco IVA/ICMS só fica vermelho se a base CST+IVA da mesma unidade divergir.
+            a coluna Abreviação compara o cadastro com a Abrev. da base. Na Egaplast a lista mostra SP
+            e “ver ficha”; vermelho no IVA só se a regra CST+IVA da mesma UF divergir.
           </p>
           <p>
             Quando a regra daquele NCM estiver certa para todos os itens da fila, dá para marcar o
@@ -236,8 +240,9 @@ export function UserManual() {
           </p>
           <p>
             A tela mostra NCM do cadastro, NCM da regra, CST da nota de entrada, CST da empresa,
-            CFOP, MVA e um checklist. Na Egaplast aparece o bloco IVA/ICMS por UF (código, origem, CST, NCM),
-            sem a matriz de 8 destinatários da BAIFER. Se o cadastro ainda divergir, o alerta aparece no topo.
+            CFOP, MVA e um checklist. Na Egaplast a tabela IVA/ICMS tem uma linha por UF (Importado e
+            Como deve ficar), com código, origem, CST e NCM no topo. Sem matriz de 8 destinatários da
+            BAIFER. Se o cadastro ainda divergir, o alerta aparece no topo.
           </p>
         </ManualCard>
 
@@ -245,7 +250,8 @@ export function UserManual() {
           <p>
             Aqui ficam as regras da empresa: um NCM, uma regra (às vezes duas hipóteses), para todos
             os produtos daquele NCM. Produtos da planilha não entram nesta tela. Na Egaplast importe
-            `TRIBUTACAO NCM EGAPLAST` (NCM, CEST, segmento, alíquotas por UF) ou o `.xls` com Dados e Planilha1.
+            `TRIBUTACAO NCM EGAPLAST` (NCM, CEST, segmento, alíquotas por UF) e, se precisar de CST+IVA,
+            o `.xls` com Dados e Planilha1 — as duas bases convivem; o seed não apaga TRIBUTACAO_UF.
           </p>
           <p>
             O administrador cadastra, edita, exclui regra a regra, importa a planilha ou exclui a

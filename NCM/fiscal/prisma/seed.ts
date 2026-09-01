@@ -236,6 +236,7 @@ async function syncRules(spec: CompanySeed, incoming: ExtractedRule[]) {
   const plan = classifyRuleSync(
     uniqueIncoming.map((rule) => ({ ncm: rule.ncm, situacaoCodigo: rule.situacaoCodigo })),
     existing,
+    spec.slug === "egaplast" ? { keepSituacaoCodigos: ["TRIBUTACAO_UF"] } : {},
   );
 
   for (const item of plan.toUpdate) {

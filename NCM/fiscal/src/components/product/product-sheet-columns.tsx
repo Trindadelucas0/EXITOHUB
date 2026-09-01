@@ -190,7 +190,6 @@ export const EGAPLAST_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = 
           compact
           atual={atual}
           ideal={ideal}
-          matched={row.status === "CORRETO"}
           compare={row.status === "DIVERGENTE" && hasFilledIvaPorUf(ideal)}
         />
       );

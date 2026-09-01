@@ -155,6 +155,16 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
   const ivaAtual = data.product.ivaPorUf;
   const ivaIdeal = data.compare.rule?.ivaPorUf;
   const showIvaBlock = egaplast && (hasFilledIvaPorUf(ivaAtual) || hasFilledIvaPorUf(ivaIdeal));
+  const ncmDiff = data.compare.diffs.find((diff) => diff.campo === "NCM");
+  const cstDiff = data.compare.diffs.find((diff) => diff.campo === "CST saída");
+  const hasTributacaoUf =
+    data.compare.rule?.situacaoCodigo === "TRIBUTACAO_UF" ||
+    data.compare.candidates.some((item) => item.situacaoCodigo === "TRIBUTACAO_UF");
+  const cstIvaSemTributacao =
+    egaplast &&
+    Boolean(data.compare.rule) &&
+    data.compare.rule?.situacaoCodigo !== "TRIBUTACAO_UF" &&
+    !hasTributacaoUf;
 
   return (
     <div className="grid gap-6">
@@ -208,6 +218,21 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
           </p>
         )}
         <p className="text-sm text-ink">{data.compare.motivo}</p>
+        {egaplast && ncmDiff && !data.compare.rule ? (
+          <p className="rounded-md border border-status-bad bg-status-bad-bg px-3 py-2 text-sm text-status-bad">
+            O errado é o NCM. Como está: {ncmDiff.atual}. Como deve ficar: um NCM da{" "}
+            <Link href="/base-fiscal" className="font-medium underline">
+              Base fiscal
+            </Link>
+            . Sem esse NCM, CST e IVA não têm regra para conferir.
+          </p>
+        ) : null}
+        {cstIvaSemTributacao ? (
+          <p className="rounded-md border border-line bg-paper-sunken px-3 py-2 text-sm text-ink-muted">
+            Este NCM não está na planilha TRIBUTACAO NCM. CST e IVA corretos vêm da Planilha1
+            (cadastro CST+IVA).
+          </p>
+        ) : null}
       </section>
 
       {data.compare.needsLink ? (
@@ -231,7 +256,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
         </div>
       ) : null}
 
-      {mode === "entrada" && visibleDiffs.length > 0 ? (
+      {visibleDiffs.length > 0 ? (
         <section className="grid gap-2 rounded-lg border border-line bg-white p-4 shadow-panel sm:p-5">
           <h2 className="text-sm font-medium text-ink">
             O que veio errado no importado e como deve ficar
@@ -288,8 +313,9 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
                 ncm={data.product.ncm}
                 atual={ivaAtual}
                 ideal={ivaIdeal}
-                matched={data.compare.status === "CORRETO"}
-                compare={data.compare.status === "DIVERGENTE" && hasFilledIvaPorUf(ivaIdeal)}
+                compare={hasFilledIvaPorUf(ivaIdeal)}
+                mismatchCst={Boolean(cstDiff)}
+                mismatchNcm={Boolean(ncmDiff)}
               />
               <dl className="grid gap-3 sm:grid-cols-2">
                 <Item label="Situação" value={data.guide?.situacao ?? "—"} />
@@ -364,8 +390,9 @@ function EgaplastFicha({ data, showIvaBlock }: { data: Payload; showIvaBlock: bo
         ncm={data.product.ncm}
         atual={ivaAtual}
         ideal={ivaIdeal}
-        matched={data.compare.status === "CORRETO"}
-        compare={data.compare.status === "DIVERGENTE" && hasFilledIvaPorUf(ivaIdeal)}
+        compare={hasFilledIvaPorUf(ivaIdeal)}
+        mismatchCst={Boolean(data.compare.diffs.find((diff) => diff.campo === "CST saída"))}
+        mismatchNcm={Boolean(data.compare.diffs.find((diff) => diff.campo === "NCM"))}
       />
       {!showIvaBlock ? (
         <p className="text-sm text-ink-muted">

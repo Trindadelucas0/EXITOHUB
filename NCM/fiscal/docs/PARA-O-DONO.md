@@ -16,7 +16,7 @@ O Auditor Fiscal BAIFER é um sistema interno do escritório. Ele **não substit
 - Classifica cada produto como **correto**, **divergente** ou **necessita análise**.
 - Em **Divergências**, mostra primeiro **quantos NCMs** estão errados; um clique filtra a grade.
 - Em **Consulta** e **Divergências** da Unica, a barra tem **Filtrar segmento**; a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz de 8 destinatários da BAIFER).
-- Em **Consulta** e **Divergências** da Egaplast, o mesmo filtro de segmento agrupa o cadastro; com `TRIBUTACAO NCM EGAPLAST` a conferência é NCM na base (CEST se o cadastro tiver CEST). O IVA aparece no bloco das 27 UFs; vermelho só contra a regra CST+IVA na mesma UF. **Como dar entrada** não usa a matriz da BAIFER.
+- Em **Consulta** e **Divergências** da Egaplast, o mesmo filtro de segmento agrupa o cadastro; com `TRIBUTACAO NCM EGAPLAST` a conferência é NCM na base (CEST se o cadastro tiver CEST). A lista mostra SP; a ficha e **Como dar entrada** têm 27 linhas (UF, Importado, Como deve ficar). Vermelho no IVA só contra a regra CST+IVA na mesma UF. NCM só na Planilha1 usa CST+IVA; NCM em nenhuma base: o errado é o NCM.
 - Compara a planilha nova com a **anterior** (códigos novos, que saíram, NCM ou situação que mudou).
 - Permite marcar produto ou NCM como **já tratado**. Na próxima importação dá para **trazer essas marcas** (ou começar do zero).
 - Mostra a **matriz dos 8 destinatários** (não um CST único).

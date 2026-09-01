@@ -2,7 +2,7 @@ import path from "node:path";
 import * as XLSX from "xlsx";
 import type { DestinosCst } from "@/src/lib/fiscal";
 import { DESTINO_KEYS } from "@/src/lib/fiscal";
-import { asIvaPorUf, emptyIvaPorUf, type IvaPorUf } from "@/src/lib/iva-por-uf";
+import { asIvaPorUf, emptyIvaPorUf, EGAPLAST_IVA_UF_KEYS, type IvaPorUf } from "@/src/lib/iva-por-uf";
 import { isEgaplastCompany } from "./company-slug";
 import { joinEgaplastCadastro } from "./egaplast-rules";
 import { normalizeCst, normalizeNcm, parseMvaNumber } from "./ncm";
@@ -340,6 +340,46 @@ function findColumnIndexes(header: unknown[]): {
   return { codigo, ncm, sit, origem };
 }
 
+function isRelatorioProductRow(
+  row: unknown[],
+  cols: { codigo: number; ncm: number; sit: number; origem: number },
+): boolean {
+  const codigo = cellStr(row[cols.codigo]);
+  if (!codigo) return false;
+  if (foldHeader(codigo) === "codigo") return false;
+  if (isJunkRow(codigo, "")) return false;
+  const sitRaw = cellStr(row[cols.sit]);
+  if (!sitRaw) return false;
+  if (foldHeader(sitRaw).includes("sit") && foldHeader(sitRaw).includes("tribut")) return false;
+  return true;
+}
+
+function rowHasIvaUfPairs(row: unknown[]): boolean {
+  let n = 0;
+  for (let j = 0; j < row.length - 1; j++) {
+    const uf = cellStr(row[j]).toUpperCase();
+    if (uf.length === 2 && EGAPLAST_IVA_UF_KEYS.includes(uf)) {
+      n += 1;
+      j += 1;
+    }
+  }
+  return n >= 3;
+}
+
+function collectIvaRowsAfterProduct(
+  aoa: unknown[][],
+  productIdx: number,
+  cols: { codigo: number; ncm: number; sit: number; origem: number },
+): unknown[][] {
+  const ivaRows: unknown[][] = [];
+  for (let k = productIdx + 1; k < aoa.length && ivaRows.length < 4; k++) {
+    const next = aoa[k] ?? [];
+    if (ivaRows.length > 0 && isRelatorioProductRow(next, cols)) break;
+    if (rowHasIvaUfPairs(next)) ivaRows.push(next);
+  }
+  return ivaRows;
+}
+
 function parseIvaBlockFromRows(rows: unknown[][]): {
   ivaMva: string | null;
   ivaMvaNumero: number | null;
@@ -347,14 +387,11 @@ function parseIvaBlockFromRows(rows: unknown[][]): {
 } {
   const byUf = emptyIvaPorUf();
   for (const row of rows) {
-    const label = foldHeader(cellStr(row[1]));
-    if (!label.includes("iva")) continue;
-    for (let j = 2; j < row.length - 1; j += 2) {
+    for (let j = 0; j < row.length - 1; j++) {
       const uf = cellStr(row[j]).toUpperCase();
-      const val = cellStr(row[j + 1]);
-      if (/^[A-Z]{2}$/.test(uf)) {
-        byUf[uf] = val || null;
-      }
+      if (uf.length !== 2 || !EGAPLAST_IVA_UF_KEYS.includes(uf)) continue;
+      byUf[uf] = cellStr(row[j + 1]) || null;
+      j += 1;
     }
   }
   const ivaPorUf = asIvaPorUf(byUf);
@@ -364,7 +401,7 @@ function parseIvaBlockFromRows(rows: unknown[][]): {
     return { ivaMva: sp, ivaMvaNumero: spNum, ivaPorUf };
   }
   if (ivaPorUf) {
-    for (const uf of Object.keys(ivaPorUf).sort()) {
+    for (const uf of EGAPLAST_IVA_UF_KEYS) {
       const num = parseIvaDecimal(ivaPorUf[uf] ?? null);
       if (num != null && num > 0) {
         return { ivaMva: ivaPorUf[uf] ?? null, ivaMvaNumero: num, ivaPorUf };
@@ -399,12 +436,7 @@ export function parseEgaplastRelatorioAoa(aoa: unknown[][]): ParsedProduct[] {
     const { ncm, ncmOriginal } = ncmFromCadastroCell(ncmRaw);
     const cstUnico = normalizeCst(sitRaw);
     const origem = cols.origem >= 0 ? cellStr(row[cols.origem]) || null : null;
-    const ivaRows: unknown[][] = [];
-    for (let k = 1; k <= 4 && i + k < aoa.length; k++) {
-      const next = aoa[i + k] ?? [];
-      if (foldHeader(cellStr(next[1])).includes("iva")) ivaRows.push(next);
-    }
-    const iva = parseIvaBlockFromRows(ivaRows);
+    const iva = parseIvaBlockFromRows(collectIvaRowsAfterProduct(aoa, i, cols));
     const dedupeKey = `${codigo}::${ncm}::${cstUnico ?? ""}`;
     if (seen.has(dedupeKey)) continue;
     seen.add(dedupeKey);

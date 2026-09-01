@@ -53,18 +53,28 @@ export type IncomingRuleKey = {
   situacaoCodigo: string;
 };
 
-export function classifyRuleSync(incoming: IncomingRuleKey[], existing: ExistingRule[]) {
+export function classifyRuleSync(
+  incoming: IncomingRuleKey[],
+  existing: ExistingRule[],
+  options: { keepSituacaoCodigos?: string[] } = {},
+) {
   const incomingKeys = new Set(incoming.map((item) => ruleSyncKey(item.ncm, item.situacaoCodigo)));
   const existingByKey = new Map(existing.map((item) => [ruleSyncKey(item.ncm, item.situacaoCodigo), item]));
+  const keep = new Set(options.keepSituacaoCodigos ?? []);
   const toInsert = incoming.filter((item) => !existingByKey.has(ruleSyncKey(item.ncm, item.situacaoCodigo)));
   const toUpdate = incoming
     .map((item) => existingByKey.get(ruleSyncKey(item.ncm, item.situacaoCodigo)))
     .filter((item): item is ExistingRule => Boolean(item));
   const toDelete = existing.filter(
-    (item) => !incomingKeys.has(ruleSyncKey(item.ncm, item.situacaoCodigo)) && !item.linked,
+    (item) =>
+      !incomingKeys.has(ruleSyncKey(item.ncm, item.situacaoCodigo)) &&
+      !item.linked &&
+      !keep.has(item.situacaoCodigo),
   );
   const toKeepOrphan = existing.filter(
-    (item) => !incomingKeys.has(ruleSyncKey(item.ncm, item.situacaoCodigo)) && item.linked,
+    (item) =>
+      !incomingKeys.has(ruleSyncKey(item.ncm, item.situacaoCodigo)) &&
+      (item.linked || keep.has(item.situacaoCodigo)),
   );
   return { toInsert, toUpdate, toDelete, toKeepOrphan };
 }

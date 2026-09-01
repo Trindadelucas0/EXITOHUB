@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.10 — 01/09/2026
+
+Corrigido:
+
+- Parser do relatório Egaplast passa a pular linha em branco no bloco IVA (ex.: produto `190001` / NCM `40129090`, SP `2.169` na 4ª linha). Ficha e Como dar entrada listam **UF | Importado | Como deve ficar**. Consulta/Divergências mostram só SP. Se o NCM não estiver em nenhuma regra, o texto diz que o errado é o NCM. Seed da Egaplast não apaga `TRIBUTACAO_UF` ao sincronizar o JSON CST+IVA. BAIFER, Loja e Unica não mudam.
+
 ## v1.6.9 — 31/08/2026
 
 Corrigido:
