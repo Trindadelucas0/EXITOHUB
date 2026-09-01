@@ -19,6 +19,7 @@ export function indexRulesByNcm(rules: FiscalRule[]): Map<string, FiscalRule[]> 
 export function scoreParsedProducts(
   products: ParsedProduct[],
   rulesByNcm: Map<string, FiscalRule[]>,
+  options: { companySlug?: string | null } = {},
 ): { scored: ScoredImportRow[]; totals: ReturnType<typeof summarizeStatus> } {
   const compares: ReturnType<typeof compareProduct>[] = [];
   const scored = products.map((product) => {
@@ -26,7 +27,7 @@ export function scoreParsedProducts(
       return { ...product, auditStatus: null, auditMotivo: null };
     }
     const imported: ImportedProduct = product;
-    const compare = compareProduct(imported, rulesByNcm.get(product.ncm) ?? [], null);
+    const compare = compareProduct(imported, rulesByNcm.get(product.ncm) ?? [], null, options);
     compares.push(compare);
     return {
       ...product,

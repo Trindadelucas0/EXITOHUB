@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { pickCadastroSheet, parseCadastroBuffer } from "./import-cadastro";
 import { dedupeParsedRules, parseRulesBuffer, pickRulesSheet } from "./import-rules";
 import { classifySituacao, parseMvaFields } from "./rule-classify";
-import { isValidSlug, normalizeSlug } from "./company-slug";
+import { isValidSlug, isEgaplastCompany, normalizeSlug } from "./company-slug";
 
 const FIXTURE = path.join(process.cwd(), "tests", "fixtures", "ncm-atualizado.ods");
 
@@ -14,6 +14,14 @@ describe("slug de empresa", () => {
     expect(normalizeSlug(" Loja das Máquinas ")).toBe("loja-das-maquinas");
     expect(isValidSlug("baifer")).toBe(true);
     expect(isValidSlug("Loja")).toBe(false);
+  });
+
+  it("reconhece só a empresa Egaplast", () => {
+    expect(isEgaplastCompany("Egaplast")).toBe(true);
+    expect(isEgaplastCompany("egaplast")).toBe(true);
+    expect(isEgaplastCompany("BAIFER")).toBe(false);
+    expect(isEgaplastCompany("Unica")).toBe(false);
+    expect(isEgaplastCompany("Loja das Máquinas")).toBe(false);
   });
 });
 
@@ -279,5 +287,53 @@ describe("calibração planilha Unica UF", () => {
     expect(atac.find((r) => r.ncm === "27150000")?.abreviacao).toBe("2");
     expect(first?.cest).toBeNull();
     expect(first?.ufTributacao?.MG.aliqInterna).toBe("18%");
+  });
+});
+
+const EGAPLAST_DADOS = path.join(process.cwd(), "tests", "fixtures", "cadastro-egaplast-ncm-2026-08-27.xls");
+const EGAPLAST_TRIB = path.join(
+  process.cwd(),
+  "tests",
+  "fixtures",
+  "cadastro-egaplast-relatorio-produtos.xlsx",
+);
+
+function mergeEgaplastWorkbook(): Buffer {
+  const dados = XLSX.read(readFileSync(EGAPLAST_DADOS), { type: "buffer", raw: false });
+  const trib = XLSX.read(readFileSync(EGAPLAST_TRIB), { type: "buffer", raw: false });
+  const merged = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(merged, dados.Sheets["Dados"] ?? dados.Sheets[dados.SheetNames[0]], "Dados");
+  XLSX.utils.book_append_sheet(
+    merged,
+    trib.Sheets["Planilha1"] ?? trib.Sheets[trib.SheetNames[0]],
+    "Planilha1",
+  );
+  return Buffer.from(XLSX.write(merged, { type: "buffer", bookType: "xlsx" }));
+}
+
+describe("calibração regras Egaplast", () => {
+  it("só com companyName Egaplast lê as duas abas", () => {
+    const buffer = mergeEgaplastWorkbook();
+    const rules = dedupeParsedRules(parseRulesBuffer(buffer, { companyName: "Egaplast" }));
+    expect(rules.length).toBe(283);
+    const st = rules.find((r) => r.ncm === "39172900" && r.situacaoCodigo === "ST_INTERNO");
+    expect(st?.cstSaida).toBe("10");
+    expect(st?.cfopSaida).toBeNull();
+    expect(st?.segmento).toBe("Plásticos e suas obras");
+    expect(st?.mvaPercentual).toBeGreaterThan(0);
+    const tributado = rules.find((r) => r.ncm === "32064990");
+    expect(tributado?.cstSaida).toBe("0");
+    expect(tributado?.situacaoCodigo).toBe("REGRA_GERAL");
+    const dual = rules.filter((r) => r.ncm === "84818019");
+    expect(dual.map((r) => r.situacaoCodigo).sort()).toEqual(["REGRA_GERAL", "ST_INTERNO"]);
+    expect(rules.some((r) => r.situacaoCodigo === "INCOMPLETA")).toBe(true);
+  });
+
+  it("BAIFER/Unica não usam o parser Egaplast no mesmo arquivo", () => {
+    const buffer = mergeEgaplastWorkbook();
+    const baifer = parseRulesBuffer(buffer, { companyName: "BAIFER" });
+    const unica = parseRulesBuffer(buffer, { companyName: "Unica" });
+    expect(baifer.find((r) => r.ncm === "39172900" && r.situacaoCodigo === "ST_INTERNO")).toBeFalsy();
+    expect(unica.find((r) => r.ncm === "25202090")).toBeFalsy();
   });
 });

@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import { productFromDb, ruleFromDb } from "./audit-map";
 import { compareProduct, type FiscalRule } from "./compare";
 import { LONG_TX, withTenant } from "./db";
+import { isEgaplastCompany } from "./company-slug";
 import { auditCounterDeltas } from "./product-query";
 import { applyRuleValuesToProduct, resolveLinkedRule } from "./treated-apply";
 import { HttpError } from "./tenant";
@@ -65,6 +66,11 @@ export async function markProductsTreated(params: {
         list.push(mapped);
         rulesByNcm.set(mapped.ncm, list);
       }
+      const company = await db.company.findFirst({
+        where: { id: params.companyId },
+        select: { slug: true },
+      });
+      const compareOpts = isEgaplastCompany(company?.slug) ? { companySlug: "egaplast" } : {};
       const linkByProduct = new Map(links.map((link) => [link.productId, link.ruleId]));
       const treatedAt = params.treated ? new Date() : null;
       const batchDeltas = new Map<
@@ -78,8 +84,8 @@ export async function markProductsTreated(params: {
         const linkedRuleId = linkByProduct.get(row.id) ?? null;
         const rule = resolveLinkedRule(rules, linkedRuleId);
         const nextProduct =
-          params.treated && rule ? applyRuleValuesToProduct(mapped, rule) : mapped;
-        const compare = compareProduct(nextProduct, rules, linkedRuleId);
+          params.treated && rule ? applyRuleValuesToProduct(mapped, rule, company?.slug) : mapped;
+        const compare = compareProduct(nextProduct, rules, linkedRuleId, compareOpts);
         const valuePatch =
           params.treated && rule
             ? {

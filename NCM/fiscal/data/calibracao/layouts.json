@@ -159,6 +159,28 @@
       "fixture": "tests/fixtures/tributacao-ncm-unica-atacadista-2026-08-27.xlsx",
       "xlsxFixtureSemAbreviacao": "tests/fixtures/planilha-regra-fiscal-unica.xlsx",
       "aprendidoEm": "2026-08-31"
+    },
+    {
+      "tipo": "regras",
+      "bancoOuOrigem": "Egaplast",
+      "aba": "Planilha1 + Dados",
+      "cabecalhosChave": [
+        "ncm",
+        "sit.tributária",
+        "iva/icm por uf",
+        "código",
+        "nome"
+      ],
+      "ajustes": [
+        "só empresa slug egaplast — BAIFER/Loja/Unica não usam este parser",
+        "Planilha1: CST 00/10/51 + IVA SP (ou 1º UF > 0); 16 NCMs com 00 e 10 viram duas regras",
+        "Dados: NCM sem tributação entra INCOMPLETA com segmento do capítulo TIPI",
+        "sem CFOP, CEST, Abrev., matriz 8 destinos",
+        "fonte: planilha egaplast.xls (duas abas); 283 regras / 265 NCMs"
+      ],
+      "fixture": "tests/fixtures/cadastro-egaplast-ncm-2026-08-27.xls",
+      "xlsxFixture": "tests/fixtures/cadastro-egaplast-relatorio-produtos.xlsx",
+      "aprendidoEm": "2026-08-31"
     }
   ],
   "ignorarAbas": [
@@ -188,6 +210,19 @@
         "descricao": "KIT P/CX ACOP. EGAPRO ACION SUP UNIV"
       },
       "totalProdutos": 4153
+    },
+    "egaplastRegras": {
+      "39172900": {
+        "cstSaida": "10",
+        "situacaoCodigo": "ST_INTERNO",
+        "segmento": "Plásticos e suas obras",
+        "mva": 1.7922
+      },
+      "32064990": { "cstSaida": "0", "situacaoCodigo": "REGRA_GERAL" },
+      "84818019": { "situacoes": ["ST_INTERNO", "REGRA_GERAL"] },
+      "totalRegras": 283,
+      "uniqueNcm": 265,
+      "incompletas": 165
     },
     "egaplastRelatorio": {
       "950018": { "ncm": "32064990", "cstUnico": "0" },

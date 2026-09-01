@@ -184,7 +184,11 @@ export function ProductCatalog({
           <FiscalGrid
             caption={title}
             columns={productSheetColumns(
-              productUsesUnicaLayout(layout, rows) ? "unica" : "matriz",
+              layout === "egaplast"
+                ? "egaplast"
+                : productUsesUnicaLayout(layout, rows)
+                  ? "unica"
+                  : "matriz",
             )}
             rows={rows}
             getRowId={(row) => row.id}

@@ -12,6 +12,7 @@ import {
 import { productFromDb, ruleFromDb } from "./audit-map";
 import { LONG_TX, withTenant } from "./db";
 import { isJunkRow } from "./import-cadastro";
+import { isEgaplastCompany } from "./company-slug";
 import {
   parseProductListParams,
   auditCounterDeltas,
@@ -28,7 +29,7 @@ import {
 } from "@/src/lib/segmento";
 import { HttpError } from "./tenant";
 
-export type ProductSheetLayout = "unica" | "matriz";
+export type ProductSheetLayout = "unica" | "matriz" | "egaplast";
 
 export { productFromDb, ruleFromDb };
 
@@ -162,14 +163,40 @@ export function sheetItemFromPersisted(
   };
 }
 
-export async function productSheetLayout(companyId: string): Promise<ProductSheetLayout> {
-  return withTenant(companyId, async (db) => {
-    const unica = await db.fiscalNcmRule.findFirst({
-      where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
-      select: { id: true },
-    });
-    return unica ? "unica" : "matriz";
+function compareOpts(slug: string) {
+  return isEgaplastCompany(slug) ? { companySlug: "egaplast" } : {};
+}
+
+async function loadCompanySlug(
+  db: import("@prisma/client").PrismaClient,
+  companyId: string,
+): Promise<string> {
+  const row = await db.company.findFirst({
+    where: { id: companyId },
+    select: { slug: true },
   });
+  return row?.slug ?? "";
+}
+
+async function resolveSheetLayout(
+  db: import("@prisma/client").PrismaClient,
+  companyId: string,
+): Promise<ProductSheetLayout> {
+  const slug = await loadCompanySlug(db, companyId);
+  if (isEgaplastCompany(slug)) return "egaplast";
+  const unica = await db.fiscalNcmRule.findFirst({
+    where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
+    select: { id: true },
+  });
+  return unica ? "unica" : "matriz";
+}
+
+function usesSegmentoFilter(layout: ProductSheetLayout): boolean {
+  return layout === "unica" || layout === "egaplast";
+}
+
+export async function productSheetLayout(companyId: string): Promise<ProductSheetLayout> {
+  return withTenant(companyId, async (db) => resolveSheetLayout(db, companyId));
 }
 
 async function loadRulesAndLinks(
@@ -243,6 +270,8 @@ export async function compareCompanyProducts(
       );
       const rulesByNcm = indexRules(rules);
       const linkByProduct = new Map(links.map((l) => [l.productId, l.ruleId]));
+      const slug = await loadCompanySlug(db, companyId);
+      const opts = compareOpts(slug);
       return products
         .filter((row) => !isJunkRow(row.codigo, row.descricao))
         .map((row) => {
@@ -251,6 +280,7 @@ export async function compareCompanyProducts(
             product,
             rulesByNcm.get(product.ncm) ?? [],
             linkByProduct.get(row.id) ?? null,
+            opts,
           );
           return { product, compare };
         });
@@ -329,10 +359,12 @@ export async function syncProductAudit(companyId: string, productId: string) {
         return null;
       }
       const { rules, links } = await loadRulesAndLinks(db, companyId, [productRow.ncm], [productRow.id]);
+      const slug = await loadCompanySlug(db, companyId);
       const compare = compareProduct(
         productFromDb(productRow),
         indexRules(rules).get(productRow.ncm) ?? [],
         links[0]?.ruleId ?? null,
+        compareOpts(slug),
       );
       const previous = productRow.auditStatus;
       await db.product.updateMany({
@@ -419,16 +451,12 @@ export async function listAuditedProducts(companyId: string, batchId: string, re
     if (!batch) {
       throw new HttpError(404, "NOT_FOUND", "Lote não encontrado.");
     }
-    const unicaRule = await db.fiscalNcmRule.findFirst({
-      where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
-      select: { id: true },
-    });
-    const layout: ProductSheetLayout = unicaRule ? "unica" : "matriz";
+    const layout = await resolveSheetLayout(db, companyId);
     const segmentoWhere = await unicaSegmentoWhere(
       db,
       companyId,
       params.segmento,
-      Boolean(unicaRule),
+      usesSegmentoFilter(layout),
     );
     const searched = searchWhere(companyId, batchId, params.q, params.ncm, params.tratado);
     const baseWhere: Prisma.ProductWhereInput = Object.keys(segmentoWhere).length
@@ -523,15 +551,12 @@ export async function listNcmSummary(companyId: string, batchId: string, request
     if (!batch) {
       throw new HttpError(404, "NOT_FOUND", "Lote não encontrado.");
     }
-    const unicaRule = await db.fiscalNcmRule.findFirst({
-      where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
-      select: { id: true },
-    });
+    const layout = await resolveSheetLayout(db, companyId);
     const segmentoWhere = await unicaSegmentoWhere(
       db,
       companyId,
       params.segmento,
-      Boolean(unicaRule),
+      usesSegmentoFilter(layout),
     );
     const where: Prisma.ProductWhereInput = {
       companyId,
@@ -584,12 +609,9 @@ export async function listSegmentoSummary(companyId: string, batchId: string, re
     if (!batch) {
       throw new HttpError(404, "NOT_FOUND", "Lote não encontrado.");
     }
-    const unicaRule = await db.fiscalNcmRule.findFirst({
-      where: { companyId, situacaoCodigo: "TRIBUTACAO_UF" },
-      select: { id: true },
-    });
-    if (!unicaRule) {
-      return { unica: false as const, segmentoCount: 0, productCount: 0, groups: [] };
+    const layout = await resolveSheetLayout(db, companyId);
+    if (!usesSegmentoFilter(layout)) {
+      return { unica: false as const, layout, segmentoCount: 0, productCount: 0, groups: [] };
     }
     const where: Prisma.ProductWhereInput = {
       companyId,
@@ -664,6 +686,7 @@ export async function listSegmentoSummary(companyId: string, batchId: string, re
       );
     return {
       unica: true as const,
+      layout,
       segmentoCount: groups.length,
       productCount: groups.reduce((acc, row) => acc + row.total, 0),
       groups,

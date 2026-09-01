@@ -30,6 +30,10 @@ async function persistBatch(companyId: string, batchId: string) {
       list.push(mapped);
       rulesByNcm.set(mapped.ncm, list);
     }
+    const company = await prisma.company.findFirst({
+      where: { id: companyId },
+      select: { slug: true },
+    });
     const linkByProduct = new Map(links.map((link) => [link.productId, link.ruleId]));
     const usable = products
       .filter((row) => !isJunkRow(row.codigo, row.descricao))
@@ -39,6 +43,7 @@ async function persistBatch(companyId: string, batchId: string) {
           product,
           rulesByNcm.get(product.ncm) ?? [],
           linkByProduct.get(row.id) ?? null,
+          { companySlug: company?.slug },
         );
         return { product, compare };
       });

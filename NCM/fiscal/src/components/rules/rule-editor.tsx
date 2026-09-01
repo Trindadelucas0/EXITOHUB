@@ -78,7 +78,7 @@ export function RuleEditor({
   onCancel: () => void;
   saving: boolean;
   title: string;
-  layout?: "matriz" | "unica";
+  layout?: "matriz" | "unica" | "egaplast";
 }) {
   function setField<K extends keyof RuleFormState>(key: K, value: RuleFormState[K]) {
     onChange({ ...form, [key]: value });
@@ -132,23 +132,27 @@ export function RuleEditor({
         ) : (
           <>
             <Field
-              label="CST entrada"
-              name="cstEntrada"
-              value={form.cstEntrada}
-              onChange={(e) => setField("cstEntrada", e.target.value)}
-            />
-            <Field
               label="CST saída"
               name="cstSaida"
               value={form.cstSaida}
               onChange={(e) => setField("cstSaida", e.target.value)}
             />
+            {layout === "egaplast" ? null : (
+              <Field
+                label="CFOP saída"
+                name="cfopSaida"
+                value={form.cfopSaida}
+                onChange={(e) => setField("cfopSaida", e.target.value)}
+              />
+            )}
+            {layout === "egaplast" ? null : (
             <Field
-              label="CFOP saída"
-              name="cfopSaida"
-              value={form.cfopSaida}
-              onChange={(e) => setField("cfopSaida", e.target.value)}
+              label="CST entrada"
+              name="cstEntrada"
+              value={form.cstEntrada}
+              onChange={(e) => setField("cstEntrada", e.target.value)}
             />
+            )}
             <Field
               label="MVA"
               name="mvaTexto"
@@ -220,7 +224,7 @@ export function RuleEditor({
             />
           </div>
         </fieldset>
-      ) : (
+      ) : layout === "egaplast" ? null : (
         <fieldset className="grid gap-3">
           <legend className="text-sm font-medium text-ink">CST por destinatário</legend>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

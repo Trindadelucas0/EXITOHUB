@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import ExcelJS from "exceljs";
+import * as XLSX from "xlsx";
 import { describe, expect, it } from "vitest";
 import {
   assertSafeUpload,
@@ -261,5 +262,45 @@ describe("import cadastro", () => {
     const semNcm = rows.find((r) => r.codigo === "990363");
     expect(semNcm?.ncm).toBe("");
     expect(semNcm?.cstUnico).toBe("0");
+  });
+
+  it("na Egaplast cruza Dados + Planilha1 por código", () => {
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["EGAPLAST ARTEFATOS E COM PLAST"],
+        [],
+        [],
+        [],
+        ["CÓDIGO", "", "NOME", "ORIGEM", "NCM"],
+        [],
+        ["10100", "0", "KIT TESTE", "9-PRODUÇÃO", "84818019"],
+        ["99999", "0", "SÓ LISTAGEM", "0-NACIONAL", "39172900"],
+      ]),
+      "Dados",
+    );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["CÓDIGO", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "ORIGEM", "SIT.TRIBUTÁRIA", "NCM"],
+        [],
+        ["10100", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "0-NACIONAL", "10-TRIB.C/ SUBST", "84818019"],
+        ["", "IVA/ICM:", "AC", "0", "AL", "0", "AM", "0", "AP", "0", "BA", "0", "CE", "0", "DF", "0"],
+        ["", "IVA/ICM:", "ES", "0", "GO", "0", "MA", "0", "MG", "0", "MS", "0", "MT", "0", "PA", "0"],
+        ["", "IVA/ICM:", "PB", "0", "PE", "0", "PI", "0", "PR", "0", "RJ", "0", "RN", "0", "RO", "0"],
+        ["", "IVA/ICM:", "RR", "0", "RS", "0", "SE", "0", "SC", "0", "SP", "1.9424", "TO", "0"],
+      ]),
+      "Planilha1",
+    );
+    const buffer = Buffer.from(XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }));
+    const other = parseCadastroBuffer(buffer, ".xlsx");
+    expect(other.find((r) => r.codigo === "10100")?.cstUnico).toBeNull();
+    const egaplast = parseCadastroBuffer(buffer, ".xlsx", { companyName: "Egaplast" });
+    const kit = egaplast.find((r) => r.codigo === "10100");
+    expect(kit?.descricao).toContain("KIT TESTE");
+    expect(kit?.cstUnico).toBe("10");
+    expect(kit?.ivaMvaNumero).toBeCloseTo(1.9424, 4);
+    expect(egaplast.find((r) => r.codigo === "99999")?.cstUnico).toBeNull();
   });
 });

@@ -18,6 +18,9 @@ import {
   parseMvaFields,
 } from "./rule-classify";
 import { fillMissingUnicaAbreviacao } from "./unica-abreviacao";
+import { isEgaplastCompany } from "./company-slug";
+import { parseEgaplastCadastroSheets } from "./import-cadastro";
+import { rulesFromEgaplastCadastro } from "./egaplast-rules";
 
 export type ParsedRule = {
   ncm: string;
@@ -464,6 +467,10 @@ export function pickRulesSheet(
 
 export function parseRulesBuffer(buffer: Buffer, options: ParseRulesOptions = {}): ParsedRule[] {
   const workbook = XLSX.read(buffer, { type: "buffer", raw: false });
+  if (isEgaplastCompany(options.companyName)) {
+    const { dados, relatorio } = parseEgaplastCadastroSheets(workbook, false);
+    return rulesFromEgaplastCadastro(relatorio, dados);
+  }
   const sheetName = pickRulesSheet(workbook, options.companyName);
   const sheet = workbook.Sheets[sheetName];
   const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw: false });

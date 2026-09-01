@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.7 — 31/08/2026
+
+Adicionado:
+
+- Empresa **Egaplast** no seed (`admin@egaplast.local`). A base fiscal vem de `planilha egaplast.xls` (abas Dados + Planilha1): CST, IVA e segmento pelo capítulo do NCM (283 regras / 265 NCMs). Consulta e Divergências filtram por segmento e conferem CST+IVA. BAIFER, Loja e Unica não mudam.
+
 ## v1.6.6 — 31/08/2026
 
 Adicionado:

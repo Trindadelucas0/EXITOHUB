@@ -363,3 +363,77 @@ describe("motor de comparação", () => {
     expect(result.diffs).toEqual([]);
   });
 });
+
+describe("conferência Egaplast", () => {
+  function egaplastRule(partial: Partial<FiscalRule> & { id: string }): FiscalRule {
+    return rule({
+      ncm: "39172900",
+      cstEntrada: null,
+      cstSaida: "10",
+      cfopSaida: null,
+      destinosCst: {
+        naoContribuinte: null,
+        contribuinte: null,
+        revenda: null,
+        construtora: null,
+        hospClinica: null,
+        orgaoPublico: null,
+        produtorRural: null,
+        atacado: null,
+      },
+      situacaoCodigo: "ST_INTERNO",
+      mvaPercentual: 1.9551,
+      mvaTexto: "1.9551",
+      mvaKind: "numeric",
+      segmento: "Plásticos e suas obras",
+      ...partial,
+    });
+  }
+
+  it("CST 10 sem matriz não vira análise", () => {
+    const fiscal = egaplastRule({ id: "e1" });
+    const ok = compareProduct(
+      product({ ncm: "39172900", destinosCst: null, cstUnico: "10", ivaMvaNumero: 1.9551 }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(ok.status).toBe("CORRETO");
+    const baiferPath = compareProduct(
+      product({ ncm: "39172900", destinosCst: null, cstUnico: "10", ivaMvaNumero: 1.9551 }),
+      [fiscal],
+      null,
+    );
+    expect(baiferPath.status).toBe("NECESSITA_ANALISE");
+  });
+
+  it("CST diferente da regra é divergente", () => {
+    const fiscal = egaplastRule({ id: "e1" });
+    const bad = compareProduct(
+      product({ ncm: "39172900", destinosCst: null, cstUnico: "0", ivaMvaNumero: 1.9551 }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(bad.status).toBe("DIVERGENTE");
+  });
+
+  it("duas regras: CST 10 casa ST sem vínculo", () => {
+    const st = egaplastRule({ id: "st" });
+    const geral = egaplastRule({
+      id: "g",
+      cstSaida: "0",
+      situacaoCodigo: "REGRA_GERAL",
+      mvaPercentual: null,
+      mvaKind: "skip",
+    });
+    const result = compareProduct(
+      product({ ncm: "39172900", destinosCst: null, cstUnico: "10", ivaMvaNumero: 1.9551 }),
+      [st, geral],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(result.status).toBe("CORRETO");
+    expect(result.rule?.id).toBe("st");
+  });
+});

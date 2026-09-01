@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { FiscalGrid } from "@/src/components/grid/fiscal-grid";
 import {
+  EGAPLAST_SHEET_COLUMNS,
   RULE_SHEET_COLUMNS,
   UNICA_SHEET_COLUMNS,
   ruleUsesUnicaLayout,
@@ -18,6 +19,7 @@ import { Button } from "@/src/components/ui/button";
 import { clearImportListCache } from "@/src/components/product/batch-selector";
 import { ncmApiUrl } from "@/src/lib/base-path";
 import { emptyUfTributacao } from "@/src/lib/fiscal";
+import { isEgaplastCompany } from "@/src/server/company-slug";
 
 const SITUACOES = [
   { value: "", label: "Todas as situações" },
@@ -78,6 +80,7 @@ export default function BaseFiscalPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZE_DEFAULT);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [companyName, setCompanyName] = useState("");
   const [mode, setMode] = useState<"idle" | "create" | "edit">("idle");
   const [form, setForm] = useState<RuleFormState>(emptyRuleForm());
   const [saving, setSaving] = useState(false);
@@ -88,7 +91,10 @@ export default function BaseFiscalPage() {
   useEffect(() => {
     fetch(ncmApiUrl("/api/auth/me"))
       .then((r) => r.json())
-      .then((json) => setIsAdmin(Boolean(json.data?.canWrite)))
+      .then((json) => {
+        setIsAdmin(Boolean(json.data?.canWrite));
+        setCompanyName(String(json.data?.companyName ?? ""));
+      })
       .catch(() => setIsAdmin(false));
   }, []);
 
@@ -120,6 +126,12 @@ export default function BaseFiscalPage() {
   }, [q, situacao, reload]);
 
   const unicaLayout = ruleUsesUnicaLayout(rules);
+  const egaplastLayout = isEgaplastCompany(companyName);
+  const sheetLayout: "unica" | "matriz" | "egaplast" = egaplastLayout
+    ? "egaplast"
+    : unicaLayout
+      ? "unica"
+      : "matriz";
   const highlight = useMemo(
     () => selected ?? rules[0] ?? null,
     [selected, rules],
@@ -235,9 +247,11 @@ export default function BaseFiscalPage() {
         kicker="Regras da empresa"
         title="Base fiscal"
         description={
-          unicaLayout
+          sheetLayout === "unica"
             ? "NCM, CEST e MVA/alíquota por UF (DF, GO, MG) desta empresa. Produtos não entram aqui."
-            : "NCM, CST, CFOP, destinatários, situação e MVA desta empresa. Produtos não entram aqui."
+            : sheetLayout === "egaplast"
+              ? "NCM, segmento (capítulo), CST e IVA/MVA desta empresa. Produtos não entram aqui."
+              : "NCM, CST, CFOP, destinatários, situação e MVA desta empresa. Produtos não entram aqui."
         }
         actions={
           isAdmin ? (
@@ -262,13 +276,13 @@ export default function BaseFiscalPage() {
       {isAdmin ? (
         <form className="rounded-lg border border-line bg-white p-4 shadow-panel sm:p-6">
           <label htmlFor="arquivo-regras" className="text-sm font-medium text-ink">
-            Importar planilha de regras (XLSX, CSV ou ODS, até 8 MB)
+            Importar planilha de regras (XLSX, XLS, CSV ou ODS, até 8 MB)
           </label>
           <input
             id="arquivo-regras"
             name="arquivo-regras"
             type="file"
-            accept=".xlsx,.csv,.ods"
+            accept=".xlsx,.xls,.csv,.ods"
             disabled={importing || clearing}
             className="mt-2 block w-full text-base md:text-sm"
             onChange={(e) => {
@@ -278,9 +292,11 @@ export default function BaseFiscalPage() {
             }}
           />
           <p className="mt-2 text-xs text-ink-muted">
-            {unicaLayout
+            {sheetLayout === "unica"
               ? "Unica: NCM, CEST, segmento e MVA/alíquota Original, 4%, 7%, 12% e interna para DF, GO e MG. A variante com ABREVIACAO também entra."
-              : "Colunas: NCM, segmento, CST entrada, CST saída, CFOP, 8 destinatários, situação e MVA. Arquivo só com aba Planilha1 também vale."}
+              : sheetLayout === "egaplast"
+                ? "Egaplast: as duas abas do .xls (Dados = NCMs; Planilha1 = SIT.TRIBUTÁRIA e IVA/ICM). Segmento vem do capítulo do NCM."
+                : "Colunas: NCM, segmento, CST entrada, CST saída, CFOP, 8 destinatários, situação e MVA. Arquivo só com aba Planilha1 também vale."}
           </p>
           <div className="mt-4 border-t border-line pt-4">
             <p className="text-sm text-ink-muted">
@@ -307,7 +323,7 @@ export default function BaseFiscalPage() {
           onCancel={() => setMode("idle")}
           saving={saving}
           title={mode === "edit" ? "Editar regra" : "Cadastrar regra"}
-          layout={unicaLayout ? "unica" : "matriz"}
+          layout={sheetLayout}
         />
       ) : null}
       <SheetToolbar>
@@ -363,7 +379,13 @@ export default function BaseFiscalPage() {
         <div className="min-w-0">
           <FiscalGrid
             caption="Base fiscal NCM"
-            columns={unicaLayout ? UNICA_SHEET_COLUMNS : RULE_SHEET_COLUMNS}
+            columns={
+              sheetLayout === "unica"
+                ? UNICA_SHEET_COLUMNS
+                : sheetLayout === "egaplast"
+                  ? EGAPLAST_SHEET_COLUMNS
+                  : RULE_SHEET_COLUMNS
+            }
             rows={pageRows}
             getRowId={(row) => row.id}
             loading={loading}
@@ -390,12 +412,12 @@ export default function BaseFiscalPage() {
             <h2 className="mt-1 font-display text-2xl tabular text-brand">{highlight.ncm}</h2>
             <p className="text-sm text-ink-muted">
               {highlight.segmento} · {highlight.situacaoCodigo} ·{" "}
-              {unicaLayout
+              {sheetLayout === "unica"
                 ? `CEST ${highlight.cest ?? "—"} · Aliq. DF ${highlight.ufTributacao?.DF.aliqInterna ?? "—"}`
                 : `MVA ${highlight.mvaTexto ?? "—"}`}
             </p>
             <div className="mt-4">
-              {unicaLayout ? (
+              {sheetLayout === "unica" ? (
                 <dl className="grid gap-2 text-sm">
                   {(["DF", "GO", "MG"] as const).map((uf) => (
                     <div key={uf} className="flex justify-between gap-2 border-b border-line py-1">
@@ -406,6 +428,17 @@ export default function BaseFiscalPage() {
                       </dd>
                     </div>
                   ))}
+                </dl>
+              ) : sheetLayout === "egaplast" ? (
+                <dl className="grid gap-2 text-sm">
+                  <div className="flex justify-between gap-2 border-b border-line py-1">
+                    <dt className="font-medium text-ink">CST</dt>
+                    <dd className="tabular">{highlight.cstSaida ?? "—"}</dd>
+                  </div>
+                  <div className="flex justify-between gap-2 border-b border-line py-1">
+                    <dt className="font-medium text-ink">IVA / MVA</dt>
+                    <dd className="tabular">{highlight.mvaTexto ?? "—"}</dd>
+                  </div>
                 </dl>
               ) : (
                 <CstMatrix layout="stacked" ideal={highlight.destinosCst} />

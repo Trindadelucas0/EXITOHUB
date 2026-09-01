@@ -35,6 +35,7 @@ export function SegmentoSummary({
   onGroups?: (groups: SegmentoOption[]) => void;
 }) {
   const [unica, setUnica] = useState(false);
+  const [layoutKind, setLayoutKind] = useState<"unica" | "egaplast">("unica");
   const [productCount, setProductCount] = useState(0);
   const [groups, setGroups] = useState<Group[]>([]);
   const [query, setQuery] = useState("");
@@ -61,6 +62,7 @@ export function SegmentoSummary({
         const next = json.data.groups ?? [];
         setGroups(next);
         onGroups?.(json.data.unica ? next : []);
+        setLayoutKind(json.data.layout === "egaplast" ? "egaplast" : "unica");
       })
       .catch((err: Error) => {
         if (err.name === "AbortError") return;
@@ -146,8 +148,12 @@ export function SegmentoSummary({
       {active ? (
         <p className="border-t border-line pt-3 text-sm text-ink-muted">
           {active.id === SEGMENTO_FORA
-            ? "NCM fora das 125 regras da Unica — a conferência marca divergente até o NCM entrar na Base fiscal."
-            : `Conferência deste segmento: Abreviação do cadastro × Abrev. da base (${active.corretos} corretos, ${active.divergentes} divergentes).`}
+            ? layoutKind === "egaplast"
+              ? "NCM fora da base Egaplast — a conferência marca divergente até o NCM entrar na Base fiscal."
+              : "NCM fora das 125 regras da Unica — a conferência marca divergente até o NCM entrar na Base fiscal."
+            : layoutKind === "egaplast"
+              ? `Conferência deste segmento: CST e IVA do cadastro × regra do NCM (${active.corretos} corretos, ${active.divergentes} divergentes).`
+              : `Conferência deste segmento: Abreviação do cadastro × Abrev. da base (${active.corretos} corretos, ${active.divergentes} divergentes).`}
         </p>
       ) : (
         <p className="text-sm text-ink-muted">

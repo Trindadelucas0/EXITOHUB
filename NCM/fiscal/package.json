@@ -18,6 +18,7 @@
     "postinstall": "prisma generate",
     "extract": "python tools/extract_rules.py",
     "extract:unica": "tsx prisma/extract-unica.ts",
+    "extract:egaplast": "tsx prisma/extract-egaplast.ts",
     "import:cadastro": "tsx prisma/import-cadastro.ts",
     "db:backfill-audit": "tsx prisma/backfill-audit.ts"
   },

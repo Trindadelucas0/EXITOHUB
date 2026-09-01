@@ -27,6 +27,40 @@ export function ruleUsesUnicaLayout(rules: RuleSheetItem[]): boolean {
   return rules.some((row) => hasUfTributacao(row.ufTributacao) || row.situacaoCodigo === "TRIBUTACAO_UF");
 }
 
+export const EGAPLAST_SHEET_COLUMNS: FiscalColumn<RuleSheetItem>[] = [
+  {
+    id: "ncm",
+    header: "NCM",
+    sticky: 1,
+    className: "min-w-[6.75rem] font-medium tabular",
+    cell: (row) => row.ncm,
+  },
+  {
+    id: "segmento",
+    header: "Segmento",
+    sticky: 2,
+    className: "min-w-[10rem] max-w-[14rem] truncate sm:min-w-[14rem]",
+    cell: (row) => <span title={row.segmento}>{row.segmento || "—"}</span>,
+  },
+  {
+    id: "situacao",
+    header: "Situação",
+    cell: (row) => row.situacaoCodigo || row.situacao,
+  },
+  {
+    id: "cstSaida",
+    header: "CST saída",
+    show: "md",
+    cell: (row) => <CstCell atual={row.cstSaida} />,
+  },
+  {
+    id: "mva",
+    header: "IVA / MVA",
+    show: "lg",
+    cell: (row) => row.mvaTexto ?? "—",
+  },
+];
+
 export const RULE_SHEET_COLUMNS: FiscalColumn<RuleSheetItem>[] = [
   {
     id: "ncm",

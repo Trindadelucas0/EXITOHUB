@@ -147,14 +147,50 @@ export const UNICA_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
   },
 ];
 
+export const EGAPLAST_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = [
+  ...identityColumns,
+  {
+    id: "segmento",
+    header: "Segmento",
+    show: "md",
+    className: "min-w-[9rem] max-w-[14rem] truncate",
+    cell: (row) => <span title={row.segmento ?? ""}>{row.segmento || "—"}</span>,
+  },
+  {
+    id: "cstSaida",
+    header: "CST saída",
+    show: "md",
+    cell: (row) => (
+      <CstCell compare atual={row.importado.cstUnico} ideal={row.correto?.cstSaida} />
+    ),
+  },
+  {
+    id: "mva",
+    header: "IVA / MVA",
+    show: "lg",
+    cell: (row) => (
+      <CstCell
+        compare={Boolean(row.importado.ivaMva)}
+        atual={row.importado.ivaMva}
+        ideal={row.correto?.mva}
+      />
+    ),
+  },
+];
+
 export function productUsesUnicaLayout(
-  layout: "unica" | "matriz" | undefined,
+  layout: "unica" | "matriz" | "egaplast" | undefined,
   rows: ProductSheetItem[],
 ): boolean {
   if (layout === "unica") return true;
+  if (layout === "egaplast") return false;
   return rows.some((row) => isUnicaSituacao(row.situacaoCodigo));
 }
 
-export function productSheetColumns(layout: "unica" | "matriz"): FiscalColumn<ProductSheetItem>[] {
-  return layout === "unica" ? UNICA_PRODUCT_SHEET_COLUMNS : PRODUCT_SHEET_COLUMNS;
+export function productSheetColumns(
+  layout: "unica" | "matriz" | "egaplast",
+): FiscalColumn<ProductSheetItem>[] {
+  if (layout === "unica") return UNICA_PRODUCT_SHEET_COLUMNS;
+  if (layout === "egaplast") return EGAPLAST_PRODUCT_SHEET_COLUMNS;
+  return PRODUCT_SHEET_COLUMNS;
 }

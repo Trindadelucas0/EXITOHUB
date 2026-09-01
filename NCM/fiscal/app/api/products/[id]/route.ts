@@ -26,7 +26,9 @@ export async function GET(
       });
       const mappedProduct = productFromDb(product);
       const mappedRules = rules.map(ruleFromDb);
-      const compare = compareProduct(mappedProduct, mappedRules, link?.ruleId ?? null);
+      const compare = compareProduct(mappedProduct, mappedRules, link?.ruleId ?? null, {
+        companySlug: user.companyName,
+      });
       const guide = buildEntradaGuide(compare.rule, compare, mappedProduct.ncm);
       return {
         product: {

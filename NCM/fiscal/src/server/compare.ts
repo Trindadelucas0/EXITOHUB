@@ -1,4 +1,5 @@
 import { mvaRequiresAnalysis, normalizeCst } from "./ncm";
+import { isEgaplastCompany } from "./company-slug";
 import {
   DESTINO_KEYS,
   DESTINO_LABELS,
@@ -121,10 +122,15 @@ export function completeRuleDestinos(rule: FiscalRule): FiscalRule {
   return { ...rule, destinosCst: destinos };
 }
 
+export type CompareOptions = {
+  companySlug?: string | null;
+};
+
 export function compareProduct(
   product: ImportedProduct,
   rulesForNcm: FiscalRule[],
   linkedRuleId: string | null,
+  options: CompareOptions = {},
 ): CompareResult {
   if (!product.ncm) {
     return {
@@ -160,6 +166,10 @@ export function compareProduct(
       candidates: [],
       needsLink: false,
     };
+  }
+
+  if (isEgaplastCompany(options.companySlug)) {
+    return compareEgaplastProduct(product, rulesForNcm, linkedRuleId);
   }
 
   if (rulesForNcm.length > 1 && !linkedRuleId) {
@@ -245,6 +255,106 @@ export function compareProduct(
     status: "CORRETO",
     motivo:
       "A matriz bate com a regra desta empresa para este NCM (vale para todos os produtos desse NCM). Confirme se o NCM do produto realmente é este; NCM errado no ERP mascara o restante.",
+    diffs: [],
+    rule,
+    candidates: rulesForNcm,
+    needsLink: false,
+  };
+}
+
+function pickEgaplastRule(
+  product: ImportedProduct,
+  rulesForNcm: FiscalRule[],
+  linkedRuleId: string | null,
+): { rule: FiscalRule | null; needsLink: boolean } {
+  if (linkedRuleId) {
+    const linked = rulesForNcm.find((item) => item.id === linkedRuleId) ?? null;
+    return { rule: linked, needsLink: !linked };
+  }
+  const complete = rulesForNcm.filter((item) => item.situacaoCodigo !== "INCOMPLETA");
+  if (complete.length === 1) return { rule: complete[0] ?? null, needsLink: false };
+  const cst = normalizeCst(product.cstUnico);
+  if (cst != null) {
+    const matches = complete.filter((item) => normalizeCst(item.cstSaida) === cst);
+    if (matches.length === 1) return { rule: matches[0] ?? null, needsLink: false };
+  }
+  if (complete.length === 0 && rulesForNcm.length === 1) {
+    return { rule: rulesForNcm[0] ?? null, needsLink: false };
+  }
+  return { rule: null, needsLink: complete.length > 1 || rulesForNcm.length > 1 };
+}
+
+function compareEgaplastProduct(
+  product: ImportedProduct,
+  rulesForNcm: FiscalRule[],
+  linkedRuleId: string | null,
+): CompareResult {
+  const picked = pickEgaplastRule(product, rulesForNcm, linkedRuleId);
+  if (!picked.rule) {
+    return {
+      status: "NECESSITA_ANALISE",
+      motivo: picked.needsLink
+        ? "NCM com duas regras na Egaplast (CST 00 e 10). Vincule a hipótese ou importe o cadastro com SIT.TRIBUTÁRIA."
+        : "Vínculo de regra inválido para este NCM.",
+      diffs: [],
+      rule: null,
+      candidates: rulesForNcm,
+      needsLink: picked.needsLink,
+    };
+  }
+  const rule = picked.rule;
+  if (rule.situacaoCodigo === "INCOMPLETA" || !rule.cstSaida) {
+    return {
+      status: "NECESSITA_ANALISE",
+      motivo: "Este NCM está na base Egaplast sem SIT.TRIBUTÁRIA/IVA (só na listagem). Não inventar CST.",
+      diffs: [],
+      rule,
+      candidates: rulesForNcm,
+      needsLink: false,
+    };
+  }
+  if (!product.cstUnico) {
+    return {
+      status: "NECESSITA_ANALISE",
+      motivo: "Cadastro sem SIT.TRIBUTÁRIA. Importe a aba de tributação (Planilha1) ou o relatório de produtos.",
+      diffs: [],
+      rule,
+      candidates: rulesForNcm,
+      needsLink: false,
+    };
+  }
+  const diffs: FieldDiff[] = [];
+  const atualCst = normalizeCst(product.cstUnico);
+  const idealCst = normalizeCst(rule.cstSaida);
+  if (idealCst != null && atualCst !== idealCst) {
+    diffs.push({
+      campo: "CST saída",
+      atual: atualCst ?? "(vazio)",
+      ideal: idealCst,
+    });
+  }
+  if (rule.mvaPercentual != null && product.ivaMvaNumero != null) {
+    if (Math.abs(rule.mvaPercentual - product.ivaMvaNumero) > 0.05) {
+      diffs.push({
+        campo: "MVA / IVA",
+        atual: String(product.ivaMvaNumero),
+        ideal: String(rule.mvaPercentual),
+      });
+    }
+  }
+  if (diffs.length > 0) {
+    return {
+      status: "DIVERGENTE",
+      motivo: `Cadastro Egaplast diverge da regra deste NCM (${diffs.map((d) => d.campo).join(", ")}).`,
+      diffs,
+      rule,
+      candidates: rulesForNcm,
+      needsLink: false,
+    };
+  }
+  return {
+    status: "CORRETO",
+    motivo: "CST e IVA do cadastro Egaplast conferem com a regra deste NCM.",
     diffs: [],
     rule,
     candidates: rulesForNcm,

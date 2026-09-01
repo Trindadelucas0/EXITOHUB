@@ -86,6 +86,14 @@ const COMPANIES: CompanySeed[] = [
     adminEmail: "admin@unica.local",
     consultaEmail: "consulta@unica.local",
   },
+  {
+    id: "cm_egaplast_seed_company",
+    slug: "egaplast",
+    name: "Egaplast",
+    jsonFile: "base-egaplast.json",
+    adminEmail: "admin@egaplast.local",
+    consultaEmail: "consulta@egaplast.local",
+  },
 ];
 
 const prisma = new PrismaClient();
@@ -109,6 +117,9 @@ function loadRules(file: string, expectedCompany: string): ExtractedFile {
   }
   if (expectedCompany === "unica" && raw.rules.some((r) => r.sourceSheet === "BAIFER" || r.sourceSheet === "LOJA")) {
     throw new Error("JSON da Unica contém aba BAIFER ou LOJA.");
+  }
+  if (expectedCompany === "egaplast" && raw.rules.some((r) => r.sourceSheet === "BAIFER" || r.sourceSheet === "LOJA")) {
+    throw new Error("JSON da Egaplast contém aba BAIFER ou LOJA.");
   }
   if (raw.rules.some((r) => "codigoProduto" in r || "descricaoProduto" in r)) {
     throw new Error("Seed recusou payload com produtos.");
@@ -318,8 +329,9 @@ async function main() {
   });
   const lojaRules = await prisma.fiscalNcmRule.count({ where: { company: { slug: "loja" } } });
   const unicaRules = await prisma.fiscalNcmRule.count({ where: { company: { slug: "unica" } } });
+  const egaplastRules = await prisma.fiscalNcmRule.count({ where: { company: { slug: "egaplast" } } });
   console.log(
-    `Conferência: BAIFER ${baiferRules} regras, LOJA ${lojaRules} regras, UNICA ${unicaRules} regras — isoladas por companyId.`,
+    `Conferência: BAIFER ${baiferRules} regras, LOJA ${lojaRules} regras, UNICA ${unicaRules} regras, EGAPLAST ${egaplastRules} regras — isoladas por companyId.`,
   );
 }
 

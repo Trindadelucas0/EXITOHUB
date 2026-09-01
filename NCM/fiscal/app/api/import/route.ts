@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     }
     const ext = assertSafeUpload(file.name, file.size, file.type);
     const buffer = Buffer.from(await file.arrayBuffer());
-    const products = parseCadastroBuffer(buffer, ext);
+    const products = parseCadastroBuffer(buffer, ext, { companyName: user.companyName });
     if (products.length === 0) {
       return NextResponse.json(
         {
@@ -56,6 +56,7 @@ export async function POST(request: Request) {
         const { scored, totals } = scoreParsedProducts(
           products,
           indexRulesByNcm(ruleRows.map(ruleFromDb)),
+          { companySlug: user.companyName },
         );
         const previousMarkers = keepTreated && previous
           ? await db.product.findMany({

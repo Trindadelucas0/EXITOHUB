@@ -2,6 +2,8 @@ import path from "node:path";
 import * as XLSX from "xlsx";
 import type { DestinosCst } from "@/src/lib/fiscal";
 import { DESTINO_KEYS } from "@/src/lib/fiscal";
+import { isEgaplastCompany } from "./company-slug";
+import { joinEgaplastCadastro } from "./egaplast-rules";
 import { normalizeCst, normalizeNcm, parseMvaNumber } from "./ncm";
 
 export const ALLOWED_EXTENSIONS = new Set([".xlsx", ".xls", ".csv", ".ods"]);
@@ -161,13 +163,13 @@ function hasSitTributariaHeader(folded: string[]): boolean {
   return folded.some((c) => c.includes("sit") && c.includes("tribut"));
 }
 
-function isCadastroHeader(cells: unknown[]): boolean {
+export function isCadastroHeader(cells: unknown[]): boolean {
   const folded = cells.map((c) => foldHeader(String(c ?? "")));
   return hasCodigoHeader(folded) && hasNcmHeader(folded) && hasNomeHeader(folded);
 }
 
 /** Relatório Egaplast: CÓDIGO + SIT.TRIBUTÁRIA + NCM, sem coluna de nome. */
-function isEgaplastRelatorioHeader(cells: unknown[]): boolean {
+export function isEgaplastRelatorioHeader(cells: unknown[]): boolean {
   const folded = cells.map((c) => foldHeader(String(c ?? "")));
   return (
     hasCodigoHeader(folded) &&
@@ -409,31 +411,94 @@ export function parseEgaplastRelatorioAoa(aoa: unknown[][]): ParsedProduct[] {
   return products;
 }
 
-export function parseCadastroBuffer(buffer: Buffer, ext: string): ParsedProduct[] {
-  const isCsv = ext.toLowerCase() === ".csv";
-  const raw = isCsv;
-  const readOpts: XLSX.ParsingOptions = { type: "buffer", raw };
-  if (isCsv) readOpts.codepage = resolveCsvCodepage(buffer);
+export type ParseCadastroOptions = {
+  companyName?: string | null;
+};
 
-  const workbook = XLSX.read(buffer, readOpts);
-  const sheetName = pickCadastroSheet(workbook, raw);
-  const sheet = workbook.Sheets[sheetName];
-  const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw });
-
+function parseCadastroSheetProducts(
+  sheet: XLSX.WorkSheet,
+  aoa: unknown[][],
+  raw: boolean,
+): ParsedProduct[] {
   const relatorioHeader = aoa.findIndex((row) => isEgaplastRelatorioHeader(row ?? []));
   if (relatorioHeader >= 0 && !isCadastroHeader(aoa[relatorioHeader] ?? [])) {
     return parseEgaplastRelatorioAoa(aoa);
   }
-
   const headerRow = findHeaderRowIndex(aoa);
   const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
     range: headerRow,
     defval: "",
     raw,
   });
-  return rows
-    .map((row) => toProduct(row))
-    .filter((item): item is ParsedProduct => item != null);
+  return rows.map((row) => toProduct(row)).filter((item): item is ParsedProduct => item != null);
+}
+
+function parseEgaplastCadastroWorkbook(workbook: XLSX.WorkBook, raw: boolean): ParsedProduct[] | null {
+  const names = workbook.SheetNames.filter((n) => !shouldSkipCadastroSheetName(n));
+  let dados: ParsedProduct[] | null = null;
+  let relatorio: ParsedProduct[] | null = null;
+  for (const name of names) {
+    const sheet = workbook.Sheets[name];
+    const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw });
+    const idx = findHeaderRowIndex(aoa);
+    const header = aoa[idx] ?? [];
+    if (isEgaplastRelatorioHeader(header) && !isCadastroHeader(header)) {
+      relatorio = parseEgaplastRelatorioAoa(aoa);
+      continue;
+    }
+    if (isCadastroHeader(header)) {
+      dados = parseCadastroSheetProducts(sheet, aoa, raw);
+    }
+  }
+  if (dados && relatorio) return joinEgaplastCadastro(dados, relatorio);
+  if (dados) return dados;
+  if (relatorio) return relatorio;
+  return null;
+}
+
+export function parseCadastroBuffer(
+  buffer: Buffer,
+  ext: string,
+  options: ParseCadastroOptions = {},
+): ParsedProduct[] {
+  const isCsv = ext.toLowerCase() === ".csv";
+  const raw = isCsv;
+  const readOpts: XLSX.ParsingOptions = { type: "buffer", raw };
+  if (isCsv) readOpts.codepage = resolveCsvCodepage(buffer);
+
+  const workbook = XLSX.read(buffer, readOpts);
+  if (isEgaplastCompany(options.companyName)) {
+    const joined = parseEgaplastCadastroWorkbook(workbook, raw);
+    if (joined) return joined;
+  }
+  const sheetName = pickCadastroSheet(workbook, raw);
+  const sheet = workbook.Sheets[sheetName];
+  const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw });
+  return parseCadastroSheetProducts(sheet, aoa, raw);
+}
+
+/** Abas Dados + Planilha1 para montar a regra Egaplast. */
+export function parseEgaplastCadastroSheets(
+  workbook: XLSX.WorkBook,
+  raw = false,
+): { dados: ParsedProduct[]; relatorio: ParsedProduct[] } {
+  const names = workbook.SheetNames.filter((n) => !shouldSkipCadastroSheetName(n));
+  let dados: ParsedProduct[] = [];
+  let relatorio: ParsedProduct[] = [];
+  for (const name of names) {
+    const sheet = workbook.Sheets[name];
+    const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw });
+    const idx = findHeaderRowIndex(aoa);
+    const header = aoa[idx] ?? [];
+    if (isEgaplastRelatorioHeader(header) && !isCadastroHeader(header)) {
+      relatorio = parseEgaplastRelatorioAoa(aoa);
+      continue;
+    }
+    if (isCadastroHeader(header)) {
+      dados = parseCadastroSheetProducts(sheet, aoa, raw);
+    }
+  }
+  return { dados, relatorio };
 }
 
 function toProduct(row: Record<string, unknown>): ParsedProduct | null {

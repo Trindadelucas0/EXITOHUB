@@ -128,7 +128,8 @@ export default function ImportarPage() {
           <p className="mt-3 text-xs text-ink-muted">
             Aceita vários layouts no mesmo fluxo: Santri/genérico (codigo, descricao, ncm, CST por
             destinatário, CST compra, alíquota, IVA/MVA, CEST), listagem Egaplast (.xls com CÓDIGO /
-            NOME / NCM), relatório Egaplast em blocos (SIT.TRIBUTÁRIA + IVA por UF) e CSV Unica
+            NOME / NCM), relatório Egaplast em blocos (SIT.TRIBUTÁRIA + IVA por UF; na empresa Egaplast
+            as duas abas do mesmo arquivo se cruzam por código) e CSV Unica
             (Cód.Item, Novo NCM / Classif. IPI, Desc. Abrev. ICMS). Cada arquivo vira um lote
             separado na conferência.
           </p>

@@ -39,7 +39,7 @@ export function useProductQuery(
   const [pageCount, setPageCount] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [layout, setLayout] = useState<"unica" | "matriz">("matriz");
+  const [layout, setLayout] = useState<"unica" | "matriz" | "egaplast">("matriz");
 
   const q = filters.q;
   const ncm = filters.ncm;
@@ -78,7 +78,7 @@ export function useProductQuery(
           setCatalogTotal(json.data.catalogTotal ?? 0);
           setTotal(json.data.total ?? json.data.items.length);
           setPageCount(json.data.pageCount ?? 1);
-          if (json.data.layout === "unica" || json.data.layout === "matriz") {
+          if (json.data.layout === "unica" || json.data.layout === "matriz" || json.data.layout === "egaplast") {
             setLayout(json.data.layout);
           }
         })

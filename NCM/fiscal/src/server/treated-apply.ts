@@ -1,4 +1,6 @@
 import { completeRuleDestinos, type FiscalRule, type ImportedProduct } from "./compare";
+import { isEgaplastCompany } from "./company-slug";
+import { emptyDestinos } from "./rule-classify";
 
 export function resolveLinkedRule(
   rulesForNcm: FiscalRule[],
@@ -13,7 +15,17 @@ export function resolveLinkedRule(
 export function applyRuleValuesToProduct(
   product: ImportedProduct,
   rule: FiscalRule,
+  companySlug?: string | null,
 ): ImportedProduct {
+  if (isEgaplastCompany(companySlug)) {
+    return {
+      ...product,
+      cstUnico: rule.cstSaida,
+      destinosCst: product.destinosCst ?? emptyDestinos(),
+      ivaMva: rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto,
+      ivaMvaNumero: rule.mvaPercentual,
+    };
+  }
   const completed = completeRuleDestinos(rule);
   const unica = rule.situacaoCodigo === "TRIBUTACAO_UF" || Boolean(rule.ufTributacao);
   return {

@@ -14,7 +14,7 @@ Prisma (SQL parametrizado)
 PostgreSQL (database "fiscal-p")
 ```
 
-Python **não** sobe como API. Roda em `tools/extract_rules.py`: ODS padrão (`data/ncm-atualizado.ods`) — aba `BAIFER` → `data/base-baifer.json`; aba `LOJA` → `data/base-loja.json`. A Unica sai de `prisma/extract-unica.ts` → `data/base-unica.json`. O seed grava cada JSON na empresa correspondente. A aba `Planilha_Classes_Fiscais` não entra no seed.
+Python **não** sobe como API. Roda em `tools/extract_rules.py`: ODS padrão (`data/ncm-atualizado.ods`) — aba `BAIFER` → `data/base-baifer.json`; aba `LOJA` → `data/base-loja.json`. A Unica sai de `prisma/extract-unica.ts` → `data/base-unica.json`. A Egaplast sai de `prisma/extract-egaplast.ts` → `data/base-egaplast.json`. O seed grava cada JSON na empresa correspondente. A aba `Planilha_Classes_Fiscais` não entra no seed.
 
 ## Separação
 
