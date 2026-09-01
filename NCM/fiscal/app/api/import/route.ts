@@ -112,6 +112,8 @@ export async function POST(request: Request) {
                 abreviacao: item.abreviacao,
                 cstCompra: item.cstCompra,
                 cstUnico: item.cstUnico,
+                origem: item.origem,
+                ivaPorUf: item.ivaPorUf ?? undefined,
                 destinosCst: item.destinosCst ?? undefined,
                 auditStatus: item.auditStatus,
                 auditMotivo: item.auditMotivo,

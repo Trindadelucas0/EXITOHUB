@@ -88,6 +88,7 @@ model FiscalNcmRule {
   reducao           Boolean  @default(false)
   reducaoPercentual Decimal? @map("reducao_percentual") @db.Decimal(8, 4)
   ufTributacao      Json?    @map("uf_tributacao")
+  ivaPorUf          Json?    @map("iva_por_uf")
   createdAt         DateTime @default(now()) @map("created_at")
 
   company Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
@@ -133,6 +134,8 @@ model Product {
   abreviacao    String?
   cstCompra     String?  @map("cst_compra")
   cstUnico      String?  @map("cst_unico")
+  origem           String?
+  ivaPorUf         Json?    @map("iva_por_uf")
   destinosCst      Json?    @map("destinos_cst")
   auditStatus      String?  @map("audit_status")
   auditMotivo      String?  @map("audit_motivo")

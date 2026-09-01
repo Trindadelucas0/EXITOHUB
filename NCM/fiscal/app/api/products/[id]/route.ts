@@ -5,6 +5,7 @@ import { buildEntradaGuide } from "@/src/server/entrada";
 import { jsonError, jsonOk } from "@/src/server/http";
 import { HttpError, ownedWhere, requireCompanyAdmin, requireCompanySession } from "@/src/server/tenant";
 import { withTenant } from "@/src/server/db";
+import { isEgaplastCompany } from "@/src/server/company-slug";
 
 export async function GET(
   _request: Request,
@@ -29,8 +30,11 @@ export async function GET(
       const compare = compareProduct(mappedProduct, mappedRules, link?.ruleId ?? null, {
         companySlug: user.companyName,
       });
-      const guide = buildEntradaGuide(compare.rule, compare, mappedProduct.ncm);
+      const guide = buildEntradaGuide(compare.rule, compare, mappedProduct.ncm, {
+        companySlug: user.companyName,
+      });
       return {
+        layout: isEgaplastCompany(user.companyName) ? "egaplast" : "default",
         product: {
           ...mappedProduct,
           treated: Boolean(product.treatedAt),

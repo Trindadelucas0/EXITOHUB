@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { asDestinos, type FiscalRule, type ImportedProduct } from "./compare";
 import { asUfTributacao } from "@/src/lib/fiscal";
+import { asIvaPorUf } from "@/src/lib/iva-por-uf";
 
 function toNumber(value: Prisma.Decimal | number | null | undefined): number | null {
   if (value == null) return null;
@@ -27,6 +28,7 @@ export function ruleFromDb(row: {
   reducao?: boolean;
   reducaoPercentual?: Prisma.Decimal | number | null;
   ufTributacao?: Prisma.JsonValue | null;
+  ivaPorUf?: Prisma.JsonValue | null;
 }): FiscalRule {
   return {
     id: row.id,
@@ -48,6 +50,7 @@ export function ruleFromDb(row: {
     reducao: Boolean(row.reducao),
     reducaoPercentual: toNumber(row.reducaoPercentual),
     ufTributacao: asUfTributacao(row.ufTributacao ?? null),
+    ivaPorUf: asIvaPorUf(row.ivaPorUf ?? null),
   };
 }
 
@@ -65,6 +68,8 @@ export function productFromDb(row: {
   cstCompra: string | null;
   cstUnico: string | null;
   destinosCst: Prisma.JsonValue | null;
+  origem?: string | null;
+  ivaPorUf?: Prisma.JsonValue | null;
 }): ImportedProduct {
   return {
     id: row.id,
@@ -80,5 +85,7 @@ export function productFromDb(row: {
     cstCompra: row.cstCompra,
     cstUnico: row.cstUnico,
     destinosCst: row.destinosCst ? asDestinos(row.destinosCst) : null,
+    origem: row.origem ?? null,
+    ivaPorUf: asIvaPorUf(row.ivaPorUf ?? null),
   };
 }

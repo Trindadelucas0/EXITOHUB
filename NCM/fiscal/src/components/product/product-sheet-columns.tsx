@@ -2,6 +2,8 @@ import { CstCell } from "@/src/components/grid/cst-cell";
 import type { FiscalColumn } from "@/src/components/grid/fiscal-grid";
 import { StatusBadge } from "@/src/components/ui/status-badge";
 import { DESTINO_KEYS, DESTINO_SHORT_LABELS, isUnicaSituacao } from "@/src/lib/fiscal";
+import { hasFilledIvaPorUf } from "@/src/lib/iva-por-uf";
+import { EgaplastIvaBlock } from "./egaplast-iva-block";
 import type { ProductSheetItem } from "./product-sheet-types";
 
 const identityColumns: FiscalColumn<ProductSheetItem>[] = [
@@ -157,6 +159,15 @@ export const EGAPLAST_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = 
     cell: (row) => <span title={row.segmento ?? ""}>{row.segmento || "—"}</span>,
   },
   {
+    id: "origem",
+    header: "Origem",
+    show: "md",
+    className: "min-w-[7rem] max-w-[10rem] truncate",
+    cell: (row) => (
+      <span title={row.importado.origem ?? ""}>{row.importado.origem || "—"}</span>
+    ),
+  },
+  {
     id: "cstSaida",
     header: "CST saída",
     show: "md",
@@ -165,16 +176,25 @@ export const EGAPLAST_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = 
     ),
   },
   {
-    id: "mva",
-    header: "IVA / MVA",
-    show: "lg",
-    cell: (row) => (
-      <CstCell
-        compare={Boolean(row.importado.ivaMva)}
-        atual={row.importado.ivaMva}
-        ideal={row.correto?.mva}
-      />
-    ),
+    id: "ivaBloco",
+    header: "IVA/ICMS (UFs)",
+    className: "min-w-[18rem]",
+    cell: (row) => {
+      const atual = row.importado.ivaPorUf;
+      const ideal = row.correto?.ivaPorUf;
+      if (!hasFilledIvaPorUf(atual) && !hasFilledIvaPorUf(ideal)) {
+        return row.importado.ivaMva || "—";
+      }
+      return (
+        <EgaplastIvaBlock
+          compact
+          atual={atual}
+          ideal={ideal}
+          matched={row.status === "CORRETO"}
+          compare={row.status === "DIVERGENTE" && hasFilledIvaPorUf(ideal)}
+        />
+      );
+    },
   },
 ];
 

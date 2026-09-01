@@ -1,4 +1,10 @@
 import { ncmCapituloLabel } from "@/src/lib/ncm-capitulo";
+import {
+  EGAPLAST_IVA_UF_KEYS,
+  asIvaPorUf,
+  parseIvaFactor,
+  type IvaPorUf,
+} from "@/src/lib/iva-por-uf";
 import type { ParsedProduct } from "./import-cadastro";
 import { emptyDestinos } from "./rule-classify";
 import type { ParsedRule } from "./import-rules";
@@ -33,8 +39,32 @@ export function joinEgaplastCadastro(
       cstUnico: extra.cstUnico,
       ivaMva: extra.ivaMva,
       ivaMvaNumero: extra.ivaMvaNumero,
+      origem: row.origem || extra.origem,
+      ivaPorUf: extra.ivaPorUf ?? row.ivaPorUf,
     };
   });
+}
+
+function majorityIvaPorUf(rows: ParsedProduct[]): IvaPorUf | null {
+  const out: IvaPorUf = {};
+  let filled = 0;
+  for (const uf of EGAPLAST_IVA_UF_KEYS) {
+    const counts = new Map<string, { n: number; text: string }>();
+    for (const row of rows) {
+      const text = row.ivaPorUf?.[uf];
+      if (text == null || String(text).trim() === "") continue;
+      const key = String(parseIvaFactor(text) ?? text);
+      const current = counts.get(key) ?? { n: 0, text: String(text) };
+      current.n += 1;
+      counts.set(key, current);
+    }
+    const ranked = [...counts.values()].sort((a, b) => b.n - a.n);
+    if (ranked[0]) {
+      out[uf] = ranked[0].text;
+      filled += 1;
+    }
+  }
+  return filled > 0 ? asIvaPorUf(out) : null;
 }
 
 function majorityIva(rows: ParsedProduct[]): {
@@ -60,6 +90,7 @@ function buildEgaplastRule(input: {
   cstSaida: string | null;
   ivaMva: string | null;
   ivaMvaNumero: number | null;
+  ivaPorUf: IvaPorUf | null;
   situacaoCodigo: ParsedRule["situacaoCodigo"];
   situacao: string;
 }): ParsedRule {
@@ -82,6 +113,7 @@ function buildEgaplastRule(input: {
     reducao: input.situacaoCodigo === "REDUCAO",
     reducaoPercentual: null,
     ufTributacao: null,
+    ivaPorUf: input.ivaPorUf,
   };
 }
 
@@ -114,6 +146,7 @@ export function rulesFromEgaplastCadastro(
         cstSaida: first.cstUnico,
         ivaMva: iva.ivaMva,
         ivaMvaNumero: iva.ivaMvaNumero,
+        ivaPorUf: majorityIvaPorUf(rows),
         situacaoCodigo: sit.situacaoCodigo,
         situacao: sit.situacao,
       }),
@@ -131,6 +164,7 @@ export function rulesFromEgaplastCadastro(
         cstSaida: null,
         ivaMva: null,
         ivaMvaNumero: null,
+        ivaPorUf: null,
         situacaoCodigo: "INCOMPLETA",
         situacao: "Incompleta",
       }),

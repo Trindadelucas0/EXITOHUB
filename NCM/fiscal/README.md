@@ -14,10 +14,10 @@ Sistema web para o escritório conferir o cadastro importado contra a **base fis
 | `PLANILHA REGRA FISCAL UNICA.xlsx` | Variante sem coluna `ABREVIACAO` — import completa Abrev. pelo NCM da base Atacadista |
 | `Planilha_Classes_Fiscais` | Cadastro Santri (tela **Planilhas**) — não vira base fiscal |
 | Listagem Egaplast `ncm.xls` (aba `Dados`) | Cadastro: CÓDIGO, NOME, NCM (na Egaplast, cruza com Planilha1) |
-| Relatório Egaplast de produtos (blocos) | Cadastro: SIT.TRIBUTÁRIA + IVA/ICM por UF (dedupe por código) |
+| Relatório Egaplast de produtos (blocos) | Cadastro: origem, SIT.TRIBUTÁRIA + IVA/ICM das 27 UFs (dedupe por código) |
 | `NCM_GERAL` / links | Ignoradas |
 
-As bases **não se misturam** (`companyId` em toda query). Em **Base fiscal → Importar regras**, o layout segue a empresa da sessão. Na Unica e na Egaplast, **Consulta** e **Divergências** separam o cadastro por segmento da base (Unica: Abreviação; Egaplast: NCM na tributação, ou CST/IVA se a base for o `.xls` de duas abas). BAIFER/Loja não.
+As bases **não se misturam** (`companyId` em toda query). Em **Base fiscal → Importar regras**, o layout segue a empresa da sessão. Na Unica e na Egaplast, **Consulta** e **Divergências** separam o cadastro por segmento da base (Unica: Abreviação; Egaplast: bloco IVA/ICMS por UF, sem misturar fator com MVA %). BAIFER/Loja não.
 
 1. Extraia as regras do ODS padrão (BAIFER/Loja), da Unica e da Egaplast:
 

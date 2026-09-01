@@ -47,7 +47,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -80,7 +109,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -113,7 +171,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4449",
+        "AL": "1.496",
+        "AM": "0",
+        "AP": "1.4273",
+        "BA": "1.4943",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4101",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.4488",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4449",
+        "PB": "1.463",
+        "PE": "1.5054",
+        "PI": "0",
+        "PR": "1.5195",
+        "RJ": "1.5344",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "1.9402",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7922",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -146,7 +233,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4449",
+        "AL": "1.496",
+        "AM": "0",
+        "AP": "1.4273",
+        "BA": "1.4943",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4101",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.4488",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4449",
+        "PB": "1.463",
+        "PE": "1.5054",
+        "PI": "0",
+        "PR": "1.5195",
+        "RJ": "1.5344",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -179,7 +295,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4449",
+        "AL": "1.496",
+        "AM": "0",
+        "AP": "1.4273",
+        "BA": "1.4943",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4101",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.4488",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4449",
+        "PB": "1.463",
+        "PE": "1.5054",
+        "PI": "0",
+        "PR": "1.5195",
+        "RJ": "1.5344",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -212,7 +357,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4449",
+        "AL": "1.496",
+        "AM": "0",
+        "AP": "1.4273",
+        "BA": "1.4943",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4101",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.4488",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4449",
+        "PB": "1.463",
+        "PE": "1.5054",
+        "PI": "0",
+        "PR": "1.5195",
+        "RJ": "1.5344",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -245,7 +419,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -278,7 +481,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.6474",
+        "AL": "1.896",
+        "AM": "0",
+        "AP": "1.6273",
+        "BA": "1.8717",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.6077",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.6474",
+        "PB": "1.536",
+        "PE": "1.9079",
+        "PI": "0",
+        "PR": "1.7888",
+        "RJ": "1.9446",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -311,7 +543,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.517",
+        "AL": "1.824",
+        "AM": "0",
+        "AP": "1.6507",
+        "BA": "1.8717",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4805",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.7561",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.517",
+        "PB": "1.536",
+        "PE": "1.8355",
+        "PI": "0",
+        "PR": "1.6576",
+        "RJ": "1.8708",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "1.7812",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.1541",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -344,7 +605,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5319",
+        "AL": "1.639",
+        "AM": "0",
+        "AP": "1.5132",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4949",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5561",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.5319",
+        "PB": "1.551",
+        "PE": "1.6493",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.681",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -377,7 +667,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5319",
+        "AL": "1.639",
+        "AM": "0",
+        "AP": "1.5132",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4949",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5561",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.5319",
+        "PB": "1.551",
+        "PE": "1.6493",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.681",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -410,7 +729,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5319",
+        "AL": "1.639",
+        "AM": "0",
+        "AP": "1.5132",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4949",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5561",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.5319",
+        "PB": "1.551",
+        "PE": "1.6493",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.681",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -443,7 +791,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -476,7 +853,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -509,7 +915,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -542,7 +977,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4775",
+        "AL": "1.595",
+        "AM": "0",
+        "AP": "1.4595",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4419",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5561",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4775",
+        "PB": "0",
+        "PE": "1.605",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.6359",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -575,7 +1039,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.6119",
+        "AL": "1.74",
+        "AM": "0",
+        "AP": "1.5922",
+        "BA": "1.7509",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.573",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.6119",
+        "PB": "0",
+        "PE": "1.7509",
+        "PI": "0",
+        "PR": "1.7888",
+        "RJ": "1.7846",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -608,7 +1101,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -641,7 +1163,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5753",
+        "AL": "1.595",
+        "AM": "0",
+        "AP": "1.5561",
+        "BA": "1.605",
+        "CE": "1.595",
+        "DF": "0",
+        "ES": "1.5373",
+        "GO": "1.5373",
+        "MA": "0",
+        "MG": "1.5561",
+        "MS": "1.5373",
+        "MT": "0",
+        "PA": "1.5753",
+        "PB": "1.595",
+        "PE": "1.605",
+        "PI": "1.6152",
+        "PR": "1.9085",
+        "RJ": "1.595",
+        "RN": "1.5561",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -674,7 +1225,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.8663",
+        "AL": "1.8896",
+        "AM": "1.8896",
+        "AP": "1.8435",
+        "BA": "1.9015",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "1.938",
+        "MG": "1.8435",
+        "MS": "1.5904",
+        "MT": "0",
+        "PA": "1.8663",
+        "PB": "1.8896",
+        "PE": "1.9015",
+        "PI": "1.5595",
+        "PR": "1.8778",
+        "RJ": "1.8896",
+        "RN": "0",
+        "RO": "1.4758",
+        "RR": "1.8896",
+        "RS": "1.8212",
+        "SE": "0",
+        "SC": "1.8896",
+        "SP": "1.8475",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -707,7 +1287,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.8663",
+        "AL": "1.8896",
+        "AM": "1.8896",
+        "AP": "1.8435",
+        "BA": "1.9015",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "1.938",
+        "MG": "1.8435",
+        "MS": "1.5904",
+        "MT": "0",
+        "PA": "1.8663",
+        "PB": "1.8896",
+        "PE": "1.9015",
+        "PI": "1.5595",
+        "PR": "1.8778",
+        "RJ": "1.8896",
+        "RN": "0",
+        "RO": "1.4758",
+        "RR": "1.8896",
+        "RS": "1.8212",
+        "SE": "0",
+        "SC": "1.8896",
+        "SP": "1.8475",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -740,7 +1349,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -773,7 +1411,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -806,7 +1473,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -839,7 +1535,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -872,7 +1597,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -905,7 +1659,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -938,7 +1721,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5319",
+        "AL": "1.639",
+        "AM": "0",
+        "AP": "1.5132",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4949",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5561",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.5319",
+        "PB": "1.551",
+        "PE": "1.6493",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.681",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -971,7 +1783,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1004,7 +1845,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.1834",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8604",
+        "RJ": "1.8831",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1037,7 +1907,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.1834",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8604",
+        "RJ": "1.8831",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7912",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -1070,7 +1969,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.1834",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8604",
+        "RJ": "1.8831",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1103,7 +2031,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1136,7 +2093,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1169,7 +2155,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1202,7 +2217,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -1235,7 +2279,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.6711",
+        "AL": "1.728",
+        "AM": "0",
+        "AP": "1.6507",
+        "BA": "1.5818",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.6308",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.6711",
+        "PB": "1.692",
+        "PE": "1.7389",
+        "PI": "0",
+        "PR": "1.8842",
+        "RJ": "1.7723",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1268,7 +2341,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5319",
+        "AL": "1.584",
+        "AM": "0",
+        "AP": "1.5132",
+        "BA": "1.45",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4949",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5561",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.5319",
+        "PB": "1.551",
+        "PE": "1.594",
+        "PI": "0",
+        "PR": "1.7272",
+        "RJ": "1.6246",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1301,7 +2403,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5862",
+        "AL": "1.661",
+        "AM": "0",
+        "AP": "1.5668",
+        "BA": "1.7157",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.548",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6098",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.5862",
+        "PB": "1.606",
+        "PE": "1.6714",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.7036",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1334,7 +2465,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5862",
+        "AL": "1.661",
+        "AM": "0",
+        "AP": "1.5668",
+        "BA": "1.7157",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.548",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6098",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.5862",
+        "PB": "1.606",
+        "PE": "1.6714",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.7036",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1367,7 +2527,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5862",
+        "AL": "1.661",
+        "AM": "0",
+        "AP": "1.5668",
+        "BA": "1.7157",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.548",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6098",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.5862",
+        "PB": "1.606",
+        "PE": "1.6714",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.7036",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1400,7 +2589,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5862",
+        "AL": "1.661",
+        "AM": "0",
+        "AP": "1.5668",
+        "BA": "1.7157",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.548",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6098",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.5862",
+        "PB": "1.606",
+        "PE": "1.6714",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.7036",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1433,7 +2651,36 @@
       "abreviacao": null,
       "reducao": true,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1466,7 +2713,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.8607",
+        "AL": "1.944",
+        "AM": "0",
+        "AP": "1.838",
+        "BA": "1.9925",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.8159",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.8146",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.867",
+        "PB": "1.884",
+        "PE": "1.9562",
+        "PI": "0",
+        "PR": "2.087",
+        "RJ": "1.9938",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "2.3479",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.9151",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -1499,7 +2775,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.7057",
+        "AL": "1.782",
+        "AM": "0",
+        "AP": "1.6849",
+        "BA": "1.8264",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.6646",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6634",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.7057",
+        "PB": "1.727",
+        "PE": "1.7932",
+        "PI": "0",
+        "PR": "1.913",
+        "RJ": "1.8277",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "2.1522",
+        "SE": "0",
+        "SC": "0",
+        "SP": "2.6722",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -1532,7 +2837,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.8015",
+        "AL": "2.16",
+        "AM": "0",
+        "AP": "1.7795",
+        "BA": "2.234",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.7581",
+        "GO": "0",
+        "MA": "0",
+        "MG": "2.0488",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.8015",
+        "PB": "0",
+        "PE": "2.1736",
+        "PI": "0",
+        "PR": "2.087",
+        "RJ": "2.2154",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1565,7 +2899,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.6514",
+        "AL": "1.98",
+        "AM": "0",
+        "AP": "1.6312",
+        "BA": "2.0478",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.6116",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.878",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.6514",
+        "PB": "0",
+        "PE": "1.9925",
+        "PI": "0",
+        "PR": "1.913",
+        "RJ": "2.0308",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1598,7 +2961,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4232",
+        "AL": "1.463",
+        "AM": "0",
+        "AP": "1.8673",
+        "BA": "1.4943",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.3889",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.4488",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.8904",
+        "PB": "1.441",
+        "PE": "1.4722",
+        "PI": "0",
+        "PR": "1.5195",
+        "RJ": "1.5005",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1631,7 +3023,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4232",
+        "AL": "1.463",
+        "AM": "0",
+        "AP": "1.8673",
+        "BA": "1.4943",
+        "CE": "0",
+        "DF": "1.249",
+        "ES": "1.3889",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.4488",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.8904",
+        "PB": "1.441",
+        "PE": "1.4722",
+        "PI": "0",
+        "PR": "1.5195",
+        "RJ": "1.5005",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1664,7 +3085,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.7778",
+        "AL": "1.9164",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.753",
+        "RJ": "1.7723",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1697,7 +3147,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.7778",
+        "AL": "1.9164",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.753",
+        "RJ": "1.7723",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1730,7 +3209,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.1637",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8365",
+        "RJ": "1.8338",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8029",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -1763,7 +3271,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.1637",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8365",
+        "RJ": "1.8338",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1796,7 +3333,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1829,7 +3395,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.1637",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8365",
+        "RJ": "1.8338",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1862,7 +3457,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.2757",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8365",
+        "RJ": "1.8215",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1895,7 +3519,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.2325",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8604",
+        "RJ": "1.92",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7678",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -1928,7 +3581,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.2325",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8604",
+        "RJ": "1.92",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1961,7 +3643,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.2003",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.9677",
+        "RJ": "1.9692",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -1994,7 +3705,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.2003",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.9677",
+        "RJ": "1.9692",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2027,7 +3767,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.2003",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.9677",
+        "RJ": "1.9692",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2060,7 +3829,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.165",
+        "AL": "2.017",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5561",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8037",
+        "RJ": "1.8051",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2093,7 +3891,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.2003",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.9677",
+        "RJ": "1.9692",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8263",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -2126,7 +3953,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2159,7 +4015,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.7778",
+        "AL": "2.3594",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "2.0154",
+        "RJ": "1.9977",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2192,7 +4077,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.7778",
+        "AL": "2.3594",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "2.0154",
+        "RJ": "1.9977",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2225,7 +4139,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.21",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8484",
+        "RJ": "1.8338",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2258,7 +4201,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2291,7 +4263,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.21",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.8484",
+        "RJ": "1.8338",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.7795",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -2324,7 +4325,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2357,7 +4387,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.6119",
+        "AL": "1.764",
+        "AM": "0",
+        "AP": "1.5922",
+        "BA": "1.7509",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.573",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.6119",
+        "PB": "1.632",
+        "PE": "1.7751",
+        "PI": "0",
+        "PR": "1.7888",
+        "RJ": "1.8092",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2390,7 +4449,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4775",
+        "AL": "1.617",
+        "AM": "0",
+        "AP": "1.4595",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4419",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5661",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4775",
+        "PB": "1.496",
+        "PE": "1.6272",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.6585",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2423,7 +4511,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2456,7 +4573,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -2489,7 +4635,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2522,7 +4697,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2555,7 +4759,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2588,7 +4821,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2621,7 +4883,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -2654,7 +4945,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2687,7 +5007,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.7778",
+        "AL": "2.0632",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.7769",
+        "RJ": "1.7777",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2720,7 +5069,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2753,7 +5131,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4558",
+        "AL": "1.617",
+        "AM": "0",
+        "AP": "1.438",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4207",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5024",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4558",
+        "PB": "1.474",
+        "PE": "1.6272",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.6585",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2786,7 +5193,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5881",
+        "AL": "1.764",
+        "AM": "0",
+        "AP": "1.5688",
+        "BA": "1.7509",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.5499",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.639",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.5881",
+        "PB": "1.608",
+        "PE": "1.7751",
+        "PI": "0",
+        "PR": "1.7888",
+        "RJ": "1.8092",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2819,7 +5255,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4558",
+        "AL": "1.617",
+        "AM": "0",
+        "AP": "1.438",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4207",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5024",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4558",
+        "PB": "1.474",
+        "PE": "1.6272",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.6585",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "1.813",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9424",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -2852,7 +5317,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4558",
+        "AL": "1.617",
+        "AM": "0",
+        "AP": "1.438",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4207",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5024",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4558",
+        "PB": "1.474",
+        "PE": "1.6272",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.6585",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "1.813",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.9424",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -2885,7 +5379,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5763",
+        "AL": "1.632",
+        "AM": "0",
+        "AP": "1.5571",
+        "BA": "1.7509",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.5383",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5805",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.5763",
+        "PB": "1.596",
+        "PE": "1.6423",
+        "PI": "0",
+        "PR": "1.6576",
+        "RJ": "1.6738",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2918,7 +5441,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5881",
+        "AL": "1.764",
+        "AM": "0",
+        "AP": "1.5688",
+        "BA": "1.7509",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.5499",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.639",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.5881",
+        "PB": "1.608",
+        "PE": "1.7751",
+        "PI": "0",
+        "PR": "1.7888",
+        "RJ": "1.8092",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2951,7 +5503,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4558",
+        "AL": "1.617",
+        "AM": "0",
+        "AP": "1.438",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4207",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5024",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4558",
+        "PB": "1.474",
+        "PE": "1.6272",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.6585",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -2984,7 +5565,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5881",
+        "AL": "1.764",
+        "AM": "0",
+        "AP": "1.5688",
+        "BA": "1.7509",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.5499",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.639",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "1.5881",
+        "PB": "1.608",
+        "PE": "1.7751",
+        "PI": "0",
+        "PR": "1.7888",
+        "RJ": "1.8092",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3017,7 +5627,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3050,7 +5689,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4558",
+        "AL": "1.617",
+        "AM": "0",
+        "AP": "1.438",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4207",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5024",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4558",
+        "PB": "1.474",
+        "PE": "1.6272",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.6585",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3083,7 +5751,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.4558",
+        "AL": "1.617",
+        "AM": "0",
+        "AP": "1.438",
+        "BA": "1.605",
+        "CE": "0",
+        "DF": "0",
+        "ES": "1.4207",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.5024",
+        "MS": "1.4631",
+        "MT": "0",
+        "PA": "1.4558",
+        "PB": "1.474",
+        "PE": "1.6272",
+        "PI": "0",
+        "PR": "1.6398",
+        "RJ": "1.6585",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3116,7 +5813,36 @@
       "abreviacao": null,
       "reducao": true,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3149,7 +5875,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -3182,7 +5937,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3215,7 +5999,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3248,7 +6061,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3281,7 +6123,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "1.6099",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3314,7 +6185,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "1.6099",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -3347,7 +6247,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "1.6099",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3380,7 +6309,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3413,7 +6371,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3446,7 +6433,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3479,7 +6495,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.2494",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.9319",
+        "RJ": "1.92",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8966",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -3512,7 +6557,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.2494",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.9319",
+        "RJ": "1.92",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3545,7 +6619,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.245",
+        "AL": "2.2494",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.9319",
+        "RJ": "1.92",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3578,7 +6681,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.5763",
+        "AL": "2.2831",
+        "AM": "0",
+        "AP": "1.5571",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.7651",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "1.875",
+        "PI": "0",
+        "PR": "1.5861",
+        "RJ": "1.8632",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3611,7 +6743,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "1.6099",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3644,7 +6805,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3677,7 +6867,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "1.6474",
+        "AL": "2.2836",
+        "AM": "0",
+        "AP": "1.6273",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "1.6976",
+        "MS": "1.5961",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "1.6576",
+        "RJ": "1.824",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "1.8732",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -3710,7 +6929,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3743,7 +6991,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3776,7 +7053,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3809,7 +7115,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3842,7 +7177,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": "0",
+        "RS": "0",
+        "SE": "0",
+        "SC": "0",
+        "SP": "0",
+        "TO": "0"
+      }
     },
     {
       "company": "egaplast",
@@ -3875,7 +7239,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3908,7 +7301,36 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": {
+        "AC": "0",
+        "AL": "0",
+        "AM": "0",
+        "AP": "0",
+        "BA": "0",
+        "CE": "0",
+        "DF": "0",
+        "ES": "0",
+        "GO": "0",
+        "MA": "0",
+        "MG": "0",
+        "MS": "0",
+        "MT": "0",
+        "PA": "0",
+        "PB": "0",
+        "PE": "0",
+        "PI": "0",
+        "PR": "0",
+        "RJ": "0",
+        "RN": "0",
+        "RO": "0",
+        "RR": null,
+        "RS": null,
+        "SE": null,
+        "SC": null,
+        "SP": null,
+        "TO": null
+      }
     },
     {
       "company": "egaplast",
@@ -3941,7 +7363,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -3974,7 +7397,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4007,7 +7431,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4040,7 +7465,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4073,7 +7499,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4106,7 +7533,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4139,7 +7567,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4172,7 +7601,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4205,7 +7635,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4238,7 +7669,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4271,7 +7703,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4304,7 +7737,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4337,7 +7771,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4370,7 +7805,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4403,7 +7839,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4436,7 +7873,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4469,7 +7907,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4502,7 +7941,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4535,7 +7975,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4568,7 +8009,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4601,7 +8043,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4634,7 +8077,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4667,7 +8111,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4700,7 +8145,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4733,7 +8179,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4766,7 +8213,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4799,7 +8247,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4832,7 +8281,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4865,7 +8315,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4898,7 +8349,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4931,7 +8383,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4964,7 +8417,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -4997,7 +8451,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5030,7 +8485,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5063,7 +8519,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5096,7 +8553,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5129,7 +8587,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5162,7 +8621,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5195,7 +8655,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5228,7 +8689,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5261,7 +8723,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5294,7 +8757,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5327,7 +8791,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5360,7 +8825,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5393,7 +8859,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5426,7 +8893,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5459,7 +8927,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5492,7 +8961,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5525,7 +8995,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5558,7 +9029,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5591,7 +9063,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5624,7 +9097,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5657,7 +9131,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5690,7 +9165,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5723,7 +9199,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5756,7 +9233,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5789,7 +9267,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5822,7 +9301,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5855,7 +9335,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5888,7 +9369,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5921,7 +9403,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5954,7 +9437,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -5987,7 +9471,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6020,7 +9505,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6053,7 +9539,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6086,7 +9573,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6119,7 +9607,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6152,7 +9641,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6185,7 +9675,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6218,7 +9709,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6251,7 +9743,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6284,7 +9777,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6317,7 +9811,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6350,7 +9845,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6383,7 +9879,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6416,7 +9913,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6449,7 +9947,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6482,7 +9981,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6515,7 +10015,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6548,7 +10049,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6581,7 +10083,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6614,7 +10117,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6647,7 +10151,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6680,7 +10185,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6713,7 +10219,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6746,7 +10253,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6779,7 +10287,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6812,7 +10321,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6845,7 +10355,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6878,7 +10389,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6911,7 +10423,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6944,7 +10457,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -6977,7 +10491,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7010,7 +10525,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7043,7 +10559,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7076,7 +10593,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7109,7 +10627,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7142,7 +10661,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7175,7 +10695,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7208,7 +10729,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7241,7 +10763,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7274,7 +10797,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7307,7 +10831,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7340,7 +10865,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7373,7 +10899,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7406,7 +10933,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7439,7 +10967,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7472,7 +11001,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7505,7 +11035,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7538,7 +11069,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7571,7 +11103,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7604,7 +11137,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7637,7 +11171,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7670,7 +11205,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7703,7 +11239,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7736,7 +11273,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7769,7 +11307,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7802,7 +11341,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7835,7 +11375,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7868,7 +11409,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7901,7 +11443,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7934,7 +11477,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -7967,7 +11511,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8000,7 +11545,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8033,7 +11579,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8066,7 +11613,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8099,7 +11647,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8132,7 +11681,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8165,7 +11715,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8198,7 +11749,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8231,7 +11783,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8264,7 +11817,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8297,7 +11851,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8330,7 +11885,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8363,7 +11919,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8396,7 +11953,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8429,7 +11987,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8462,7 +12021,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8495,7 +12055,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8528,7 +12089,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8561,7 +12123,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8594,7 +12157,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8627,7 +12191,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8660,7 +12225,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8693,7 +12259,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8726,7 +12293,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8759,7 +12327,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8792,7 +12361,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8825,7 +12395,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8858,7 +12429,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8891,7 +12463,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8924,7 +12497,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8957,7 +12531,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -8990,7 +12565,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9023,7 +12599,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9056,7 +12633,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9089,7 +12667,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9122,7 +12701,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9155,7 +12735,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9188,7 +12769,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9221,7 +12803,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9254,7 +12837,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9287,7 +12871,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9320,7 +12905,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     },
     {
       "company": "egaplast",
@@ -9353,7 +12939,8 @@
       "abreviacao": null,
       "reducao": false,
       "reducaoPercentual": null,
-      "ufTributacao": null
+      "ufTributacao": null,
+      "ivaPorUf": null
     }
   ]
 }

@@ -70,6 +70,7 @@ export function labelCampoFiscal(campo: string): string {
   if (campo === "CST BAIFER") return "CST da empresa (saída)";
   if (campo === "CST compra / nota de entrada") return "CST de compra (entrada)";
   if (campo === "Abreviação") return "Abreviação fiscal";
+  if (campo.startsWith("IVA ")) return `IVA/ICMS ${campo.slice(4)}`;
   return campo;
 }
 

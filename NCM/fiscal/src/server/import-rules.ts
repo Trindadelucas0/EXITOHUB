@@ -21,6 +21,7 @@ import { fillMissingUnicaAbreviacao } from "./unica-abreviacao";
 import { isEgaplastCompany } from "./company-slug";
 import { parseEgaplastCadastroSheets } from "./import-cadastro";
 import { rulesFromEgaplastCadastro } from "./egaplast-rules";
+import type { IvaPorUf } from "@/src/lib/iva-por-uf";
 
 export type ParsedRule = {
   ncm: string;
@@ -42,6 +43,7 @@ export type ParsedRule = {
   reducao: boolean;
   reducaoPercentual: number | null;
   ufTributacao: UfTributacao | null;
+  ivaPorUf: IvaPorUf | null;
 };
 
 export type ParseRulesOptions = {
@@ -237,7 +239,7 @@ function deriveCstSaida(mappedCst: string | null, destinos: DestinosCst): string
 
 function unicaExtras(): Pick<
   ParsedRule,
-  "cest" | "ipi" | "abreviacao" | "reducao" | "reducaoPercentual" | "ufTributacao"
+  "cest" | "ipi" | "abreviacao" | "reducao" | "reducaoPercentual" | "ufTributacao" | "ivaPorUf"
 > {
   return {
     cest: null,
@@ -246,6 +248,7 @@ function unicaExtras(): Pick<
     reducao: false,
     reducaoPercentual: null,
     ufTributacao: null,
+    ivaPorUf: null,
   };
 }
 
@@ -405,6 +408,7 @@ function rowToUnicaRule(raw: unknown[], map: UnicaColumnMap): ParsedRule | null 
     reducao,
     reducaoPercentual: reducaoMva.mvaPercentual,
     ufTributacao: ufTributacaoFilled(uf) ? uf : null,
+    ivaPorUf: null,
   };
 }
 

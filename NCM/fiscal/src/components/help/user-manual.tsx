@@ -116,9 +116,10 @@ export function UserManual() {
           <p>
             Clique na linha para abrir a ficha. Lá aparece o cadastro importado ao lado do que a
             regra manda. Na Unica a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz
-            de destinatários da BAIFER). Na Egaplast mostra segmento, CST e IVA (ou CEST/alíquota se a base for TRIBUTACAO NCM).
-            A tributação correta não vem do cadastro: vem da regra
-            daquele NCM.
+            de destinatários da BAIFER). Na Egaplast mostra segmento, CST, origem e o bloco IVA/ICMS
+            das 27 UFs. Com TRIBUTACAO NCM o NCM na base fica correto; o fator IVA do cadastro não é
+            comparado com o percentual MVA da planilha. A tributação correta não vem do cadastro:
+            vem da regra daquele NCM.
           </p>
           <p>
             Se o NCM tiver duas regras, a ficha pede para vincular a hipótese. Só o administrador
@@ -134,7 +135,7 @@ export function UserManual() {
           </p>
           <p>
             Clique na linha para expandir: o que veio errado no importado e como deve ficar. Na Unica
-            a coluna Abreviação compara o cadastro com a Abrev. da base. Na Egaplast, com TRIBUTACAO NCM, o NCM na base fica correto; com o .xls antigo, compara CST e IVA.
+            a coluna Abreviação compara o cadastro com a Abrev. da base. Na Egaplast, com TRIBUTACAO NCM, o NCM na base fica correto; o bloco IVA/ICMS só fica vermelho se a base CST+IVA da mesma unidade divergir.
           </p>
           <p>
             Quando a regra daquele NCM estiver certa para todos os itens da fila, dá para marcar o
@@ -235,7 +236,8 @@ export function UserManual() {
           </p>
           <p>
             A tela mostra NCM do cadastro, NCM da regra, CST da nota de entrada, CST da empresa,
-            CFOP, MVA e um checklist. Se o cadastro ainda divergir, o alerta aparece no topo.
+            CFOP, MVA e um checklist. Na Egaplast aparece o bloco IVA/ICMS por UF (código, origem, CST, NCM),
+            sem a matriz de 8 destinatários da BAIFER. Se o cadastro ainda divergir, o alerta aparece no topo.
           </p>
         </ManualCard>
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.9 — 31/08/2026
+
+Corrigido:
+
+- Na Egaplast, o fator IVA do cadastro (ex. `1.9424` de SP) não é mais comparado com o MVA % da planilha `TRIBUTACAO NCM` (ex. `27.31`). Consulta, ficha e Como dar entrada mostram o bloco das 27 UFs (código, origem, CST, NCM). Vermelho só se a regra CST+IVA da mesma UF divergir (ex. SP `1.9` vs `1.955`). Sem matriz de 8 destinatários nem alerta “aba BAIFER”. BAIFER, Loja e Unica não mudam.
+
 ## v1.6.8 — 31/08/2026
 
 Corrigido:

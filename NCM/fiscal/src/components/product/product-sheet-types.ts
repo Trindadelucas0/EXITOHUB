@@ -1,4 +1,5 @@
 import type { DestinosCst, FieldDiff, StatusFiscal } from "@/src/lib/fiscal";
+import type { IvaPorUf } from "@/src/lib/iva-por-uf";
 
 export type ProductSheetItem = {
   id: string;
@@ -21,6 +22,8 @@ export type ProductSheetItem = {
     abreviacao: string | null;
     cest: string | null;
     aliquotaIcms: string | null;
+    origem?: string | null;
+    ivaPorUf?: IvaPorUf | null;
   };
   correto: {
     ncm: string;
@@ -33,6 +36,7 @@ export type ProductSheetItem = {
     abreviacao: string | null;
     cest: string | null;
     aliquotaIcms: string | null;
+    ivaPorUf?: IvaPorUf | null;
   } | null;
   candidates: {
     id: string;

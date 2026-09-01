@@ -1,5 +1,6 @@
 import { completeRuleDestinos, type FiscalRule, type ImportedProduct } from "./compare";
 import { isEgaplastCompany } from "./company-slug";
+import { hasFilledIvaPorUf } from "@/src/lib/iva-por-uf";
 import { emptyDestinos } from "./rule-classify";
 
 export function resolveLinkedRule(
@@ -19,21 +20,20 @@ export function applyRuleValuesToProduct(
 ): ImportedProduct {
   if (isEgaplastCompany(companySlug)) {
     const unica = rule.situacaoCodigo === "TRIBUTACAO_UF" || Boolean(rule.ufTributacao);
-    if (unica) {
+    if (unica && !hasFilledIvaPorUf(rule.ivaPorUf)) {
       return {
         ...product,
-        ivaMva: rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto,
-        ivaMvaNumero: rule.mvaPercentual,
         cest: rule.cest ?? product.cest,
         aliquotaIcms: rule.ufTributacao?.DF.aliqInterna ?? product.aliquotaIcms,
       };
     }
     return {
       ...product,
-      cstUnico: rule.cstSaida,
+      cstUnico: rule.cstSaida ?? product.cstUnico,
       destinosCst: product.destinosCst ?? emptyDestinos(),
-      ivaMva: rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto,
-      ivaMvaNumero: rule.mvaPercentual,
+      ivaMva: rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto ?? product.ivaMva,
+      ivaMvaNumero: rule.mvaPercentual ?? product.ivaMvaNumero,
+      ivaPorUf: rule.ivaPorUf ?? product.ivaPorUf,
     };
   }
   const completed = completeRuleDestinos(rule);

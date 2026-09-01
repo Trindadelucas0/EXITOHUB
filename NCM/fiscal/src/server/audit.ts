@@ -47,6 +47,8 @@ const productSelect = {
   cstCompra: true,
   cstUnico: true,
   destinosCst: true,
+  origem: true,
+  ivaPorUf: true,
   auditStatus: true,
   auditMotivo: true,
   importBatchId: true,
@@ -66,6 +68,8 @@ function sheetFiscalPair(product: ImportedProduct, rule: FiscalRule | null) {
       abreviacao: product.abreviacao ?? null,
       cest: product.cest ?? null,
       aliquotaIcms: product.aliquotaIcms ?? null,
+      origem: product.origem ?? null,
+      ivaPorUf: product.ivaPorUf ?? null,
     },
     correto: rule
       ? {
@@ -79,6 +83,7 @@ function sheetFiscalPair(product: ImportedProduct, rule: FiscalRule | null) {
           abreviacao: rule.abreviacao ?? null,
           cest: rule.cest ?? null,
           aliquotaIcms: rule.ufTributacao?.DF.aliqInterna ?? null,
+          ivaPorUf: rule.ivaPorUf ?? null,
         }
       : null,
   };

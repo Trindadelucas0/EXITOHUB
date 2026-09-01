@@ -321,6 +321,7 @@ describe("calibração regras Egaplast", () => {
     expect(st?.cfopSaida).toBeNull();
     expect(st?.segmento).toBe("Plásticos e suas obras");
     expect(st?.mvaPercentual).toBeGreaterThan(0);
+    expect(st?.ivaPorUf?.SP).toBeTruthy();
     const tributado = rules.find((r) => r.ncm === "32064990");
     expect(tributado?.cstSaida).toBe("0");
     expect(tributado?.situacaoCodigo).toBe("REGRA_GERAL");
@@ -357,6 +358,7 @@ describe("import TRIBUTACAO NCM Egaplast", () => {
     expect(gold?.ufTributacao?.DF.aliqInterna).toBe("20%");
     expect(gold?.ufTributacao?.DF.original).toBe("328%");
     expect(gold?.abreviacao).toBeUndefined();
+    expect(gold?.ivaPorUf).toBeNull();
   });
 
   it("não preenche Abrev. da Unica na tributação Egaplast", () => {

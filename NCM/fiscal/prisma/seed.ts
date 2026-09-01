@@ -44,6 +44,7 @@ type ExtractedRule = {
   reducao?: boolean;
   reducaoPercentual?: number | null;
   ufTributacao?: unknown;
+  ivaPorUf?: unknown;
 };
 
 type ExtractedFile = {
@@ -149,6 +150,7 @@ function ruleData(spec: CompanySeed, rule: ExtractedRule) {
     reducao: Boolean(rule.reducao),
     reducaoPercentual: rule.reducaoPercentual ?? null,
     ufTributacao: rule.ufTributacao ?? Prisma.DbNull,
+    ivaPorUf: (rule.ivaPorUf as Prisma.InputJsonValue) ?? Prisma.DbNull,
   };
 }
 

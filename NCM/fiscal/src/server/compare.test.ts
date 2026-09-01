@@ -480,4 +480,66 @@ describe("conferência Egaplast", () => {
     );
     expect(bad.status).toBe("DIVERGENTE");
   });
+
+  it("tributação NCM: fator IVA 1.9424 não diverge de MVA 27.31%", () => {
+    const fiscal = egaplastRule({
+      id: "uf",
+      cstSaida: null,
+      situacaoCodigo: "TRIBUTACAO_UF",
+      cest: "23.002.00",
+      mvaPercentual: 27.31,
+      mvaTexto: "27.31%",
+      mvaKind: "numeric",
+      ufTributacao: {
+        DF: { original: "27.31%", ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "20%" },
+        GO: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "19%" },
+        MG: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "18%" },
+      },
+    });
+    const ok = compareProduct(
+      product({
+        ncm: "84818019",
+        destinosCst: null,
+        cstUnico: "10",
+        ivaMva: "1.9424",
+        ivaMvaNumero: 1.9424,
+      }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(ok.status).toBe("CORRETO");
+    expect(ok.diffs.some((d) => d.campo === "MVA / IVA")).toBe(false);
+  });
+
+  it("CST+IVA: SP 1.9 vs 1.955 diverge na mesma unidade", () => {
+    const fiscal = egaplastRule({
+      id: "e1",
+      ivaPorUf: { SP: "1.955", MG: "1.58" },
+    });
+    const bad = compareProduct(
+      product({
+        ncm: "39172900",
+        destinosCst: null,
+        cstUnico: "10",
+        ivaMvaNumero: 1.9,
+        ivaPorUf: { SP: "1.9", MG: "1.58" },
+      }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(bad.status).toBe("DIVERGENTE");
+    expect(bad.diffs.some((d) => d.campo === "IVA SP")).toBe(true);
+    expect(bad.diffs.some((d) => d.campo === "IVA MG")).toBe(false);
+  });
+
+  it("BAIFER 32141010 continua na matriz (sem slug Egaplast)", () => {
+    const result = compareProduct(
+      product({ destinosCst: dest0 }),
+      [rule({ id: "r1" })],
+      null,
+    );
+    expect(result.status).toBe("CORRETO");
+  });
 });

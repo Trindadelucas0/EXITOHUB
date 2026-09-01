@@ -190,4 +190,64 @@ describe("aplicar valores corretos ao tratar", () => {
     expect(applied.cstUnico).toBe("60");
     expect(compareProduct(applied, [fiscal], null).status).toBe("CORRETO");
   });
+
+  it("Egaplast TRIBUTACAO_UF não copia MVA % no IVA do cadastro", () => {
+    const fiscal = rule({
+      id: "uf",
+      ncm: "84818019",
+      situacaoCodigo: "TRIBUTACAO_UF",
+      cstEntrada: null,
+      cstSaida: null,
+      cfopSaida: null,
+      destinosCst: {
+        naoContribuinte: null,
+        contribuinte: null,
+        revenda: null,
+        construtora: null,
+        hospClinica: null,
+        orgaoPublico: null,
+        produtorRural: null,
+        atacado: null,
+      },
+      mvaPercentual: 27.31,
+      mvaTexto: "27.31%",
+      cest: "23.002.00",
+      ufTributacao: {
+        DF: {
+          original: "27.31%",
+          ajustada4: null,
+          ajustada7: null,
+          ajustada12: null,
+          aliqInterna: "20%",
+        },
+        GO: {
+          original: null,
+          ajustada4: null,
+          ajustada7: null,
+          ajustada12: null,
+          aliqInterna: null,
+        },
+        MG: {
+          original: null,
+          ajustada4: null,
+          ajustada7: null,
+          ajustada12: null,
+          aliqInterna: null,
+        },
+      },
+    });
+    const applied = applyRuleValuesToProduct(
+      product({
+        ncm: "84818019",
+        destinosCst: null,
+        ivaMva: "1.9424",
+        ivaMvaNumero: 1.9424,
+      }),
+      fiscal,
+      "egaplast",
+    );
+    expect(applied.ivaMva).toBe("1.9424");
+    expect(applied.ivaMvaNumero).toBe(1.9424);
+    expect(applied.cest).toBe("23.002.00");
+  });
 });

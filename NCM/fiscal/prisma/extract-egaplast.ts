@@ -83,6 +83,7 @@ function main() {
       reducao: rule.reducao,
       reducaoPercentual: rule.reducaoPercentual,
       ufTributacao: rule.ufTributacao,
+      ivaPorUf: rule.ivaPorUf,
     })),
   };
   writeFileSync(DEST, `${JSON.stringify(payload, null, 2)}\n`, "utf8");

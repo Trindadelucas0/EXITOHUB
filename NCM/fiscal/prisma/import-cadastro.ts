@@ -57,6 +57,8 @@ async function main() {
           abreviacao: item.abreviacao,
           cstCompra: item.cstCompra,
           cstUnico: item.cstUnico,
+          origem: item.origem,
+          ivaPorUf: item.ivaPorUf ?? undefined,
           destinosCst: item.destinosCst ?? undefined,
         })),
       });

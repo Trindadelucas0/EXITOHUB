@@ -5,13 +5,16 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CstMatrix, type MatrixExtraRow } from "@/src/components/matrix/cst-matrix";
 import { DiffTable } from "@/src/components/product/diff-table";
+import { EgaplastIvaBlock } from "@/src/components/product/egaplast-iva-block";
 import { Button } from "@/src/components/ui/button";
 import { PageHeader } from "@/src/components/ui/page-header";
 import { StatusBadge } from "@/src/components/ui/status-badge";
 import { ncmApiUrl } from "@/src/lib/base-path";
 import { DESTINO_KEYS, isUnicaSituacao, type DestinosCst, type FieldDiff, type StatusFiscal } from "@/src/lib/fiscal";
+import { hasFilledIvaPorUf, type IvaPorUf } from "@/src/lib/iva-por-uf";
 
 type Payload = {
+  layout?: "egaplast" | "default";
   product: {
     id: string;
     codigo: string;
@@ -21,6 +24,8 @@ type Payload = {
     cstUnico: string | null;
     cstCompra: string | null;
     ivaMva: string | null;
+    origem?: string | null;
+    ivaPorUf?: IvaPorUf | null;
     cest?: string | null;
     abreviacao?: string | null;
     aliquotaIcms?: string | null;
@@ -44,6 +49,7 @@ type Payload = {
       mvaPercentual: number | null;
       cest?: string | null;
       abreviacao?: string | null;
+      ivaPorUf?: IvaPorUf | null;
       ufTributacao?: { DF?: { aliqInterna?: string | null } } | null;
     } | null;
     candidates: { id: string; situacaoCodigo: string; cstSaida: string | null }[];
@@ -139,9 +145,16 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
   }
 
   const title = mode === "entrada" ? "Como dar entrada?" : "Consulta fiscal do produto";
-  const unica = isUnicaSituacao(data.compare.rule?.situacaoCodigo);
+  const egaplast = data.layout === "egaplast";
+  const unica = !egaplast && isUnicaSituacao(data.compare.rule?.situacaoCodigo);
   const showDestinos =
-    !unica && (hasDestinos(data.product.destinosCst) || Boolean(data.compare.rule?.destinosCst));
+    !egaplast && !unica && (hasDestinos(data.product.destinosCst) || Boolean(data.compare.rule?.destinosCst));
+  const visibleDiffs = egaplast
+    ? data.compare.diffs.filter((diff) => !diff.campo.startsWith("IVA "))
+    : data.compare.diffs;
+  const ivaAtual = data.product.ivaPorUf;
+  const ivaIdeal = data.compare.rule?.ivaPorUf;
+  const showIvaBlock = egaplast && (hasFilledIvaPorUf(ivaAtual) || hasFilledIvaPorUf(ivaIdeal));
 
   return (
     <div className="grid gap-6">
@@ -218,37 +231,43 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
         </div>
       ) : null}
 
-      {mode === "entrada" && data.compare.diffs.length > 0 ? (
+      {mode === "entrada" && visibleDiffs.length > 0 ? (
         <section className="grid gap-2 rounded-lg border border-line bg-white p-4 shadow-panel sm:p-5">
           <h2 className="text-sm font-medium text-ink">
             O que veio errado no importado e como deve ficar
           </h2>
-          <DiffTable diffs={data.compare.diffs} />
+          <DiffTable diffs={visibleDiffs} />
         </section>
       ) : null}
 
       {mode === "ficha" ? (
         <section className="grid gap-2 rounded-lg border border-line bg-white p-4 shadow-panel sm:p-5">
           <h2 className="text-sm font-medium text-ink">Como está e como deve ficar</h2>
-          <div className="md:hidden">
-            <CstMatrix
-              layout="stacked"
-              ideal={data.compare.rule?.destinosCst}
-              atual={data.product.destinosCst}
-              extras={fichaExtras(data)}
-              showAtual
-              showDestinos={showDestinos}
-            />
-          </div>
-          <div className="hidden md:block">
-            <CstMatrix
-              ideal={data.compare.rule?.destinosCst}
-              atual={data.product.destinosCst}
-              extras={fichaExtras(data)}
-              showAtual
-              showDestinos={showDestinos}
-            />
-          </div>
+          {egaplast ? (
+            <EgaplastFicha data={data} showIvaBlock={showIvaBlock} />
+          ) : (
+            <>
+              <div className="md:hidden">
+                <CstMatrix
+                  layout="stacked"
+                  ideal={data.compare.rule?.destinosCst}
+                  atual={data.product.destinosCst}
+                  extras={fichaExtras(data)}
+                  showAtual
+                  showDestinos={showDestinos}
+                />
+              </div>
+              <div className="hidden md:block">
+                <CstMatrix
+                  ideal={data.compare.rule?.destinosCst}
+                  atual={data.product.destinosCst}
+                  extras={fichaExtras(data)}
+                  showAtual
+                  showDestinos={showDestinos}
+                />
+              </div>
+            </>
+          )}
         </section>
       ) : (
         <section className="grid gap-4 rounded-lg border border-line bg-white p-5 shadow-panel">
@@ -260,22 +279,45 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
           {data.guide?.destaqueStInterno ? (
             <p className="rounded-md bg-status-warn-bg px-3 py-2 text-sm">{data.guide.destaqueStInterno}</p>
           ) : null}
-          <dl className="grid gap-3 sm:grid-cols-2">
-            <Item label="NCM do cadastro (cliente)" value={data.product.ncm || "(vazio)"} />
-            <Item label="NCM da regra da empresa" value={data.guide?.ncm ?? "—"} />
-            <Item label="Situação" value={data.guide?.situacao ?? "—"} />
-            <Item label="CST nota de entrada" value={data.guide?.cstEntrada ?? "—"} emphasis />
-            <Item label="CST da empresa (saída)" value={data.guide?.cstBaifer ?? "—"} />
-            <Item label="CFOP de saída" value={data.guide?.cfopSaida ?? "—"} />
-            <Item label="MVA" value={data.guide?.mva ?? "—"} emphasis />
-            <Item label="CFOP de entrada" value={data.guide?.cfopEntradaNota ?? "—"} emphasis />
-          </dl>
-          <div className="md:hidden">
-            <CstMatrix layout="stacked" ideal={data.compare.rule?.destinosCst} showDestinos={showDestinos} extras={unica ? fichaExtras(data) : []} />
-          </div>
-          <div className="hidden md:block">
-            <CstMatrix ideal={data.compare.rule?.destinosCst} showDestinos={showDestinos} extras={unica ? fichaExtras(data) : []} />
-          </div>
+          {egaplast ? (
+            <>
+              <EgaplastIvaBlock
+                codigo={data.product.codigo}
+                origem={data.product.origem}
+                cst={data.product.cstUnico ?? data.guide?.cstBaifer ?? null}
+                ncm={data.product.ncm}
+                atual={ivaAtual}
+                ideal={ivaIdeal}
+                matched={data.compare.status === "CORRETO"}
+                compare={data.compare.status === "DIVERGENTE" && hasFilledIvaPorUf(ivaIdeal)}
+              />
+              <dl className="grid gap-3 sm:grid-cols-2">
+                <Item label="Situação" value={data.guide?.situacao ?? "—"} />
+                <Item label="CST da regra (saída)" value={data.guide?.cstBaifer ?? "—"} />
+                <Item label="IVA/ICMS" value={data.guide?.mva ?? "—"} />
+                <Item label="CFOP de entrada" value={data.guide?.cfopEntradaNota ?? "—"} />
+              </dl>
+            </>
+          ) : (
+            <>
+              <dl className="grid gap-3 sm:grid-cols-2">
+                <Item label="NCM do cadastro (cliente)" value={data.product.ncm || "(vazio)"} />
+                <Item label="NCM da regra da empresa" value={data.guide?.ncm ?? "—"} />
+                <Item label="Situação" value={data.guide?.situacao ?? "—"} />
+                <Item label="CST nota de entrada" value={data.guide?.cstEntrada ?? "—"} emphasis />
+                <Item label="CST da empresa (saída)" value={data.guide?.cstBaifer ?? "—"} />
+                <Item label="CFOP de saída" value={data.guide?.cfopSaida ?? "—"} />
+                <Item label="MVA" value={data.guide?.mva ?? "—"} emphasis />
+                <Item label="CFOP de entrada" value={data.guide?.cfopEntradaNota ?? "—"} emphasis />
+              </dl>
+              <div className="md:hidden">
+                <CstMatrix layout="stacked" ideal={data.compare.rule?.destinosCst} showDestinos={showDestinos} extras={unica ? fichaExtras(data) : []} />
+              </div>
+              <div className="hidden md:block">
+                <CstMatrix ideal={data.compare.rule?.destinosCst} showDestinos={showDestinos} extras={unica ? fichaExtras(data) : []} />
+              </div>
+            </>
+          )}
           <div>
             <h2 className="font-medium text-ink">Checklist na NF do fornecedor</h2>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-ink">
@@ -310,6 +352,31 @@ function Item({ label, value, emphasis = false }: { label: string; value: string
   );
 }
 
+function EgaplastFicha({ data, showIvaBlock }: { data: Payload; showIvaBlock: boolean }) {
+  const ivaAtual = data.product.ivaPorUf;
+  const ivaIdeal = data.compare.rule?.ivaPorUf;
+  return (
+    <div className="grid gap-4">
+      <EgaplastIvaBlock
+        codigo={data.product.codigo}
+        origem={data.product.origem}
+        cst={data.product.cstUnico ?? data.compare.rule?.cstSaida ?? null}
+        ncm={data.product.ncm}
+        atual={ivaAtual}
+        ideal={ivaIdeal}
+        matched={data.compare.status === "CORRETO"}
+        compare={data.compare.status === "DIVERGENTE" && hasFilledIvaPorUf(ivaIdeal)}
+      />
+      {!showIvaBlock ? (
+        <p className="text-sm text-ink-muted">
+          Este cadastro ainda não tem o bloco IVA/ICMS das 27 UFs. Importe o relatório (Planilha1)
+          na tela Planilhas.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function hasDestinos(destinos?: DestinosCst | null) {
   return Boolean(destinos && DESTINO_KEYS.some((key) => destinos[key]));
 }
@@ -326,6 +393,7 @@ function fichaExtras(data: Payload): MatrixExtraRow[] {
   const cestDiff = diffs.find((diff) => diff.campo === "CEST");
   const aliqDiff = diffs.find((diff) => diff.campo === "Alíquota interna DF");
   const unica = isUnicaSituacao(rule?.situacaoCodigo);
+  const egaplast = data.layout === "egaplast";
 
   if (unica || abrevDiff || product.abreviacao || rule?.abreviacao) {
     extras.push({
@@ -377,7 +445,10 @@ function fichaExtras(data: Payload): MatrixExtraRow[] {
     });
   }
 
-  if (mvaDiff || product.ivaMva || (!unica && (rule?.mvaTexto || rule?.mvaPercentual != null))) {
+  if (
+    !egaplast &&
+    (mvaDiff || product.ivaMva || (!unica && (rule?.mvaTexto || rule?.mvaPercentual != null)))
+  ) {
     const ruleMva =
       rule?.mvaPercentual != null ? String(rule.mvaPercentual) : rule?.mvaTexto ?? null;
     extras.push({

@@ -259,6 +259,8 @@ describe("import cadastro", () => {
     expect(st?.ivaMvaNumero).toBeTruthy();
     expect(st?.ivaMvaNumero ?? 0).toBeGreaterThan(0);
     expect(st?.ivaMvaNumero ?? 0).toBeLessThan(100);
+    expect(st?.ivaPorUf?.SP).toBeTruthy();
+    expect(Object.keys(st?.ivaPorUf ?? {}).length).toBe(27);
     const semNcm = rows.find((r) => r.codigo === "990363");
     expect(semNcm?.ncm).toBe("");
     expect(semNcm?.cstUnico).toBe("0");
@@ -301,6 +303,9 @@ describe("import cadastro", () => {
     expect(kit?.descricao).toContain("KIT TESTE");
     expect(kit?.cstUnico).toBe("10");
     expect(kit?.ivaMvaNumero).toBeCloseTo(1.9424, 4);
+    expect(kit?.origem).toBe("9-PRODUÇÃO");
+    expect(kit?.ivaPorUf?.SP).toBe("1.9424");
+    expect(kit?.ivaPorUf?.AC).toBe("0");
     expect(egaplast.find((r) => r.codigo === "99999")?.cstUnico).toBeNull();
   });
 });

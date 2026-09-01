@@ -2,6 +2,7 @@ import path from "node:path";
 import * as XLSX from "xlsx";
 import type { DestinosCst } from "@/src/lib/fiscal";
 import { DESTINO_KEYS } from "@/src/lib/fiscal";
+import { asIvaPorUf, emptyIvaPorUf, type IvaPorUf } from "@/src/lib/iva-por-uf";
 import { isEgaplastCompany } from "./company-slug";
 import { joinEgaplastCadastro } from "./egaplast-rules";
 import { normalizeCst, normalizeNcm, parseMvaNumber } from "./ncm";
@@ -17,6 +18,8 @@ export type ParsedProduct = {
   aliquotaIcms: string | null;
   ivaMva: string | null;
   ivaMvaNumero: number | null;
+  origem: string | null;
+  ivaPorUf: IvaPorUf | null;
   cest: string | null;
   abreviacao: string | null;
   cstCompra: string | null;
@@ -78,6 +81,7 @@ const HEADER_MAP: Record<string, string> = {
   prodrural: "produtorRural",
   "produtor rural": "produtorRural",
   atacado: "atacado",
+  origem: "origem",
 };
 
 const SKIP_SHEETS = new Set(["baifer", "loja", "ncm_geral"]);
@@ -116,7 +120,7 @@ export function assertSafeUpload(fileName: string, size: number, mime: string): 
 
 function mapHeader(header: string): string | null {
   const folded = foldHeader(header);
-  if (folded === "codigo original" || folded === "marca" || folded === "origem") return null;
+  if (folded === "codigo original" || folded === "marca") return null;
   if (folded.includes("iva") && folded.includes("venda")) return null;
   // Desc. Abrev. ICMS = CST + alíquota (não confundir com Abreviação fiscal)
   if (folded.includes("abrev") && folded.includes("icms")) return "descAbrevIcms";
@@ -324,6 +328,7 @@ function findColumnIndexes(header: unknown[]): {
   codigo: number;
   ncm: number;
   sit: number;
+  origem: number;
 } {
   const folded = header.map((c) => foldHeader(String(c ?? "")));
   const codigo = folded.findIndex(
@@ -331,32 +336,42 @@ function findColumnIndexes(header: unknown[]): {
   );
   const ncm = folded.findIndex((c) => c === "ncm" || c.includes("ncm"));
   const sit = folded.findIndex((c) => c.includes("sit") && c.includes("tribut"));
-  return { codigo, ncm, sit };
+  const origem = folded.findIndex((c) => c === "origem");
+  return { codigo, ncm, sit, origem };
 }
 
-function parseIvaBlockFromRows(rows: unknown[][]): { ivaMva: string | null; ivaMvaNumero: number | null } {
-  const byUf: Record<string, string> = {};
+function parseIvaBlockFromRows(rows: unknown[][]): {
+  ivaMva: string | null;
+  ivaMvaNumero: number | null;
+  ivaPorUf: IvaPorUf | null;
+} {
+  const byUf = emptyIvaPorUf();
   for (const row of rows) {
     const label = foldHeader(cellStr(row[1]));
     if (!label.includes("iva")) continue;
     for (let j = 2; j < row.length - 1; j += 2) {
       const uf = cellStr(row[j]).toUpperCase();
       const val = cellStr(row[j + 1]);
-      if (/^[A-Z]{2}$/.test(uf) && val) byUf[uf] = val;
+      if (/^[A-Z]{2}$/.test(uf)) {
+        byUf[uf] = val || null;
+      }
     }
   }
-  const sp = byUf.SP;
+  const ivaPorUf = asIvaPorUf(byUf);
+  const sp = ivaPorUf?.SP ?? null;
   const spNum = parseIvaDecimal(sp);
   if (spNum != null && spNum > 0) {
-    return { ivaMva: sp, ivaMvaNumero: spNum };
+    return { ivaMva: sp, ivaMvaNumero: spNum, ivaPorUf };
   }
-  for (const uf of Object.keys(byUf).sort()) {
-    const num = parseIvaDecimal(byUf[uf]);
-    if (num != null && num > 0) {
-      return { ivaMva: byUf[uf], ivaMvaNumero: num };
+  if (ivaPorUf) {
+    for (const uf of Object.keys(ivaPorUf).sort()) {
+      const num = parseIvaDecimal(ivaPorUf[uf] ?? null);
+      if (num != null && num > 0) {
+        return { ivaMva: ivaPorUf[uf] ?? null, ivaMvaNumero: num, ivaPorUf };
+      }
     }
   }
-  return { ivaMva: null, ivaMvaNumero: null };
+  return { ivaMva: null, ivaMvaNumero: null, ivaPorUf };
 }
 
 /** Layout relatório Egaplast: bloco código + 4 linhas IVA/ICM por UF. */
@@ -383,6 +398,7 @@ export function parseEgaplastRelatorioAoa(aoa: unknown[][]): ParsedProduct[] {
     const ncmRaw = cellStr(row[cols.ncm]);
     const { ncm, ncmOriginal } = ncmFromCadastroCell(ncmRaw);
     const cstUnico = normalizeCst(sitRaw);
+    const origem = cols.origem >= 0 ? cellStr(row[cols.origem]) || null : null;
     const ivaRows: unknown[][] = [];
     for (let k = 1; k <= 4 && i + k < aoa.length; k++) {
       const next = aoa[i + k] ?? [];
@@ -401,6 +417,8 @@ export function parseEgaplastRelatorioAoa(aoa: unknown[][]): ParsedProduct[] {
       aliquotaIcms: null,
       ivaMva: iva.ivaMva,
       ivaMvaNumero: iva.ivaMvaNumero,
+      origem,
+      ivaPorUf: iva.ivaPorUf,
       cest: null,
       abreviacao: null,
       cstCompra: null,
@@ -544,6 +562,8 @@ function toProduct(row: Record<string, unknown>): ParsedProduct | null {
     aliquotaIcms,
     ivaMva: ivaRaw,
     ivaMvaNumero: ivaNum,
+    origem: mapped.origem || null,
+    ivaPorUf: null,
     cest: mapped.cest || null,
     abreviacao: mapped.abreviacao || null,
     cstCompra: normalizeCst(mapped.cstCompra),

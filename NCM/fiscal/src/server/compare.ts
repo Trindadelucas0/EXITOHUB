@@ -9,6 +9,7 @@ import {
   type StatusFiscal,
   type UfTributacao,
 } from "@/src/lib/fiscal";
+import { hasFilledIvaPorUf, ivaPorUfDiffs, type IvaPorUf } from "@/src/lib/iva-por-uf";
 
 export type { DestinoKey, DestinosCst, FieldDiff, StatusFiscal };
 export { DESTINO_KEYS, DESTINO_LABELS };
@@ -33,6 +34,7 @@ export type FiscalRule = {
   reducao?: boolean;
   reducaoPercentual?: number | null;
   ufTributacao?: UfTributacao | null;
+  ivaPorUf?: IvaPorUf | null;
 };
 
 export type ImportedProduct = {
@@ -49,6 +51,8 @@ export type ImportedProduct = {
   cstCompra?: string | null;
   cstUnico?: string | null;
   destinosCst?: DestinosCst | null;
+  origem?: string | null;
+  ivaPorUf?: IvaPorUf | null;
 };
 
 export type CompareResult = {
@@ -314,15 +318,6 @@ function compareEgaplastTributacaoProduct(
       diffs.push({ campo: "CEST", atual: product.cest, ideal: picked.cest });
     }
   }
-  if (picked.mvaPercentual != null && product.ivaMvaNumero != null) {
-    if (Math.abs(picked.mvaPercentual - product.ivaMvaNumero) > 0.05) {
-      diffs.push({
-        campo: "MVA / IVA",
-        atual: String(product.ivaMvaNumero),
-        ideal: String(picked.mvaPercentual),
-      });
-    }
-  }
   if (diffs.length > 0) {
     return {
       status: "DIVERGENTE",
@@ -343,14 +338,34 @@ function compareEgaplastTributacaoProduct(
   };
 }
 
+function isCstIvaEgaplastRule(rule: FiscalRule): boolean {
+  if (isUnicaRule(rule)) return hasFilledIvaPorUf(rule.ivaPorUf);
+  return true;
+}
+
 function compareEgaplastProduct(
   product: ImportedProduct,
   rulesForNcm: FiscalRule[],
   linkedRuleId: string | null,
 ): CompareResult {
+  const cstIvaRules = rulesForNcm.filter(isCstIvaEgaplastRule);
+  const hasCompleteCstIva = cstIvaRules.some((item) => item.situacaoCodigo !== "INCOMPLETA");
+  const productHasCstIva =
+    Boolean(product.cstUnico) || hasFilledIvaPorUf(product.ivaPorUf) || product.ivaMvaNumero != null;
+  if (hasCompleteCstIva && productHasCstIva) {
+    return compareEgaplastCstIvaProduct(product, cstIvaRules, linkedRuleId);
+  }
   if (rulesForNcm.some(isUnicaRule)) {
     return compareEgaplastTributacaoProduct(product, rulesForNcm, linkedRuleId);
   }
+  return compareEgaplastCstIvaProduct(product, rulesForNcm, linkedRuleId);
+}
+
+function compareEgaplastCstIvaProduct(
+  product: ImportedProduct,
+  rulesForNcm: FiscalRule[],
+  linkedRuleId: string | null,
+): CompareResult {
   const picked = pickEgaplastRule(product, rulesForNcm, linkedRuleId);
   if (!picked.rule) {
     return {
@@ -395,7 +410,15 @@ function compareEgaplastProduct(
       ideal: idealCst,
     });
   }
-  if (rule.mvaPercentual != null && product.ivaMvaNumero != null) {
+  if (hasFilledIvaPorUf(rule.ivaPorUf) && hasFilledIvaPorUf(product.ivaPorUf)) {
+    for (const diff of ivaPorUfDiffs(product.ivaPorUf, rule.ivaPorUf)) {
+      diffs.push({
+        campo: `IVA ${diff.uf}`,
+        atual: diff.atual,
+        ideal: diff.ideal,
+      });
+    }
+  } else if (rule.mvaPercentual != null && product.ivaMvaNumero != null && !isUnicaRule(rule)) {
     if (Math.abs(rule.mvaPercentual - product.ivaMvaNumero) > 0.05) {
       diffs.push({
         campo: "MVA / IVA",

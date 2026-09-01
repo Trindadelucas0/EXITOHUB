@@ -37,6 +37,8 @@ function product(partial: Partial<ParsedProduct>): ParsedProduct {
     aliquotaIcms: null,
     ivaMva: null,
     ivaMvaNumero: null,
+    origem: null,
+    ivaPorUf: null,
     cest: null,
     abreviacao: null,
     cstCompra: "0",
