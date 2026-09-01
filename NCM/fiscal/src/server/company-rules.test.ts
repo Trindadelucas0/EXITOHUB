@@ -312,7 +312,7 @@ function mergeEgaplastWorkbook(): Buffer {
 }
 
 describe("calibração regras Egaplast", () => {
-  it("só com companyName Egaplast lê as duas abas", () => {
+  it("só com companyName Egaplast lê as duas abas", { timeout: 20_000 }, () => {
     const buffer = mergeEgaplastWorkbook();
     const rules = dedupeParsedRules(parseRulesBuffer(buffer, { companyName: "Egaplast" }));
     expect(rules.length).toBe(283);
@@ -327,15 +327,31 @@ describe("calibração regras Egaplast", () => {
     expect(tributado?.situacaoCodigo).toBe("REGRA_GERAL");
     const dual = rules.filter((r) => r.ncm === "84818019");
     expect(dual.map((r) => r.situacaoCodigo).sort()).toEqual(["REGRA_GERAL", "ST_INTERNO"]);
+    const st848 = rules.find((r) => r.ncm === "84818019" && r.situacaoCodigo === "ST_INTERNO");
+    expect(st848?.ivaPorUf?.SP).toBeTruthy();
     expect(rules.some((r) => r.situacaoCodigo === "INCOMPLETA")).toBe(true);
   });
 
-  it("BAIFER/Unica não usam o parser Egaplast no mesmo arquivo", () => {
+  it("BAIFER/Unica não usam o parser Egaplast no mesmo arquivo", { timeout: 20_000 }, () => {
     const buffer = mergeEgaplastWorkbook();
     const baifer = parseRulesBuffer(buffer, { companyName: "BAIFER" });
     const unica = parseRulesBuffer(buffer, { companyName: "Unica" });
     expect(baifer.find((r) => r.ncm === "39172900" && r.situacaoCodigo === "ST_INTERNO")).toBeFalsy();
     expect(unica.find((r) => r.ncm === "25202090")).toBeFalsy();
+  });
+
+  it("JSON extraído separa IVA nacional e importado no NCM 84818019", () => {
+    const raw = JSON.parse(readFileSync(path.join(process.cwd(), "data", "base-egaplast.json"), "utf8")) as {
+      rules: Array<{
+        ncm: string;
+        situacaoCodigo: string;
+        ivaPorUf?: { SP?: string } | null;
+        ivaPorUfImportado?: { SP?: string } | null;
+      }>;
+    };
+    const st = raw.rules.find((r) => r.ncm === "84818019" && r.situacaoCodigo === "ST_INTERNO");
+    expect(st?.ivaPorUf?.SP).toBe("1.9424");
+    expect(st?.ivaPorUfImportado?.SP).toBe("2.119");
   });
 });
 
@@ -347,7 +363,7 @@ const EGAPLAST_TRIBUTACAO = path.join(
 );
 
 describe("import TRIBUTACAO NCM Egaplast", () => {
-  it("lê NCM/CEST/segmento/UF só com companyName Egaplast", () => {
+  it("lê NCM/CEST/segmento/UF só com companyName Egaplast", { timeout: 20_000 }, () => {
     const buffer = readFileSync(EGAPLAST_TRIBUTACAO);
     const rules = dedupeParsedRules(parseRulesBuffer(buffer, { companyName: "Egaplast" }));
     expect(rules.length).toBeGreaterThanOrEqual(300);

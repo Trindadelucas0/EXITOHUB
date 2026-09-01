@@ -1,6 +1,7 @@
 import { completeRuleDestinos, type FiscalRule, type ImportedProduct } from "./compare";
 import { isEgaplastCompany } from "./company-slug";
-import { hasFilledIvaPorUf } from "@/src/lib/iva-por-uf";
+import { hasFilledIvaPorUf, parseIvaFactor } from "@/src/lib/iva-por-uf";
+import { ivaIdealForOrigem } from "@/src/lib/origem-iva";
 import { emptyDestinos } from "./rule-classify";
 
 export function resolveLinkedRule(
@@ -27,13 +28,14 @@ export function applyRuleValuesToProduct(
         aliquotaIcms: rule.ufTributacao?.DF.aliqInterna ?? product.aliquotaIcms,
       };
     }
+    const ivaIdeal = ivaIdealForOrigem(rule, product.origem);
     return {
       ...product,
       cstUnico: rule.cstSaida ?? product.cstUnico,
       destinosCst: product.destinosCst ?? emptyDestinos(),
-      ivaMva: rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto ?? product.ivaMva,
-      ivaMvaNumero: rule.mvaPercentual ?? product.ivaMvaNumero,
-      ivaPorUf: rule.ivaPorUf ?? product.ivaPorUf,
+      ivaMva: ivaIdeal?.SP ?? (rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto ?? product.ivaMva),
+      ivaMvaNumero: parseIvaFactor(ivaIdeal?.SP) ?? rule.mvaPercentual ?? product.ivaMvaNumero,
+      ivaPorUf: ivaIdeal ?? product.ivaPorUf,
     };
   }
   const completed = completeRuleDestinos(rule);

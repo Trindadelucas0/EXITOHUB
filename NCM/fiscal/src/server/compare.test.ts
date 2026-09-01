@@ -533,6 +533,77 @@ describe("conferência Egaplast", () => {
     expect(ok.status).toBe("CORRETO");
   });
 
+  it("IVA nacional e importado do mesmo NCM não se misturam", () => {
+    const fiscal = egaplastRule({
+      id: "dual",
+      ncm: "84818019",
+      ivaPorUf: { SP: "1.9424" },
+      ivaPorUfImportado: { SP: "2.119" },
+    });
+    const nacional = compareProduct(
+      product({
+        ncm: "84818019",
+        origem: "0-NACIONAL",
+        destinosCst: null,
+        cstUnico: "10",
+        ivaPorUf: { SP: "1.9424" },
+      }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    const importado = compareProduct(
+      product({
+        ncm: "84818019",
+        origem: "1-ESTRANGEIRA",
+        destinosCst: null,
+        cstUnico: "10",
+        ivaPorUf: { SP: "2.119" },
+      }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    const misturado = compareProduct(
+      product({
+        ncm: "84818019",
+        origem: "0-NACIONAL",
+        destinosCst: null,
+        cstUnico: "10",
+        ivaPorUf: { SP: "2.119" },
+      }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(nacional.status).toBe("CORRETO");
+    expect(importado.status).toBe("CORRETO");
+    expect(misturado.status).toBe("DIVERGENTE");
+    expect(misturado.diffs.some((d) => d.campo === "IVA SP" && d.ideal === "1.9424")).toBe(true);
+  });
+
+  it("cliente sem IVA não gera 27 diffs; a regra continua no compare.rule", () => {
+    const fiscal = egaplastRule({
+      id: "e2",
+      ivaPorUf: { SP: "1.9424", AC: "1.45" },
+    });
+    const semIva = compareProduct(
+      product({
+        ncm: "39172900",
+        origem: "0-NACIONAL",
+        destinosCst: null,
+        cstUnico: "10",
+        ivaPorUf: null,
+        ivaMvaNumero: null,
+      }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(semIva.diffs.some((d) => d.campo.startsWith("IVA "))).toBe(false);
+    expect(semIva.rule?.ivaPorUf?.SP).toBe("1.9424");
+  });
+
   it("Egaplast sem regra: o errado é o NCM", () => {
     const fora = compareProduct(
       product({ ncm: "40129090", ncmOriginal: "40129090", destinosCst: null, cstUnico: "10" }),

@@ -27,6 +27,7 @@ import {
   segmentoIdFromRule,
   segmentoLabel,
 } from "@/src/lib/segmento";
+import { ivaIdealForOrigem } from "@/src/lib/origem-iva";
 import { HttpError } from "./tenant";
 
 export type ProductSheetLayout = "unica" | "matriz" | "egaplast";
@@ -83,7 +84,7 @@ function sheetFiscalPair(product: ImportedProduct, rule: FiscalRule | null) {
           abreviacao: rule.abreviacao ?? null,
           cest: rule.cest ?? null,
           aliquotaIcms: rule.ufTributacao?.DF.aliqInterna ?? null,
-          ivaPorUf: rule.ivaPorUf ?? null,
+          ivaPorUf: ivaIdealForOrigem(rule, product.origem),
         }
       : null,
   };

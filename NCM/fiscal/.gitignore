@@ -8,6 +8,7 @@ coverage
 .DS_Store
 uploads
 .vercel
+data/egaplast-iva-patch.json
 prisma/*.db
 __pycache__/
 .pytest_cache/

@@ -1,4 +1,5 @@
 import { ncmCapituloLabel } from "@/src/lib/ncm-capitulo";
+import { classifyOrigemIva } from "@/src/lib/origem-iva";
 import {
   EGAPLAST_IVA_UF_KEYS,
   asIvaPorUf,
@@ -91,6 +92,7 @@ function buildEgaplastRule(input: {
   ivaMva: string | null;
   ivaMvaNumero: number | null;
   ivaPorUf: IvaPorUf | null;
+  ivaPorUfImportado: IvaPorUf | null;
   situacaoCodigo: ParsedRule["situacaoCodigo"];
   situacao: string;
 }): ParsedRule {
@@ -114,6 +116,7 @@ function buildEgaplastRule(input: {
     reducaoPercentual: null,
     ufTributacao: null,
     ivaPorUf: input.ivaPorUf,
+    ivaPorUfImportado: input.ivaPorUfImportado,
   };
 }
 
@@ -137,16 +140,19 @@ export function rulesFromEgaplastCadastro(
     const first = rows[0];
     if (!first) continue;
     const sit = situacaoFromEgaplastCst(first.cstUnico);
-    const iva = majorityIva(rows);
+    const nacionalRows = rows.filter((row) => classifyOrigemIva(row.origem) === "nacional");
+    const importadoRows = rows.filter((row) => classifyOrigemIva(row.origem) === "importado");
+    const ivaNacional = majorityIva(nacionalRows.length > 0 ? nacionalRows : rows);
     taxedNcms.add(first.ncm);
     rules.push(
       buildEgaplastRule({
         ncm: first.ncm,
         ncmOriginal: first.ncmOriginal || first.ncm,
         cstSaida: first.cstUnico,
-        ivaMva: iva.ivaMva,
-        ivaMvaNumero: iva.ivaMvaNumero,
-        ivaPorUf: majorityIvaPorUf(rows),
+        ivaMva: ivaNacional.ivaMva,
+        ivaMvaNumero: ivaNacional.ivaMvaNumero,
+        ivaPorUf: majorityIvaPorUf(nacionalRows.length > 0 ? nacionalRows : rows),
+        ivaPorUfImportado: majorityIvaPorUf(importadoRows),
         situacaoCodigo: sit.situacaoCodigo,
         situacao: sit.situacao,
       }),
@@ -165,6 +171,7 @@ export function rulesFromEgaplastCadastro(
         ivaMva: null,
         ivaMvaNumero: null,
         ivaPorUf: null,
+        ivaPorUfImportado: null,
         situacaoCodigo: "INCOMPLETA",
         situacao: "Incompleta",
       }),

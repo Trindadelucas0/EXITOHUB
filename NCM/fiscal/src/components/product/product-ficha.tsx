@@ -12,6 +12,7 @@ import { StatusBadge } from "@/src/components/ui/status-badge";
 import { ncmApiUrl } from "@/src/lib/base-path";
 import { DESTINO_KEYS, isUnicaSituacao, type DestinosCst, type FieldDiff, type StatusFiscal } from "@/src/lib/fiscal";
 import { hasFilledIvaPorUf, type IvaPorUf } from "@/src/lib/iva-por-uf";
+import { ivaIdealForOrigem } from "@/src/lib/origem-iva";
 
 type Payload = {
   layout?: "egaplast" | "default";
@@ -50,6 +51,7 @@ type Payload = {
       cest?: string | null;
       abreviacao?: string | null;
       ivaPorUf?: IvaPorUf | null;
+      ivaPorUfImportado?: IvaPorUf | null;
       ufTributacao?: { DF?: { aliqInterna?: string | null } } | null;
     } | null;
     candidates: { id: string; situacaoCodigo: string; cstSaida: string | null }[];
@@ -153,7 +155,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
     ? data.compare.diffs.filter((diff) => !diff.campo.startsWith("IVA "))
     : data.compare.diffs;
   const ivaAtual = data.product.ivaPorUf;
-  const ivaIdeal = data.compare.rule?.ivaPorUf;
+  const ivaIdeal = ivaIdealForOrigem(data.compare.rule, data.product.origem);
   const showIvaBlock = egaplast && (hasFilledIvaPorUf(ivaAtual) || hasFilledIvaPorUf(ivaIdeal));
   const ncmDiff = data.compare.diffs.find((diff) => diff.campo === "NCM");
   const cstDiff = data.compare.diffs.find((diff) => diff.campo === "CST saída");
@@ -313,7 +315,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
                 ncm={data.product.ncm}
                 atual={ivaAtual}
                 ideal={ivaIdeal}
-                compare={hasFilledIvaPorUf(ivaIdeal)}
+                compare={hasFilledIvaPorUf(ivaAtual) && hasFilledIvaPorUf(ivaIdeal)}
                 mismatchCst={Boolean(cstDiff)}
                 mismatchNcm={Boolean(ncmDiff)}
               />
@@ -380,7 +382,7 @@ function Item({ label, value, emphasis = false }: { label: string; value: string
 
 function EgaplastFicha({ data, showIvaBlock }: { data: Payload; showIvaBlock: boolean }) {
   const ivaAtual = data.product.ivaPorUf;
-  const ivaIdeal = data.compare.rule?.ivaPorUf;
+  const ivaIdeal = ivaIdealForOrigem(data.compare.rule, data.product.origem);
   return (
     <div className="grid gap-4">
       <EgaplastIvaBlock
@@ -390,7 +392,7 @@ function EgaplastFicha({ data, showIvaBlock }: { data: Payload; showIvaBlock: bo
         ncm={data.product.ncm}
         atual={ivaAtual}
         ideal={ivaIdeal}
-        compare={hasFilledIvaPorUf(ivaIdeal)}
+        compare={hasFilledIvaPorUf(ivaAtual) && hasFilledIvaPorUf(ivaIdeal)}
         mismatchCst={Boolean(data.compare.diffs.find((diff) => diff.campo === "CST saída"))}
         mismatchNcm={Boolean(data.compare.diffs.find((diff) => diff.campo === "NCM"))}
       />

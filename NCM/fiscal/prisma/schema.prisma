@@ -89,6 +89,7 @@ model FiscalNcmRule {
   reducaoPercentual Decimal? @map("reducao_percentual") @db.Decimal(8, 4)
   ufTributacao      Json?    @map("uf_tributacao")
   ivaPorUf          Json?    @map("iva_por_uf")
+  ivaPorUfImportado Json?    @map("iva_por_uf_importado")
   createdAt         DateTime @default(now()) @map("created_at")
 
   company Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)

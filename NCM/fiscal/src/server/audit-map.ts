@@ -29,6 +29,7 @@ export function ruleFromDb(row: {
   reducaoPercentual?: Prisma.Decimal | number | null;
   ufTributacao?: Prisma.JsonValue | null;
   ivaPorUf?: Prisma.JsonValue | null;
+  ivaPorUfImportado?: Prisma.JsonValue | null;
 }): FiscalRule {
   return {
     id: row.id,
@@ -51,6 +52,7 @@ export function ruleFromDb(row: {
     reducaoPercentual: toNumber(row.reducaoPercentual),
     ufTributacao: asUfTributacao(row.ufTributacao ?? null),
     ivaPorUf: asIvaPorUf(row.ivaPorUf ?? null),
+    ivaPorUfImportado: asIvaPorUf(row.ivaPorUfImportado ?? null),
   };
 }
 

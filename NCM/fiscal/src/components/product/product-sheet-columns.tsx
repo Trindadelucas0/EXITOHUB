@@ -188,9 +188,10 @@ export const EGAPLAST_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = 
       return (
         <EgaplastIvaBlock
           compact
+          origem={row.importado.origem}
           atual={atual}
           ideal={ideal}
-          compare={row.status === "DIVERGENTE" && hasFilledIvaPorUf(ideal)}
+          compare={row.status === "DIVERGENTE" && hasFilledIvaPorUf(atual) && hasFilledIvaPorUf(ideal)}
         />
       );
     },

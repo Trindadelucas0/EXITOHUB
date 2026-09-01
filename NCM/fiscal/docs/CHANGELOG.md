@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.11 — 01/09/2026
+
+Corrigido:
+
+- Na Egaplast, IVA da regra fica separado por origem: **Nacional** (`0`, `4`, `5`, `9`) e **Importado** (`1`, `2`, `3`, `6`, `7`, `8`). A ficha mostra **Cadastro do cliente** e **Como deve ficar · Nacional/Importado**; a coluna da regra permanece preenchida mesmo sem IVA no cadastro. SP `2.119` (importado) não é mais comparado com `1.9424` (nacional) do mesmo NCM. BAIFER, Loja e Unica não mudam.
+
 ## v1.6.10 — 01/09/2026
 
 Corrigido:

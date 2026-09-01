@@ -44,6 +44,7 @@ export type ParsedRule = {
   reducaoPercentual: number | null;
   ufTributacao: UfTributacao | null;
   ivaPorUf: IvaPorUf | null;
+  ivaPorUfImportado: IvaPorUf | null;
 };
 
 export type ParseRulesOptions = {
@@ -239,7 +240,7 @@ function deriveCstSaida(mappedCst: string | null, destinos: DestinosCst): string
 
 function unicaExtras(): Pick<
   ParsedRule,
-  "cest" | "ipi" | "abreviacao" | "reducao" | "reducaoPercentual" | "ufTributacao" | "ivaPorUf"
+  "cest" | "ipi" | "abreviacao" | "reducao" | "reducaoPercentual" | "ufTributacao" | "ivaPorUf" | "ivaPorUfImportado"
 > {
   return {
     cest: null,
@@ -249,6 +250,7 @@ function unicaExtras(): Pick<
     reducaoPercentual: null,
     ufTributacao: null,
     ivaPorUf: null,
+    ivaPorUfImportado: null,
   };
 }
 
@@ -409,6 +411,7 @@ function rowToUnicaRule(raw: unknown[], map: UnicaColumnMap): ParsedRule | null 
     reducaoPercentual: reducaoMva.mvaPercentual,
     ufTributacao: ufTributacaoFilled(uf) ? uf : null,
     ivaPorUf: null,
+    ivaPorUfImportado: null,
   };
 }
 

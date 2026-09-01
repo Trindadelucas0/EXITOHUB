@@ -84,6 +84,7 @@ function main() {
       reducaoPercentual: rule.reducaoPercentual,
       ufTributacao: rule.ufTributacao,
       ivaPorUf: rule.ivaPorUf,
+      ivaPorUfImportado: rule.ivaPorUfImportado,
     })),
   };
   writeFileSync(DEST, `${JSON.stringify(payload, null, 2)}\n`, "utf8");

@@ -10,6 +10,7 @@ import {
   type UfTributacao,
 } from "@/src/lib/fiscal";
 import { hasFilledIvaPorUf, ivaPorUfDiffs, type IvaPorUf } from "@/src/lib/iva-por-uf";
+import { ivaIdealForOrigem } from "@/src/lib/origem-iva";
 
 export type { DestinoKey, DestinosCst, FieldDiff, StatusFiscal };
 export { DESTINO_KEYS, DESTINO_LABELS };
@@ -35,6 +36,7 @@ export type FiscalRule = {
   reducaoPercentual?: number | null;
   ufTributacao?: UfTributacao | null;
   ivaPorUf?: IvaPorUf | null;
+  ivaPorUfImportado?: IvaPorUf | null;
 };
 
 export type ImportedProduct = {
@@ -427,13 +429,16 @@ function compareEgaplastCstIvaProduct(
       ideal: idealCst,
     });
   }
-  if (hasFilledIvaPorUf(rule.ivaPorUf) && hasFilledIvaPorUf(product.ivaPorUf)) {
-    for (const diff of ivaPorUfDiffs(product.ivaPorUf, rule.ivaPorUf)) {
-      diffs.push({
-        campo: `IVA ${diff.uf}`,
-        atual: diff.atual,
-        ideal: diff.ideal,
-      });
+  if (hasFilledIvaPorUf(product.ivaPorUf)) {
+    const idealIva = ivaIdealForOrigem(rule, product.origem);
+    if (hasFilledIvaPorUf(idealIva)) {
+      for (const diff of ivaPorUfDiffs(product.ivaPorUf, idealIva)) {
+        diffs.push({
+          campo: `IVA ${diff.uf}`,
+          atual: diff.atual,
+          ideal: diff.ideal,
+        });
+      }
     }
   } else if (rule.mvaPercentual != null && product.ivaMvaNumero != null && !isUnicaRule(rule)) {
     if (Math.abs(rule.mvaPercentual - product.ivaMvaNumero) > 0.05) {

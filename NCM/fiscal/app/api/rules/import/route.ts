@@ -65,6 +65,7 @@ export async function POST(request: Request) {
               reducaoPercentual: rule.reducaoPercentual,
               ufTributacao: jsonField(rule.ufTributacao),
               ivaPorUf: jsonField(rule.ivaPorUf as Prisma.InputJsonValue | null),
+              ivaPorUfImportado: jsonField(rule.ivaPorUfImportado as Prisma.InputJsonValue | null),
             },
           });
           updated += 1;
@@ -92,6 +93,7 @@ export async function POST(request: Request) {
               reducaoPercentual: rule.reducaoPercentual,
               ufTributacao: jsonField(rule.ufTributacao),
               ivaPorUf: jsonField(rule.ivaPorUf as Prisma.InputJsonValue | null),
+              ivaPorUfImportado: jsonField(rule.ivaPorUfImportado as Prisma.InputJsonValue | null),
             })),
           });
           inserted = created.count;

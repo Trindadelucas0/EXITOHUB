@@ -2,6 +2,7 @@ import "server-only";
 
 import type { CompareResult, FiscalRule } from "./compare";
 import { DESTINO_KEYS, DESTINO_LABELS } from "@/src/lib/fiscal";
+import { ivaIdealForOrigem } from "@/src/lib/origem-iva";
 import { isEgaplastCompany } from "./company-slug";
 
 export type EntradaGuide = {
@@ -20,10 +21,12 @@ export type EntradaGuide = {
 
 export type EntradaGuideOptions = {
   companySlug?: string | null;
+  origem?: string | null;
 };
 
-function formatEgaplastIva(rule: FiscalRule): string {
-  if (rule.ivaPorUf?.SP) return String(rule.ivaPorUf.SP);
+function formatEgaplastIva(rule: FiscalRule, origem?: string | null): string {
+  const ideal = ivaIdealForOrigem(rule, origem);
+  if (ideal?.SP) return String(ideal.SP);
   if (rule.mvaTexto) return rule.mvaTexto;
   if (rule.mvaPercentual != null && rule.mvaPercentual < 10) return String(rule.mvaPercentual);
   if (rule.situacaoCodigo === "TRIBUTACAO_UF" || rule.ufTributacao) {
@@ -80,7 +83,7 @@ export function buildEntradaGuide(
       cstEntrada: rule.cstEntrada ?? "não informado na base (não inventado)",
       cstBaifer: rule.cstSaida ?? "não informado na base",
       cfopSaida: rule.cfopSaida ?? "não informado na base",
-      mva: formatEgaplastIva(rule),
+      mva: formatEgaplastIva(rule, options.origem),
       cfopEntradaNota: "conforme operação (dentro/fora do estado) — CFOP de entrada não está na base",
       destaqueStInterno: null,
       checklist: [
