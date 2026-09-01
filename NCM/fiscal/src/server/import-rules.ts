@@ -408,7 +408,10 @@ function rowToUnicaRule(raw: unknown[], map: UnicaColumnMap): ParsedRule | null 
   };
 }
 
-function parseUnicaAoa(aoa: unknown[][]): ParsedRule[] {
+function parseUnicaAoa(
+  aoa: unknown[][],
+  options: { fillMissingAbreviacao?: boolean } = {},
+): ParsedRule[] {
   const map = findUnicaColumnMap(aoa);
   if (!map) return [];
   const parsed = aoa
@@ -416,6 +419,7 @@ function parseUnicaAoa(aoa: unknown[][]): ParsedRule[] {
     .map((row) => rowToUnicaRule(row ?? [], map))
     .filter((item): item is ParsedRule => item != null);
   if (map.abreviacao != null) return parsed;
+  if (options.fillMissingAbreviacao === false) return parsed;
   return fillMissingUnicaAbreviacao(parsed);
 }
 
@@ -469,7 +473,8 @@ export function parseRulesBuffer(buffer: Buffer, options: ParseRulesOptions = {}
   const workbook = XLSX.read(buffer, { type: "buffer", raw: false });
   if (isEgaplastCompany(options.companyName)) {
     const { dados, relatorio } = parseEgaplastCadastroSheets(workbook, false);
-    return rulesFromEgaplastCadastro(relatorio, dados);
+    const fromCadastro = rulesFromEgaplastCadastro(relatorio, dados);
+    if (fromCadastro.length > 0) return fromCadastro;
   }
   const sheetName = pickRulesSheet(workbook, options.companyName);
   const sheet = workbook.Sheets[sheetName];
@@ -477,7 +482,9 @@ export function parseRulesBuffer(buffer: Buffer, options: ParseRulesOptions = {}
   if (aoa.length === 0) return [];
 
   if (looksLikeUnicaAoa(aoa)) {
-    return parseUnicaAoa(aoa);
+    return parseUnicaAoa(aoa, {
+      fillMissingAbreviacao: !isEgaplastCompany(options.companyName),
+    });
   }
 
   const isLoja = sheetName.trim().toUpperCase() === "LOJA";

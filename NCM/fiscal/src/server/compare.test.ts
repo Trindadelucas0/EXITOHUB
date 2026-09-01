@@ -436,4 +436,48 @@ describe("conferência Egaplast", () => {
     expect(result.status).toBe("CORRETO");
     expect(result.rule?.id).toBe("st");
   });
+
+  it("tributação NCM: produto só com NCM na base fica correto", () => {
+    const fiscal = egaplastRule({
+      id: "uf",
+      cstSaida: null,
+      situacaoCodigo: "TRIBUTACAO_UF",
+      cest: "23.002.00",
+      mvaPercentual: null,
+      mvaKind: "skip",
+      ufTributacao: {
+        DF: { original: "328%", ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "20%" },
+        GO: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "19%" },
+        MG: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "18%" },
+      },
+    });
+    const ok = compareProduct(
+      product({ ncm: "39172900", destinosCst: null, cstUnico: null, ivaMvaNumero: null }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(ok.status).toBe("CORRETO");
+  });
+
+  it("tributação NCM: CEST diferente é divergente", () => {
+    const fiscal = egaplastRule({
+      id: "uf",
+      cstSaida: null,
+      situacaoCodigo: "TRIBUTACAO_UF",
+      cest: "23.002.00",
+      ufTributacao: {
+        DF: { original: "328%", ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "20%" },
+        GO: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: null },
+        MG: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: null },
+      },
+    });
+    const bad = compareProduct(
+      product({ ncm: "39172900", destinosCst: null, cstUnico: null, cest: "17.048.00" }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(bad.status).toBe("DIVERGENTE");
+  });
 });

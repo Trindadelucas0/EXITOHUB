@@ -284,11 +284,73 @@ function pickEgaplastRule(
   return { rule: null, needsLink: complete.length > 1 || rulesForNcm.length > 1 };
 }
 
+function compareEgaplastTributacaoProduct(
+  product: ImportedProduct,
+  rulesForNcm: FiscalRule[],
+  linkedRuleId: string | null,
+): CompareResult {
+  const ufRules = rulesForNcm.filter(isUnicaRule);
+  const picked =
+    (linkedRuleId ? ufRules.find((item) => item.id === linkedRuleId) : null) ??
+    (ufRules.length === 1 ? ufRules[0] : null);
+  if (!picked) {
+    return {
+      status: "NECESSITA_ANALISE",
+      motivo:
+        ufRules.length > 1
+          ? "NCM com mais de uma regra na tributação Egaplast. Vincule a hipótese correta."
+          : "Vínculo de regra inválido para este NCM.",
+      diffs: [],
+      rule: null,
+      candidates: rulesForNcm,
+      needsLink: ufRules.length > 1,
+    };
+  }
+  const diffs: FieldDiff[] = [];
+  if (product.cest && picked.cest) {
+    const atual = foldCest(product.cest);
+    const ideal = foldCest(picked.cest);
+    if (atual && ideal && atual !== ideal) {
+      diffs.push({ campo: "CEST", atual: product.cest, ideal: picked.cest });
+    }
+  }
+  if (picked.mvaPercentual != null && product.ivaMvaNumero != null) {
+    if (Math.abs(picked.mvaPercentual - product.ivaMvaNumero) > 0.05) {
+      diffs.push({
+        campo: "MVA / IVA",
+        atual: String(product.ivaMvaNumero),
+        ideal: String(picked.mvaPercentual),
+      });
+    }
+  }
+  if (diffs.length > 0) {
+    return {
+      status: "DIVERGENTE",
+      motivo: `Cadastro Egaplast diverge da tributação deste NCM (${diffs.map((d) => d.campo).join(", ")}).`,
+      diffs,
+      rule: picked,
+      candidates: rulesForNcm,
+      needsLink: false,
+    };
+  }
+  return {
+    status: "CORRETO",
+    motivo: "NCM do cadastro Egaplast consta na planilha de tributação desta empresa.",
+    diffs: [],
+    rule: picked,
+    candidates: rulesForNcm,
+    needsLink: false,
+  };
+}
+
 function compareEgaplastProduct(
   product: ImportedProduct,
   rulesForNcm: FiscalRule[],
   linkedRuleId: string | null,
 ): CompareResult {
+  if (rulesForNcm.some(isUnicaRule)) {
+    return compareEgaplastTributacaoProduct(product, rulesForNcm, linkedRuleId);
+  }
   const picked = pickEgaplastRule(product, rulesForNcm, linkedRuleId);
   if (!picked.rule) {
     return {

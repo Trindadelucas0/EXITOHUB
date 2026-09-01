@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.3.7 — Egaplast: empresa, base fiscal das duas abas, segmentos por capítulo NCM.
+> Versão: 1.3.8 — Egaplast: Base fiscal aceita TRIBUTACAO NCM (NCM/CEST/UF) além do .xls de duas abas.
 
 ## 1. Visão geral
 
@@ -100,9 +100,10 @@ Tela **Base fiscal** (`POST /ncm/api/rules/import`). Parser: [`import-rules.ts`]
 | Loja | ODS aba `LOJA` ou XLSX Lojão (`Planilha1`) | matriz 8 destinos sem CST BAIFER | CFOP `5,405` → `5405` (sem coluna de abreviação) |
 | Unica (oficial / seed) | `TRIBUTACAO NCM UNICA ATACADISTA` (`Planilha3`) | NCM, CEST, **ABREVIACAO**, MVA/alíquota DF·GO·MG | situação `TRIBUTACAO_UF` + Abrev. na Base fiscal |
 | Unica (variante) | `PLANILHA REGRA FISCAL UNICA.xlsx` | mesmos campos **sem** `ABREVIACAO` | preenche Abrev. pelo NCM da base Atacadista (ex.: `25202090` → `4`); NCM fora dessa base continua sem Abrev. e no update **não apaga** valor já gravado |
-| Egaplast | `planilha egaplast.xls` (abas `Dados` + `Planilha1`) | NCM, CST (`SIT.TRIBUTÁRIA`), IVA/ICM, segmento = capítulo TIPI | 283 regras / 265 NCMs; CST 00/10/51; NCMs só na listagem ficam `INCOMPLETA`. Só a empresa `egaplast` lê as duas abas como regra |
+| Egaplast (oficial) | `TRIBUTACAO NCM EGAPLAST` (aba `Planilha1`) | NCM, CEST, segmento, MVA/alíquota DF·GO·MG (mesmo layout da Unica, **sem** Abrev. da Unica) | situação `TRIBUTACAO_UF`; só a empresa `egaplast`. NCMs de 7 dígitos ou `0` são ignorados |
+| Egaplast (variante) | `planilha egaplast.xls` (abas `Dados` + `Planilha1`) | NCM, CST (`SIT.TRIBUTÁRIA`), IVA/ICM, segmento = capítulo TIPI | 283 regras / 265 NCMs; CST 00/10/51; NCMs só na listagem ficam `INCOMPLETA`. Só a empresa `egaplast` lê as duas abas como regra |
 
-Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `Novo Abreviação Fiscal`, `Desc. Abrev. ICMS`) na tela **Planilhas** — não veio nestas planilhas de tributação. A coluna **Abrev.** da Base fiscal Unica vem da `ABREVIACAO` da planilha Atacadista (ex.: NCM `25202090` → `4`). Se a Base fiscal for atualizada com `PLANILHA REGRA FISCAL UNICA.xlsx` (sem essa coluna), o import **completa** a Abrev. com o mesmo mapa Atacadista por NCM — não deixa a coluna em branco. Na conferência Unica (`TRIBUTACAO_UF`), o item fica **CORRETO** quando a Abreviação do cadastro bate com a da base (`004` = `4`); CEST e MVA só entram se o CSV trouxer esses campos. `Desc. Abrev. ICMS` (ex.: `000 18 0`) grava só o CST — **não** é comparado com a alíquota interna DF da base (senão o lote inteiro virava divergente). **Consulta e Divergências** da Unica mostram Abreviação, CEST, Aliq. DF (da base) e MVA. Na barra há **Filtrar segmento**. **Egaplast** usa o mesmo filtro de segmento (capítulo do NCM) e confere **CST + IVA**, sem Abreviação e sem matriz de 8 destinatários. **BAIFER/Loja** não veem esses chips e não comparam Abreviação — continuam na matriz de 8 destinatários.
+Cadastro de **produtos** Unica continua sendo o CSV (`Cód.Item`, `Novo NCM`, `Novo Abreviação Fiscal`, `Desc. Abrev. ICMS`) na tela **Planilhas** — não veio nestas planilhas de tributação. A coluna **Abrev.** da Base fiscal Unica vem da `ABREVIACAO` da planilha Atacadista (ex.: NCM `25202090` → `4`). Se a Base fiscal for atualizada com `PLANILHA REGRA FISCAL UNICA.xlsx` (sem essa coluna), o import **completa** a Abrev. com o mesmo mapa Atacadista por NCM — não deixa a coluna em branco. Na conferência Unica (`TRIBUTACAO_UF`), o item fica **CORRETO** quando a Abreviação do cadastro bate com a da base (`004` = `4`); CEST e MVA só entram se o CSV trouxer esses campos. `Desc. Abrev. ICMS` (ex.: `000 18 0`) grava só o CST — **não** é comparado com a alíquota interna DF da base (senão o lote inteiro virava divergente). **Consulta e Divergências** da Unica mostram Abreviação, CEST, Aliq. DF (da base) e MVA. Na barra há **Filtrar segmento**. **Egaplast** usa o mesmo filtro de segmento. Se a Base fiscal veio de `TRIBUTACAO NCM EGAPLAST`, a conferência é **NCM na base** (CEST/IVA só se o cadastro trouxer esses campos) e a grade da Base fiscal mostra CEST e alíquotas DF/GO/MG, **sem** copiar Abrev. da Unica. Se a base ainda for o `.xls` de duas abas, confere **CST + IVA**. Sem Abreviação e sem matriz de 8 destinatários. **BAIFER/Loja** não veem esses chips e não comparam Abreviação — continuam na matriz de 8 destinatários.
 
 ### Import de cadastro (Planilhas)
 
@@ -116,7 +117,7 @@ Tela **Planilhas** (`POST /ncm/api/import`). Parser: [`import-cadastro.ts`](NCM/
 | Egaplast relatório | aba `Planilha1` / `relatorio de produtos.xlsx` | blocos com SIT.TRIBUTÁRIA + IVA/ICM por UF; dedupe → ~1127 códigos |
 | Egaplast combinado | `planilha egaplast.xls` (duas abas) na empresa Egaplast | nome de `Dados` + CST/IVA de `Planilha1` pelo código |
 
-A conferência compara o lote com a **base fiscal da empresa da sessão**. Na Egaplast a regra oficial é `planilha egaplast.xls` (não o cadastro). Importar o mesmo layout em BAIFER/Loja/Unica **não** ativa o parser de duas abas nem a conferência CST/IVA da Egaplast.
+A conferência compara o lote com a **base fiscal da empresa da sessão**. Na Egaplast a regra oficial a importar é `TRIBUTACAO NCM EGAPLAST.xlsx` (NCM/CEST/UF). O `.xls` de duas abas continua válido como variante CST+IVA. Listagem/relatório na tela Planilhas é o **cadastro**. Importar o mesmo layout em BAIFER/Loja/Unica **não** ativa o parser Egaplast.
 
 ## 8. Guia rápido
 
@@ -125,6 +126,6 @@ A conferência compara o lote com a **base fiscal da empresa da sessão**. Na Eg
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu sem Folha/NCM.
 4. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar.
 5. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG. Pode importar a Atacadista ou `PLANILHA REGRA FISCAL UNICA.xlsx` (esta última não tem coluna Abrev.; o sistema completa pelo NCM). Importe o CSV em **Planilhas**. No **Panorama**, o card **Corretos** são os itens cuja Abreviação bate com a base (`004` = `4`). **Consulta** e **Divergências**: na barra, **Filtrar segmento** escolhe Autopeças, Tintas, Fora da base etc. **Divergências** mostra só o que não bateu (Abreviação diferente ou NCM fora da base).
-6. Egaplast: em Empresas, **Entrar** na Egaplast → **Base fiscal** já vem com a regra de `planilha egaplast.xls` (CST, IVA, segmento por capítulo). Em **Planilhas**, importe o cadastro do cliente (as duas abas no mesmo `.xls` se cruzam por código). **Consulta** filtra por segmento; a conferência é CST + IVA, não Abreviação.
+6. Egaplast: em Empresas, **Entrar** na Egaplast → **Base fiscal** → Importar `TRIBUTACAO NCM EGAPLAST.xlsx` (NCM, CEST, segmento, alíquotas DF/GO/MG). Em **Planilhas**, importe o cadastro do cliente. **Consulta** filtra por segmento; com essa tributação, o NCM na base fica correto (CEST só se o cadastro tiver CEST). O `.xls` Dados+Planilha1 ainda entra como regra CST+IVA.
 
 Guia expandido: [`README.md`](README.md). Detalhe do auditor: [`NCM/fiscal/README.md`](NCM/fiscal/README.md).

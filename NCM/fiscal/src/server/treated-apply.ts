@@ -18,6 +18,16 @@ export function applyRuleValuesToProduct(
   companySlug?: string | null,
 ): ImportedProduct {
   if (isEgaplastCompany(companySlug)) {
+    const unica = rule.situacaoCodigo === "TRIBUTACAO_UF" || Boolean(rule.ufTributacao);
+    if (unica) {
+      return {
+        ...product,
+        ivaMva: rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto,
+        ivaMvaNumero: rule.mvaPercentual,
+        cest: rule.cest ?? product.cest,
+        aliquotaIcms: rule.ufTributacao?.DF.aliqInterna ?? product.aliquotaIcms,
+      };
+    }
     return {
       ...product,
       cstUnico: rule.cstSaida,

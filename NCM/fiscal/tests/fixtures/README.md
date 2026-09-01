@@ -10,6 +10,7 @@
 | `cadastro-teste.csv` | Cadastro mínimo para testes de import |
 | `cadastro-egaplast-ncm-2026-08-27.xls` | Listagem Egaplast (aba `Dados`: CÓDIGO, NOME, ORIGEM, NCM). Com `companyName` Egaplast entra na extração da **base fiscal** |
 | `cadastro-egaplast-relatorio-produtos.xlsx` | Relatório Egaplast em blocos (SIT.TRIBUTÁRIA + IVA/ICM por UF). Com `companyName` Egaplast vira regra CST+IVA |
+| `tributacao-ncm-egaplast-2026-08-31.xlsx` | Tributação NCM Egaplast (NCM, CEST, segmento, MVA/alíquota por UF). Com `companyName` Egaplast vira base `TRIBUTACAO_UF` |
 
 Registro: `data/calibracao/layouts.json`.
 

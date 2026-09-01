@@ -8,7 +8,7 @@ O Auditor Fiscal BAIFER é um sistema interno do escritório. Ele **não substit
   - BAIFER ← aba **BAIFER** (ou XLSX de tributação NCM BAIFER)
   - Loja das Máquinas ← aba **LOJA** (ou XLSX Lojão)
   - Unica ← planilha de regra fiscal Unica (CEST, Abreviação e alíquotas DF, GO, MG); a conferência do CSV também marca divergência de Abreviação
-  - Egaplast ← `planilha egaplast.xls` (abas Dados + Planilha1): CST, IVA e segmento pelo capítulo do NCM
+  - Egaplast ← `TRIBUTACAO NCM EGAPLAST` (NCM, CEST, segmento, alíquotas DF/GO/MG) ou, se importar o `.xls` de duas abas, CST + IVA
   - As quatro **não se misturam**
   - A aba Santri `Planilha_Classes_Fiscais` é só cadastro (tela Planilhas), não base fiscal
   - Listagem/relatório Egaplast na tela Planilhas é o **cadastro** a conferir contra a base Egaplast
@@ -16,7 +16,7 @@ O Auditor Fiscal BAIFER é um sistema interno do escritório. Ele **não substit
 - Classifica cada produto como **correto**, **divergente** ou **necessita análise**.
 - Em **Divergências**, mostra primeiro **quantos NCMs** estão errados; um clique filtra a grade.
 - Em **Consulta** e **Divergências** da Unica, a barra tem **Filtrar segmento**; a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz de 8 destinatários da BAIFER).
-- Em **Consulta** e **Divergências** da Egaplast, o mesmo filtro de segmento agrupa pelo capítulo do NCM; a conferência é CST e IVA.
+- Em **Consulta** e **Divergências** da Egaplast, o mesmo filtro de segmento agrupa o cadastro; com `TRIBUTACAO NCM EGAPLAST` a conferência é NCM na base (CEST se o cadastro tiver CEST).
 - Compara a planilha nova com a **anterior** (códigos novos, que saíram, NCM ou situação que mudou).
 - Permite marcar produto ou NCM como **já tratado**. Na próxima importação dá para **trazer essas marcas** (ou começar do zero).
 - Mostra a **matriz dos 8 destinatários** (não um CST único).
@@ -49,7 +49,7 @@ A tela inicial é só login. Cada e-mail abre o painel daquela conta:
 1. Entrar no sistema.
 2. Conferir a **Base fiscal** (já vem preenchida após a instalação).
 3. **Importar** o cadastro atual (export Santri *Relação de Classes Fiscais*, CSV Unica, listagem/relatório Egaplast em `.xls`/`.xlsx`, ou a aba `Planilha_Classes_Fiscais` do ODS padrão). Isso **não** é a base fiscal — é o cadastro a ser auditado. Cada arquivo fica no histórico; use **Ver conferência** ou o seletor **Ver dados desta planilha** para olhar só aquele arquivo.
-4. Para atualizar a **base fiscal**, use Base fiscal → Importar regras: a empresa BAIFER lê a aba BAIFER; a Loja lê a aba LOJA; a Unica aceita a planilha Atacadista (com Abrev.) ou `PLANILHA REGRA FISCAL UNICA.xlsx` (completa a Abrev. pelo NCM da Atacadista); a Egaplast lê as duas abas de `planilha egaplast.xls`.
+4. Para atualizar a **base fiscal**, use Base fiscal → Importar regras: a empresa BAIFER lê a aba BAIFER; a Loja lê a aba LOJA; a Unica aceita a planilha Atacadista (com Abrev.) ou `PLANILHA REGRA FISCAL UNICA.xlsx` (completa a Abrev. pelo NCM da Atacadista); a Egaplast lê `TRIBUTACAO NCM EGAPLAST.xlsx` (NCM/CEST/UF) ou as duas abas de `planilha egaplast.xls`.
 5. Abrir **Divergências**, filtrar pelo NCM e marcar o que já foi ajustado no ERP.
 6. Em NCM com ST e REDUÇÃO, o administrador **vincula** a regra correta.
 

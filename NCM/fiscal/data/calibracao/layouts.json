@@ -181,6 +181,27 @@
       "fixture": "tests/fixtures/cadastro-egaplast-ncm-2026-08-27.xls",
       "xlsxFixture": "tests/fixtures/cadastro-egaplast-relatorio-produtos.xlsx",
       "aprendidoEm": "2026-08-31"
+    },
+    {
+      "tipo": "regras",
+      "bancoOuOrigem": "Egaplast",
+      "aba": "Planilha1",
+      "cabecalhosChave": [
+        "ncm",
+        "cest",
+        "segmento",
+        "ipi",
+        "original / ajustada / aliq. interna por UF (DF, GO, MG…)"
+      ],
+      "ajustes": [
+        "só empresa slug egaplast — BAIFER/Loja/Unica não usam este parser como Egaplast",
+        "mesmo layout da Unica (NCM+CEST+UF); se Dados+Planilha1 não existirem, cai neste parser",
+        "não preenche Abrev. pelo mapa Atacadista da Unica",
+        "NCM 0 e códigos com menos de 8 dígitos são ignorados",
+        "fonte: TRIBUTACAO NCM EGAPLAST 31 08 2026.xlsx"
+      ],
+      "xlsxFixture": "tests/fixtures/tributacao-ncm-egaplast-2026-08-31.xlsx",
+      "aprendidoEm": "2026-08-31"
     }
   ],
   "ignorarAbas": [

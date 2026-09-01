@@ -337,3 +337,31 @@ describe("calibração regras Egaplast", () => {
     expect(unica.find((r) => r.ncm === "25202090")).toBeFalsy();
   });
 });
+
+const EGAPLAST_TRIBUTACAO = path.join(
+  process.cwd(),
+  "tests",
+  "fixtures",
+  "tributacao-ncm-egaplast-2026-08-31.xlsx",
+);
+
+describe("import TRIBUTACAO NCM Egaplast", () => {
+  it("lê NCM/CEST/segmento/UF só com companyName Egaplast", () => {
+    const buffer = readFileSync(EGAPLAST_TRIBUTACAO);
+    const rules = dedupeParsedRules(parseRulesBuffer(buffer, { companyName: "Egaplast" }));
+    expect(rules.length).toBeGreaterThanOrEqual(300);
+    const gold = rules.find((r) => r.ncm === "18063110");
+    expect(gold?.situacaoCodigo).toBe("TRIBUTACAO_UF");
+    expect(gold?.cest).toBe("23.002.00");
+    expect(gold?.segmento).toMatch(/sorvete/i);
+    expect(gold?.ufTributacao?.DF.aliqInterna).toBe("20%");
+    expect(gold?.ufTributacao?.DF.original).toBe("328%");
+    expect(gold?.abreviacao).toBeUndefined();
+  });
+
+  it("não preenche Abrev. da Unica na tributação Egaplast", () => {
+    const buffer = readFileSync(EGAPLAST_TRIBUTACAO);
+    const egaplast = parseRulesBuffer(buffer, { companyName: "Egaplast" });
+    expect(egaplast.some((r) => r.abreviacao)).toBe(false);
+  });
+});

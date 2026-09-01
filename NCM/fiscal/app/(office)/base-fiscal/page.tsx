@@ -126,11 +126,11 @@ export default function BaseFiscalPage() {
   }, [q, situacao, reload]);
 
   const unicaLayout = ruleUsesUnicaLayout(rules);
-  const egaplastLayout = isEgaplastCompany(companyName);
-  const sheetLayout: "unica" | "matriz" | "egaplast" = egaplastLayout
-    ? "egaplast"
-    : unicaLayout
-      ? "unica"
+  const egaplastCompany = isEgaplastCompany(companyName);
+  const sheetLayout: "unica" | "matriz" | "egaplast" = unicaLayout
+    ? "unica"
+    : egaplastCompany
+      ? "egaplast"
       : "matriz";
   const highlight = useMemo(
     () => selected ?? rules[0] ?? null,
@@ -292,10 +292,10 @@ export default function BaseFiscalPage() {
             }}
           />
           <p className="mt-2 text-xs text-ink-muted">
-            {sheetLayout === "unica"
-              ? "Unica: NCM, CEST, segmento e MVA/alíquota Original, 4%, 7%, 12% e interna para DF, GO e MG. A variante com ABREVIACAO também entra."
-              : sheetLayout === "egaplast"
-                ? "Egaplast: as duas abas do .xls (Dados = NCMs; Planilha1 = SIT.TRIBUTÁRIA e IVA/ICM). Segmento vem do capítulo do NCM."
+            {egaplastCompany
+              ? "Egaplast: TRIBUTACAO NCM EGAPLAST (NCM, CEST, segmento, MVA/alíquota DF, GO e MG) ou o .xls com Dados + Planilha1 (CST e IVA). Não usa Abreviação da Unica."
+              : sheetLayout === "unica"
+                ? "Unica: NCM, CEST, segmento e MVA/alíquota Original, 4%, 7%, 12% e interna para DF, GO e MG. A variante com ABREVIACAO também entra."
                 : "Colunas: NCM, segmento, CST entrada, CST saída, CFOP, 8 destinatários, situação e MVA. Arquivo só com aba Planilha1 também vale."}
           </p>
           <div className="mt-4 border-t border-line pt-4">

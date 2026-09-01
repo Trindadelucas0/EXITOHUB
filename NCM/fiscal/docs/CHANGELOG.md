@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.8 — 31/08/2026
+
+Corrigido:
+
+- Importar `TRIBUTACAO NCM EGAPLAST.xlsx` na Base fiscal da Egaplast não reconhecia nenhuma regra: o parser só lia as abas Dados + Planilha1 (cadastro). Passa a ler o layout NCM/CEST/segmento/UF (DF, GO, MG) quando esse arquivo não tem as duas abas de cadastro. Não preenche Abrev. da Unica. BAIFER, Loja e Unica não mudam.
+
 ## v1.6.7 — 31/08/2026
 
 Adicionado:

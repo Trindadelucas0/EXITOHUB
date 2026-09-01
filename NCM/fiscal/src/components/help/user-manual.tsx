@@ -116,7 +116,7 @@ export function UserManual() {
           <p>
             Clique na linha para abrir a ficha. Lá aparece o cadastro importado ao lado do que a
             regra manda. Na Unica a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz
-            de destinatários da BAIFER). Na Egaplast mostra segmento (capítulo do NCM), CST e IVA.
+            de destinatários da BAIFER). Na Egaplast mostra segmento, CST e IVA (ou CEST/alíquota se a base for TRIBUTACAO NCM).
             A tributação correta não vem do cadastro: vem da regra
             daquele NCM.
           </p>
@@ -134,7 +134,7 @@ export function UserManual() {
           </p>
           <p>
             Clique na linha para expandir: o que veio errado no importado e como deve ficar. Na Unica
-            a coluna Abreviação compara o cadastro com a Abrev. da base. Na Egaplast compara CST e IVA.
+            a coluna Abreviação compara o cadastro com a Abrev. da base. Na Egaplast, com TRIBUTACAO NCM, o NCM na base fica correto; com o .xls antigo, compara CST e IVA.
           </p>
           <p>
             Quando a regra daquele NCM estiver certa para todos os itens da fila, dá para marcar o
@@ -242,8 +242,8 @@ export function UserManual() {
         <ManualCard id="base-fiscal" title="Base fiscal">
           <p>
             Aqui ficam as regras da empresa: um NCM, uma regra (às vezes duas hipóteses), para todos
-            os produtos daquele NCM. Produtos da planilha não entram nesta tela. Na Egaplast a regra
-            oficial é o `.xls` com as abas Dados e Planilha1 (CST, IVA, segmento pelo NCM).
+            os produtos daquele NCM. Produtos da planilha não entram nesta tela. Na Egaplast importe
+            `TRIBUTACAO NCM EGAPLAST` (NCM, CEST, segmento, alíquotas por UF) ou o `.xls` com Dados e Planilha1.
           </p>
           <p>
             O administrador cadastra, edita, exclui regra a regra, importa a planilha ou exclui a
