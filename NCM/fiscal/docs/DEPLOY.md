@@ -8,6 +8,8 @@ Fluxo previsto:
 Git → npm ci → prisma migrate deploy → npm run db:seed (só na 1ª vez) → next build → next start
 ```
 
+No desenvolvimento via HUB (`npm run dev` na raiz), o Next do NCM sobe **sem** `migrate deploy`. Depois de puxar migrations novas, rode `npm run db:migrate` em `NCM/fiscal` antes de abrir Consulta/Divergências.
+
 Variáveis (valores secretos nunca neste arquivo):
 
 - `DATABASE_URL`

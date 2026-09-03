@@ -67,12 +67,14 @@ describe("filtro de exportação", () => {
     expect(parseExportStatuses(new URL("http://local/api/export/excel?status=CORRETO"))).toEqual({
       statuses: ["CORRETO"],
       slug: "corretos",
+      foraDaBase: false,
     });
     expect(
       parseExportStatuses(new URL("http://local/api/export/pdf?status=NECESSITA_ANALISE")),
     ).toEqual({
       statuses: ["NECESSITA_ANALISE"],
       slug: "analise",
+      foraDaBase: false,
     });
   });
 
@@ -80,18 +82,22 @@ describe("filtro de exportação", () => {
     expect(parseExportStatuses(new URL("http://local/api/export/excel?somente=divergentes"))).toEqual({
       statuses: ["DIVERGENTE"],
       slug: "divergentes",
+      foraDaBase: false,
     });
     expect(parseExportStatuses(new URL("http://local/api/export/excel?somente=todos"))).toEqual({
       statuses: undefined,
       slug: "cadastro",
+      foraDaBase: false,
     });
     expect(parseExportStatuses(new URL("http://local/api/export/excel?somente=hacker"))).toEqual({
       statuses: undefined,
       slug: "cadastro",
+      foraDaBase: false,
     });
     expect(parseExportStatuses(new URL("http://local/api/export/excel"))).toEqual({
       statuses: undefined,
       slug: "cadastro",
+      foraDaBase: false,
     });
   });
 
@@ -103,6 +109,24 @@ describe("filtro de exportação", () => {
     ).toEqual({
       statuses: ["CORRETO"],
       slug: "corretos",
+      foraDaBase: false,
+    });
+  });
+
+  it("aceita somente=fora-da-base", () => {
+    expect(
+      parseExportStatuses(new URL("http://local/api/export/excel?somente=fora-da-base")),
+    ).toEqual({
+      statuses: undefined,
+      slug: "fora-da-base",
+      foraDaBase: true,
+    });
+    expect(
+      parseExportStatuses(new URL("http://local/api/export/excel?somente=FORA-DA-BASE&tratado=nao")),
+    ).toEqual({
+      statuses: undefined,
+      slug: "fora-da-base",
+      foraDaBase: true,
     });
   });
 });

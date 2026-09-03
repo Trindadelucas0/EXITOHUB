@@ -26,7 +26,7 @@ Respostas: `{ success, data }` ou `{ success: false, error: { code, message } }`
 | GET | `/api/import/diff` | sessão | diff vs lote anterior (`lote`, `tipo`, `page`) |
 | POST | `/api/import/select` | sessão | escolhe o lote ativo (cookie HttpOnly) |
 | DELETE | `/api/import/:id` | admin | apaga um lote; outro tenant → 404; regras NCM intactas |
-| GET | `/api/export/excel` | sessão | Excel; `status=DIVERGENTE\|CORRETO\|NECESSITA_ANALISE` (vazio = todos); `somente=divergentes\|corretos\|analise\|todos` (legado); `tratado=nao` oculta já tratados |
+| GET | `/api/export/excel` | sessão | Excel; `status=DIVERGENTE\|CORRETO\|NECESSITA_ANALISE` (vazio = todos); `somente=divergentes\|corretos\|analise\|todos\|fora-da-base`; `fora-da-base` = NCM vazio ou ausente da Base fiscal da empresa (lote inteiro, detalhado); `tratado=nao` oculta já tratados |
 | GET | `/api/export/pdf` | sessão da empresa | PDF A4 paisagem; mesmos filtros; texto escapado |
 | GET | `/api/companies` | superadmin | lista empresas |
 | POST | `/api/companies` | superadmin | cria empresa e o primeiro admin |

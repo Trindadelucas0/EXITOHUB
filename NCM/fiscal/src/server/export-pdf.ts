@@ -246,6 +246,7 @@ export async function buildPdf(report: ExportReport): Promise<Buffer> {
 
   const cards = [
     { label: "No arquivo", value: String(meta.total) },
+    { label: "NCMs distintos", value: String(meta.ncmDistinct) },
     { label: "Divergentes", value: String(meta.divergentes) },
     { label: "Necessita análise", value: String(meta.analise) },
   ];

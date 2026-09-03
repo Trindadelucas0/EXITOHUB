@@ -14,16 +14,19 @@ export async function GET(request: Request) {
     }
     const url = new URL(request.url);
     const { tratado } = parseProductListParams(url);
-    const { statuses, slug } = parseExportStatuses(url);
+    const { statuses, slug, foraDaBase } = parseExportStatuses(url);
     const items = await compareCompanyProducts(user.companyId, batch.id, {
-      statuses,
+      statuses: foraDaBase ? undefined : statuses,
       tratado,
+      foraDaBase,
     });
     const buffer = await buildExcel(
       buildReportFromCompared({
         companyName: user.companyName,
         batchFileName: batch.fileName,
         items,
+        foraDaBase,
+        title: foraDaBase ? "NCM fora da base fiscal" : undefined,
       }),
     );
     return new Response(new Uint8Array(buffer), {

@@ -243,7 +243,7 @@ function indexRules(rules: Parameters<typeof ruleFromDb>[0][]) {
 export async function compareCompanyProducts(
   companyId: string,
   batchId: string,
-  options?: { statuses?: StatusFiscal[]; tratado?: "" | "nao" | "sim" },
+  options?: { statuses?: StatusFiscal[]; tratado?: "" | "nao" | "sim"; foraDaBase?: boolean },
 ): Promise<{ product: ImportedProduct & { id: string }; compare: CompareResult }[]> {
   return withTenant(
     companyId,
@@ -255,14 +255,25 @@ export async function compareCompanyProducts(
       if (!batch) {
         throw new HttpError(404, "NOT_FOUND", "Lote não encontrado.");
       }
+      let ncmWhere: Prisma.ProductWhereInput = {};
+      if (options?.foraDaBase) {
+        const ruleNcms = await db.fiscalNcmRule.findMany({
+          where: { companyId },
+          select: { ncm: true, segmento: true },
+        });
+        ncmWhere = prismaWhereForSegmento(ncmFilterForSegmento(ruleNcms, SEGMENTO_FORA));
+      }
       const products = await db.product.findMany({
         where: {
           companyId,
           importBatchId: batchId,
-          ...(options?.statuses?.length
-            ? { auditStatus: { in: options.statuses } }
-            : {}),
+          ...(options?.foraDaBase
+            ? {}
+            : options?.statuses?.length
+              ? { auditStatus: { in: options.statuses } }
+              : {}),
           ...treatedWhere(options?.tratado ?? ""),
+          ...ncmWhere,
         },
         orderBy: { codigo: "asc" },
         select: productSelect,

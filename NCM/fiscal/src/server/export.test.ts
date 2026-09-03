@@ -99,4 +99,62 @@ describe("export", () => {
     const campos = wb.getWorksheet("Campos");
     expect(String(campos?.getRow(1).getCell(6).value)).toBe("Como deve ficar");
   });
+
+  it("Excel de NCM fora da base agrupa sem regra e detalha todos os produtos", async () => {
+    const semRegra: CompareResult = {
+      status: "DIVERGENTE",
+      motivo: "NCM do cadastro não existe na base fiscal desta empresa.",
+      diffs: [{ campo: "NCM", atual: "99999999", ideal: "NCM da base fiscal" }],
+      rule: null,
+      candidates: [],
+      needsLink: false,
+    };
+    const report = buildReport({
+      companyName: "BAIFER",
+      batchFileName: "cadastro.xlsx",
+      generatedAt: new Date("2026-09-03T12:00:00Z"),
+      foraDaBase: true,
+      items: [
+        {
+          codigo: "A1",
+          descricao: "Item um",
+          ncm: "99999999",
+          compare: semRegra,
+        },
+        {
+          codigo: "A2",
+          descricao: "Item dois",
+          ncm: "99999999",
+          compare: semRegra,
+        },
+        {
+          codigo: "B1",
+          descricao: "Outro NCM",
+          ncm: "",
+          compare: { ...semRegra, diffs: [{ campo: "NCM", atual: "(vazio)", ideal: "Informar o NCM" }] },
+        },
+      ],
+    });
+    expect(report.meta.title).toBe("NCM fora da base fiscal");
+    expect(report.meta.foraDaBase).toBe(true);
+    expect(report.meta.total).toBe(3);
+    expect(report.meta.ncmDistinct).toBe(2);
+    expect(report.groups).toHaveLength(2);
+    expect(report.groups.every((group) => group.rule === null)).toBe(true);
+
+    const buffer = await buildExcel(report);
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(buffer as never);
+    const resumo = wb.getWorksheet("Resumo");
+    const resumoText = [4, 5, 6, 7, 8, 9, 10]
+      .map((row) => `${resumo?.getRow(row).getCell(1).value ?? ""} ${resumo?.getRow(row).getCell(2).value ?? ""}`)
+      .join(" | ");
+    expect(resumoText).toContain("Recorte");
+    expect(resumoText).toContain("NCM fora da base fiscal");
+    expect(resumoText).toContain("NCMs distintos");
+    const porRegra = wb.getWorksheet("Por regra");
+    const banner = String(porRegra?.getRow(2).getCell(1).value ?? "");
+    expect(banner).toContain("Sem regra na base fiscal");
+    expect(porRegra?.rowCount).toBeGreaterThanOrEqual(5);
+  });
 });

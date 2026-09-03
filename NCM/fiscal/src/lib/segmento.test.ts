@@ -41,6 +41,7 @@ describe("segmento Unica", () => {
       mode: "notIn",
       ncms: ["84242000", "32041700", "32089010", "27150000"],
     });
+    expect(ncmFilterForSegmento([], SEGMENTO_FORA)).toEqual({ mode: "notIn", ncms: [] });
   });
 
   it("rótulos oficiais e nome canônico pela grafia mais comum", () => {

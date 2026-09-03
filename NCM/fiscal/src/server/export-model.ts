@@ -63,6 +63,8 @@ export type ExportMeta = {
   total: number;
   divergentes: number;
   analise: number;
+  ncmDistinct: number;
+  foraDaBase: boolean;
 };
 
 export type ExportReport = {
@@ -141,6 +143,7 @@ export function buildReport(input: {
   batchFileName: string;
   generatedAt?: Date;
   title?: string;
+  foraDaBase?: boolean;
   items: ExportItemInput[];
 }): ExportReport {
   const generatedAt = input.generatedAt ?? new Date();
@@ -150,6 +153,8 @@ export function buildReport(input: {
     if (ncm !== 0) return ncm;
     return a.codigo.localeCompare(b.codigo, "pt-BR");
   });
+  const foraDaBase = Boolean(input.foraDaBase);
+  const ncmDistinct = new Set(sorted.map((item) => item.ncm || "(vazio)")).size;
 
   const groups: ExportGroup[] = [];
   const index = new Map<string, ExportGroup>();
@@ -198,10 +203,12 @@ export function buildReport(input: {
       companyName: input.companyName,
       batchFileName: input.batchFileName,
       generatedAt,
-      title: input.title ?? "Relatório de divergências",
+      title: input.title ?? (foraDaBase ? "NCM fora da base fiscal" : "Relatório de divergências"),
       total: totals.total,
       divergentes: totals.divergentes,
       analise: totals.analise,
+      ncmDistinct,
+      foraDaBase,
     },
     groups,
   };
@@ -212,6 +219,7 @@ export function buildReportFromCompared(input: {
   batchFileName: string;
   generatedAt?: Date;
   title?: string;
+  foraDaBase?: boolean;
   items: {
     product: {
       codigo: string;
@@ -232,6 +240,7 @@ export function buildReportFromCompared(input: {
     batchFileName: input.batchFileName,
     generatedAt: input.generatedAt,
     title: input.title,
+    foraDaBase: input.foraDaBase,
     items: input.items.map((item) => ({
       codigo: item.product.codigo,
       descricao: item.product.descricao,

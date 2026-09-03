@@ -167,7 +167,9 @@ function writeResumo(wb: ExcelJS.Workbook, report: ExportReport) {
     ["Empresa", report.meta.companyName],
     ["Lote", report.meta.batchFileName],
     ["Gerado em", formatExportDate(report.meta.generatedAt)],
+    ...(report.meta.foraDaBase ? ([["Recorte", "NCM fora da base fiscal"]] as [string, string][]) : []),
     ["Produtos neste arquivo", String(report.meta.total)],
+    ["NCMs distintos", String(report.meta.ncmDistinct)],
     ["Divergentes", String(report.meta.divergentes)],
     ["Necessita análise", String(report.meta.analise)],
   ];
@@ -190,8 +192,9 @@ function writeResumo(wb: ExcelJS.Workbook, report: ExportReport) {
   sheet.getCell(`B${r}`).fill = fill(argb(C.okBg));
   sheet.getCell(`B${r}`).font = font({ color: { argb: argb(C.ok) } });
   r += 2;
-  sheet.getCell(`A${r}`).value =
-    "A aba Por regra mostra cada NCM com a regra inteira e, abaixo, os produtos. Use o agrupamento à esquerda para recolher.";
+  sheet.getCell(`A${r}`).value = report.meta.foraDaBase
+    ? "Este arquivo lista só produtos cujo NCM não existe na Base fiscal da empresa, ou NCM vazio. A aba Por regra agrupa cada NCM e lista todos os produtos."
+    : "A aba Por regra mostra cada NCM com a regra inteira e, abaixo, os produtos. Use o agrupamento à esquerda para recolher.";
   sheet.mergeCells(`A${r}:C${r + 1}`);
   sheet.getCell(`A${r}`).alignment = { wrapText: true, vertical: "top" };
   sheet.getCell(`A${r}`).font = font({ size: 10, color: { argb: argb(C.muted) } });

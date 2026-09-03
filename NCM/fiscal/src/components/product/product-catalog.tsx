@@ -11,8 +11,6 @@ import {
   productUsesUnicaLayout,
 } from "@/src/components/product/product-sheet-columns";
 import type { ProductSheetItem } from "@/src/components/product/product-sheet-types";
-import { NcmSummary } from "@/src/components/product/ncm-summary";
-import { SegmentoSummary, type SegmentoOption } from "@/src/components/product/segmento-summary";
 import {
   ProductFilters,
   parseStatusFilter,
@@ -20,6 +18,7 @@ import {
 } from "@/src/components/product/product-filters";
 import { useActiveBatch } from "@/src/components/product/use-active-batch";
 import { useProductQuery } from "@/src/components/product/use-product-query";
+import { useSegmentoOptions } from "@/src/components/product/use-segmento-options";
 import { Button } from "@/src/components/ui/button";
 import { EmptyState } from "@/src/components/ui/empty-state";
 import { PageHeader } from "@/src/components/ui/page-header";
@@ -50,7 +49,6 @@ export function ProductCatalog({
   rowMode,
   extra,
   hideTreatedDefault = false,
-  showNcmSummary = false,
 }: {
   kicker: string;
   title: string;
@@ -60,7 +58,6 @@ export function ProductCatalog({
   rowMode: "navigate" | "expand";
   extra?: CatalogSlot;
   hideTreatedDefault?: boolean;
-  showNcmSummary?: boolean;
   reloadKey?: number;
 }) {
   const router = useRouter();
@@ -75,16 +72,14 @@ export function ProductCatalog({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [queueTick, setQueueTick] = useState(0);
   const [canWrite, setCanWrite] = useState(false);
-  const [segmentoOptions, setSegmentoOptions] = useState<SegmentoOption[]>([]);
+  const segmentoOptions = useSegmentoOptions(batchId, filters.status, filters.tratado);
   const { rows, summary, catalogTotal, total, pageCount, loading, error, layout } = useProductQuery(
     filters,
     batchId,
     batchBooted || Boolean(loteFromUrl),
     page,
     pageSize,
-    queueTick,
   );
 
   useEffect(() => {
@@ -131,26 +126,6 @@ export function ProductCatalog({
           <BatchSelector compact preferredId={loteFromUrl} onChange={onBatchChange} />
         }
       />
-      <SegmentoSummary
-        lote={batchId}
-        status={filters.status}
-        tratado={filters.tratado}
-        activeSegmento={filters.segmento}
-        onSelect={(segmento) => setFilters((current) => ({ ...current, segmento, ncm: "" }))}
-        onGroups={setSegmentoOptions}
-      />
-      {showNcmSummary ? (
-        <NcmSummary
-          lote={batchId}
-          status={filters.status}
-          tratado={filters.tratado}
-          segmento={filters.segmento}
-          activeNcm={filters.ncm}
-          onSelect={(ncm) => setFilters((current) => ({ ...current, ncm }))}
-          onQueueChange={() => setQueueTick((tick) => tick + 1)}
-          refreshKey={queueTick}
-        />
-      ) : null}
       {error ? <p className="text-sm text-status-bad">{error}</p> : null}
       {!loading && !error && rows.length === 0 ? (
         <EmptyState

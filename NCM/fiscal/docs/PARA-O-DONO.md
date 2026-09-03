@@ -14,13 +14,12 @@ O Auditor Fiscal BAIFER é um sistema interno do escritório. Ele **não substit
   - Listagem/relatório Egaplast na tela Planilhas é o **cadastro** a conferir contra a base Egaplast
 - Permite **importar** várias planilhas; cada arquivo vira um lote no histórico, sem misturar. Em Panorama, Consulta e Divergências dá para **escolher a planilha** e ver só os dados dela.
 - Classifica cada produto como **correto**, **divergente** ou **necessita análise**.
-- Em **Divergências**, mostra primeiro **quantos NCMs** estão errados; um clique filtra a grade.
-- Em **Consulta** e **Divergências** da Unica, a barra tem **Filtrar segmento**; a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz de 8 destinatários da BAIFER).
+- Em **Consulta** e **Divergências** da Unica, a barra tem **Filtrar segmento**; a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz de 8 destinatários da BAIFER). Não há chips de segmento nem fila de NCM.
 - Em **Consulta** e **Divergências** da Egaplast, o mesmo filtro de segmento agrupa o cadastro; com `TRIBUTACAO NCM EGAPLAST` a conferência é NCM na base (CEST se o cadastro tiver CEST). A lista mostra SP; a ficha e **Como dar entrada** têm 27 linhas (UF, cadastro do cliente, como deve ficar Nacional ou Importado). Vermelho no IVA só contra a regra da **mesma origem**. NCM só na Planilha1 usa CST+IVA; NCM em nenhuma base: o errado é o NCM.
 - Compara a planilha nova com a **anterior** (códigos novos, que saíram, NCM ou situação que mudou).
-- Permite marcar produto ou NCM como **já tratado**. Na próxima importação dá para **trazer essas marcas** (ou começar do zero).
+- Permite marcar produto como **já tratado** na ficha. Na próxima importação dá para **trazer essas marcas** (ou começar do zero).
 - Mostra a **matriz dos 8 destinatários** (não um CST único).
-- Exporta **PDF e Excel** no formato da planilha: grade completa, detalhe do que está errado, e Excel separado por regra NCM.
+- Exporta **PDF e Excel** no formato da planilha: grade completa, detalhe do que está errado, e Excel separado por regra NCM. Em Divergências, **Incluir no arquivo → Fora da base** baixa só os produtos cujo NCM não está na regra da empresa.
 - Orienta **como dar entrada** só com o que existe na regra — sem inventar CFOP de entrada, CEST ou PIS/COFINS.
 
 ## O que ele não faz (ainda)
@@ -35,7 +34,7 @@ A tela inicial é só login. Cada e-mail abre o painel daquela conta:
 
 - **Administrador do escritório:** vê as empresas, cadastra empresa e usuários de qualquer empresa. Clicando em “Entrar” abre a conferência daquela empresa, com um aviso no topo e o botão “Voltar ao escritório”.
 - **Administrador da empresa** (BAIFER, Loja, etc.): importa cadastro e vincula regra quando o NCM tem duas hipóteses. Não cadastra empresa nem usuário — isso é do escritório.
-- **Consulta:** lê, busca, exporta Excel/PDF e marca item/NCM como já tratado.
+- **Consulta:** lê, busca, exporta Excel/PDF e marca item como já tratado na ficha.
 
 ## Como os dados são protegidos
 

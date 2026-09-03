@@ -5,18 +5,20 @@ import type { ProductFilterValues } from "@/src/components/product/product-filte
 import { ExportFileButton } from "@/src/components/ui/export-file-button";
 import { withBasePath } from "@/src/lib/base-path";
 
-type ExportScope = ProductFilterValues["status"];
+type ExportScope = ProductFilterValues["status"] | "FORA_DA_BASE";
 
 const SCOPES: { id: ExportScope; label: string }[] = [
   { id: "", label: "Todos" },
   { id: "DIVERGENTE", label: "Divergentes" },
+  { id: "FORA_DA_BASE", label: "Fora da base" },
   { id: "NECESSITA_ANALISE", label: "Análise" },
   { id: "CORRETO", label: "Corretos" },
 ];
 
-function exportHref(format: "excel" | "pdf", batchId: string | null, tratado: string, status: ExportScope) {
+function exportHref(format: "excel" | "pdf", batchId: string | null, tratado: string, scope: ExportScope) {
   const params = new URLSearchParams();
-  if (status) params.set("status", status);
+  if (scope === "FORA_DA_BASE") params.set("somente", "fora-da-base");
+  else if (scope) params.set("status", scope);
   if (batchId) params.set("lote", batchId);
   if (tratado) params.set("tratado", tratado);
   const query = params.toString();
@@ -34,7 +36,7 @@ export function ExportActions({
 
   return (
     <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-end">
-      <div className="min-w-0 sm:w-44">
+      <div className="min-w-0 sm:w-48">
         <label htmlFor="exportar-situacao" className="mb-1 block text-xs font-medium text-ink-muted">
           Incluir no arquivo
         </label>

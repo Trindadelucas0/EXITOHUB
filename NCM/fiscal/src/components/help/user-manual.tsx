@@ -111,7 +111,7 @@ export function UserManual() {
         <ManualCard id="consultar" title="Consultar um produto">
           <p>
             Em Consultar você vê a planilha escolhida, linha a linha. Filtre por código, descrição,
-            NCM ou situação.
+            NCM, segmento (Unica e Egaplast) ou situação.
           </p>
           <p>
             Clique na linha para abrir a ficha. Lá aparece o cadastro importado ao lado do que a
@@ -139,19 +139,16 @@ export function UserManual() {
           <p>
             Clique na linha para expandir: o que veio errado no importado e como deve ficar. Na Unica
             a coluna Abreviação compara o cadastro com a Abrev. da base. Na Egaplast a lista mostra SP
-            e “ver ficha”; vermelho no IVA só se a regra CST+IVA da mesma UF divergir.
-          </p>
-          <p>
-            Quando a regra daquele NCM estiver certa para todos os itens da fila, dá para marcar o
-            NCM inteiro como já tratado, de uma vez.
+            e “ver ficha”; vermelho no IVA só se a regra CST+IVA da mesma UF divergir. Na Unica e na
+            Egaplast, **Filtrar segmento** na barra escolhe Autopeças, Tintas, Fora da base etc.
           </p>
           <ScreenLink href="/divergencias">Abrir Divergências</ScreenLink>
         </ManualCard>
 
         <ManualCard id="tratado" title="Marcar como já tratado" highlight>
           <p>
-            Use “já tratado” quando conferiu o item (ou o NCM) e quer alinhar o cadastro desta
-            planilha com a regra fiscal.
+            Use “já tratado” quando conferiu o item e quer alinhar o cadastro desta planilha com a
+            regra fiscal.
           </p>
           <p className="font-medium text-ink">O que o sistema faz na hora:</p>
           <ul className="list-disc space-y-1 pl-5">
@@ -167,8 +164,7 @@ export function UserManual() {
             <li>o cadastro no ERP do cliente.</li>
           </ul>
           <p>
-            Você marca um produto na ficha, ou um NCM inteiro em Divergências. Dá para desmarcar se
-            marcou por engano.
+            Você marca um produto na ficha. Dá para desmarcar se marcou por engano.
           </p>
           <p>
             Na próxima importação, o administrador pode pedir para trazer a marca do lote anterior
@@ -287,9 +283,11 @@ export function UserManual() {
             importado ao lado da regra, agrupado por NCM.
           </p>
           <p>
-            Antes de gerar, escolha o que entra no arquivo: todos, só divergentes, só análise ou só
-            corretos. A planilha ativa e “ocultar tratados” também entram na exportação. Marcar
-            tratado aqui não altera o sistema do cliente: o Excel/PDF é o recado para eles
+            Antes de gerar, escolha o que entra no arquivo: todos, só divergentes, só NCM fora da
+            base (código que não existe na regra fiscal da empresa, ou NCM vazio), só análise ou só
+            corretos. “Fora da base” gera o lote inteiro desse recorte, detalhado por NCM — não é a
+            página da grade. A planilha ativa e “ocultar tratados” também entram na exportação.
+            Marcar tratado aqui não altera o sistema do cliente: o Excel/PDF é o recado para eles
             ajustarem.
           </p>
           <ScreenLink href="/divergencias">Abrir Divergências para exportar</ScreenLink>

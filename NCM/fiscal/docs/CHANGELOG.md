@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.6.14 — 03/09/2026
+
+Corrigido:
+
+- Divergências, Consulta e export Excel/PDF voltavam erro quando o PostgreSQL local ainda não tinha a coluna de Abreviação do cadastro (`products.abreviacao`) e as colunas da Egaplast (`origem`, `iva_por_uf`). Depois de `npm run db:migrate` em `NCM/fiscal`, a lista abre de novo. O HUB não aplica migrate sozinho.
+
+## v1.6.13 — 03/09/2026
+
+Removido:
+
+- Chips de **Segmento da base fiscal** e a fila de NCM em Consulta e Divergências. A conferência continua por NCM da base. Unica e Egaplast filtram pelo **Filtrar segmento** e pelo campo NCM na barra. Marcar já tratado fica só na ficha do produto. BAIFER/Loja não mudam.
+
+## v1.6.12 — 03/09/2026
+
+Adicionado:
+
+- Em **Divergências**, o seletor **Incluir no arquivo** ganha **Fora da base**: Excel e PDF saem só com produtos cujo NCM não existe na Base fiscal da empresa (ou NCM vazio), todos e detalhados (abas Resumo, Por regra, Regras, Campos). Não mistura com divergência de CST/Abreviação. Vale para BAIFER, Loja, Unica e Egaplast.
+
 ## v1.6.11 — 01/09/2026
 
 Corrigido:

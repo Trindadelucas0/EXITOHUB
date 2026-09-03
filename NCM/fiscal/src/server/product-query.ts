@@ -61,22 +61,26 @@ const STATUS_TO_EXPORT_SLUG: Record<StatusFiscal, string> = {
 export type ExportStatusFilter = {
   statuses: StatusFiscal[] | undefined;
   slug: string;
+  foraDaBase: boolean;
 };
 
 export function parseExportStatuses(url: URL): ExportStatusFilter {
   const { status } = parseProductListParams(url);
   if (status) {
-    return { statuses: [status], slug: STATUS_TO_EXPORT_SLUG[status] };
+    return { statuses: [status], slug: STATUS_TO_EXPORT_SLUG[status], foraDaBase: false };
   }
   const somente = (url.searchParams.get("somente") ?? "").trim().toLowerCase();
+  if (somente === "fora-da-base") {
+    return { statuses: undefined, slug: "fora-da-base", foraDaBase: true };
+  }
   if (somente === "todos") {
-    return { statuses: undefined, slug: "cadastro" };
+    return { statuses: undefined, slug: "cadastro", foraDaBase: false };
   }
   const mapped = SOMENTE_TO_STATUS[somente];
   if (mapped) {
-    return { statuses: [mapped], slug: STATUS_TO_EXPORT_SLUG[mapped] };
+    return { statuses: [mapped], slug: STATUS_TO_EXPORT_SLUG[mapped], foraDaBase: false };
   }
-  return { statuses: undefined, slug: "cadastro" };
+  return { statuses: undefined, slug: "cadastro", foraDaBase: false };
 }
 
 export function treatedWhere(

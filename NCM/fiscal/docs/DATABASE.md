@@ -3,6 +3,8 @@
 PostgreSQL. Nome do database: `fiscal-p` (hífen; em SQL use `"fiscal-p"`).  
 ORM: Prisma. Migrations em `prisma/migrations`.
 
+O HUB (`npm run dev` na raiz) **não** aplica migrations ao subir o NCM. Depois de puxar código com migration nova: `cd NCM/fiscal && npm run db:migrate` (`prisma migrate deploy`). Sem isso, a tela Divergências/Consulta falha se o Prisma esperar uma coluna que o banco ainda não tem (ex.: `products.abreviacao`).
+
 Credenciais **somente** em `.env` (`DATABASE_URL`, `DB_*`). Nenhuma variável `NEXT_PUBLIC_*` aponta para o banco.
 
 ## Tabelas

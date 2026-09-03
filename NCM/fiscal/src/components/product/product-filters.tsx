@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { SheetToolbar } from "@/src/components/ui/sheet-toolbar";
 import { Field } from "@/src/components/ui/field";
 import { Button } from "@/src/components/ui/button";
-import type { SegmentoOption } from "@/src/components/product/segmento-summary";
+import type { SegmentoOption } from "@/src/components/product/use-segmento-options";
 
 export type ProductFilterValues = {
   q: string;
