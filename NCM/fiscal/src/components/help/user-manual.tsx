@@ -116,7 +116,7 @@ export function UserManual() {
           <p>
             Clique na linha para abrir a ficha. Lá aparece o cadastro importado ao lado do que a
             regra manda. Na Unica a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz
-            de destinatários da BAIFER). Na Egaplast a ficha lista IVA/ICMS em 27 linhas: cadastro do
+            de destinatários da empresa). Na Egaplast a ficha lista IVA/ICMS em 27 linhas: cadastro do
             cliente e como deve ficar (regra Nacional ou Importado, conforme a origem do produto).
             Consulta e Divergências mostram só SP e pedem para abrir a ficha. Com TRIBUTACAO NCM o NCM
             na base fica correto; o fator IVA do cadastro não é comparado com o percentual MVA da
@@ -238,7 +238,7 @@ export function UserManual() {
             A tela mostra NCM do cadastro, NCM da regra, CST da nota de entrada, CST da empresa,
             CFOP, MVA e um checklist. Na Egaplast a tabela IVA/ICMS tem cadastro do cliente e como deve
             ficar (Nacional ou Importado, conforme a origem), com código, origem, CST e NCM no topo.
-            Sem matriz de 8 destinatários da BAIFER. Se o cadastro ainda divergir, o alerta aparece no topo.
+            Sem matriz de 8 destinatários (layout padrão com matriz). Se o cadastro ainda divergir, o alerta aparece no topo.
           </p>
         </ManualCard>
 

@@ -238,7 +238,7 @@ function writeRegras(wb: ExcelJS.Workbook, report: ExportReport) {
     "NCM",
     "Segmento",
     "CST entrada",
-    "CST BAIFER",
+    "CST saída",
     "CFOP",
     ...DESTINO_KEYS.map((key) => DESTINO_SHORT_LABELS[key]),
     "Situação",

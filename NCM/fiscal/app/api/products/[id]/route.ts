@@ -32,6 +32,7 @@ export async function GET(
       });
       const guide = buildEntradaGuide(compare.rule, compare, mappedProduct.ncm, {
         companySlug: user.companyName,
+        companyName: user.companyName,
         origem: mappedProduct.origem,
       });
       return {

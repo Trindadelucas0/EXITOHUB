@@ -299,7 +299,7 @@ export function ruleBannerText(rule: ExportRuleSnap | null, ncm: string): string
     rule.segmento,
     rule.situacaoCodigo || rule.situacao,
     `CST entrada ${showCst(rule.cstEntrada)}`,
-    `CST BAIFER ${showCst(rule.cstSaida)}`,
+    `CST saída ${showCst(rule.cstSaida)}`,
     `CFOP ${showCst(rule.cfopSaida)}`,
     `MVA ${showCst(rule.mvaTexto)}`,
     destinos,

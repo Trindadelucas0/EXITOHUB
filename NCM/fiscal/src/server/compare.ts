@@ -586,7 +586,7 @@ function compareFields(product: ImportedProduct, rule: FiscalRule): FieldDiff[] 
     const ideal = normalizeCst(rule.cstSaida);
     if (ideal != null && atual !== ideal) {
       diffs.push({
-        campo: "CST BAIFER",
+        campo: "CST saída",
         atual: atual ?? "(vazio)",
         ideal,
       });

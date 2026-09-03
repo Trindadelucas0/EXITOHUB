@@ -35,7 +35,7 @@ const compare: CompareResult = {
   motivo: '<script>alert("xss")</script>',
   diffs: [
     { campo: "Revenda", atual: "00", ideal: "10" },
-    { campo: "CST BAIFER", atual: "10", ideal: "00" },
+    { campo: "CST saída", atual: "10", ideal: "00" },
   ],
   rule,
   candidates: [],
@@ -95,7 +95,7 @@ describe("export", () => {
     expect(headers.join(" ")).not.toContain("Não contribuinte:00 |");
     const banner = String(porRegra?.getRow(2).getCell(1).value ?? "");
     expect(banner).toContain("NCM 32141010");
-    expect(banner).toContain("CST BAIFER");
+    expect(banner).toContain("CST saída");
     const campos = wb.getWorksheet("Campos");
     expect(String(campos?.getRow(1).getCell(6).value)).toBe("Como deve ficar");
   });

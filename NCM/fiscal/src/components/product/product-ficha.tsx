@@ -64,7 +64,7 @@ type Payload = {
     alertaDivergencia: string | null;
     matriz: { destino: string; cst: string }[];
     cstEntrada: string;
-    cstBaifer: string;
+    cstSaida: string;
     cfopSaida: string;
     mva: string;
     situacao: string;
@@ -311,7 +311,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
               <EgaplastIvaBlock
                 codigo={data.product.codigo}
                 origem={data.product.origem}
-                cst={data.product.cstUnico ?? data.guide?.cstBaifer ?? null}
+                cst={data.product.cstUnico ?? data.guide?.cstSaida ?? null}
                 ncm={data.product.ncm}
                 atual={ivaAtual}
                 ideal={ivaIdeal}
@@ -321,7 +321,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
               />
               <dl className="grid gap-3 sm:grid-cols-2">
                 <Item label="Situação" value={data.guide?.situacao ?? "—"} />
-                <Item label="CST da regra (saída)" value={data.guide?.cstBaifer ?? "—"} />
+                <Item label="CST da regra (saída)" value={data.guide?.cstSaida ?? "—"} />
                 <Item label="IVA/ICMS" value={data.guide?.mva ?? "—"} />
                 <Item label="CFOP de entrada" value={data.guide?.cfopEntradaNota ?? "—"} />
               </dl>
@@ -333,7 +333,7 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
                 <Item label="NCM da regra da empresa" value={data.guide?.ncm ?? "—"} />
                 <Item label="Situação" value={data.guide?.situacao ?? "—"} />
                 <Item label="CST nota de entrada" value={data.guide?.cstEntrada ?? "—"} emphasis />
-                <Item label="CST da empresa (saída)" value={data.guide?.cstBaifer ?? "—"} />
+                <Item label="CST da empresa (saída)" value={data.guide?.cstSaida ?? "—"} />
                 <Item label="CFOP de saída" value={data.guide?.cfopSaida ?? "—"} />
                 <Item label="MVA" value={data.guide?.mva ?? "—"} emphasis />
                 <Item label="CFOP de entrada" value={data.guide?.cfopEntradaNota ?? "—"} emphasis />
@@ -416,7 +416,7 @@ function fichaExtras(data: Payload): MatrixExtraRow[] {
   const product = data.product;
   const diffs = data.compare.diffs;
   const compraDiff = diffs.find((diff) => diff.campo === "CST compra / nota de entrada");
-  const saidaDiff = diffs.find((diff) => diff.campo === "CST BAIFER");
+  const saidaDiff = diffs.find((diff) => diff.campo === "CST saída");
   const mvaDiff = diffs.find((diff) => diff.campo === "MVA / IVA");
   const abrevDiff = diffs.find((diff) => diff.campo === "Abreviação");
   const cestDiff = diffs.find((diff) => diff.campo === "CEST");

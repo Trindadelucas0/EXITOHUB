@@ -89,7 +89,7 @@ export const RULE_SHEET_COLUMNS: FiscalColumn<RuleSheetItem>[] = [
   },
   {
     id: "cstSaida",
-    header: "CST BAIFER",
+    header: "CST saída",
     show: "md",
     cell: (row) => <CstCell atual={row.cstSaida} />,
   },
