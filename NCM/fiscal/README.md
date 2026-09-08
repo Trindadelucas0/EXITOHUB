@@ -44,7 +44,7 @@ npm run dev
 3. Abra `http://localhost:3000` (ou o HUB) e entre só com e-mail e senha:
 
 - Escritório: `SEED_SUPERADMIN_EMAIL` — cai no painel das empresas; cadastra empresa/usuário e usa “Entrar” para abrir a conferência de uma empresa
-- BAIFER consulta (HUB): `baifer` ou `consulta@baifer.local` — só a conferência da BAIFER, sem Planilhas nem export
+- BAIFER consulta (HUB): `consulta.baifer` ou `consulta@baifer.local` — só a conferência da BAIFER, sem Planilhas nem export. O usuário `baifer` é da Conciliação, não do NCM
 - BAIFER admin: `admin@baifer.local` — abre direto a conferência da BAIFER
 - Loja: `admin@loja.local` — abre direto a conferência da Loja
 - Unica (seed local): `admin@unica.local` — base fiscal Unica. No HUB, o login da equipe é criado em `/admin/usuarios`

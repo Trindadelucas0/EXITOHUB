@@ -6,6 +6,7 @@ module.exports = {
       name: 'exito-hub',
       cwd: path.join(__dirname),
       script: 'hub/server.js',
+      node_args: '--max-old-space-size=4096',
       env: {
         NODE_ENV: 'production',
         PORT: 3010,

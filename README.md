@@ -10,6 +10,8 @@ npm install
 npm run dev
 ```
 
+O HUB e o Next do NCM rodam no mesmo processo. O script já pede 4 GB de heap (`--max-old-space-size=4096`); sem isso o `npm run dev` cai com *JavaScript heap out of memory* ao abrir `/ncm/dashboard`.
+
 Abra http://localhost:3000
 
 Login inicial (seed via `.env`):
@@ -49,7 +51,7 @@ O HUB provisiona Conciliação e NCM automaticamente. O menu e as rotas só most
 |---------|--------------------------|---------------|------|
 | Admin Conciliação | username | `/conci/admin/empresas` | só Conci |
 | Empresa Conci | username | `/conci/` da empresa | só Conci |
-| Consulta BAIFER | `baifer` ou e-mail | `/ncm/dashboard` da BAIFER | só NCM; sem Planilhas/export |
+| Consulta BAIFER | `consulta.baifer` ou e-mail | `/ncm/dashboard` da BAIFER | só NCM; sem Planilhas/export |
 | Empresa NCM | e-mail | `/ncm/dashboard` | só NCM |
 | Só Folha | usuário | `/folha/modulos` | só Folha |
 | Admin HUB (2+ módulos) | usuário ou e-mail | Home `/` | módulos marcados |

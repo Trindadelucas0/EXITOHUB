@@ -9,7 +9,9 @@ dotenv.config({ path: path.join(__dirname, "..", "NCM", "fiscal", ".env") });
 const { query, closePool } = require("./db");
 
 async function seedBaiferConsulta() {
-  const username = String(process.env.HUB_SEED_BAIFER_CONSULTA_USER || "baifer").trim().toLowerCase();
+  const username = String(process.env.HUB_SEED_BAIFER_CONSULTA_USER || "consulta.baifer")
+    .trim()
+    .toLowerCase();
   const email = String(
     process.env.HUB_SEED_BAIFER_CONSULTA_EMAIL || "consulta@baifer.local",
   )
@@ -79,20 +81,17 @@ async function seedBaiferConsulta() {
 
   if (String(user.username).toLowerCase() !== username) {
     const clash = await query(
-      "SELECT id FROM hub_users WHERE LOWER(username) = LOWER($1) AND id <> $2 LIMIT 1",
+      "SELECT id, email FROM hub_users WHERE LOWER(username) = LOWER($1) AND id <> $2 LIMIT 1",
       [username, user.id],
     );
     if (!clash.rowCount) {
       await query("UPDATE hub_users SET username = $1 WHERE id = $2", [username, user.id]);
+    } else {
+      console.warn(
+        `[hub] usuário ${username} já existe (${clash.rows[0].email}); NCM consulta permanece ${user.email}`,
+      );
     }
   }
-
-  await query(
-    `UPDATE hub_users
-     SET display_name = $1, is_admin = false, active = true
-     WHERE id = $2`,
-    [displayName, user.id],
-  );
 
   await updateUserWithModules(user.id, {
     modules: ["ncm"],
@@ -100,7 +99,13 @@ async function seedBaiferConsulta() {
     isAdmin: false,
     active: true,
   });
-  console.log(`[hub] consulta BAIFER alinhado: ${username}`);
+  await query(
+    `UPDATE hub_users
+     SET display_name = $1, is_admin = false, active = true, landing_path = '/ncm/dashboard'
+     WHERE id = $2`,
+    [displayName, user.id],
+  );
+  console.log(`[hub] consulta BAIFER alinhado: ${email} → /ncm/dashboard`);
   return { created: false, updated: true };
 }
 

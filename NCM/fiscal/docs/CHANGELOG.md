@@ -4,7 +4,7 @@
 
 Adicionado:
 
-- Login consulta da BAIFER no HUB (`baifer` / `consulta@baifer.local`). Só essa empresa. Consulta não exporta Excel/PDF, não vê Planilhas e não troca de tenant.
+- Login consulta da BAIFER no HUB (`consulta.baifer` / `consulta@baifer.local`). Só essa empresa. Consulta não exporta Excel/PDF, não vê Planilhas e não troca de tenant. O usuário `baifer` do HUB é da Conciliação.
 
 ## v1.6.21 — 08/09/2026
 

@@ -5,8 +5,8 @@
   "description": "EXITO HUB — Folha, Conciliação e NCM em um único servidor",
   "main": "hub/server.js",
   "scripts": {
-    "dev": "node hub/server.js",
-    "start": "node hub/server.js",
+    "dev": "node --max-old-space-size=4096 hub/server.js",
+    "start": "node --max-old-space-size=4096 hub/server.js",
     "seed:baifer-consulta": "node hub/seed-baifer-consulta.js",
     "validate:login": "node hub/validate-login-flows.js",
     "reconcile:modules": "node hub/reconcile-hub-modules.js",
