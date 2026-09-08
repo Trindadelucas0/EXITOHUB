@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { BatchDiffPanel } from "@/src/components/product/batch-diff-panel";
 import { Button } from "@/src/components/ui/button";
@@ -9,6 +10,7 @@ import { clearImportListCache, type BatchOption } from "@/src/components/product
 import { ncmApiUrl } from "@/src/lib/base-path";
 
 export default function ImportarPage() {
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -27,11 +29,16 @@ export default function ImportarPage() {
     fetch(ncmApiUrl("/api/auth/me"))
       .then((r) => r.json())
       .then((json) => {
-        setCanWrite(Boolean(json.data?.canWrite));
+        const write = Boolean(json.data?.canWrite);
+        setCanWrite(write);
+        if (!write) router.replace("/dashboard");
       })
-      .catch(() => setCanWrite(false));
+      .catch(() => {
+        setCanWrite(false);
+        router.replace("/dashboard");
+      });
     void loadBatches();
-  }, []);
+  }, [router]);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();

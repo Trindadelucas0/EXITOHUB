@@ -1,7 +1,7 @@
 # API
 
 Autenticação: cookie `fiscal_session` (HttpOnly, SameSite=Lax, Secure em produção).  
-Todas as rotas de negócio exigem sessão válida. Rotas fiscais exigem uma empresa resolvida no servidor: o usuário da empresa usa o `companyId` dele; o escritório usa a empresa que abriu (`POST /api/auth/select-company`) e sem isso recebe `403 COMPANY_REQUIRED`. Mutações de importação/vínculo exigem `admin` da empresa ou o escritório dentro dela. Marcar “já tratado” vale para admin e consulta.  
+Todas as rotas de negócio exigem sessão válida. Rotas fiscais exigem uma empresa resolvida no servidor: o usuário da empresa usa o `companyId` dele; o escritório usa a empresa que abriu (`POST /api/auth/select-company`) e sem isso recebe `403 COMPANY_REQUIRED`. Mutações de importação/vínculo e exportação Excel/PDF exigem `admin` da empresa ou o escritório dentro dela. Marcar “já tratado” vale para admin e consulta.  
 Respostas: `{ success, data }` ou `{ success: false, error: { code, message } }`.
 
 | Método | Rota | Auth | Função |
@@ -26,8 +26,8 @@ Respostas: `{ success, data }` ou `{ success: false, error: { code, message } }`
 | GET | `/api/import/diff` | sessão | diff vs lote anterior (`lote`, `tipo`, `page`) |
 | POST | `/api/import/select` | sessão | escolhe o lote ativo (cookie HttpOnly) |
 | DELETE | `/api/import/:id` | admin | apaga um lote; outro tenant → 404; regras NCM intactas |
-| GET | `/api/export/excel` | sessão | Excel; `status=DIVERGENTE\|CORRETO\|NECESSITA_ANALISE` (vazio = todos); `somente=divergentes\|corretos\|analise\|todos\|fora-da-base`; `fora-da-base` = NCM vazio ou ausente da Base fiscal da empresa (lote inteiro, detalhado); `tratado=nao` oculta já tratados |
-| GET | `/api/export/pdf` | sessão da empresa | PDF A4 paisagem; mesmos filtros; texto escapado |
+| GET | `/api/export/excel` | admin | Excel; `status=DIVERGENTE\|CORRETO\|NECESSITA_ANALISE` (vazio = todos); `somente=divergentes\|corretos\|analise\|todos\|fora-da-base`; `fora-da-base` = NCM vazio ou ausente da Base fiscal da empresa (lote inteiro, detalhado); `tratado=nao` oculta já tratados; consulta → 403 |
+| GET | `/api/export/pdf` | admin | PDF A4 paisagem; mesmos filtros; texto escapado; consulta → 403 |
 | GET | `/api/companies` | superadmin | lista empresas |
 | POST | `/api/companies` | superadmin | cria empresa e o primeiro admin |
 | GET | `/api/users` | superadmin | lista usuários da empresa (`companyId` obrigatório) |

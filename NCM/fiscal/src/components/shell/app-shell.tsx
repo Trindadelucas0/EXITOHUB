@@ -40,7 +40,7 @@ const NAV_GROUPS: { id: string; label: string; items: NavItem[] }[] = [
       { href: "/consulta", label: "Consultar", icon: IconConsultar },
       { href: "/divergencias", label: "Divergências", icon: IconDivergencias },
       { href: "/base-fiscal", label: "Base fiscal", icon: IconBaseFiscal },
-      { href: "/importar", label: "Planilhas", icon: IconImportar },
+      { href: "/importar", label: "Planilhas", icon: IconImportar, admin: true },
     ],
   },
 ];

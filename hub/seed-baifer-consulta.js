@@ -1,0 +1,110 @@
+"use strict";
+
+const path = require("path");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
+dotenv.config({ path: path.join(__dirname, "..", "NCM", "fiscal", ".env") });
+
+const { query, closePool } = require("./db");
+
+async function seedBaiferConsulta() {
+  const username = String(process.env.HUB_SEED_BAIFER_CONSULTA_USER || "baifer").trim().toLowerCase();
+  const email = String(
+    process.env.HUB_SEED_BAIFER_CONSULTA_EMAIL || "consulta@baifer.local",
+  )
+    .trim()
+    .toLowerCase();
+  const password = String(
+    process.env.HUB_SEED_BAIFER_CONSULTA_PASSWORD || process.env.SEED_ADMIN_PASSWORD || "",
+  ).trim();
+  const displayName = String(process.env.HUB_SEED_BAIFER_CONSULTA_NAME || "Consulta BAIFER").trim();
+
+  if (!username || !email || !email.includes("@")) {
+    console.warn("[hub] seed consulta BAIFER ignorado — usuário/e-mail inválido");
+    return { created: false };
+  }
+
+  const { listNcmCompanies } = require("./provision-modules");
+  const companies = await listNcmCompanies();
+  const baifer = companies.find((c) => c.slug === "baifer");
+  if (!baifer) {
+    console.warn("[hub] seed consulta BAIFER ignorado — empresa baifer não encontrada no NCM");
+    return { created: false };
+  }
+
+  const { createUser, updateUserWithModules } = require("./auth");
+  const moduleMeta = { ncm: { role: "consulta", companyId: baifer.id } };
+
+  const existing = await query(
+    `SELECT id, username, email
+     FROM hub_users
+     WHERE LOWER(username) = LOWER($1) OR LOWER(email) = LOWER($2)
+     LIMIT 1`,
+    [username, email],
+  );
+
+  if (!existing.rowCount) {
+    if (!password) {
+      console.warn(
+        "[hub] seed consulta BAIFER ignorado — defina HUB_SEED_BAIFER_CONSULTA_PASSWORD ou SEED_ADMIN_PASSWORD",
+      );
+      return { created: false };
+    }
+    await createUser({
+      username,
+      email,
+      password,
+      displayName,
+      isAdmin: false,
+      modules: ["ncm"],
+      moduleMeta,
+    });
+    console.log(`[hub] consulta BAIFER criado: ${username}`);
+    return { created: true };
+  }
+
+  const user = existing.rows[0];
+  if (String(user.username).toLowerCase() !== username) {
+    const clash = await query(
+      "SELECT id FROM hub_users WHERE LOWER(username) = LOWER($1) AND id <> $2 LIMIT 1",
+      [username, user.id],
+    );
+    if (!clash.rowCount) {
+      await query("UPDATE hub_users SET username = $1 WHERE id = $2", [username, user.id]);
+    }
+  }
+
+  await query(
+    `UPDATE hub_users
+     SET display_name = $1, is_admin = false, active = true, email = $2
+     WHERE id = $3`,
+    [displayName, email, user.id],
+  );
+
+  await updateUserWithModules(user.id, {
+    modules: ["ncm"],
+    moduleMeta,
+    isAdmin: false,
+    active: true,
+  });
+  console.log(`[hub] consulta BAIFER alinhado: ${username}`);
+  return { created: false, updated: true };
+}
+
+async function main() {
+  try {
+    await seedBaiferConsulta();
+  } catch (err) {
+    console.error("[hub] seed consulta BAIFER falhou:", err.message);
+    process.exitCode = 1;
+  } finally {
+    await closePool();
+  }
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = { seedBaiferConsulta };

@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.3.21 — Conciliação: Classificação Êxito vazia casa o histórico do extrato com a descrição do pré-cadastro.
+> Versão: 1.3.23 — Login consulta BAIFER: só essa empresa; não exporta nem retira planilhas.
 
 ## 1. Visão geral
 
@@ -33,6 +33,15 @@ O HUB provisiona automaticamente:
 
 Código: [`hub/provision-modules.js`](hub/provision-modules.js), [`hub/auth.js`](hub/auth.js) (`createUser`, `updateUserWithModules`).
 
+Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/seed-baifer-consulta.js) (`npm run seed:baifer-consulta` ou no boot do HUB). Usuário `baifer` / e-mail `consulta@baifer.local`, módulo só NCM, papel `consulta`, empresa BAIFER. Senha via `HUB_SEED_BAIFER_CONSULTA_PASSWORD` ou `SEED_ADMIN_PASSWORD` (não fica na documentação).
+
+### 2.1 Histórico de versões
+
+| Versão | Data | O que mudou |
+|--------|------|-------------|
+| 1.3.23 | 08/09/2026 | Login consulta BAIFER; consulta não exporta Excel/PDF nem acessa Planilhas |
+| 1.3.22 | 08/09/2026 | NCM Egaplast: SKU com SIT+IVA (10200) vai para Divergências; linha sem SIT (10255) permanece Análise |
+
 ## 3. Login → destino
 
 | Persona | Login | `landing_path` | Bloqueio |
@@ -40,7 +49,8 @@ Código: [`hub/provision-modules.js`](hub/provision-modules.js), [`hub/auth.js`]
 | Admin HUB (2+ módulos) | usuário ou e-mail | `/` (home) | [`requireHubAdmin`](hub/middleware.js) em `/admin/*` |
 | Admin Conciliação | username | `/conci/admin/empresas` | `requireAdmin` no Conci |
 | Empresa Conci | username | `/conci/` | `requireEmpresa` + `empresa_id` |
-| Empresa NCM | e-mail | `/ncm/dashboard` | [`resolveCompanyScope`](NCM/fiscal/src/server/company-scope.ts) |
+| Empresa NCM (admin) | e-mail | `/ncm/dashboard` | [`resolveCompanyScope`](NCM/fiscal/src/server/company-scope.ts) |
+| Consulta BAIFER | `baifer` ou `consulta@baifer.local` | `/ncm/dashboard` | tenant BAIFER; sem Planilhas, sem Excel/PDF |
 | Só Folha | usuário ou e-mail | `/folha/modulos` | [`requireHubModule('folha')`](hub/server.js) |
 
 Função: [`postLoginPath`](hub/auth.js).
@@ -56,6 +66,8 @@ Rotas sem módulo → 403 via [`requireHubModule`](hub/middleware.js).
 - `hub_users.is_admin` — administra usuários do HUB (`/admin/usuarios`)
 - `CONCI.users.role = 'admin'` — administra empresas/bancos Conci
 - `fiscal-p.users.role = 'superadmin'` — escritório NCM (seed interno)
+- `fiscal-p.users.role = 'admin'` — importa, apaga lote, exporta Excel/PDF e altera a base fiscal da empresa vinculada
+- `fiscal-p.users.role = 'consulta'` — só a empresa do `company_id`; vê Panorama, Consultar, Divergências e Base fiscal (leitura); marca já tratado; **não** lista outras empresas, não importa, não apaga lote, não exporta Excel/PDF. Menu **Planilhas** oculto; `GET /ncm/api/export/*` → 403
 
 ## 5. SSO por módulo
 
@@ -71,6 +83,7 @@ Rotas sem módulo → 403 via [`requireHubModule`](hub/middleware.js).
 
 ```bash
 npm run validate:login          # valida personas no banco
+npm run seed:baifer-consulta     # cria/alinha login consulta só da BAIFER
 npm run reconcile:modules:dry     # simula correção de módulos fantasmas
 npm run reconcile:modules         # aplica correção (Conci/NCM módulo único)
 cd NCM/fiscal && npm run db:migrate   # alinha o PostgreSQL fiscal-p ao Prisma (o HUB não aplica migrate no boot)
@@ -117,7 +130,7 @@ Tela **Planilhas** (`POST /ncm/api/import`). Parser: [`import-cadastro.ts`](NCM/
 |--------|----------------|----------|
 | Santri | Relação de Classes Fiscais / aba `Planilha_Classes_Fiscais` | código, nome, NCM, 8 destinos, IVA compra |
 | Unica | CSV `Cód.Item` | NCM + Abreviação fiscal + CST/alíquota via Desc. Abrev. ICMS |
-| Egaplast (oficial) | `PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx` (aba `Regra Tributária x Produtos`; fixture `regra-tributaria-x-produtos-egaplast.xlsx`) | CÓDIGO, DESCRIÇÃO, NCM, ORIGEM, SIT. TRIBUTÁRIA e IVA das 27 UFs no cabeçalho; ~4153 produtos, ~1127 com CST+IVA. Ouro: código `10100` NCM `84818019` origem `9-PRODUÇÃO` SP `1.9424`. **Não** importa na Base fiscal |
+| Egaplast (oficial) | `PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx` (aba `Regra Tributária x Produtos`; fixture `regra-tributaria-x-produtos-egaplast.xlsx`) | CÓDIGO, DESCRIÇÃO, NCM, ORIGEM, SIT. TRIBUTÁRIA e IVA das 27 UFs no cabeçalho; ~4153 produtos, ~1127 com CST+IVA. Ouro: `10100` NCM `84818019` origem `9-PRODUÇÃO` SP `1.9424` (**Correto** vs EXITO `1.9854`, dentro de 0,05); `10200` mesmo KIT origem `0-NACIONAL` SP `2.1190` (**Divergente** vs `1.9854`); `10255` sem SIT → **Análise**. **Não** importa na Base fiscal |
 | Egaplast listagem (variante) | `ncm.xls` / aba `Dados` | CÓDIGO, NOME, NCM (NCM `0` → vazio); ~4153 produtos, sem IVA por UF |
 | Egaplast relatório (variante) | aba `Planilha1` / `relatorio de produtos.xlsx` | blocos com código, origem, SIT.TRIBUTÁRIA, NCM + IVA/ICM das 27 UFs (até 4 linhas de pares UF+valor, **pula linha em branco** no meio); `ivaMva` = SP; dedupe → ~1127 códigos |
 | Egaplast combinado (variante) | `planilha egaplast.xls` (duas abas) na empresa Egaplast | nome de `Dados` + CST/IVA de `Planilha1` pelo código |
@@ -143,7 +156,8 @@ Tela **Revisão** após enviar Extrato + Contas a Pagar. Pré-cadastro por empre
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu sem Folha/NCM.
 4. Empresa Conci: em **Pré-cadastro**, cadastre a Classificação Êxito (descrição que aparece no histórico do extrato) e os códigos Débito/Crédito. Envie Extrato + Contas a Pagar. Na **Revisão**, o que não veio da planilha de CAP é classificado se a descrição estiver no histórico. Se cadastrou depois, clique **Atualizar pré-cadastro**.
 5. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar.
-6. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG. Pode importar a Atacadista ou `PLANILHA REGRA FISCAL UNICA.xlsx` (esta última não tem coluna Abrev.; o sistema completa pelo NCM). Importe o CSV em **Planilhas**. No **Panorama**, o card **Corretos** são os itens cuja Abreviação bate com a base (`004` = `4`). **Consulta** e **Divergências**: na barra, **Filtrar segmento** escolhe Autopeças, Tintas, Fora da base etc. (não há chips nem fila de NCM). **Divergências** mostra só o que não bateu (Abreviação diferente ou NCM fora da base). Marcar como já tratado é na **ficha** do produto. Para baixar só os NCM que **não estão na regra** da empresa: **Incluir no arquivo → Fora da base → Exportar Excel** (lote inteiro, detalhado). Vale também para BAIFER, Loja e Egaplast.
-7. Egaplast: em Empresas, **Entrar** na Egaplast → **Base fiscal** → Importar `TRIBUTACAO NCM EGAPLAST.xlsx` (NCM, CEST, segmento, alíquotas DF/GO/MG) e `NCM REGRA FISCAL EXITO CONTABILIDADE X EGAPLAST.xlsx` (CST+IVA SIGNATÁRIO — é a regra do escritório). As duas bases ficam juntas. Em **Planilhas**, importe o cadastro do cliente (`PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx`, com CÓDIGO). O arquivo EXITO SIGNATÁRIO **não** entra em Planilhas. Na ficha, **Como deve ficar** preenche o IVA da regra CST+IVA (ouro SP `1.9854` nacional / `2.1659` importado no NCM `84818019`); se a base só tiver TRIBUTACAO NCM, usa o IVA do cadastro (não deixa traço, não usa o MVA %). Cadastro sem IVA na UF = **NADA INFORMADO**. **Consulta** filtra por segmento e mostra SP. NCM em nenhuma base e sem IVA no cadastro: o errado é o NCM — abra **Base fiscal**. O fator IVA não é comparado com o MVA % da TRIBUTACAO.
+6. **Consulta BAIFER:** em `/login` use `baifer` ou `consulta@baifer.local` (senha do seed, não publicada). Abre só a conferência da BAIFER. Vê Panorama, Consultar, Divergências e Base fiscal. Não vê outras empresas, não importa, não apaga lote, não baixa Excel/PDF. Para outro cliente consulta, o mesmo padrão: `/admin/usuarios` → NCM + empresa + papel Consulta.
+7. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG. Pode importar a Atacadista ou `PLANILHA REGRA FISCAL UNICA.xlsx` (esta última não tem coluna Abrev.; o sistema completa pelo NCM). Importe o CSV em **Planilhas**. No **Panorama**, o card **Corretos** são os itens cuja Abreviação bate com a base (`004` = `4`). **Consulta** e **Divergências**: na barra, **Filtrar segmento** escolhe Autopeças, Tintas, Fora da base etc. (não há chips nem fila de NCM). **Divergências** mostra só o que não bateu (Abreviação diferente ou NCM fora da base). Marcar como já tratado é na **ficha** do produto. Para baixar só os NCM que **não estão na regra** da empresa: **Incluir no arquivo → Fora da base → Exportar Excel** (lote inteiro, detalhado) — só admin da empresa ou escritório. Vale também para BAIFER, Loja e Egaplast.
+8. Egaplast: em Empresas, **Entrar** na Egaplast → **Base fiscal** → Importar `TRIBUTACAO NCM EGAPLAST.xlsx` (NCM, CEST, segmento, alíquotas DF/GO/MG) e `NCM REGRA FISCAL EXITO CONTABILIDADE X EGAPLAST.xlsx` (CST+IVA SIGNATÁRIO — é a regra do escritório). As duas bases ficam juntas. Em **Planilhas**, importe o cadastro do cliente (`PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx`, com CÓDIGO). O arquivo EXITO SIGNATÁRIO **não** entra em Planilhas. Na ficha, **Como deve ficar** preenche o IVA da regra CST+IVA (ouro SP `1.9854` nacional / `2.1659` importado no NCM `84818019`); se a base só tiver TRIBUTACAO NCM, usa o IVA do cadastro (não deixa traço, não usa o MVA %). Cadastro sem IVA na UF = **NADA INFORMADO**. **Consulta** filtra por segmento e mostra SP. Busque pelo **código**: o mesmo NCM pode ter SKU Correto (`10100`) e Divergente (`10200`, origem 0 com IVA de importado). Linha sem SIT.TRIBUTÁRIA (`10255`) fica em **Análise** — não é erro de layout. NCM em nenhuma base e sem IVA no cadastro: o errado é o NCM — abra **Base fiscal**. O fator IVA não é comparado com o MVA % da TRIBUTACAO.
 
 Guia expandido: [`README.md`](README.md). Detalhe do auditor: [`NCM/fiscal/README.md`](NCM/fiscal/README.md).

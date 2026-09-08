@@ -80,8 +80,9 @@ export function UserManual() {
               base.
             </li>
             <li>
-              <strong>Necessita análise</strong> — em geral o NCM tem mais de uma regra e alguém precisa
-              escolher a hipótese.
+              <strong>Necessita análise</strong> — NCM com duas regras (vincular hipótese) ou, na Egaplast,
+              linha da planilha do cliente **sem** SIT.TRIBUTÁRIA (ex. código `10255`). O mesmo NCM pode
+              ter outro SKU em Divergências (`10200`) ou Correto (`10100`): busque pelo código.
             </li>
           </ul>
           <ScreenLink href="/dashboard">Abrir o Panorama</ScreenLink>
@@ -290,8 +291,9 @@ export function UserManual() {
 
         <ManualCard id="exportar" title="Exportar Excel ou PDF">
           <p>
-            Em Divergências, exporte o relatório para o cliente corrigir o ERP. O arquivo mostra o
-            importado ao lado da regra, agrupado por NCM.
+            Em Divergências, o administrador exporta o relatório para o cliente corrigir o ERP. O
+            arquivo mostra o importado ao lado da regra, agrupado por NCM. O perfil consulta não
+            vê esses botões e a API recusa o download.
           </p>
           <p>
             Antes de gerar, escolha o que entra no arquivo: todos, só divergentes, só NCM fora da
@@ -306,14 +308,14 @@ export function UserManual() {
 
         <ManualCard id="permissoes" title="Quem pode o quê">
           <p>
-            <strong>Consulta</strong> (analista): vê Panorama, Consultar, Divergências, Base fiscal,
-            Planilhas (somente leitura do histórico) e este guia; marca e desmarca tratado; exporta
-            Excel e PDF. Não importa nem apaga lotes, nem altera regras fiscais.
+            <strong>Consulta</strong> (analista): vê Panorama, Consultar, Divergências, Base fiscal
+            (leitura) e este guia; marca e desmarca tratado. Não importa, não apaga lotes, não
+            exporta Excel/PDF, não altera regras fiscais e não vê outras empresas.
           </p>
           <p>
-            <strong>Administrador</strong>: tudo acima, mais importar e apagar lotes, cadastrar,
-            editar e excluir regras (incluindo a base fiscal inteira), vincular hipótese quando o
-            NCM tem duas regras, empresas e usuários.
+            <strong>Administrador</strong>: tudo acima, mais importar e apagar lotes, exportar
+            Excel/PDF, cadastrar, editar e excluir regras (incluindo a base fiscal inteira), vincular
+            hipótese quando o NCM tem duas regras, empresas e usuários.
           </p>
         </ManualCard>
       </article>

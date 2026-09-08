@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.6.22 — 08/09/2026
+
+Adicionado:
+
+- Login consulta da BAIFER no HUB (`baifer` / `consulta@baifer.local`). Só essa empresa. Consulta não exporta Excel/PDF, não vê Planilhas e não troca de tenant.
+
+## v1.6.21 — 08/09/2026
+
+Corrigido:
+
+- Egaplast: CST da célula `10 TRIB C/ SUBST` não zera (SUBST contém `sit`). SKU `10200` (KIT origem `0-NACIONAL` SP `2.1190`) entra em **Divergências** contra a regra EXITO nacional `1.9854`. Linha sem SIT/IVA (ex. `10255`) continua **Análise**, com motivo da própria planilha do cliente (não pede mais Planilha1). `10100` permanece Correto (tolerância 0,05).
+
 ## v1.6.20 — 04/09/2026
 
 Corrigido:

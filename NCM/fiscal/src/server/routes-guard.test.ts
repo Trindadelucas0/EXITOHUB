@@ -43,4 +43,16 @@ describe("rotas leves do Panorama", () => {
     expect(src).toContain("scoreParsedProducts");
     expect(src).toContain("listImportBatches");
   });
+
+  it("export Excel e PDF exigem administrador da empresa", () => {
+    const excel = readFileSync(path.join(process.cwd(), "app/api/export/excel/route.ts"), "utf8");
+    const pdf = readFileSync(path.join(process.cwd(), "app/api/export/pdf/route.ts"), "utf8");
+    expect(excel).toContain("requireCompanyAdmin");
+    expect(pdf).toContain("requireCompanyAdmin");
+  });
+
+  it("menu Planilhas some para quem não escreve", () => {
+    const src = readFileSync(path.join(process.cwd(), "src/components/shell/app-shell.tsx"), "utf8");
+    expect(src).toContain('href: "/importar", label: "Planilhas", icon: IconImportar, admin: true');
+  });
 });

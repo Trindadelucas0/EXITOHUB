@@ -125,6 +125,12 @@ async function bootstrapHubDatabase() {
   } catch (err) {
     console.warn('[hub] sync usuários dos módulos falhou:', err.message);
   }
+  try {
+    const { seedBaiferConsulta } = require('./seed-baifer-consulta');
+    await seedBaiferConsulta();
+  } catch (err) {
+    console.warn('[hub] seed consulta BAIFER falhou:', err.message);
+  }
 }
 
 async function closePool() {

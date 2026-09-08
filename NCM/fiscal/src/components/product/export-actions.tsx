@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ProductFilterValues } from "@/src/components/product/product-filters";
 import { ExportFileButton } from "@/src/components/ui/export-file-button";
-import { withBasePath } from "@/src/lib/base-path";
+import { ncmApiUrl, withBasePath } from "@/src/lib/base-path";
 
 type ExportScope = ProductFilterValues["status"] | "FORA_DA_BASE";
 
@@ -33,6 +33,16 @@ export function ExportActions({
   tratado: ProductFilterValues["tratado"];
 }) {
   const [scope, setScope] = useState<ExportScope>("DIVERGENTE");
+  const [canWrite, setCanWrite] = useState(false);
+
+  useEffect(() => {
+    fetch(ncmApiUrl("/api/auth/me"))
+      .then((r) => r.json())
+      .then((json) => setCanWrite(Boolean(json.data?.canWrite)))
+      .catch(() => setCanWrite(false));
+  }, []);
+
+  if (!canWrite) return null;
 
   return (
     <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-end">

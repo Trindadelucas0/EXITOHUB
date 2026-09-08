@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "node hub/server.js",
     "start": "node hub/server.js",
+    "seed:baifer-consulta": "node hub/seed-baifer-consulta.js",
     "validate:login": "node hub/validate-login-flows.js",
     "reconcile:modules": "node hub/reconcile-hub-modules.js",
     "reconcile:modules:dry": "node hub/reconcile-hub-modules.js --dry-run",

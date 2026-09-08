@@ -73,7 +73,7 @@ export function requireCompanyAdmin(session: CompanySession): void {
     throw new HttpError(
       403,
       "FORBIDDEN",
-      "Somente o administrador pode importar, apagar lotes ou alterar a base fiscal. O perfil consulta apenas visualiza.",
+      "Somente o administrador pode importar, apagar lotes, exportar planilhas ou alterar a base fiscal. O perfil consulta apenas visualiza.",
     );
   }
 }

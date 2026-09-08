@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { homePath, postLoginPath } from "@/src/lib/auth-home";
 import { canWriteCompany, resolveCompanyScope } from "./company-scope";
 import { loginAllowed, loginFailed, loginSucceeded } from "./rate-limit";
-import { HttpError, ownedWhere, requireSuperAdmin } from "./tenant";
+import { HttpError, ownedWhere, requireCompanyAdmin, requireSuperAdmin } from "./tenant";
 import { escapeHtml } from "@/src/lib/html";
 
 describe("senha inválida", () => {
@@ -85,6 +85,23 @@ describe("papéis", () => {
     expect(adminScope?.fromOffice).toBe(false);
     expect(canWriteCompany("admin", adminScope!)).toBe(true);
     expect(canWriteCompany("consulta", consultaScope!)).toBe(false);
+    expect(() =>
+      requireCompanyAdmin({
+        id: baiferConsulta.id,
+        email: baiferConsulta.email,
+        name: baiferConsulta.name,
+        role: "consulta",
+        companyId: "cm_baifer_seed_company",
+        companyName: "BAIFER",
+        fromOffice: false,
+      }),
+    ).toThrow(HttpError);
+  });
+
+  it("consulta não exporta nem troca de empresa", () => {
+    expect(() => requireSuperAdmin(baiferConsulta)).toThrow(HttpError);
+    const forged = { ...baiferConsulta, activeCompanyId: "cm_loja_seed_company", activeCompanyName: "Loja" };
+    expect(resolveCompanyScope(forged)?.companyId).toBe("cm_baifer_seed_company");
   });
 
   it("activeCompanyId de usuário de empresa não muda o tenant", () => {

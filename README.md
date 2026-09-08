@@ -49,6 +49,7 @@ O HUB provisiona Conciliação e NCM automaticamente. O menu e as rotas só most
 |---------|--------------------------|---------------|------|
 | Admin Conciliação | username | `/conci/admin/empresas` | só Conci |
 | Empresa Conci | username | `/conci/` da empresa | só Conci |
+| Consulta BAIFER | `baifer` ou e-mail | `/ncm/dashboard` da BAIFER | só NCM; sem Planilhas/export |
 | Empresa NCM | e-mail | `/ncm/dashboard` | só NCM |
 | Só Folha | usuário | `/folha/modulos` | só Folha |
 | Admin HUB (2+ módulos) | usuário ou e-mail | Home `/` | módulos marcados |

@@ -15,7 +15,7 @@ O Auditor Fiscal BAIFER é um sistema interno do escritório. Ele **não substit
 - Permite **importar** várias planilhas; cada arquivo vira um lote no histórico, sem misturar. Em Panorama, Consulta e Divergências dá para **escolher a planilha** e ver só os dados dela.
 - Classifica cada produto como **correto**, **divergente** ou **necessita análise**.
 - Em **Consulta** e **Divergências** da Unica, a barra tem **Filtrar segmento**; a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz de 8 destinatários da BAIFER). Não há chips de segmento nem fila de NCM.
-- Em **Consulta** e **Divergências** da Egaplast, o mesmo filtro de segmento agrupa o cadastro; com `TRIBUTACAO NCM EGAPLAST` a conferência é NCM na base (CEST se o cadastro tiver CEST). A lista mostra SP; a ficha e **Como dar entrada** têm 27 linhas (UF, cadastro do cliente, como deve ficar = IVA da regra CST+IVA da EXITO SIGNATÁRIO; se essa regra não tiver mapa, o IVA do cadastro). Cadastro sem IVA = **NADA INFORMADO** (`0` informado continua `0`). Vermelho no IVA só contra a regra da **mesma origem**. NCM só na regra CST+IVA usa CST+IVA; NCM em nenhuma base e sem IVA no cadastro: o errado é o NCM.
+- Em **Consulta** e **Divergências** da Egaplast, o mesmo filtro de segmento agrupa o cadastro; com `TRIBUTACAO NCM EGAPLAST` a conferência é NCM na base (CEST se o cadastro tiver CEST). A lista mostra SP; a ficha e **Como dar entrada** têm 27 linhas (UF, cadastro do cliente, como deve ficar = IVA da regra CST+IVA da EXITO SIGNATÁRIO; se essa regra não tiver mapa, o IVA do cadastro). Cadastro sem IVA = **NADA INFORMADO** (`0` informado continua `0`). Vermelho no IVA só contra a regra da **mesma origem**. SKU com SIT+IVA e IVA diferente da EXITO (ex. `10200` SP `2.1190` vs `1.9854`) vai para **Divergências**. Linha sem SIT (ex. `10255`) fica em **Análise**. NCM só na regra CST+IVA usa CST+IVA; NCM em nenhuma base e sem IVA no cadastro: o errado é o NCM.
 - Compara a planilha nova com a **anterior** (códigos novos, que saíram, NCM ou situação que mudou).
 - Permite marcar produto como **já tratado** na ficha. Na próxima importação dá para **trazer essas marcas** (ou começar do zero).
 - Mostra a **matriz dos 8 destinatários** (não um CST único).
@@ -34,7 +34,7 @@ A tela inicial é só login. Cada e-mail abre o painel daquela conta:
 
 - **Administrador do escritório:** vê as empresas, cadastra empresa e usuários de qualquer empresa. Clicando em “Entrar” abre a conferência daquela empresa, com um aviso no topo e o botão “Voltar ao escritório”.
 - **Administrador da empresa** (BAIFER, Loja, etc.): importa cadastro e vincula regra quando o NCM tem duas hipóteses. Não cadastra empresa nem usuário — isso é do escritório.
-- **Consulta:** lê, busca, exporta Excel/PDF e marca item como já tratado na ficha.
+- **Consulta:** lê e busca só a empresa vinculada; marca item como já tratado na ficha. **Não** exporta Excel/PDF, não importa, não apaga lote e não vê outras empresas.
 
 ## Como os dados são protegidos
 
