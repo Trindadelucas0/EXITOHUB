@@ -36,15 +36,28 @@ async function seedBaiferConsulta() {
   const { createUser, updateUserWithModules } = require("./auth");
   const moduleMeta = { ncm: { role: "consulta", companyId: baifer.id } };
 
-  const existing = await query(
-    `SELECT id, username, email
-     FROM hub_users
-     WHERE LOWER(username) = LOWER($1) OR LOWER(email) = LOWER($2)
-     LIMIT 1`,
-    [username, email],
+  const byEmail = await query(
+    `SELECT id, username, email FROM hub_users WHERE LOWER(email) = LOWER($1) LIMIT 1`,
+    [email],
+  );
+  const byUsername = await query(
+    `SELECT id, username, email FROM hub_users WHERE LOWER(username) = LOWER($1) LIMIT 1`,
+    [username],
   );
 
-  if (!existing.rowCount) {
+  let user = byEmail.rows[0] || null;
+  if (!user && byUsername.rowCount) {
+    const taken = byUsername.rows[0];
+    if (String(taken.email).toLowerCase() !== email) {
+      console.warn(
+        `[hub] seed consulta BAIFER ignorado — usuário ${username} já existe com outro e-mail`,
+      );
+      return { created: false };
+    }
+    user = taken;
+  }
+
+  if (!user) {
     if (!password) {
       console.warn(
         "[hub] seed consulta BAIFER ignorado — defina HUB_SEED_BAIFER_CONSULTA_PASSWORD ou SEED_ADMIN_PASSWORD",
@@ -64,7 +77,6 @@ async function seedBaiferConsulta() {
     return { created: true };
   }
 
-  const user = existing.rows[0];
   if (String(user.username).toLowerCase() !== username) {
     const clash = await query(
       "SELECT id FROM hub_users WHERE LOWER(username) = LOWER($1) AND id <> $2 LIMIT 1",
@@ -77,9 +89,9 @@ async function seedBaiferConsulta() {
 
   await query(
     `UPDATE hub_users
-     SET display_name = $1, is_admin = false, active = true, email = $2
-     WHERE id = $3`,
-    [displayName, email, user.id],
+     SET display_name = $1, is_admin = false, active = true
+     WHERE id = $2`,
+    [displayName, user.id],
   );
 
   await updateUserWithModules(user.id, {
