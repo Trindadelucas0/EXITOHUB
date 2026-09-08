@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { homePath, postLoginPath } from "@/src/lib/auth-home";
+import { ncmSessionMatchesHub } from "@/src/lib/ncm-hub-session";
 import { canWriteCompany, resolveCompanyScope } from "./company-scope";
 import { loginAllowed, loginFailed, loginSucceeded } from "./rate-limit";
 import { HttpError, ownedWhere, requireCompanyAdmin, requireSuperAdmin } from "./tenant";
@@ -102,6 +103,17 @@ describe("papéis", () => {
     expect(() => requireSuperAdmin(baiferConsulta)).toThrow(HttpError);
     const forged = { ...baiferConsulta, activeCompanyId: "cm_loja_seed_company", activeCompanyName: "Loja" };
     expect(resolveCompanyScope(forged)?.companyId).toBe("cm_baifer_seed_company");
+  });
+
+  it("mismatch de sessão NCM vs HUB descarta o escritório", () => {
+    expect(ncmSessionMatchesHub("escritorio@local", "consulta@baifer.local")).toBe(false);
+    expect(ncmSessionMatchesHub("consulta@baifer.local", "consulta@baifer.local")).toBe(true);
+    expect(ncmSessionMatchesHub("  Consulta@Baifer.local ", "consulta@baifer.local")).toBe(true);
+    expect(ncmSessionMatchesHub("", "consulta@baifer.local")).toBe(false);
+    expect(ncmSessionMatchesHub("consulta@baifer.local", "")).toBe(false);
+    expect(ncmSessionMatchesHub(null, "consulta@baifer.local")).toBe(false);
+    expect(() => requireSuperAdmin(baiferConsulta)).toThrow(HttpError);
+    expect(homePath("consulta", false)).toBe("/dashboard");
   });
 
   it("activeCompanyId de usuário de empresa não muda o tenant", () => {

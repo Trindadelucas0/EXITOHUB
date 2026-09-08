@@ -4,6 +4,7 @@ import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE } from "@/src/lib/constants";
+import { ncmSessionMatchesHub } from "@/src/lib/ncm-hub-session";
 import { prisma, withTenant } from "./db";
 
 export { SESSION_COOKIE };
@@ -164,12 +165,17 @@ export async function readSessionCookie(): Promise<string | undefined> {
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const token = await readSessionCookie();
   const fromSession = await getUserFromToken(token);
-  if (fromSession) return fromSession;
   if (process.env.HUB_MODE === "1") {
     const { getUserFromHubCookie } = await import("./hub-sso");
-    return getUserFromHubCookie();
+    const hubUser = await getUserFromHubCookie();
+    if (!hubUser) return null;
+    if (fromSession && ncmSessionMatchesHub(fromSession.email, hubUser.email)) {
+      return fromSession;
+    }
+    if (token) await destroySession(token);
+    return hubUser;
   }
-  return null;
+  return fromSession;
 }
 
 export function sessionCookieOptions() {

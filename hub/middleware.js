@@ -6,6 +6,7 @@ const {
   getSessionUser,
   destroySession,
   clearSessionCookie,
+  clearNcmCookies,
 } = require('./auth');
 
 async function hubSessionMiddleware(req, res, next) {
@@ -66,6 +67,7 @@ async function logoutHub(req, res) {
     await destroySession(req.hubSessionId);
   }
   clearSessionCookie(res);
+  clearNcmCookies(res);
   req.hubUser = null;
   req.hubSessionId = null;
 }

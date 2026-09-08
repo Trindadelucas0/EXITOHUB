@@ -5,6 +5,7 @@ const {
   authenticate,
   createSession,
   setSessionCookie,
+  clearNcmCookies,
   listUsers,
   createUser,
   updateUserWithModules,
@@ -53,6 +54,7 @@ router.post('/login', async (req, res) => {
     }
     const sessionId = await createSession(user.id);
     setSessionCookie(res, sessionId);
+    clearNcmCookies(res);
     return res.redirect(postLoginPath(user));
   } catch (err) {
     console.error('[hub] login error', err);

@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const { query, MODULES } = require('./db');
 
 const COOKIE_NAME = 'exito_hub_sid';
+const NCM_SESSION_COOKIE = 'fiscal_session';
+const NCM_BATCH_COOKIE = 'fiscal_batch';
 const MAX_AGE_MS = 1000 * 60 * 60 * 8;
 
 function parseCookies(header) {
@@ -33,6 +35,24 @@ function cookieOptions() {
   };
 }
 
+function appendSetCookie(res, cookie) {
+  const prev = res.getHeader('Set-Cookie');
+  if (!prev) {
+    res.setHeader('Set-Cookie', cookie);
+    return;
+  }
+  const list = Array.isArray(prev) ? prev.slice() : [String(prev)];
+  list.push(cookie);
+  res.setHeader('Set-Cookie', list);
+}
+
+function expiredCookie(name) {
+  const opts = cookieOptions();
+  const parts = [`${name}=`, 'Path=/', 'HttpOnly', 'SameSite=Lax', 'Max-Age=0'];
+  if (opts.secure) parts.push('Secure');
+  return parts.join('; ');
+}
+
 function setSessionCookie(res, sessionId) {
   const opts = cookieOptions();
   const parts = [
@@ -43,14 +63,16 @@ function setSessionCookie(res, sessionId) {
     `Max-Age=${opts.maxAge}`,
   ];
   if (opts.secure) parts.push('Secure');
-  res.setHeader('Set-Cookie', parts.join('; '));
+  appendSetCookie(res, parts.join('; '));
 }
 
 function clearSessionCookie(res) {
-  res.setHeader(
-    'Set-Cookie',
-    `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
-  );
+  appendSetCookie(res, expiredCookie(COOKIE_NAME));
+}
+
+function clearNcmCookies(res) {
+  appendSetCookie(res, expiredCookie(NCM_SESSION_COOKIE));
+  appendSetCookie(res, expiredCookie(NCM_BATCH_COOKIE));
 }
 
 function toPublicUser(row, modules) {
@@ -357,6 +379,7 @@ module.exports = {
   parseCookies,
   setSessionCookie,
   clearSessionCookie,
+  clearNcmCookies,
   authenticate,
   createSession,
   destroySession,
