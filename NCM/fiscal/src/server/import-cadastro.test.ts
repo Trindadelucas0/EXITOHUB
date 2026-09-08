@@ -15,6 +15,8 @@ import {
   parseDescAbrevIcms,
   parseIvaDecimal,
   ncmFromCadastroCell,
+  cstFromSitCell,
+  isSitTributariaHeaderLabel,
 } from "./import-cadastro";
 import { normalizeNcm } from "./ncm";
 
@@ -383,9 +385,27 @@ describe("import cadastro", () => {
     expect(parcial?.ncm).toBe("84819010");
     expect(parcial?.cstUnico).toBeNull();
     expect(parcial?.ivaPorUf).toBeNull();
+    const kitNacional = rows.find((r) => r.codigo === "10200");
+    expect(kitNacional?.ncm).toBe("84818019");
+    expect(kitNacional?.cstUnico).toBe("10");
+    expect(kitNacional?.origem).toMatch(/0-NACIONAL/i);
+    expect(Number(kitNacional?.ivaPorUf?.SP)).toBeCloseTo(2.119, 4);
+    expect(Number(kitNacional?.ivaPorUf?.AC)).toBeCloseTo(1.5881, 4);
+    const semSit = rows.find((r) => r.codigo === "10255");
+    expect(semSit?.ncm).toBe("39229000");
+    expect(semSit?.cstUnico).toBeNull();
+    expect(semSit?.ivaPorUf).toBeNull();
     const semEmpresa = parseCadastroBuffer(readFileSync(EGAPLAST_WIDE), ".xlsx");
     expect(semEmpresa.length).toBe(4153);
     expect(semEmpresa.find((r) => r.codigo === "10100")?.ivaPorUf?.SP).toBeTruthy();
+  });
+
+  it("CST da célula SIT não zera por causa de SUBST/TRIBUTÁRIA", () => {
+    expect(cstFromSitCell("10-TRIB.C/ SUBST")).toBe("10");
+    expect(cstFromSitCell("10 TRIB C/ SUBST")).toBe("10");
+    expect(cstFromSitCell("SIT. TRIBUTÁRIA")).toBeNull();
+    expect(isSitTributariaHeaderLabel("SIT. TRIBUTÁRIA")).toBe(true);
+    expect(isSitTributariaHeaderLabel("10 TRIB C/ SUBST")).toBe(false);
   });
 
   it("lê linhas SIGNATÁRIO (AOA) e recusa o arquivo em Planilhas", () => {

@@ -95,6 +95,20 @@ function foldHeader(value: string): string {
     .replace(/\s+/g, " ");
 }
 
+/** Rótulo da coluna (SIT. TRIBUTÁRIA), não um CST. SUBST contém "sit" — não usar isso sozinho. */
+export function isSitTributariaHeaderLabel(raw: string): boolean {
+  const folded = foldHeader(raw);
+  if (!folded.includes("sit") || !folded.includes("tribut")) return false;
+  return normalizeCst(raw) == null;
+}
+
+/** CST da célula de SIT; `10 TRIB C/ SUBST` e `10-TRIB.C/ SUBST` → `10`. */
+export function cstFromSitCell(raw: string | null | undefined): string | null {
+  const text = String(raw ?? "").trim();
+  if (!text || isSitTributariaHeaderLabel(text)) return null;
+  return normalizeCst(text);
+}
+
 export function sanitizeFileName(name: string): string {
   const base = path.basename(name).replace(/[^\w.\- ()À-ÿ]/g, "_");
   return base.slice(0, 120) || "cadastro.xlsx";
@@ -416,7 +430,7 @@ function isRelatorioProductRow(
   if (isJunkRow(codigo, "")) return false;
   const sitRaw = cellStr(row[cols.sit]);
   if (!sitRaw) return false;
-  if (foldHeader(sitRaw).includes("sit") && foldHeader(sitRaw).includes("tribut")) return false;
+  if (isSitTributariaHeaderLabel(sitRaw)) return false;
   return true;
 }
 
@@ -502,11 +516,11 @@ export function parseEgaplastRelatorioAoa(aoa: unknown[][]): ParsedProduct[] {
     // Linha de produto: tem sit.tributária preenchida na coluna
     const sitRaw = cellStr(row[cols.sit]);
     if (!sitRaw) continue;
-    if (foldHeader(sitRaw).includes("sit") && foldHeader(sitRaw).includes("tribut")) continue;
+    if (isSitTributariaHeaderLabel(sitRaw)) continue;
 
     const ncmRaw = cellStr(row[cols.ncm]);
     const { ncm, ncmOriginal } = ncmFromCadastroCell(ncmRaw);
-    const cstUnico = normalizeCst(sitRaw);
+    const cstUnico = cstFromSitCell(sitRaw);
     const origem = cols.origem >= 0 ? cellStr(row[cols.origem]) || null : null;
     const iva = parseIvaBlockFromRows(collectIvaRowsAfterProduct(aoa, i, cols));
     const dedupeKey = `${codigo}::${ncm}::${cstUnico ?? ""}`;
@@ -613,11 +627,7 @@ export function parseEgaplastSignatarioCadastroAoa(aoa: unknown[][]): ParsedProd
     if (isJunkRow(codigo, descricao)) continue;
 
     const sitRaw = cols.sit >= 0 ? cellStr(row[cols.sit]) : "";
-    const sitFold = foldHeader(sitRaw);
-    const cstUnico =
-      sitRaw && !(sitFold.includes("sit") && sitFold.includes("tribut"))
-        ? normalizeCst(sitRaw)
-        : null;
+    const cstUnico = cstFromSitCell(sitRaw);
     const iva = parseIvaFromWideRow(row, ufCols);
     const dedupeKey = `${codigo}::${ncm}::${cstUnico ?? ""}`;
     if (seen.has(dedupeKey)) continue;
@@ -665,11 +675,7 @@ export function parseEgaplastWideCadastroAoa(aoa: unknown[][]): ParsedProduct[] 
     if (isJunkRow(codigo, descricao)) continue;
 
     const sitRaw = cols.sit >= 0 ? cellStr(row[cols.sit]) : "";
-    const sitFold = foldHeader(sitRaw);
-    const cstUnico =
-      sitRaw && !(sitFold.includes("sit") && sitFold.includes("tribut"))
-        ? normalizeCst(sitRaw)
-        : null;
+    const cstUnico = cstFromSitCell(sitRaw);
 
     const ncmRaw = cellStr(row[cols.ncm]);
     const { ncm, ncmOriginal } = ncmFromCadastroCell(ncmRaw);

@@ -622,6 +622,84 @@ describe("conferência Egaplast", () => {
     expect(misturado.diffs.some((d) => d.campo === "IVA SP" && d.ideal === "1.9424")).toBe(true);
   });
 
+  it("10200 origem 0 com SP 2.1190 diverge da regra nacional 1.9854; 10100 permanece correto", () => {
+    const fiscal = egaplastRule({
+      id: "exito",
+      ncm: "84818019",
+      ivaPorUf: { SP: "1.9854", AC: "1.4558" },
+      ivaPorUfImportado: { SP: "2.1659", AC: "1.5881" },
+    });
+    const kitNacional = compareProduct(
+      product({
+        codigo: "10200",
+        ncm: "84818019",
+        origem: "0-NACIONAL",
+        destinosCst: null,
+        cstUnico: "10",
+        ivaPorUf: { SP: "2.1190", AC: "1.5881" },
+      }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(kitNacional.status).toBe("DIVERGENTE");
+    expect(kitNacional.diffs.some((d) => d.campo === "IVA SP" && d.atual === "2.1190" && d.ideal === "1.9854")).toBe(
+      true,
+    );
+    const kitProducao = compareProduct(
+      product({
+        codigo: "10100",
+        ncm: "84818019",
+        origem: "9-PRODUÇÃO",
+        destinosCst: null,
+        cstUnico: "10",
+        ivaPorUf: { SP: "1.9424", AC: "1.4558" },
+      }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(kitProducao.status).toBe("CORRETO");
+  });
+
+  it("linha sem SIT e sem IVA → Análise; com IVA e sem CST → Divergente", () => {
+    const fiscal = egaplastRule({
+      id: "st",
+      ncm: "84818019",
+      ivaPorUf: { SP: "1.9854" },
+    });
+    const analise = compareProduct(
+      product({
+        codigo: "10255",
+        ncm: "39229000",
+        destinosCst: null,
+        cstUnico: null,
+        ivaPorUf: null,
+        ivaMvaNumero: null,
+      }),
+      [egaplastRule({ id: "outro", ncm: "39229000", ivaPorUf: { SP: "1.5" } })],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(analise.status).toBe("NECESSITA_ANALISE");
+    expect(analise.motivo).toMatch(/não tem SIT/i);
+    const ivaSemCst = compareProduct(
+      product({
+        ncm: "84818019",
+        origem: "0-NACIONAL",
+        destinosCst: null,
+        cstUnico: null,
+        ivaPorUf: { SP: "2.1190" },
+      }),
+      [fiscal],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(ivaSemCst.status).toBe("DIVERGENTE");
+    expect(ivaSemCst.diffs.some((d) => d.campo === "CST saída" && d.atual === "(vazio)")).toBe(true);
+    expect(ivaSemCst.diffs.some((d) => d.campo === "IVA SP")).toBe(true);
+  });
+
   it("cliente sem IVA não gera 27 diffs; a regra continua no compare.rule", () => {
     const fiscal = egaplastRule({
       id: "e2",

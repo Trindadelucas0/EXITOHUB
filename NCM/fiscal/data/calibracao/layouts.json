@@ -111,7 +111,8 @@
         "layout largo: 1 linha = 1 produto (CÓDIGO/DESCRIÇÃO); UFs no cabeçalho (não em blocos)",
         "linhas parciais (só código/descrição/NCM/origem) entram sem CST e sem ivaPorUf",
         "CST de SIT. TRIBUTÁRIA (00/10/51); ivaMva = SP se >0, senão 1º UF >0",
-        "4153 produtos; 1127 com CST+IVA das 27 UFs; ouro 10100 NCM 84818019 origem 9-PRODUÇÃO SP 1.9424",
+        "4153 produtos; 1127 com CST+IVA das 27 UFs; ouro 10100 NCM 84818019 origem 9-PRODUÇÃO SP 1.9424; 10200 mesmo NCM origem 0-NACIONAL SP 2.1190 (Divergente vs EXITO 1.9854); 10255 sem SIT",
+        "CST da célula SIT usa o dígito (10 TRIB C/ SUBST); não zera por SUBST conter sit",
         "não importa na Base fiscal — recusar com aviso para usar Planilhas"
       ],
       "fixture": "tests/fixtures/regra-tributaria-x-produtos-egaplast.xlsx",
@@ -356,6 +357,15 @@
         "ac": "1.4558"
       },
       "10120": { "ncm": "84819010", "cstUnico": null },
+      "10200": {
+        "ncm": "84818019",
+        "origem": "0-NACIONAL",
+        "cstUnico": "10",
+        "sp": "2.1190",
+        "ac": "1.5881",
+        "statusEsperado": "DIVERGENTE"
+      },
+      "10255": { "ncm": "39229000", "cstUnico": null },
       "totalProdutos": 4153,
       "comIva": 1127
     },

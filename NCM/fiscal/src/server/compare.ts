@@ -419,10 +419,13 @@ function compareEgaplastCstIvaProduct(
       needsLink: false,
     };
   }
-  if (!product.cstUnico) {
+  const hasCadastroIva =
+    hasFilledIvaPorUf(product.ivaPorUf) || product.ivaMvaNumero != null;
+  if (!product.cstUnico && !hasCadastroIva) {
     return {
       status: "NECESSITA_ANALISE",
-      motivo: "Cadastro sem SIT.TRIBUTÁRIA. Importe a aba de tributação (Planilha1) ou o relatório de produtos.",
+      motivo:
+        "Esta linha da planilha do cliente não tem SIT.TRIBUTÁRIA. A conferência de IVA só vale nas linhas preenchidas.",
       diffs: [],
       rule,
       candidates: rulesForNcm,
