@@ -19,7 +19,13 @@ import {
 } from "./rule-classify";
 import { fillMissingUnicaAbreviacao } from "./unica-abreviacao";
 import { isEgaplastCompany } from "./company-slug";
-import { parseEgaplastCadastroSheets } from "./import-cadastro";
+import {
+  parseEgaplastCadastroSheets,
+  workbookLooksLikeEgaplastSignatarioCadastro,
+  workbookLooksLikeEgaplastWideCadastro,
+  egaplastSignatarioWrongCompanyErrorMessage,
+  egaplastWideCadastroRulesErrorMessage,
+} from "./import-cadastro";
 import { rulesFromEgaplastCadastro } from "./egaplast-rules";
 import type { IvaPorUf } from "@/src/lib/iva-por-uf";
 
@@ -478,6 +484,20 @@ export function pickRulesSheet(
 
 export function parseRulesBuffer(buffer: Buffer, options: ParseRulesOptions = {}): ParsedRule[] {
   const workbook = XLSX.read(buffer, { type: "buffer", raw: false });
+  if (workbookLooksLikeEgaplastSignatarioCadastro(workbook, false)) {
+    if (!isEgaplastCompany(options.companyName)) {
+      throw new Error(egaplastSignatarioWrongCompanyErrorMessage());
+    }
+    const { dados, relatorio } = parseEgaplastCadastroSheets(workbook, false);
+    const fromCadastro = rulesFromEgaplastCadastro(relatorio, dados);
+    if (fromCadastro.length === 0) {
+      throw new Error("Nenhuma regra reconhecida na planilha SIGNATÁRIO da Egaplast.");
+    }
+    return fromCadastro;
+  }
+  if (workbookLooksLikeEgaplastWideCadastro(workbook, false)) {
+    throw new Error(egaplastWideCadastroRulesErrorMessage());
+  }
   if (isEgaplastCompany(options.companyName)) {
     const { dados, relatorio } = parseEgaplastCadastroSheets(workbook, false);
     const fromCadastro = rulesFromEgaplastCadastro(relatorio, dados);

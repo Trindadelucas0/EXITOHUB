@@ -11,10 +11,12 @@ Sistema web para o escritório conferir o cadastro importado contra a **base fis
 | Atacadista Unica (`Planilha3`, com `ABREVIACAO`) | Base fiscal oficial da Unica no seed (CEST + Abrev. + MVA/alíquota DF·GO·MG) |
 | `TRIBUTACAO NCM EGAPLAST.xlsx` (`Planilha1`) | Base fiscal oficial da Egaplast (NCM, CEST, segmento, MVA/alíquota DF·GO·MG; sem Abrev. da Unica) |
 | `planilha egaplast.xls` (`Dados` + `Planilha1`) | Variante de regra Egaplast (CST + IVA + segmento capítulo NCM) |
+| `NCM REGRA FISCAL EXITO CONTABILIDADE X EGAPLAST.xlsx` | Base fiscal oficial CST+IVA da Egaplast (NCM + origem + SIT.TRIBUTÁRIA + IVA SIGNATÁRIO, sem CÓDIGO). Importe em **Base fiscal**. Não vira lote de Planilhas |
 | `PLANILHA REGRA FISCAL UNICA.xlsx` | Variante sem coluna `ABREVIACAO` — import completa Abrev. pelo NCM da base Atacadista |
 | `Planilha_Classes_Fiscais` | Cadastro Santri (tela **Planilhas**) — não vira base fiscal |
-| Listagem Egaplast `ncm.xls` (aba `Dados`) | Cadastro: CÓDIGO, NOME, NCM (na Egaplast, cruza com Planilha1) |
-| Relatório Egaplast de produtos (blocos) | Cadastro: origem, SIT.TRIBUTÁRIA + IVA/ICM das 27 UFs (dedupe por código) |
+| `Regra_Tributaria_x_Produtos.xlsx` / `PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx` | Cadastro oficial Egaplast (Planilhas): código, descrição, NCM, origem, SIT.TRIBUTÁRIA e IVA das 27 UFs na mesma linha. Não vira base fiscal |
+| Listagem Egaplast `ncm.xls` (aba `Dados`) | Variante de cadastro: CÓDIGO, NOME, NCM (na Egaplast, cruza com Planilha1) |
+| Relatório Egaplast de produtos (blocos) | Variante de cadastro: origem, SIT.TRIBUTÁRIA + IVA/ICM das 27 UFs (dedupe por código) |
 | `NCM_GERAL` / links | Ignoradas |
 
 As bases **não se misturam** (`companyId` em toda query). Em **Base fiscal → Importar regras**, o layout segue a empresa da sessão. Na Unica e na Egaplast, **Consulta** e **Divergências** filtram por segmento na barra (Unica: Abreviação; Egaplast: SP na lista e IVA completo na ficha por origem Nacional/Importado, sem misturar fator com MVA %). BAIFER/Loja não.
@@ -49,7 +51,7 @@ npm run dev
 
 Senha das empresas: `SEED_ADMIN_PASSWORD`. Senha do escritório: `SEED_SUPERADMIN_PASSWORD`. O seed **não apaga** planilhas já importadas. Para zerar só o cadastro: `SEED_RESET_CADASTRO=1 npm run db:seed`.
 
-4. Cadastro do cliente (export Santri, CSV Unica, listagem/relatório Egaplast ou a aba `Planilha_Classes_Fiscais` do ODS) importa **um lote por arquivo** na empresa logada. Aceita `.xlsx`, `.xls`, `.csv` e `.ods`. Lotes anteriores ficam no histórico:
+4. Cadastro do cliente (export Santri, CSV Unica, `PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx` na Egaplast, listagem/relatório Egaplast ou a aba `Planilha_Classes_Fiscais` do ODS) importa **um lote por arquivo** na empresa logada. Aceita `.xlsx`, `.xls`, `.csv` e `.ods`. Lotes anteriores ficam no histórico:
 
 ```bash
 npm run import:cadastro
@@ -75,7 +77,7 @@ npm run import:cadastro
 | NCM com duas regras | Amarelo até vincular |
 | NCM mascarado | `82032010-2` e `82.03.20.10` → `82032010` |
 
-**Fonte BAIFER/Loja:** `ncm-atualizado.ods`. **Fonte Unica (seed):** `tests/fixtures/tributacao-ncm-unica-atacadista-2026-08-27.xlsx` (`Planilha3`) → `data/base-unica.json` (125 regras com `ABREVIACAO`). **Fonte Egaplast (seed):** `planilha egaplast.xls` (Dados + Planilha1) → `data/base-egaplast.json` (283 regras / 265 NCMs). Layout calibrado em `data/calibracao/layouts.json`.
+**Fonte BAIFER/Loja:** `ncm-atualizado.ods`. **Fonte Unica (seed):** `tests/fixtures/tributacao-ncm-unica-atacadista-2026-08-27.xlsx` (`Planilha3`) → `data/base-unica.json` (125 regras com `ABREVIACAO`). **Fonte Egaplast CST+IVA (seed):** `tests/fixtures/ncm-regra-fiscal-exito-egaplast.xlsx` → `data/base-egaplast.json` (289 regras / 265 NCMs). Cadastro oficial Egaplast: `PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx` (`tests/fixtures/regra-tributaria-x-produtos-egaplast.xlsx`). Layout calibrado em `data/calibracao/layouts.json`.
 
 ## Testes
 

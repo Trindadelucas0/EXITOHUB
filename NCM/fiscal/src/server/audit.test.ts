@@ -99,6 +99,62 @@ describe("sheetItemFromPersisted", () => {
     expect(item.correto?.mva).toBe("40");
   });
 
+  it("Egaplast: IVA da regra CST+IVA preenche a grade mesmo com TRIBUTACAO_UF", () => {
+    const trib = unicaRule({
+      ncm: "84818019",
+      mvaPercentual: 27.31,
+      mvaTexto: "27.31%",
+      ivaPorUf: null,
+    });
+    const st = unicaRule({
+      id: "st",
+      ncm: "84818019",
+      situacaoCodigo: "ST_INTERNO",
+      cstSaida: "10",
+      mvaPercentual: 1.9424,
+      mvaTexto: "1.9424",
+      ufTributacao: trib.ufTributacao,
+      ivaPorUf: { SP: "1.9424", AC: "1.4558" },
+    });
+    const item = sheetItemFromPersisted(
+      product({
+        ncm: "84818019",
+        origem: "9-PRODUÇÃO",
+        cstUnico: "10",
+        ivaMva: "1.9424",
+        ivaPorUf: { SP: "1.9424", AC: "1.4558" },
+      }),
+      [trib, st],
+      trib.id,
+    );
+    expect(item.correto?.ivaPorUf?.SP).toBe("1.9424");
+    expect(item.correto?.ivaPorUf?.AC).toBe("1.4558");
+  });
+
+  it("Egaplast: sem mapa CST+IVA a coluna da regra usa o IVA do cadastro", () => {
+    const trib = unicaRule({
+      ncm: "84818019",
+      mvaPercentual: 27.31,
+      mvaTexto: "27.31%",
+      ivaPorUf: null,
+    });
+    const item = sheetItemFromPersisted(
+      product({
+        ncm: "84818019",
+        origem: "9-PRODUÇÃO",
+        cstUnico: "10",
+        ivaMva: "1.9854",
+        ivaPorUf: { SP: "1.9854", AC: "1.4558" },
+      }),
+      [trib],
+      trib.id,
+    );
+    expect(item.correto?.ivaPorUf?.SP).toBe("1.9854");
+    expect(item.correto?.ivaPorUf?.AC).toBe("1.4558");
+    expect(item.correto?.mva).toBe("1.9854");
+    expect(item.correto?.mva).not.toBe("27.31%");
+  });
+
   it("sem regra deixa correto nulo", () => {
     const item = sheetItemFromPersisted(product(), [], null);
     expect(item.correto).toBeNull();

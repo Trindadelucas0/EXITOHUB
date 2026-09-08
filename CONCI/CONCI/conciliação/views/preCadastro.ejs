@@ -18,11 +18,12 @@
 <details class="help-details" style="margin-bottom: 1rem;">
   <summary>Como cadastrar</summary>
   <div class="help-body">
-    <p><strong>Pagamentos:</strong> descrição = Classificação Êxito (ex.: <code>ENERGIA</code>).</p>
+    <p><strong>Pagamentos:</strong> descrição = Classificação Êxito (ex.: <code>ENERGIA</code>, <code>APL APLIC</code>).</p>
     <p><strong>Tarifas:</strong> <code>TARIFAS BANCARIAS</code>.</p>
     <p><strong>Recebimentos:</strong> valor positivo começa com Classificação Êxito = <code>RECEBIMENTO</code>.
       Cadastre <code>RECEBIMENTO DE CLIENTES</code> ou <code>RECEBIMENTO</code> para preencher Débito/Crédito no upload.</p>
-    <p>Na revisão dá para editar a Classificação Êxito manualmente e o Débito/Crédito vêm do pré-cadastro com a mesma descrição.</p>
+    <p>Se o lançamento <strong>não</strong> veio classificado da Contas a Pagar, o sistema procura essa descrição no <strong>histórico do extrato</strong> (como palavra, não pedaço de outra: <code>ENERGIA</code> não classifica <code>NEOENERGIA</code>). Cadastre o texto que aparece no extrato.</p>
+    <p>Na revisão dá para editar a Classificação Êxito manualmente e o Débito/Crédito vêm do pré-cadastro com a mesma descrição. Se cadastrou depois do upload, use <strong>Atualizar pré-cadastro</strong>.</p>
   </div>
 </details>
 

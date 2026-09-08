@@ -350,8 +350,8 @@ describe("calibração regras Egaplast", () => {
       }>;
     };
     const st = raw.rules.find((r) => r.ncm === "84818019" && r.situacaoCodigo === "ST_INTERNO");
-    expect(st?.ivaPorUf?.SP).toBe("1.9424");
-    expect(st?.ivaPorUfImportado?.SP).toBe("2.119");
+    expect(Number(st?.ivaPorUf?.SP)).toBeCloseTo(1.9854, 4);
+    expect(Number(st?.ivaPorUfImportado?.SP)).toBeCloseTo(2.1659, 4);
   });
 });
 
@@ -377,9 +377,51 @@ describe("import TRIBUTACAO NCM Egaplast", () => {
     expect(gold?.ivaPorUf).toBeNull();
   });
 
-  it("não preenche Abrev. da Unica na tributação Egaplast", () => {
+  it("não preenche Abrev. da Unica na tributação Egaplast", { timeout: 20_000 }, () => {
     const buffer = readFileSync(EGAPLAST_TRIBUTACAO);
     const egaplast = parseRulesBuffer(buffer, { companyName: "Egaplast" });
     expect(egaplast.some((r) => r.abreviacao)).toBe(false);
+  });
+});
+
+const EGAPLAST_EXITO = path.join(
+  process.cwd(),
+  "tests",
+  "fixtures",
+  "ncm-regra-fiscal-exito-egaplast.xlsx",
+);
+const EGAPLAST_CLIENTE = path.join(
+  process.cwd(),
+  "tests",
+  "fixtures",
+  "regra-tributaria-x-produtos-egaplast.xlsx",
+);
+
+describe("planilha EXITO SIGNATÁRIO vira regra só na Egaplast", () => {
+  it("na Egaplast monta CST+IVA nacional e importado", { timeout: 20_000 }, () => {
+    const buffer = readFileSync(EGAPLAST_EXITO);
+    const rules = dedupeParsedRules(parseRulesBuffer(buffer, { companyName: "Egaplast" }));
+    expect(rules.length).toBe(289);
+    const st = rules.find((r) => r.ncm === "84818019" && r.situacaoCodigo === "ST_INTERNO");
+    expect(st?.cstSaida).toBe("10");
+    expect(Number(st?.ivaPorUf?.SP)).toBeCloseTo(1.9854, 4);
+    expect(Number(st?.ivaPorUfImportado?.SP)).toBeCloseTo(2.1659, 4);
+    expect(rules.some((r) => r.situacaoCodigo === "INCOMPLETA")).toBe(true);
+  });
+
+  it("BAIFER/Unica e sessão sem empresa recusam o arquivo", () => {
+    const buffer = readFileSync(EGAPLAST_EXITO);
+    expect(() => parseRulesBuffer(buffer, { companyName: "BAIFER" })).toThrow(/Egaplast/);
+    expect(() => parseRulesBuffer(buffer, { companyName: "Unica" })).toThrow(/Egaplast/);
+    expect(() => parseRulesBuffer(buffer)).toThrow(/Egaplast/);
+  });
+});
+
+describe("cadastro do cliente Egaplast não vira regra", () => {
+  it("recusa PLANILHA BASE DA TRIBUTAÇÃO CLIENTE na Base fiscal", { timeout: 20_000 }, () => {
+    const buffer = readFileSync(EGAPLAST_CLIENTE);
+    expect(() => parseRulesBuffer(buffer, { companyName: "Egaplast" })).toThrow(/Planilhas/);
+    expect(() => parseRulesBuffer(buffer, { companyName: "BAIFER" })).toThrow(/Planilhas/);
+    expect(() => parseRulesBuffer(buffer, { companyName: "Unica" })).toThrow(/Planilhas/);
   });
 });

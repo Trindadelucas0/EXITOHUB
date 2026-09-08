@@ -117,12 +117,15 @@ export function UserManual() {
             Clique na linha para abrir a ficha. Lá aparece o cadastro importado ao lado do que a
             regra manda. Na Unica a grade mostra Abreviação, CEST, alíquota DF e MVA (não a matriz
             de destinatários da empresa). Na Egaplast a ficha lista IVA/ICMS em 27 linhas: cadastro do
-            cliente e como deve ficar (regra Nacional ou Importado, conforme a origem do produto).
-            Consulta e Divergências mostram só SP e pedem para abrir a ficha. Com TRIBUTACAO NCM o NCM
-            na base fica correto; o fator IVA do cadastro não é comparado com o percentual MVA da
-            planilha. Se o NCM estiver só na Planilha1, CST e IVA corretos vêm dessa regra. Se o NCM
-            não existir em nenhuma base, o errado é o NCM — busque o código certo em Base fiscal. A
-            tributação correta não vem do cadastro: vem da regra daquele NCM.
+            cliente e como deve ficar. A coluna verde preenche com o IVA da regra CST+IVA; se a base
+            só tiver TRIBUTACAO NCM (sem mapa IVA), usa o IVA SIGNATÁRIO do cadastro — não deixa
+            traço e não usa o MVA % da TRIBUTACAO. Célula vazia no cadastro aparece como NADA
+            INFORMADO; zero informado pelo cliente continua zero. Se o NCM não está em nenhuma base
+            e o cadastro também não trouxe IVA, aí sim fica em traço. Consulta e Divergências mostram
+            só SP e pedem para abrir a ficha. O fator IVA do cadastro não é comparado com o
+            percentual MVA da planilha. Se o NCM estiver só na Planilha1, CST e IVA corretos vêm
+            dessa regra. Se o NCM não existir em nenhuma base, o errado é o NCM — busque o código
+            certo em Base fiscal.
           </p>
           <p>
             Se o NCM tiver duas regras, a ficha pede para vincular a hipótese. Só o administrador
@@ -237,8 +240,9 @@ export function UserManual() {
           <p>
             A tela mostra NCM do cadastro, NCM da regra, CST da nota de entrada, CST da empresa,
             CFOP, MVA e um checklist. Na Egaplast a tabela IVA/ICMS tem cadastro do cliente e como deve
-            ficar (Nacional ou Importado, conforme a origem), com código, origem, CST e NCM no topo.
-            Sem matriz de 8 destinatários (layout padrão com matriz). Se o cadastro ainda divergir, o alerta aparece no topo.
+            ficar (IVA da regra CST+IVA, Nacional ou Importado conforme a origem), com código, origem,
+            CST e NCM no topo. Cadastro sem IVA na UF = NADA INFORMADO. Sem matriz de 8 destinatários
+            (layout padrão com matriz). Se o cadastro ainda divergir, o alerta aparece no topo.
           </p>
         </ManualCard>
 
@@ -246,8 +250,11 @@ export function UserManual() {
           <p>
             Aqui ficam as regras da empresa: um NCM, uma regra (às vezes duas hipóteses), para todos
             os produtos daquele NCM. Produtos da planilha não entram nesta tela. Na Egaplast importe
-            `TRIBUTACAO NCM EGAPLAST` (NCM, CEST, segmento, alíquotas por UF) e, se precisar de CST+IVA,
-            o `.xls` com Dados e Planilha1 — as duas bases convivem; o seed não apaga TRIBUTACAO_UF.
+            `TRIBUTACAO NCM EGAPLAST` (NCM, CEST, segmento, alíquotas por UF) e
+            <code>NCM REGRA FISCAL EXITO CONTABILIDADE X EGAPLAST</code> (CST+IVA SIGNATÁRIO — é a
+            regra do escritório, não o cadastro do cliente). As duas bases convivem; o seed não apaga
+            TRIBUTACAO_UF. O mesmo arquivo EXITO em Planilhas é recusado. O <code>.xls</code> com
+            Dados e Planilha1 continua como variante.
           </p>
           <p>
             O administrador cadastra, edita, exclui regra a regra, importa a planilha ou exclui a
@@ -268,7 +275,11 @@ export function UserManual() {
           </p>
           <p>
             Colunas reconhecidas: código, descrição, NCM, CST por destinatário, CST de compra,
-            alíquota, IVA/MVA e CEST.
+            alíquota, IVA/MVA e CEST. Na Egaplast o cadastro oficial do cliente é
+            <code>PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST</code> (código, descrição, NCM, origem,
+            situação tributária e IVA das 27 UFs). Listagem e relatório em blocos também. A planilha
+            EXITO com colunas SIGNATÁRIO (sem código de produto) é a regra do escritório: importe em
+            Base fiscal, não aqui.
           </p>
           <p>
             Se já existir lote anterior, dá para trazer a marca “já tratado” dos mesmos códigos. Itens

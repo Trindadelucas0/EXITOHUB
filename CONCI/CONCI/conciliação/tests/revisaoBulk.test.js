@@ -132,6 +132,47 @@ describe('revisaoBulk', () => {
     assert.equal(itens[1].debito, null);
   });
 
+  it('reaplicar: CAP vazia classifica pelo historico do pre-cadastro', () => {
+    writeSession(SID, [
+      { id: 'apl1', descricao: 'APL APLIC', debito: 1101, credito: 9 },
+      { id: 'forn', descricao: 'FORNECEDORES', debito: 1004, credito: 9 },
+    ]);
+    const origem = baseItens();
+    origem[1].historico = 'PIX APL APLIC X';
+
+    const { itens } = reapplyPreCadastroItems(origem, SID, []);
+    assert.equal(itens[1].classificacaoCap, 'APL APLIC');
+    assert.equal(itens[1].status, 'SUGERIDO');
+    assert.equal(itens[1].motivo, 'historico+precadastro');
+    assert.equal(itens[1].debito, 1101);
+    assert.equal(itens[1].credito, 9);
+    assert.ok(itens[1].preCadastroId);
+    assert.equal(itens[1].aprovado, true);
+    assert.equal(itens[0].classificacaoCap, 'FORNECEDORES');
+    assert.notEqual(itens[0].motivo, 'historico+precadastro');
+  });
+
+  it('reaplicar: CAP preenchida nao e sobrescrita pelo historico', () => {
+    writeSession(SID, [
+      { id: 't1', descricao: 'FORNECEDORES', debito: 1004, credito: 9 },
+      { id: 't2', descricao: 'BOLETO A', debito: 9999, credito: 1 },
+    ]);
+    const { itens } = reapplyPreCadastroItems(baseItens(), SID, ['a1']);
+    assert.equal(itens[0].classificacaoCap, 'FORNECEDORES');
+    assert.equal(itens[0].debito, 1004);
+    assert.notEqual(itens[0].motivo, 'historico+precadastro');
+  });
+
+  it('reaplicar: ENERGIA no pre-cadastro nao classifica NEOENERGIA', () => {
+    writeSession(SID, [{ id: 't1', descricao: 'ENERGIA', debito: 2101, credito: 9 }]);
+    const origem = baseItens();
+    origem[1].historico = 'BOLETO PAGO NEOENERGIA';
+    const { itens } = reapplyPreCadastroItems(origem, SID, ['b2']);
+    assert.equal(itens[1].classificacaoCap, '');
+    assert.equal(itens[1].status, 'SEM_MATCH');
+    assert.equal(itens[1].debito, null);
+  });
+
   it('aplicar CAP em lote altera N itens e aplica codigos', () => {
     writeSession(SID, [
       { id: 'p-f', descricao: 'FRETES SOBRE COMPRAS', debito: 2101, credito: 9 },

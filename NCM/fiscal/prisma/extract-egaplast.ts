@@ -7,6 +7,7 @@ import { dedupeParsedRules, parseRulesBuffer } from "../src/server/import-rules"
 
 const ROOT = process.cwd();
 const DESKTOP = path.join("C:", "Users", "trind", "Desktop", "planilha egaplast.xls");
+const EXITO_FIXTURE = path.join(ROOT, "tests", "fixtures", "ncm-regra-fiscal-exito-egaplast.xlsx");
 const DADOS_FIXTURE = path.join(ROOT, "tests", "fixtures", "cadastro-egaplast-ncm-2026-08-27.xls");
 const TRIB_FIXTURE = path.join(
   ROOT,
@@ -20,6 +21,9 @@ function loadWorkbook(): { buffer: Buffer; source: string } {
   const fromArg = process.argv[3];
   if (fromArg && existsSync(fromArg)) {
     return { buffer: readFileSync(fromArg), source: path.basename(fromArg) };
+  }
+  if (existsSync(EXITO_FIXTURE)) {
+    return { buffer: readFileSync(EXITO_FIXTURE), source: path.basename(EXITO_FIXTURE) };
   }
   if (existsSync(DESKTOP)) {
     return { buffer: readFileSync(DESKTOP), source: path.basename(DESKTOP) };
@@ -51,10 +55,11 @@ function main() {
   for (const rule of parsed) {
     counts[rule.situacaoCodigo] = (counts[rule.situacaoCodigo] ?? 0) + 1;
   }
+  const primarySheet = workbook.SheetNames[0] ?? source;
   const payload = {
     company: "egaplast",
     source,
-    sheet: "Planilha1+Dados",
+    sheet: primarySheet,
     extractedSheets: workbook.SheetNames,
     ignoredSheets: [],
     totalRules: parsed.length,
@@ -63,7 +68,7 @@ function main() {
     rules: parsed.map((rule) => ({
       company: "egaplast",
       sourceFile: source,
-      sourceSheet: rule.situacaoCodigo === "INCOMPLETA" ? "Dados" : "Planilha1",
+      sourceSheet: primarySheet,
       ncm: rule.ncm,
       ncmOriginal: rule.ncmOriginal,
       segmento: rule.segmento,

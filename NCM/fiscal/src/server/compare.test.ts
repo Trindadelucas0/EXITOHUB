@@ -512,6 +512,46 @@ describe("conferência Egaplast", () => {
     expect(ok.diffs.some((d) => d.campo === "MVA / IVA")).toBe(false);
   });
 
+  it("TRIBUTACAO_UF + CST+IVA: produto com IVA usa o mapa 27 UFs da regra CST+IVA", () => {
+    const trib = egaplastRule({
+      id: "uf",
+      ncm: "84818019",
+      cstSaida: null,
+      situacaoCodigo: "TRIBUTACAO_UF",
+      mvaPercentual: 27.31,
+      mvaTexto: "27.31%",
+      ufTributacao: {
+        DF: { original: "27.31%", ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "20%" },
+        GO: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "19%" },
+        MG: { original: null, ajustada4: null, ajustada7: null, ajustada12: null, aliqInterna: "18%" },
+      },
+      ivaPorUf: null,
+    });
+    const st = egaplastRule({
+      id: "st",
+      ncm: "84818019",
+      ivaPorUf: { SP: "1.9424", AC: "1.4558" },
+    });
+    const ok = compareProduct(
+      product({
+        ncm: "84818019",
+        origem: "9-PRODUÇÃO",
+        destinosCst: null,
+        cstUnico: "10",
+        ivaPorUf: { SP: "1.9424", AC: "1.4558" },
+      }),
+      [trib, st],
+      null,
+      { companySlug: "egaplast" },
+    );
+    expect(ok.status).toBe("CORRETO");
+    expect(ok.rule?.id).toBe("st");
+    expect(ok.rule?.ivaPorUf?.SP).toBe("1.9424");
+    expect(ok.rule?.ivaPorUf?.AC).toBe("1.4558");
+    expect(ok.candidates.map((item) => item.id).sort()).toEqual(["st", "uf"]);
+    expect(ok.diffs.some((d) => d.campo === "MVA / IVA")).toBe(false);
+  });
+
   it("CST+IVA 40129090 com SP 2.169 confere sem TRIBUTACAO_UF", () => {
     const fiscal = egaplastRule({
       id: "cst-iva",

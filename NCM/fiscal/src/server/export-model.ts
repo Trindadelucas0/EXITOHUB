@@ -10,6 +10,9 @@ import {
 } from "@/src/lib/fiscal";
 import type { CompareResult, FiscalRule } from "./compare";
 import { summarizeStatus } from "./compare";
+import { isEgaplastCompany } from "./company-slug";
+import { displayCadastroIva, type IvaPorUf } from "@/src/lib/iva-por-uf";
+import { ivaIdealForDisplay } from "@/src/lib/origem-iva";
 
 export type ExportProduct = {
   codigo: string;
@@ -79,6 +82,8 @@ export type ExportItemInput = {
   cstCompra?: string | null;
   cstUnico?: string | null;
   ivaMva?: string | null;
+  origem?: string | null;
+  ivaPorUf?: IvaPorUf | null;
   abreviacao?: string | null;
   cest?: string | null;
   destinosCst?: DestinosCst | null;
@@ -186,8 +191,13 @@ export function buildReport(input: {
       cstSaidaAtual: item.cstUnico ?? null,
       cstSaidaIdeal: rule?.cstSaida ?? null,
       cfopSaida: rule?.cfopSaida ?? null,
-      mvaAtual: item.ivaMva ?? null,
-      mvaIdeal: ruleMva(rule),
+      mvaAtual: isEgaplastCompany(input.companyName)
+        ? displayCadastroIva(item.ivaMva)
+        : item.ivaMva ?? null,
+      mvaIdeal: isEgaplastCompany(input.companyName)
+        ? (ivaIdealForDisplay(rule, item.compare.candidates, item.origem, item.cstUnico, item.ivaPorUf)?.SP ??
+            null)
+        : ruleMva(rule),
       abreviacaoAtual: item.abreviacao ?? null,
       abreviacaoIdeal: rule?.abreviacao ?? null,
       cestAtual: item.cest ?? null,
@@ -228,6 +238,8 @@ export function buildReportFromCompared(input: {
       cstCompra?: string | null;
       cstUnico?: string | null;
       ivaMva?: string | null;
+      origem?: string | null;
+      ivaPorUf?: IvaPorUf | null;
       abreviacao?: string | null;
       cest?: string | null;
       destinosCst?: DestinosCst | null;
@@ -248,6 +260,8 @@ export function buildReportFromCompared(input: {
       cstCompra: item.product.cstCompra,
       cstUnico: item.product.cstUnico,
       ivaMva: item.product.ivaMva,
+      origem: item.product.origem,
+      ivaPorUf: item.product.ivaPorUf,
       abreviacao: item.product.abreviacao,
       cest: item.product.cest,
       destinosCst: item.product.destinosCst,

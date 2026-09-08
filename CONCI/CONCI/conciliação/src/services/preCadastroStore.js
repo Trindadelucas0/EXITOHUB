@@ -413,6 +413,33 @@ function applyPreCadastro(item, storeKey) {
   };
 }
 
+/**
+ * Residual sem CAP: casa historico do extrato com descricao do pre-cadastro.
+ * Recebimento nao entra (CAP padrao RECEBIMENTO). CAP preenchida nao muda.
+ */
+function enrichCapFromHistorico(item, storeKey) {
+  if (!item || item.tipo === 'recebimento') return item;
+  const cap = String(item.classificacaoCap || item.categoria || '').trim();
+  if (cap) return item;
+  const pre = findBestPreByHistorico(storeKey, item.historico);
+  if (!pre) return item;
+  return {
+    ...item,
+    classificacaoCap: pre.descricao,
+    categoria: pre.descricao,
+    status: 'SUGERIDO',
+    passagem: 3,
+    motivo: 'historico+precadastro',
+  };
+}
+
+function shouldAutoAprovar(item) {
+  if (!item || !item.preCadastroId) return false;
+  if (item.debito == null && item.credito == null) return false;
+  if (item.status === 'MATCHED' || item.status === 'REGRA') return true;
+  return item.status === 'SUGERIDO' && item.motivo === 'historico+precadastro';
+}
+
 module.exports = {
   getDataDir,
   SEED_PATH,
@@ -428,6 +455,8 @@ module.exports = {
   list,
   findByDescricao,
   findBestPreByHistorico,
+  enrichCapFromHistorico,
+  shouldAutoAprovar,
   create,
   update,
   remove,

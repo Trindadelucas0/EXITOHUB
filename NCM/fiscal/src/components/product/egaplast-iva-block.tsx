@@ -1,5 +1,7 @@
 import {
   EGAPLAST_IVA_UF_KEYS,
+  displayCadastroIva,
+  displayRegraIva,
   ivaCellsDiverge,
   type IvaPorUf,
 } from "@/src/lib/iva-por-uf";
@@ -19,10 +21,6 @@ type EgaplastIvaBlockProps = {
   mismatchCst?: boolean;
   mismatchNcm?: boolean;
 };
-
-function display(value?: string | null): string {
-  return value == null || String(value).trim() === "" ? "—" : String(value);
-}
 
 export function EgaplastIvaBlock({
   atual,
@@ -45,7 +43,7 @@ export function EgaplastIvaBlock({
     const mismatch = compare && ivaCellsDiverge(atual?.SP, ideal?.SP);
     return (
       <span className={`tabular ${mismatch ? "text-status-bad" : "text-ink"}`}>
-        SP {display(atual?.SP)}
+        SP {displayCadastroIva(atual?.SP)}
         <span className="ml-1 text-ink-muted">· {origemInfo.short} · ver ficha</span>
       </span>
     );
@@ -94,8 +92,8 @@ export function EgaplastIvaBlock({
           </thead>
           <tbody>
             {EGAPLAST_IVA_UF_KEYS.map((uf) => {
-              const cadastro = display(atual?.[uf]);
-              const correto = display(ideal?.[uf]);
+              const cadastro = displayCadastroIva(atual?.[uf]);
+              const correto = displayRegraIva(ideal?.[uf]);
               const mismatch = compare && ivaCellsDiverge(atual?.[uf], ideal?.[uf]);
               return (
                 <tr key={uf}>

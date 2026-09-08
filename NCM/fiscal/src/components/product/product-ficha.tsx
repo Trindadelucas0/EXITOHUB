@@ -12,7 +12,7 @@ import { StatusBadge } from "@/src/components/ui/status-badge";
 import { ncmApiUrl } from "@/src/lib/base-path";
 import { DESTINO_KEYS, isUnicaSituacao, type DestinosCst, type FieldDiff, type StatusFiscal } from "@/src/lib/fiscal";
 import { hasFilledIvaPorUf, type IvaPorUf } from "@/src/lib/iva-por-uf";
-import { ivaIdealForOrigem } from "@/src/lib/origem-iva";
+import { ivaIdealForDisplay } from "@/src/lib/origem-iva";
 
 type Payload = {
   layout?: "egaplast" | "default";
@@ -54,7 +54,13 @@ type Payload = {
       ivaPorUfImportado?: IvaPorUf | null;
       ufTributacao?: { DF?: { aliqInterna?: string | null } } | null;
     } | null;
-    candidates: { id: string; situacaoCodigo: string; cstSaida: string | null }[];
+    candidates: {
+      id: string;
+      situacaoCodigo: string;
+      cstSaida: string | null;
+      ivaPorUf?: IvaPorUf | null;
+      ivaPorUfImportado?: IvaPorUf | null;
+    }[];
   };
   guide: {
     ncm: string;
@@ -155,7 +161,13 @@ export function ProductFicha({ mode }: { mode: "ficha" | "entrada" }) {
     ? data.compare.diffs.filter((diff) => !diff.campo.startsWith("IVA "))
     : data.compare.diffs;
   const ivaAtual = data.product.ivaPorUf;
-  const ivaIdeal = ivaIdealForOrigem(data.compare.rule, data.product.origem);
+  const ivaIdeal = ivaIdealForDisplay(
+    data.compare.rule,
+    data.compare.candidates,
+    data.product.origem,
+    data.product.cstUnico,
+    ivaAtual,
+  );
   const showIvaBlock = egaplast && (hasFilledIvaPorUf(ivaAtual) || hasFilledIvaPorUf(ivaIdeal));
   const ncmDiff = data.compare.diffs.find((diff) => diff.campo === "NCM");
   const cstDiff = data.compare.diffs.find((diff) => diff.campo === "CST saída");
@@ -382,7 +394,13 @@ function Item({ label, value, emphasis = false }: { label: string; value: string
 
 function EgaplastFicha({ data, showIvaBlock }: { data: Payload; showIvaBlock: boolean }) {
   const ivaAtual = data.product.ivaPorUf;
-  const ivaIdeal = ivaIdealForOrigem(data.compare.rule, data.product.origem);
+  const ivaIdeal = ivaIdealForDisplay(
+    data.compare.rule,
+    data.compare.candidates,
+    data.product.origem,
+    data.product.cstUnico,
+    ivaAtual,
+  );
   return (
     <div className="grid gap-4">
       <EgaplastIvaBlock

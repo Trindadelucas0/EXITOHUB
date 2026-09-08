@@ -11,6 +11,8 @@
 | `cadastro-egaplast-ncm-2026-08-27.xls` | Listagem Egaplast (aba `Dados`: CÓDIGO, NOME, ORIGEM, NCM). Com `companyName` Egaplast entra na extração da **base fiscal** |
 | `cadastro-egaplast-relatorio-produtos.xlsx` | Relatório Egaplast em blocos (SIT.TRIBUTÁRIA + IVA/ICM por UF). Com `companyName` Egaplast vira regra CST+IVA |
 | `tributacao-ncm-egaplast-2026-08-31.xlsx` | Tributação NCM Egaplast (NCM, CEST, segmento, MVA/alíquota por UF). Com `companyName` Egaplast vira base `TRIBUTACAO_UF` |
+| `regra-tributaria-x-produtos-egaplast.xlsx` | Cadastro oficial do cliente Egaplast (`PLANILHA BASE DA TRIBUTAÇÃO CLIENTE`): CÓDIGO + DESCRIÇÃO + IVA das 27 UFs. Importe em Planilhas. Não vira base fiscal |
+| `ncm-regra-fiscal-exito-egaplast.xlsx` | Base fiscal oficial CST+IVA EXITO Egaplast: NCM + origem + SIT.TRIBUTÁRIA + IVA SIGNATÁRIO (sem CÓDIGO). Importe em Base fiscal. Não vira lote de Planilhas |
 
 Registro: `data/calibracao/layouts.json`.
 

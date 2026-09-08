@@ -34,6 +34,8 @@ export async function GET(
         companySlug: user.companyName,
         companyName: user.companyName,
         origem: mappedProduct.origem,
+        cstUnico: mappedProduct.cstUnico,
+        ivaPorUf: mappedProduct.ivaPorUf,
       });
       return {
         layout: isEgaplastCompany(user.companyName) ? "egaplast" : "default",

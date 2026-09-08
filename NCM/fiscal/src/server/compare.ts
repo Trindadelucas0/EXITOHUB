@@ -10,7 +10,7 @@ import {
   type UfTributacao,
 } from "@/src/lib/fiscal";
 import { hasFilledIvaPorUf, ivaPorUfDiffs, type IvaPorUf } from "@/src/lib/iva-por-uf";
-import { ivaIdealForOrigem } from "@/src/lib/origem-iva";
+import { ivaIdealForOrigem, ruleHasIvaMap } from "@/src/lib/origem-iva";
 
 export type { DestinoKey, DestinosCst, FieldDiff, StatusFiscal };
 export { DESTINO_KEYS, DESTINO_LABELS };
@@ -358,7 +358,7 @@ function compareEgaplastTributacaoProduct(
 }
 
 function isCstIvaEgaplastRule(rule: FiscalRule): boolean {
-  if (isUnicaRule(rule)) return hasFilledIvaPorUf(rule.ivaPorUf);
+  if (isUnicaRule(rule)) return ruleHasIvaMap(rule);
   return true;
 }
 
@@ -367,12 +367,22 @@ function compareEgaplastProduct(
   rulesForNcm: FiscalRule[],
   linkedRuleId: string | null,
 ): CompareResult {
+  const ivaRules = rulesForNcm.filter(ruleHasIvaMap);
   const cstIvaRules = rulesForNcm.filter(isCstIvaEgaplastRule);
   const hasCompleteCstIva = cstIvaRules.some((item) => item.situacaoCodigo !== "INCOMPLETA");
   const productHasCstIva =
     Boolean(product.cstUnico) || hasFilledIvaPorUf(product.ivaPorUf) || product.ivaMvaNumero != null;
+  const keepCandidates = (result: CompareResult): CompareResult => ({
+    ...result,
+    candidates: rulesForNcm,
+  });
+  const linkedIn = (pool: FiscalRule[]) =>
+    pool.some((item) => item.id === linkedRuleId) ? linkedRuleId : null;
+  if (ivaRules.length > 0 && productHasCstIva) {
+    return keepCandidates(compareEgaplastCstIvaProduct(product, ivaRules, linkedIn(ivaRules)));
+  }
   if (hasCompleteCstIva && productHasCstIva) {
-    return compareEgaplastCstIvaProduct(product, cstIvaRules, linkedRuleId);
+    return keepCandidates(compareEgaplastCstIvaProduct(product, cstIvaRules, linkedIn(cstIvaRules)));
   }
   if (rulesForNcm.some(isUnicaRule)) {
     return compareEgaplastTributacaoProduct(product, rulesForNcm, linkedRuleId);

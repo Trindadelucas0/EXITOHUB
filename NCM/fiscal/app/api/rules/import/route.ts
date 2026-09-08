@@ -112,6 +112,12 @@ export async function POST(request: Request) {
     if (error instanceof Error && !(error instanceof HttpError) && error.message.includes("Nenhuma aba")) {
       return jsonError(new HttpError(400, "VALIDATION", error.message));
     }
+    if (error instanceof Error && !(error instanceof HttpError) && error.message.includes("Planilhas")) {
+      return jsonError(new HttpError(400, "VALIDATION", error.message));
+    }
+    if (error instanceof Error && !(error instanceof HttpError) && error.message.includes("Base fiscal")) {
+      return jsonError(new HttpError(400, "VALIDATION", error.message));
+    }
     return jsonError(error);
   }
 }

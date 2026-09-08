@@ -95,9 +95,11 @@ Débito/Crédito vêm **só do pré-cadastro** da empresa logada.
 
 Em http://localhost:3000/pre-cadastro:
 
-- Pagamentos: descrição = Classificação Êxito (ex.: `ENERGIA`)
+- Pagamentos: descrição = Classificação Êxito (ex.: `ENERGIA`, `APL APLIC`)
 - Tarifas: `TARIFAS BANCARIAS`
 - Recebimentos: padrão CAP = `RECEBIMENTO` (códigos via `RECEBIMENTO DE CLIENTES`); CAP editável na revisão busca Débito/Crédito pela descrição digitada
+
+No upload e em **Atualizar pré-cadastro**, lançamento **sem** Classificação Êxito é classificado se a descrição do pré-cadastro aparecer no **histórico** do extrato (como palavra; `ENERGIA` não classifica `NEOENERGIA`). Quem já veio da Contas a Pagar não muda.
 
 ## Filtros na revisão
 

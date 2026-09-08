@@ -1,5 +1,42 @@
 # Changelog
 
+## v1.6.20 — 04/09/2026
+
+Corrigido:
+
+- Calibração Egaplast das duas planilhas oficiais: **cadastro do cliente** (`PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx`, ~4153 SKUs, ouro `10100` SP `1.9424`) entra só em **Planilhas**; a **regra EXITO SIGNATÁRIO** entra só em **Base fiscal** (ouro `84818019` SP `1.9854` / `2.1659`). O cadastro do cliente na Base fiscal era gravado como NCM incompleto — agora é recusado.
+
+## v1.6.19 — 04/09/2026
+
+Corrigido:
+
+- Egaplast: `NCM REGRA FISCAL EXITO CONTABILIDADE X EGAPLAST.xlsx` passa a ser a **base fiscal** CST+IVA do escritório (tela Base fiscal). Ouro: NCM `84818019` ST interno SP `1.9854` nacional / `2.1659` importado. Seed: 289 regras / 265 NCMs. O mesmo arquivo em **Planilhas** é recusado. O cadastro do cliente continua sendo `Regra_Tributaria_x_Produtos.xlsx` (~4153 SKUs). BAIFER/Unica recusam o layout SIGNATÁRIO.
+
+## v1.6.18 — 04/09/2026
+
+Corrigido:
+
+- Egaplast: a coluna **Como deve ficar** deixa de ficar em traço quando a base só tem `TRIBUTACAO_UF`. Preenche o IVA da regra CST+IVA se ela existir; senão usa o IVA SIGNATÁRIO do cadastro importado. Continua sem copiar o MVA % da TRIBUTACAO NCM (ex. `27.31`). Grade, ficha, entrada e export.
+
+## v1.6.17 — 04/09/2026
+
+Adicionado:
+
+- Cadastro oficial da Egaplast em **Planilhas**: `NCM REGRA FISCAL EXITO CONTABILIDADE X EGAPLAST.xlsx` (NCM + origem + SIT.TRIBUTÁRIA + IVA SIGNATÁRIO, sem CÓDIGO). O lote usa código `{NCM}:{dígito da origem}` (ex. `84818019:9`); ~313 linhas (NCM `0` ignorado). Esse arquivo **não** entra na Base fiscal. O layout com CÓDIGO (~4153 SKUs) continua. A base fiscal (`TRIBUTACAO NCM EGAPLAST` / CST+IVA) não muda nesta entrega — o IVA SIGNATÁRIO (ex. SP `1.9854`) pode divergir da regra antiga (SP `1.9424`).
+
+## v1.6.16 — 03/09/2026
+
+Corrigido:
+
+- Egaplast: a coluna **Como deve ficar** usa o IVA da regra CST+IVA do mesmo NCM (mesmo quando a conferência também tem `TRIBUTACAO_UF`). Não preenche 27 UFs a partir do MVA % da TRIBUTACAO NCM.
+- Cadastro do cliente sem IVA na UF (célula vazia, linha parcial) passa a mostrar **NADA INFORMADO** na ficha, na entrada, na grade e no export — `0` informado pelo cliente continua `0`. A coluna da regra não usa esse texto.
+
+## v1.6.15 — 03/09/2026
+
+Adicionado:
+
+- Cadastro oficial da Egaplast em **Planilhas**: `Regra_Tributaria_x_Produtos.xlsx` (uma linha por produto, CST e IVA das 27 UFs no cabeçalho). O lote traz ~4153 códigos; os que têm SIT.TRIBUTÁRIA cruzam CST e cada UF com a regra CST+IVA já existente. Listagem `.xls` e relatório em blocos continuam. A base fiscal (`TRIBUTACAO NCM EGAPLAST`) não muda.
+
 ## v1.6.14 — 03/09/2026
 
 Corrigido:

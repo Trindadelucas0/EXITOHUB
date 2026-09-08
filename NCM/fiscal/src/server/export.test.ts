@@ -157,4 +157,52 @@ describe("export", () => {
     expect(banner).toContain("Sem regra na base fiscal");
     expect(porRegra?.rowCount).toBeGreaterThanOrEqual(5);
   });
+
+  it("Egaplast: IVA vazio do cadastro exporta NADA INFORMADO; regra usa o mapa CST+IVA", () => {
+    const trib: FiscalRule = {
+      ...rule,
+      id: "uf",
+      ncm: "84818019",
+      situacaoCodigo: "TRIBUTACAO_UF",
+      mvaPercentual: 27.31,
+      mvaTexto: "27.31%",
+      ivaPorUf: null,
+    };
+    const st: FiscalRule = {
+      ...rule,
+      id: "st",
+      ncm: "84818019",
+      situacaoCodigo: "ST_INTERNO",
+      cstSaida: "10",
+      mvaPercentual: 1.9424,
+      mvaTexto: "1.9424",
+      ivaPorUf: { SP: "1.9424" },
+    };
+    const report = buildReport({
+      companyName: "Egaplast",
+      batchFileName: "cadastro.xlsx",
+      generatedAt: new Date("2026-09-03T12:00:00Z"),
+      items: [
+        {
+          codigo: "15230",
+          descricao: "sem IVA",
+          ncm: "84818019",
+          cstUnico: "10",
+          ivaMva: null,
+          origem: "9-PRODUÇÃO",
+          compare: {
+            status: "CORRETO",
+            motivo: "",
+            diffs: [],
+            rule: trib,
+            candidates: [trib, st],
+            needsLink: false,
+          },
+        },
+      ],
+    });
+    const row = report.groups[0]?.products[0];
+    expect(row?.mvaAtual).toBe("NADA INFORMADO");
+    expect(row?.mvaIdeal).toBe("1.9424");
+  });
 });

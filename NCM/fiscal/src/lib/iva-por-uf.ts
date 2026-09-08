@@ -8,6 +8,9 @@ export const EGAPLAST_IVA_UF_ROWS: readonly (readonly string[])[] = [
 
 export const EGAPLAST_IVA_UF_KEYS = EGAPLAST_IVA_UF_ROWS.flat();
 
+/** Cadastro do cliente sem IVA na célula (não usar na coluna da regra). */
+export const NADA_INFORMADO = "NADA INFORMADO";
+
 export type IvaPorUf = Partial<Record<string, string | null>>;
 
 export function emptyIvaPorUf(): IvaPorUf {
@@ -53,6 +56,18 @@ export function parseIvaFactor(raw: string | null | undefined): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+export function displayCadastroIva(value?: string | null): string {
+  const text = value == null ? "" : String(value).trim();
+  if (!text || text === "—" || text === "–" || text === "-") return NADA_INFORMADO;
+  return String(value);
+}
+
+export function displayRegraIva(value?: string | null): string {
+  const text = value == null ? "" : String(value).trim();
+  if (!text) return "—";
+  return String(value);
+}
+
 export function ivaCellsDiverge(
   atual: string | null | undefined,
   ideal: string | null | undefined,
@@ -71,7 +86,11 @@ export function ivaPorUfDiffs(atual: IvaPorUf | null | undefined, ideal: IvaPorU
     const a = atual?.[uf] ?? null;
     const b = ideal[uf] ?? null;
     if (ivaCellsDiverge(a, b)) {
-      diffs.push({ uf, atual: a ?? "(vazio)", ideal: b ?? "—" });
+      diffs.push({
+        uf,
+        atual: a == null || String(a).trim() === "" ? NADA_INFORMADO : String(a),
+        ideal: b ?? "—",
+      });
     }
   }
   return diffs;

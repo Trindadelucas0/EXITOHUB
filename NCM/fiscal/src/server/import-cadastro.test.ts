@@ -7,6 +7,10 @@ import {
   assertSafeUpload,
   parseCadastroBuffer,
   parseEgaplastRelatorioAoa,
+  parseEgaplastWideCadastroAoa,
+  parseEgaplastSignatarioCadastroAoa,
+  isEgaplastWideCadastroHeader,
+  isEgaplastSignatarioCadastroHeader,
   isJunkRow,
   parseDescAbrevIcms,
   parseIvaDecimal,
@@ -25,6 +29,18 @@ const EGAPLAST_RELATORIO = path.join(
   "tests",
   "fixtures",
   "cadastro-egaplast-relatorio-produtos.xlsx",
+);
+const EGAPLAST_WIDE = path.join(
+  process.cwd(),
+  "tests",
+  "fixtures",
+  "regra-tributaria-x-produtos-egaplast.xlsx",
+);
+const EGAPLAST_EXITO = path.join(
+  process.cwd(),
+  "tests",
+  "fixtures",
+  "ncm-regra-fiscal-exito-egaplast.xlsx",
 );
 
 describe("import cadastro", () => {
@@ -265,6 +281,202 @@ describe("import cadastro", () => {
     const semNcm = rows.find((r) => r.codigo === "990363");
     expect(semNcm?.ncm).toBe("");
     expect(semNcm?.cstUnico).toBe("0");
+  });
+
+  it("lê PLANILHA BASE DA TRIBUTAÇÃO CLIENTE (layout largo) com CST e IVA por UF", () => {
+    const header = [
+      "CÓDIGO",
+      "DESCRIÇÃO",
+      "NCM",
+      "ORIGEM",
+      "SIT. TRIBUTÁRIA",
+      "AC",
+      "AL",
+      "AM",
+      "AP",
+      "BA",
+      "CE",
+      "DF",
+      "ES",
+      "GO",
+      "MA",
+      "MG",
+      "MS",
+      "MT",
+      "PA",
+      "PB",
+      "PE",
+      "PI",
+      "PR",
+      "RJ",
+      "RN",
+      "RO",
+      "RR",
+      "RS",
+      "SE",
+      "SC",
+      "SP",
+      "TO",
+    ];
+    expect(isEgaplastWideCadastroHeader(header)).toBe(true);
+    const aoaRows = parseEgaplastWideCadastroAoa([
+      header,
+      [
+        "10100",
+        "KIT P/CX ACOP. EGAPRO ACION SUP UNIV",
+        "84818019",
+        "9-PRODUÇÃO",
+        "10-TRIB.C/ SUBST",
+        1.4558,
+        1.617,
+        0,
+        1.438,
+        1.605,
+        0,
+        0,
+        1.4207,
+        0,
+        0,
+        1.5024,
+        1.4631,
+        0,
+        1.4558,
+        1.474,
+        1.6272,
+        0,
+        1.6398,
+        1.6585,
+        0,
+        0,
+        0,
+        1.813,
+        0,
+        0,
+        1.9424,
+        0,
+      ],
+      ["10120", "OBTURADOR PVC FLEXÍVEL", "84819010", "9-PRODUÇÃO"],
+    ]);
+    expect(aoaRows).toHaveLength(2);
+    expect(aoaRows[0].cstUnico).toBe("10");
+    expect(aoaRows[0].ivaPorUf?.SP).toBe("1.9424");
+    expect(aoaRows[0].ivaPorUf?.AC).toBe("1.4558");
+    expect(aoaRows[0].ivaMvaNumero).toBeCloseTo(1.9424, 4);
+    expect(aoaRows[1].codigo).toBe("10120");
+    expect(aoaRows[1].cstUnico).toBeNull();
+    expect(aoaRows[1].ivaPorUf).toBeNull();
+
+    const rows = parseCadastroBuffer(readFileSync(EGAPLAST_WIDE), ".xlsx", { companyName: "Egaplast" });
+    expect(rows.length).toBe(4153);
+    const gold = rows.find((r) => r.codigo === "10100");
+    expect(gold?.ncm).toBe("84818019");
+    expect(gold?.descricao).toContain("KIT P/CX ACOP");
+    expect(gold?.cstUnico).toBe("10");
+    expect(gold?.origem).toMatch(/9-PRODU/i);
+    expect(Number(gold?.ivaPorUf?.SP)).toBeCloseTo(1.9424, 4);
+    expect(Number(gold?.ivaPorUf?.AC)).toBeCloseTo(1.4558, 4);
+    expect(Object.keys(gold?.ivaPorUf ?? {}).length).toBe(27);
+    const comCst = rows.filter((r) => r.cstUnico != null);
+    expect(comCst.length).toBe(1127);
+    expect(comCst.every((r) => Object.keys(r.ivaPorUf ?? {}).length === 27)).toBe(true);
+    const parcial = rows.find((r) => r.codigo === "10120");
+    expect(parcial?.ncm).toBe("84819010");
+    expect(parcial?.cstUnico).toBeNull();
+    expect(parcial?.ivaPorUf).toBeNull();
+    const semEmpresa = parseCadastroBuffer(readFileSync(EGAPLAST_WIDE), ".xlsx");
+    expect(semEmpresa.length).toBe(4153);
+    expect(semEmpresa.find((r) => r.codigo === "10100")?.ivaPorUf?.SP).toBeTruthy();
+  });
+
+  it("lê linhas SIGNATÁRIO (AOA) e recusa o arquivo em Planilhas", () => {
+    const header = [
+      "NCM",
+      "CST",
+      "SEGMENTO",
+      "ORIGEM",
+      "SIT. TRIBUTÁRIA",
+      "AC SIGNATÁRIO",
+      "AL SIGNATÁRIO",
+      "AM SIGNATÁRIO",
+      "AP SIGNATÁRIO",
+      "BA SIGNATÁRIO",
+      "CE SIGNATÁRIO",
+      "DF SIGNATÁRIO",
+      "ES SIGNATÁRIO",
+      "GO SIGNATÁRIO",
+      "MA SIGNATÁRIO",
+      "MG SIGNATÁRIO",
+      "MS SIGNATÁRIO",
+      "MT SIGNATÁRIO",
+      "PA SIGNATÁRIO",
+      "PB SIGNATÁRIO",
+      "PE SIGNATÁRIO",
+      "PI SIGNATÁRIO",
+      "PR SIGNATÁRIO",
+      "RJ SIGNATÁRIO",
+      "RN SIGNATÁRIO",
+      "RO SIGNATÁRIO",
+      "RR SIGNATÁRIO",
+      "RS SIGNATÁRIO",
+      "SE SIGNATÁRIO",
+      "SC SIGNATÁRIO",
+      "SP SIGNATÁRIO",
+      "TO SIGNATÁRIO",
+    ];
+    expect(isEgaplastSignatarioCadastroHeader(header)).toBe(true);
+    expect(isEgaplastWideCadastroHeader(header)).toBe(false);
+    const aoaRows = parseEgaplastSignatarioCadastroAoa([
+      header,
+      [
+        "84818019",
+        "",
+        "",
+        "9-PRODUÇÃO",
+        "10-TRIB.C/ SUBST",
+        1.4558,
+        1.6479,
+        0,
+        1.438,
+        1.605,
+        0,
+        1.474,
+        1.4207,
+        0,
+        1.9632,
+        1.5024,
+        1.4631,
+        0,
+        1.4558,
+        1.474,
+        1.6272,
+        1.5897,
+        1.8371,
+        1.6585,
+        0,
+        0,
+        0,
+        1.813,
+        1.8896,
+        0,
+        1.9854,
+        1.8896,
+      ],
+      ["82032000", "", "", "0-NACIONAL"],
+    ]);
+    expect(aoaRows).toHaveLength(2);
+    expect(aoaRows[0].codigo).toBe("84818019:9");
+    expect(aoaRows[0].descricao).toMatch(/9-PRODU/i);
+    expect(aoaRows[0].cstUnico).toBe("10");
+    expect(aoaRows[0].ivaPorUf?.SP).toBe("1.9854");
+    expect(aoaRows[0].ivaPorUf?.AC).toBe("1.4558");
+    expect(aoaRows[1].codigo).toBe("82032000:0");
+    expect(aoaRows[1].cstUnico).toBeNull();
+    expect(aoaRows[1].ivaPorUf).toBeNull();
+
+    expect(() =>
+      parseCadastroBuffer(readFileSync(EGAPLAST_EXITO), ".xlsx", { companyName: "Egaplast" }),
+    ).toThrow(/Base fiscal/);
+    expect(() => parseCadastroBuffer(readFileSync(EGAPLAST_EXITO), ".xlsx")).toThrow(/Base fiscal/);
   });
 
   it("na Egaplast cruza Dados + Planilha1 por código", () => {

@@ -348,9 +348,12 @@
   <button type="submit" formaction="/revisao/<%= session.id %>/reaplicar-precadastro"
     <%= readOnly ? 'disabled' : '' %>
     class="btn btn-secondary btn-sm"
-    title="Se nenhum estiver marcado, atualiza todos">
+    title="Atualiza Débito/Crédito pela Classificação Êxito. Sem classificação, tenta casar o histórico com a descrição do pré-cadastro. Se nenhum estiver marcado, atualiza todos.">
     Atualizar pré-cadastro
   </button>
+  <p class="muted" style="font-size: 0.8rem; margin: 0; flex: 1 1 220px;">
+    Sem Classificação Êxito, o histórico do extrato é comparado com a descrição do pré-cadastro. Quem já veio da Contas a Pagar não muda.
+  </p>
   <div class="lote-cap-field">
     <label class="field-label" for="cap-lote">Classificação Êxito (lote)</label>
     <input id="cap-lote" name="classificacaoCap" type="text" autocomplete="off"

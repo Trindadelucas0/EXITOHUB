@@ -5,7 +5,8 @@ const { pass2 } = require('./pass2');
 const { pass3 } = require('./pass3');
 const {
   applyPreCadastro,
-  findBestPreByHistorico,
+  enrichCapFromHistorico,
+  shouldAutoAprovar,
   CLASSIFICACAO_RECEBIMENTO,
 } = require('../preCadastroStore');
 
@@ -26,31 +27,6 @@ function asRecebimento(lancamento, idx, sessionId) {
     aprovado: false,
     rowId: lancamento.id || `rec-${idx}`,
   }, sessionId);
-}
-
-/**
- * Residual sem CAP: tenta casar historico do extrato com descricao do pre-cadastro.
- */
-function enrichCapFromHistorico(item, sessionId) {
-  const cap = String(item.classificacaoCap || item.categoria || '').trim();
-  if (cap) return item;
-  const pre = findBestPreByHistorico(sessionId, item.historico);
-  if (!pre) return item;
-  return {
-    ...item,
-    classificacaoCap: pre.descricao,
-    categoria: pre.descricao,
-    status: 'SUGERIDO',
-    passagem: 3,
-    motivo: 'historico+precadastro',
-  };
-}
-
-function shouldAutoAprovar(item) {
-  if (!item.preCadastroId) return false;
-  if (item.debito == null && item.credito == null) return false;
-  if (item.status === 'MATCHED' || item.status === 'REGRA') return true;
-  return item.status === 'SUGERIDO' && item.motivo === 'historico+precadastro';
 }
 
 /**

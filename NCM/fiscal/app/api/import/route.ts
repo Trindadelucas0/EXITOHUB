@@ -16,7 +16,7 @@ import {
 } from "@/src/server/import-cadastro";
 import { indexRulesByNcm, scoreParsedProducts } from "@/src/server/import-score";
 import { carryTreatedMarker, indexPreviousMarkers } from "@/src/server/treated-carry";
-import { requireCompanyAdmin, requireCompanySession } from "@/src/server/tenant";
+import { HttpError, requireCompanyAdmin, requireCompanySession } from "@/src/server/tenant";
 
 export async function POST(request: Request) {
   try {
@@ -143,6 +143,9 @@ export async function POST(request: Request) {
     response.cookies.set(BATCH_COOKIE, result.batchId, batchCookieOptions());
     return response;
   } catch (error) {
+    if (error instanceof Error && !(error instanceof HttpError) && error.message.includes("Base fiscal")) {
+      return jsonError(new HttpError(400, "VALIDATION", error.message));
+    }
     return jsonError(error);
   }
 }

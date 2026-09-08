@@ -1,6 +1,10 @@
 'use strict';
 
-const { applyPreCadastro } = require('./preCadastroStore');
+const {
+  applyPreCadastro,
+  enrichCapFromHistorico,
+  shouldAutoAprovar,
+} = require('./preCadastroStore');
 
 /**
  * @param {unknown} raw
@@ -43,11 +47,16 @@ function applyCapAndPre(item, cap, preKey) {
 }
 
 /**
- * Reaplica pré-cadastro mantendo a CAP atual do item.
+ * Reaplica pré-cadastro. CAP preenchida só atualiza Débito/Crédito.
+ * CAP vazia tenta classificar pela descrição do pré-cadastro no histórico.
  */
 function reapplyPreOnItem(item, preKey) {
-  const withPre = applyPreCadastro({ ...item }, preKey);
-  return {
+  const hadCap = String(item.classificacaoCap || item.categoria || '').trim();
+  const enriched = enrichCapFromHistorico(item, preKey);
+  const classifiedFromHistorico = !hadCap
+    && String(enriched.motivo || '') === 'historico+precadastro';
+  const withPre = applyPreCadastro(enriched, preKey);
+  const next = {
     ...item,
     classificacaoCap: withPre.classificacaoCap ?? item.classificacaoCap,
     categoria: withPre.categoria ?? item.categoria,
@@ -57,6 +66,14 @@ function reapplyPreOnItem(item, preKey) {
     motivo: withPre.motivo,
     error: null,
   };
+  if (classifiedFromHistorico) {
+    next.status = withPre.status || 'SUGERIDO';
+    next.passagem = withPre.passagem ?? 3;
+    if (shouldAutoAprovar({ ...withPre, ...next })) {
+      next.aprovado = true;
+    }
+  }
+  return next;
 }
 
 function excludeItems(itens, rowIds) {

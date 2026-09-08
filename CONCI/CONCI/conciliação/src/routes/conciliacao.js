@@ -37,6 +37,7 @@ const { isGeminiEnabled } = require('../services/geminiExtratoMap');
 const {
   excludeItems,
   reapplyPreCadastroItems,
+  reapplyPreOnItem,
   applyCapLote,
   applyCapAndPre,
 } = require('../services/revisaoBulk');
@@ -622,15 +623,30 @@ router.post('/revisao/:id/item/:rowId', express.urlencoded({ extended: true }), 
         && req.body.classificacaoCap !== undefined;
       if (podeEditarCap) {
         const cap = String(req.body.classificacaoCap || '').trim();
-        next.classificacaoCap = cap;
-        next.categoria = cap;
-        const withPre = applyPreCadastro(next, preKey);
-        next.classificacaoCap = withPre.classificacaoCap;
-        next.categoria = withPre.categoria;
-        next.debito = withPre.debito;
-        next.credito = withPre.credito;
-        next.preCadastroId = withPre.preCadastroId;
-        next.motivo = withPre.motivo;
+        if (cap) {
+          const withPre = applyCapAndPre(next, cap, preKey);
+          next.classificacaoCap = withPre.classificacaoCap;
+          next.categoria = withPre.categoria;
+          next.debito = withPre.debito;
+          next.credito = withPre.credito;
+          next.preCadastroId = withPre.preCadastroId;
+          next.motivo = withPre.motivo;
+        } else {
+          const withPre = reapplyPreOnItem({
+            ...next,
+            classificacaoCap: '',
+            categoria: '',
+          }, preKey);
+          next.classificacaoCap = withPre.classificacaoCap;
+          next.categoria = withPre.categoria;
+          next.debito = withPre.debito;
+          next.credito = withPre.credito;
+          next.preCadastroId = withPre.preCadastroId;
+          next.motivo = withPre.motivo;
+          next.status = withPre.status;
+          if (withPre.passagem != null) next.passagem = withPre.passagem;
+          if (withPre.aprovado) next.aprovado = true;
+        }
       }
 
       const debitoRaw = req.body.debito;

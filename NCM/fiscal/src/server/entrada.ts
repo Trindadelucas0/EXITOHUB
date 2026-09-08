@@ -2,7 +2,8 @@ import "server-only";
 
 import type { CompareResult, FiscalRule } from "./compare";
 import { DESTINO_KEYS, DESTINO_LABELS } from "@/src/lib/fiscal";
-import { ivaIdealForOrigem } from "@/src/lib/origem-iva";
+import { ivaIdealForDisplay } from "@/src/lib/origem-iva";
+import type { IvaPorUf } from "@/src/lib/iva-por-uf";
 import { isEgaplastCompany } from "./company-slug";
 
 export type EntradaGuide = {
@@ -23,6 +24,8 @@ export type EntradaGuideOptions = {
   companySlug?: string | null;
   companyName?: string | null;
   origem?: string | null;
+  cstUnico?: string | null;
+  ivaPorUf?: IvaPorUf | null;
 };
 
 function resolveCompanyName(options: EntradaGuideOptions): string {
@@ -39,8 +42,14 @@ function fiscalBaseLabel(options: EntradaGuideOptions, egaplast: boolean): strin
   return `base fiscal de ${resolveCompanyName(options)}`;
 }
 
-function formatEgaplastIva(rule: FiscalRule, origem?: string | null): string {
-  const ideal = ivaIdealForOrigem(rule, origem);
+function formatEgaplastIva(
+  rule: FiscalRule,
+  compare: CompareResult,
+  origem?: string | null,
+  cstUnico?: string | null,
+  cadastroIva?: IvaPorUf | null,
+): string {
+  const ideal = ivaIdealForDisplay(rule, compare.candidates, origem, cstUnico, cadastroIva);
   if (ideal?.SP) return String(ideal.SP);
   if (rule.mvaTexto) return rule.mvaTexto;
   if (rule.mvaPercentual != null && rule.mvaPercentual < 10) return String(rule.mvaPercentual);
@@ -99,7 +108,7 @@ export function buildEntradaGuide(
       cstEntrada: rule.cstEntrada ?? "não informado na base (não inventado)",
       cstSaida: rule.cstSaida ?? "não informado na base",
       cfopSaida: rule.cfopSaida ?? "não informado na base",
-      mva: formatEgaplastIva(rule, options.origem),
+      mva: formatEgaplastIva(rule, compare, options.origem, options.cstUnico, options.ivaPorUf),
       cfopEntradaNota: "conforme operação (dentro/fora do estado) — CFOP de entrada não está na base",
       destaqueStInterno: null,
       checklist: [

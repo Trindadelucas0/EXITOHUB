@@ -182,9 +182,6 @@ export const EGAPLAST_PRODUCT_SHEET_COLUMNS: FiscalColumn<ProductSheetItem>[] = 
     cell: (row) => {
       const atual = row.importado.ivaPorUf;
       const ideal = row.correto?.ivaPorUf;
-      if (!hasFilledIvaPorUf(atual) && !hasFilledIvaPorUf(ideal)) {
-        return row.importado.ivaMva || "—";
-      }
       return (
         <EgaplastIvaBlock
           compact

@@ -27,8 +27,10 @@ import {
   segmentoIdFromRule,
   segmentoLabel,
 } from "@/src/lib/segmento";
-import { ivaIdealForOrigem } from "@/src/lib/origem-iva";
+import { ivaIdealForDisplay } from "@/src/lib/origem-iva";
+import { hasFilledIvaPorUf } from "@/src/lib/iva-por-uf";
 import { HttpError } from "./tenant";
+import { emptyDestinos } from "./rule-classify";
 
 export type ProductSheetLayout = "unica" | "matriz" | "egaplast";
 
@@ -59,34 +61,65 @@ const productSelect = {
   treatedStale: true,
 } satisfies Prisma.ProductSelect;
 
-function sheetFiscalPair(product: ImportedProduct, rule: FiscalRule | null) {
+function sheetFiscalPair(
+  product: ImportedProduct,
+  rule: FiscalRule | null,
+  candidates: FiscalRule[] = [],
+) {
+  const ivaIdeal = ivaIdealForDisplay(
+    rule,
+    candidates,
+    product.origem,
+    product.cstUnico,
+    product.ivaPorUf,
+  );
+  const importado = {
+    cstCompra: product.cstCompra ?? null,
+    cstUnico: product.cstUnico ?? null,
+    ivaMva: product.ivaMva ?? null,
+    destinosCst: product.destinosCst ?? null,
+    abreviacao: product.abreviacao ?? null,
+    cest: product.cest ?? null,
+    aliquotaIcms: product.aliquotaIcms ?? null,
+    origem: product.origem ?? null,
+    ivaPorUf: product.ivaPorUf ?? null,
+  };
+  if (rule) {
+    return {
+      importado,
+      correto: {
+        ncm: rule.ncm,
+        cstEntrada: rule.cstEntrada,
+        cstSaida: rule.cstSaida,
+        cfopSaida: rule.cfopSaida,
+        destinosCst: rule.destinosCst,
+        mva: ivaIdeal?.SP ?? (rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto),
+        situacao: rule.situacao || rule.situacaoCodigo,
+        abreviacao: rule.abreviacao ?? null,
+        cest: rule.cest ?? null,
+        aliquotaIcms: rule.ufTributacao?.DF.aliqInterna ?? null,
+        ivaPorUf: ivaIdeal,
+      },
+    };
+  }
+  if (!hasFilledIvaPorUf(ivaIdeal)) {
+    return { importado, correto: null };
+  }
   return {
-    importado: {
-      cstCompra: product.cstCompra ?? null,
-      cstUnico: product.cstUnico ?? null,
-      ivaMva: product.ivaMva ?? null,
-      destinosCst: product.destinosCst ?? null,
-      abreviacao: product.abreviacao ?? null,
-      cest: product.cest ?? null,
-      aliquotaIcms: product.aliquotaIcms ?? null,
-      origem: product.origem ?? null,
-      ivaPorUf: product.ivaPorUf ?? null,
+    importado,
+    correto: {
+      ncm: product.ncm,
+      cstEntrada: null,
+      cstSaida: null,
+      cfopSaida: null,
+      destinosCst: emptyDestinos(),
+      mva: ivaIdeal?.SP ?? null,
+      situacao: "",
+      abreviacao: null,
+      cest: null,
+      aliquotaIcms: null,
+      ivaPorUf: ivaIdeal,
     },
-    correto: rule
-      ? {
-          ncm: rule.ncm,
-          cstEntrada: rule.cstEntrada,
-          cstSaida: rule.cstSaida,
-          cfopSaida: rule.cfopSaida,
-          destinosCst: rule.destinosCst,
-          mva: rule.mvaPercentual != null ? String(rule.mvaPercentual) : rule.mvaTexto,
-          situacao: rule.situacao || rule.situacaoCodigo,
-          abreviacao: rule.abreviacao ?? null,
-          cest: rule.cest ?? null,
-          aliquotaIcms: rule.ufTributacao?.DF.aliqInterna ?? null,
-          ivaPorUf: ivaIdealForOrigem(rule, product.origem),
-        }
-      : null,
   };
 }
 
@@ -96,7 +129,7 @@ export function sheetItemFromCompare(
   includeDiffs: boolean,
   treated?: { treated: boolean; treatedStale: boolean; treatedNote: string | null },
 ) {
-  const pair = sheetFiscalPair(product, compare.rule);
+  const pair = sheetFiscalPair(product, compare.rule, compare.candidates);
   return {
     id: product.id,
     codigo: product.codigo,
@@ -147,7 +180,7 @@ export function sheetItemFromPersisted(
     rulesForNcm.find((item) => item.id === linkedRuleId) ??
     (rulesForNcm.length === 1 ? rulesForNcm[0] : null);
   const rule = rawRule ? completeRuleDestinos(rawRule) : null;
-  const pair = sheetFiscalPair(product, rule);
+  const pair = sheetFiscalPair(product, rule, rulesForNcm);
   return {
     id: product.id,
     codigo: product.codigo,
