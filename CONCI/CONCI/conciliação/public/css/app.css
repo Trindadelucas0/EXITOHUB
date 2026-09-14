@@ -1127,14 +1127,18 @@ body,
   font-weight: 700;
 }
 
-.empresa-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.35rem 0.25rem 0.7rem;
-  border-radius: 999px;
-  background: var(--brand-green-soft);
-  border: 1px solid rgba(57, 181, 74, 0.4);
+.empresa-chip--switch {
+  max-width: 260px;
+  padding: 0.15rem 0.4rem;
+}
+
+.empresa-chip--switch select {
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--brand-green-dark);
   max-width: 220px;
 }
 

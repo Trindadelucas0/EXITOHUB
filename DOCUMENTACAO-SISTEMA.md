@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.3.29 — Menu hambúrguer no padrão ERP (chevron, ícone, pílula Em breve).
+> Versão: 1.3.31 — Login master EXITO (`exito` / `escritorio@local`) vê todos os módulos e empresas.
 
 ## 1. Visão geral
 
@@ -24,7 +24,7 @@ A tela é uma **lista** (busca, módulo, situação) e um **sheet** à direita (
 | Passo | Onde | O quê |
 |-------|------|-------|
 | 1 | `/conci/admin/empresas` ou `/ncm/escritorio/empresas` | Cadastrar **empresa** (sem usuário) |
-| 2 | `/admin/usuarios` → **Novo usuário** | Login, e-mail, senha, módulos, papel e empresa Conci/NCM |
+| 2 | `/admin/usuarios` → **Novo usuário** | Login, e-mail, senha, módulos, papel e **uma ou mais** empresas Conci/NCM |
 | 3 | `/admin/usuarios?editar=:id` | Corrigir nome, senha, módulos, vínculos, Admin do HUB; desativar no rodapé |
 | 4 | `/login` | Entrar com usuário ou e-mail + senha do HUB |
 
@@ -34,8 +34,9 @@ Código: [`hub/views/admin-users.ejs`](hub/views/admin-users.ejs), [`hub/routes.
 
 O HUB provisiona automaticamente:
 
-- **Conciliação** → `CONCI.users` (papel `admin` ou `empresa` + `empresa_id`)
-- **NCM** → `fiscal-p.users` (papel `admin` ou `consulta` + `company_id`)
+- **Master EXITO** (seed `HUB_SEED_ADMIN_USER` / `HUB_SEED_ADMIN_EMAIL`, padrão `exito` / `escritorio@local`) → Admin do HUB + Folha + Conciliação admin (todas as empresas) + NCM `superadmin` (painel do escritório, todas as empresas). Garantido no boot (`ensureMasterUser`). Não exige marcar empresa no cadastro.
+- **Conciliação** → `CONCI.users` (papel `admin` ou `empresa` + `empresa_id` principal) e `CONCI.user_empresas` (todas as empresas do login)
+- **NCM** → `fiscal-p.users` (papel `superadmin` sem empresa, ou `admin`/`consulta` + `company_id` principal) e `fiscal-p.user_companies` (todas as empresas do login, se não for escritório)
 - **Folha** → sessão espelhada do HUB (sem tabela própria em modo HUB)
 
 Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/seed-baifer-consulta.js) (`npm run seed:baifer-consulta` ou no boot do HUB). Usuário `consulta.baifer` / e-mail `consulta@baifer.local`, módulo só NCM, papel `consulta`, empresa BAIFER. **Não** use o usuário `baifer` — esse é da Conciliação. Senha via `HUB_SEED_BAIFER_CONSULTA_PASSWORD` ou `SEED_ADMIN_PASSWORD` (não fica na documentação).
@@ -44,7 +45,8 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
-| 1.3.29 | 14/09/2026 | Menu ☰ no padrão ERP: chevron 16px à esquerda, ícone em cada item, ativo verde preenchido, pílula “Em breve” |
+| 1.3.31 | 14/09/2026 | Login padrão EXITO (`HUB_SEED_ADMIN_*`, usuário `exito`) é master: Folha+Conci+NCM, Admin do HUB, Conci admin, NCM superadmin (todas as empresas). Checkbox Master no cadastro. |
+| 1.3.30 | 14/09/2026 | `/admin/usuarios`: checkboxes de várias empresas em Conciliação (papel empresa) e NCM; troca da empresa ativa no módulo |
 | 1.3.28 | 14/09/2026 | Usuários HUB: lista com chips + sheet direito (`?novo=1` / `?editar=`); filtro GET; sem form/senha na linha |
 | 1.3.27 | 14/09/2026 | Menu hambúrguer por 7 departamentos (accordion); Auditor Fiscal = NCM; Projetos → Avadesk; itens novos só admin (página Em breve) |
 | 1.3.26 | 08/09/2026 | Consulta BAIFER não vê Empresas/Usuários; cookie HUB manda e apaga `fiscal_session` antiga do escritório |
@@ -57,9 +59,9 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Persona | Login | `landing_path` | Bloqueio |
 |---------|-------|----------------|----------|
-| Admin HUB (2+ módulos) | usuário ou e-mail | `/` (home) | [`requireHubAdmin`](hub/middleware.js) em `/admin/*` |
+| Admin HUB / Master EXITO | `exito` ou `escritorio@local` | `/` (home) | todos os módulos; NCM escritório; Conci admin |
 | Admin Conciliação | username | `/conci/admin/empresas` | `requireAdmin` no Conci |
-| Empresa Conci | username | `/conci/` | `requireEmpresa` + `empresa_id` |
+| Empresa Conci | username | `/conci/` | `requireEmpresa` + empresas em `user_empresas` (ativa = `acting_empresa_id` ou `empresa_id`) |
 | Empresa NCM (admin) | e-mail | `/ncm/dashboard` | [`resolveCompanyScope`](NCM/fiscal/src/server/company-scope.ts) |
 | Consulta BAIFER | `consulta.baifer` ou `consulta@baifer.local` | `/ncm/dashboard` | tenant BAIFER; sem Empresas/Usuários, sem Planilhas, sem Excel/PDF |
 | Só Folha | usuário ou e-mail | `/folha/modulos` | [`requireHubModule('folha')`](hub/server.js) |
@@ -96,10 +98,11 @@ Rotas de módulo sem permissão → 403 via [`requireHubModule`](hub/middleware.
 **Papéis distintos:**
 
 - `hub_users.is_admin` — administra usuários do HUB (`/admin/usuarios`)
+- Master EXITO — `is_admin` + módulos Folha/Conci/NCM + Conci `admin` + NCM `superadmin`; vê o menu inteiro e todas as empresas; login seed não pode perder esse pacote nem ser desativado
 - `CONCI.users.role = 'admin'` — administra empresas/bancos Conci
 - `fiscal-p.users.role = 'superadmin'` — escritório NCM (seed interno)
 - `fiscal-p.users.role = 'admin'` — importa, apaga lote, exporta Excel/PDF e altera a base fiscal da empresa vinculada
-- `fiscal-p.users.role = 'consulta'` — só a empresa do `company_id`; vê Panorama, Consultar, Divergências e Base fiscal (leitura); marca já tratado; **não** vê o painel Empresas/Usuários do escritório (`/ncm/escritorio/*` redireciona ao dashboard), não lista outras empresas, não importa, não apaga lote, não exporta Excel/PDF. Menu **Planilhas** oculto; `GET /ncm/api/export/*` → 403
+- `fiscal-p.users.role = 'consulta'` — só as empresas em `user_companies` (e o `company_id` principal); vê Panorama, Consultar, Divergências e Base fiscal (leitura) da empresa **ativa**; marca já tratado; **não** vê o painel Empresas/Usuários do escritório (`/ncm/escritorio/*` redireciona ao dashboard), não lista empresas fora do vínculo, não importa, não apaga lote, não exporta Excel/PDF. Menu **Planilhas** oculto; `GET /ncm/api/export/*` → 403. Com mais de uma empresa, o seletor no topo troca o tenant da sessão (`sessions.active_company_id`), sem aceitar empresa que não esteja no vínculo.
 
 ## 5. SSO por módulo
 
@@ -188,11 +191,11 @@ Tela **Revisão** após enviar Extrato + Contas a Pagar. Pré-cadastro por empre
 ## 8. Guia rápido
 
 1. Crie empresas nos módulos Conci e NCM.
-2. Em **Administrativo → Gerenciar usuários** (`/admin/usuarios`), clique **Novo usuário**. Preencha login, e-mail, senha, marque os módulos e vincule empresa/papel. Salvar fecha o sheet. Para corrigir: busque o login → **Editar**. Desativar pede confirmação no rodapé.
+2. Em **Administrativo → Gerenciar usuários** (`/admin/usuarios`), clique **Novo usuário**. Preencha login, e-mail, senha, marque os módulos e **marque todas as empresas** que o login pode abrir (Conciliação e/ou NCM). Salvar fecha o sheet. Para corrigir: busque o login → **Editar**. Desativar pede confirmação no rodapé.
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu mostra **Contábil → Conciliação** (sem Folha/Auditor Fiscal). Admin do HUB vê os 7 departamentos no hambúrguer; Projetos abre o card do Avadesk.
 4. Empresa Conci: em **Pré-cadastro**, cadastre a Classificação Êxito (descrição que aparece no histórico do extrato) e os códigos Débito/Crédito. Envie Extrato + Contas a Pagar. Na **Revisão**, o que não veio da planilha de CAP é classificado se a descrição estiver no histórico. Se cadastrou depois, clique **Atualizar pré-cadastro**.
 5. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar. No hambúrguer, o auditor aparece como **Fiscal → Auditor Fiscal**.
-6. **Consulta BAIFER (NCM):** em `/login` use `consulta.baifer` ou `consulta@baifer.local` (senha do seed, não publicada). **Não** use `baifer` — esse usuário é da Conciliação. O NCM abre direto o dashboard da BAIFER (Panorama). Vê Consultar, Divergências e Base fiscal. **Não** vê Empresas/Usuários do escritório (`/ncm/escritorio/empresas` volta ao dashboard). Não vê outras empresas, não importa, não apaga lote, não baixa Excel/PDF. Para outro cliente consulta, o mesmo padrão: `/admin/usuarios` → NCM + empresa + papel Consulta.
+6. **Consulta BAIFER (NCM):** em `/login` use `consulta.baifer` ou `consulta@baifer.local` (senha do seed, não publicada). **Não** use `baifer` — esse usuário é da Conciliação. O NCM abre direto o dashboard da BAIFER (Panorama). Vê Consultar, Divergências e Base fiscal. **Não** vê Empresas/Usuários do escritório (`/ncm/escritorio/empresas` volta ao dashboard). Não vê empresas fora do vínculo, não importa, não apaga lote, não baixa Excel/PDF. Para outro cliente consulta, o mesmo padrão: `/admin/usuarios` → NCM + empresas + papel Consulta. Com várias empresas marcadas, o seletor no topo do Auditor Fiscal troca a empresa ativa.
 7. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG. Pode importar a Atacadista ou `PLANILHA REGRA FISCAL UNICA.xlsx` (esta última não tem coluna Abrev.; o sistema completa pelo NCM). Importe o CSV em **Planilhas**. No **Panorama**, o card **Corretos** são os itens cuja Abreviação bate com a base (`004` = `4`). **Consulta** e **Divergências**: na barra, **Filtrar segmento** escolhe Autopeças, Tintas, Fora da base etc. (não há chips nem fila de NCM). **Divergências** mostra só o que não bateu (Abreviação diferente ou NCM fora da base). Marcar como já tratado é na **ficha** do produto. Para baixar só os NCM que **não estão na regra** da empresa: **Incluir no arquivo → Fora da base → Exportar Excel** (lote inteiro, detalhado) — só admin da empresa ou escritório. Vale também para BAIFER, Loja e Egaplast.
 8. Egaplast: em Empresas, **Entrar** na Egaplast → **Base fiscal** → Importar `TRIBUTACAO NCM EGAPLAST.xlsx` (NCM, CEST, segmento, alíquotas DF/GO/MG) e `NCM REGRA FISCAL EXITO CONTABILIDADE X EGAPLAST.xlsx` (CST+IVA SIGNATÁRIO — é a regra do escritório). As duas bases ficam juntas. Em **Planilhas**, importe o cadastro do cliente (`PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx`, com CÓDIGO). O arquivo EXITO SIGNATÁRIO **não** entra em Planilhas. Na ficha, **Como deve ficar** preenche o IVA da regra CST+IVA (ouro SP `1.9854` nacional / `2.1659` importado no NCM `84818019`); se a base só tiver TRIBUTACAO NCM, usa o IVA do cadastro (não deixa traço, não usa o MVA %). Cadastro sem IVA na UF = **NADA INFORMADO**. **Consulta** filtra por segmento e mostra SP. Busque pelo **código**: o mesmo NCM pode ter SKU Correto (`10100`) e Divergente (`10200`, origem 0 com IVA de importado). Linha sem SIT.TRIBUTÁRIA (`10255`) fica em **Análise** — não é erro de layout. NCM em nenhuma base e sem IVA no cadastro: o errado é o NCM — abra **Base fiscal**. O fator IVA não é comparado com o MVA % da TRIBUTACAO.
 

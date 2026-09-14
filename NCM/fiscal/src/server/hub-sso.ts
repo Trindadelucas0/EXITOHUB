@@ -3,7 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { Pool } from "pg";
 import { prisma } from "./db";
-import type { AuthUser } from "./auth";
+import { loadAllowedCompanies, type AuthUser } from "./auth";
 
 const HUB_COOKIE = "exito_hub_sid";
 
@@ -114,6 +114,9 @@ export async function getUserFromHubCookie(): Promise<AuthUser | null> {
   if (!user) return null;
   if (user.role !== "superadmin" && !user.companyId) return null;
 
+  const home = user.companyId && user.company ? { id: user.companyId, name: user.company.name } : null;
+  const allowed = await loadAllowedCompanies(user.id, home);
+
   return {
     id: user.id,
     companyId: user.companyId,
@@ -123,6 +126,8 @@ export async function getUserFromHubCookie(): Promise<AuthUser | null> {
     role: user.role,
     companyName: user.company?.name ?? null,
     activeCompanyName: null,
+    allowedCompanyIds: allowed.map((item) => item.id),
+    allowedCompanies: allowed,
   };
 }
 

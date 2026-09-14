@@ -3,6 +3,25 @@
   const form = document.getElementById("hub-user-form");
   const filterForm = document.querySelector("[data-users-filter]");
 
+  function syncMaster(target) {
+    const master = target.querySelector("[data-master-toggle]");
+    if (!master) return;
+    const on = master.checked;
+    target.querySelectorAll("[data-mod-toggle]").forEach(function (input) {
+      if (on) input.checked = true;
+    });
+    const admin = target.querySelector("input[name='is_admin']");
+    if (admin && on) admin.checked = true;
+    const conciRole = target.querySelector("[data-conci-role]");
+    if (conciRole && on) conciRole.value = "admin";
+    const ncmRole = target.querySelector("[data-ncm-role]");
+    if (ncmRole && on) ncmRole.value = "superadmin";
+    const ncmWrap = target.querySelector("[data-ncm-empresa-wrap]");
+    const ncmHint = target.querySelector("[data-master-ncm-hint]");
+    if (ncmWrap) ncmWrap.hidden = on;
+    if (ncmHint) ncmHint.hidden = !on;
+  }
+
   function syncConciEmpresaWrap(target) {
     target.querySelectorAll("[data-conci-role]").forEach(function (select) {
       const panel = select.closest("[data-mod-panel='conci'], .hub-sheet-body, form");
@@ -13,6 +32,7 @@
   }
 
   function syncModPanels(target) {
+    syncMaster(target);
     const toggles = target.querySelectorAll("[data-mod-toggle]");
     toggles.forEach(function (input) {
       const mod = input.getAttribute("data-mod-toggle");
@@ -86,7 +106,7 @@
 
   if (form) {
     form.addEventListener("change", function (event) {
-      if (event.target.matches("[data-mod-toggle], [data-conci-role]")) {
+      if (event.target.matches("[data-mod-toggle], [data-conci-role], [data-master-toggle]")) {
         syncModPanels(form);
       }
     });

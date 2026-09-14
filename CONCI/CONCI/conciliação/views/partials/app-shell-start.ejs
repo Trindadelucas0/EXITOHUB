@@ -60,6 +60,16 @@
             <% } %>
           </div>
 
+          <% if (typeof user !== 'undefined' && user && user.role === 'empresa' && user.empresas && user.empresas.length > 1) { %>
+            <form method="post" action="<%= pathU('/abrir-empresa') %>" class="empresa-chip empresa-chip--switch">
+              <select id="conci-empresa-switch" name="empresa_id" aria-label="Empresa" onchange="this.form.submit()">
+                <% user.empresas.forEach(function (emp) { %>
+                  <option value="<%= emp.id %>" <%= String(user.empresaId) === String(emp.id) ? 'selected' : '' %>><%= emp.nome %></option>
+                <% }) %>
+              </select>
+            </form>
+            <span class="nav-sep" aria-hidden="true"></span>
+          <% } %>
           <% if (actingAdmin) { %>
             <span class="nav-sep" aria-hidden="true"></span>
             <div class="empresa-chip" title="Empresa aberta">

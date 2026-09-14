@@ -26,6 +26,7 @@ export async function GET() {
       companyName: scope?.companyName ?? (user.role === "superadmin" ? "Escritório" : null),
       fromOffice: scope?.fromOffice ?? false,
       canWrite: scope ? scope.fromOffice || user.role === "admin" : false,
+      companies: (user.allowedCompanies || []).map((item) => ({ id: item.id, name: item.name })),
       hubMode: process.env.HUB_MODE === "1",
       isHubAdmin: hubModules.isAdmin,
       modules: {
@@ -42,7 +43,10 @@ export async function GET() {
       if (!valid || !ncmSessionMatchesHub(valid.email, user.email)) {
         if (existing) await destroySession(existing);
         const token = await createSession(user, {
-          activeCompanyId: user.role === "superadmin" ? user.activeCompanyId : null,
+          activeCompanyId:
+            user.role === "superadmin" || (user.allowedCompanyIds && user.allowedCompanyIds.length > 1)
+              ? user.activeCompanyId
+              : null,
         });
         const response = jsonOk(payload);
         response.cookies.set(SESSION_COOKIE, token, sessionCookieOptions());

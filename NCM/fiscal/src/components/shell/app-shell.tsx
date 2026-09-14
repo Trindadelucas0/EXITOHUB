@@ -53,6 +53,8 @@ type Me = {
   fromOffice: boolean;
   canWrite: boolean;
   hubMode?: boolean;
+  companies?: { id: string; name: string }[];
+  companyId?: string | null;
 };
 
 function isActivePath(pathname: string, href: string) {
@@ -67,6 +69,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState("");
   const [lote, setLote] = useState("");
   const [leaving, setLeaving] = useState(false);
+  const [switching, setSwitching] = useState(false);
 
   useEffect(() => {
     const sync = () => setLote(readActiveLote() ?? "");
@@ -122,6 +125,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
     router.push("/login");
     router.refresh();
+  }
+
+  async function switchCompany(companyId: string) {
+    if (!companyId || companyId === me?.companyId) return;
+    setSwitching(true);
+    const res = await fetch(ncmApiUrl("/api/auth/select-company"), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ companyId }),
+    });
+    if (!res.ok) {
+      setSwitching(false);
+      setError("Não foi possível trocar de empresa.");
+      return;
+    }
+    window.location.reload();
   }
 
   async function backToOffice() {
@@ -203,6 +222,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   {leaving ? "Voltando…" : "Voltar"}
                 </Button>
               </div>
+            ) : me && me.companies && me.companies.length > 1 ? (
+              <label className="flex min-w-0 max-w-[16rem] items-center gap-2">
+                <span className="sr-only">Empresa</span>
+                <select
+                  className="min-h-10 w-full truncate rounded-[10px] border border-line-strong bg-white px-2 text-sm font-medium text-ink"
+                  value={me.companyId || ""}
+                  disabled={switching}
+                  onChange={(event) => void switchCompany(event.target.value)}
+                >
+                  {me.companies.map((company) => (
+                    <option key={company.id} value={company.id}>
+                      {company.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
             ) : null}
             <div className="min-w-0 text-right">
               <p className="truncate font-medium text-ink">{me?.companyName ?? "…"}</p>

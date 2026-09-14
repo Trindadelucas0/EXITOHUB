@@ -86,15 +86,24 @@ async function ensureTables() {
 }
 
 async function seedAdmin() {
-  const username = String(process.env.HUB_SEED_ADMIN_USER || '').trim().toLowerCase();
-  const email = String(process.env.HUB_SEED_ADMIN_EMAIL || '').trim().toLowerCase();
+  const username = String(process.env.HUB_SEED_ADMIN_USER || 'exito').trim().toLowerCase();
+  const email = String(process.env.HUB_SEED_ADMIN_EMAIL || 'escritorio@local').trim().toLowerCase();
   const password = String(process.env.HUB_SEED_ADMIN_PASSWORD || '');
-  if (!username || !email || !password) {
-    console.warn('[hub] HUB_SEED_ADMIN_* incompleto — seed do admin ignorado');
+  if (!username || !email || !email.includes('@')) {
+    console.warn('[hub] HUB_SEED_ADMIN_USER/EMAIL inválido — seed do admin ignorado');
+    return;
+  }
+  if (!password) {
+    console.warn('[hub] HUB_SEED_ADMIN_PASSWORD vazio — seed do admin ignorado');
     return;
   }
 
-  const existing = await query('SELECT id FROM hub_users WHERE LOWER(username) = $1 LIMIT 1', [username]);
+  const existing = await query(
+    `SELECT id FROM hub_users
+     WHERE LOWER(username) = $1 OR LOWER(email) = $2
+     LIMIT 1`,
+    [username, email],
+  );
   if (existing.rowCount) return;
 
   const hash = await bcrypt.hash(password, 12);
@@ -102,7 +111,7 @@ async function seedAdmin() {
     `INSERT INTO hub_users (username, email, password_hash, display_name, is_admin, active)
      VALUES ($1, $2, $3, $4, true, true)
      RETURNING id`,
-    [username, email, hash, 'Administrador'],
+    [username, email, hash, 'EXITO'],
   );
   const userId = inserted.rows[0].id;
   for (const mod of MODULES) {
@@ -115,10 +124,85 @@ async function seedAdmin() {
   console.log(`[hub] admin seed criado: ${username}`);
 }
 
+async function ensureMasterUser() {
+  const username = String(process.env.HUB_SEED_ADMIN_USER || 'exito').trim().toLowerCase();
+  const email = String(process.env.HUB_SEED_ADMIN_EMAIL || 'escritorio@local').trim().toLowerCase();
+  const canonicalUser = username === 'admin' ? 'exito' : username;
+  const foundByEmail = await query(
+    `SELECT id, username, email, password_hash, display_name
+     FROM hub_users
+     WHERE LOWER(email) = $1
+     LIMIT 1`,
+    [email],
+  );
+  const found = foundByEmail.rowCount
+    ? foundByEmail
+    : await query(
+      `SELECT id, username, email, password_hash, display_name
+       FROM hub_users
+       WHERE LOWER(username) = $1
+       LIMIT 1`,
+      [canonicalUser],
+    );
+  if (!found.rowCount) return;
+  const row = found.rows[0];
+  const displayName = String(row.display_name || '').trim();
+  const nextName = !displayName || displayName.toLowerCase() === 'administrador' || displayName.toLowerCase() === 'admin'
+    ? 'EXITO'
+    : displayName;
+
+  if (row.username !== canonicalUser) {
+    const taken = await query(
+      `SELECT id FROM hub_users WHERE LOWER(username) = $1 AND id <> $2 LIMIT 1`,
+      [canonicalUser, row.id],
+    );
+    if (!taken.rowCount) {
+      await query('UPDATE hub_users SET username = $1 WHERE id = $2', [canonicalUser, row.id]);
+      row.username = canonicalUser;
+    }
+  }
+
+  await query(
+    `UPDATE hub_users
+     SET is_admin = true, active = true, display_name = $1, landing_path = NULL
+     WHERE id = $2`,
+    [nextName, row.id],
+  );
+  await query('DELETE FROM hub_user_modules WHERE user_id = $1', [row.id]);
+  for (const mod of MODULES) {
+    await query(
+      `INSERT INTO hub_user_modules (user_id, module) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+      [row.id, mod],
+    );
+  }
+
+  const { provisionConciUser, provisionNcmUser } = require('./provision-modules');
+  await provisionConciUser({
+    username: row.username,
+    passwordHash: row.password_hash,
+    displayName: nextName,
+    role: 'admin',
+    updatePassword: false,
+  });
+  await provisionNcmUser({
+    email: row.email,
+    name: nextName,
+    passwordHash: row.password_hash,
+    role: 'superadmin',
+    updatePassword: false,
+  });
+  console.log(`[hub] master EXITO garantido: ${row.username} / ${row.email}`);
+}
+
 async function bootstrapHubDatabase() {
   await ensureDatabase();
   await ensureTables();
   await seedAdmin();
+  try {
+    await ensureMasterUser();
+  } catch (err) {
+    console.warn('[hub] master EXITO falhou:', err.message);
+  }
   try {
     const { syncModuleUsers } = require('./sync-module-users');
     await syncModuleUsers();
@@ -145,5 +229,6 @@ module.exports = {
   getPool,
   query,
   bootstrapHubDatabase,
+  ensureMasterUser,
   closePool,
 };

@@ -35,7 +35,18 @@ export async function POST(request: Request) {
     const parsed = await readCompanyId(request);
     html = parsed.html;
     const user = await requireUser();
-    requireSuperAdmin(user);
+    if (user.role === "superadmin") {
+      requireSuperAdmin(user);
+    } else {
+      const allowed = user.allowedCompanyIds?.length
+        ? user.allowedCompanyIds
+        : user.companyId
+          ? [user.companyId]
+          : [];
+      if (!allowed.includes(parsed.companyId)) {
+        throw new HttpError(403, "FORBIDDEN", "Sem acesso a esta empresa.");
+      }
+    }
     const company = await prisma.company.findFirst({
       where: { id: parsed.companyId },
       select: { id: true, name: true, slug: true },
@@ -71,8 +82,9 @@ export async function POST(request: Request) {
   } catch (error) {
     if (html) {
       const message = error instanceof HttpError ? error.message : "Não foi possível abrir a empresa.";
+      const fallback = user.role === "superadmin" ? "/escritorio/empresas" : "/dashboard";
       const location = new URL(
-        `${withBasePath("/escritorio/empresas")}?erro=${encodeURIComponent(message)}`,
+        `${withBasePath(fallback)}?erro=${encodeURIComponent(message)}`,
         request.url,
       );
       return NextResponse.redirect(location, 303);

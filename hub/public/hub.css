@@ -1388,6 +1388,36 @@ body.hub-body .hub-user-sheet .hub-module-panel {
   margin-top: 0;
 }
 
+.hub-company-picks {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  border: 1px dashed var(--exito-line);
+  border-radius: 12px;
+  background: #fbfdfb;
+}
+
+.hub-company-picks legend {
+  padding: 0 0.2rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--exito-muted);
+}
+
+.hub-check-company {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.35rem 0.15rem;
+  font-size: 0.9rem;
+}
+
+.hub-check-company input {
+  margin-top: 0.2rem;
+}
+
 .hub-sheet-foot {
   padding: 0.85rem 1rem 1rem;
   border-top: 1px solid var(--exito-line);

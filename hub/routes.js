@@ -10,6 +10,7 @@ const {
   createUser,
   updateUserWithModules,
   setUserActive,
+  findUserById,
   postLoginPath,
   MODULES,
 } = require('./auth');
@@ -30,7 +31,44 @@ const FLASH_OK = {
   status: 'Situação atualizada.',
 };
 
+function isSeedMasterUser(user) {
+  if (!user) return false;
+  const username = String(process.env.HUB_SEED_ADMIN_USER || 'exito').trim().toLowerCase();
+  const email = String(process.env.HUB_SEED_ADMIN_EMAIL || 'escritorio@local').trim().toLowerCase();
+  const login = String(user.username || '').toLowerCase();
+  const mail = String(user.email || '').toLowerCase();
+  return login === username || login === 'exito' || mail === email;
+}
+
+function isMasterAccess(user, meta) {
+  if (isSeedMasterUser(user)) return true;
+  const ncmRole = meta && meta.ncm && meta.ncm.role;
+  const conciRole = meta && meta.conci && meta.conci.role;
+  return Boolean(
+    user
+    && user.isAdmin
+    && user.canFolha
+    && user.canConci
+    && user.canNcm
+    && ncmRole === 'superadmin'
+    && conciRole === 'admin',
+  );
+}
+
+function applyMasterBody(body) {
+  body.mod_folha = '1';
+  body.mod_conci = '1';
+  body.mod_ncm = '1';
+  body.is_admin = '1';
+  body.is_master = '1';
+  body.conci_role = 'admin';
+  body.ncm_role = 'superadmin';
+}
+
 function parseModules(body) {
+  if (bodyFlag(body.is_master)) {
+    return ['folha', 'conci', 'ncm'];
+  }
   const modules = [];
   if (body.mod_folha) modules.push('folha');
   if (body.mod_conci) modules.push('conci');
@@ -96,8 +134,12 @@ function userMatchesFilter(user, meta, filters, names) {
     user.username,
     user.email,
     user.displayName,
-    names.conciById.get(String(conciMeta.empresaId || '')),
-    names.ncmById.get(String(ncmMeta.companyId || '')),
+    ...(Array.isArray(conciMeta.empresaIds) && conciMeta.empresaIds.length
+      ? conciMeta.empresaIds.map((id) => names.conciById.get(String(id)))
+      : [names.conciById.get(String(conciMeta.empresaId || ''))]),
+    ...(Array.isArray(ncmMeta.companyIds) && ncmMeta.companyIds.length
+      ? ncmMeta.companyIds.map((id) => names.ncmById.get(String(id)))
+      : [names.ncmById.get(String(ncmMeta.companyId || ''))]),
   ]
     .filter(Boolean)
     .join(' ')
@@ -214,6 +256,9 @@ router.get('/admin/usuarios', requireHubAdmin, async (req, res) => {
     : null;
   const sheetMode = editingUser ? 'edit' : (req.query.novo === '1' ? 'create' : null);
   const editingSelf = Boolean(editingUser && String(editingUser.id) === String(req.hubUser.id));
+  const sheetMeta = editingUser ? (userMeta[editingUser.id] || {}) : {};
+  const sheetIsMaster = isMasterAccess(editingUser, sheetMeta);
+  const sheetMasterLocked = isSeedMasterUser(editingUser);
   const confirmOff = sheetMode === 'edit' && !editingSelf && String(req.query.confirmar || '') === 'desativar';
   const flashKey = String(req.query.ok || '');
   const error = req.query.erro ? String(req.query.erro).slice(0, 300) : null;
@@ -231,6 +276,8 @@ router.get('/admin/usuarios', requireHubAdmin, async (req, res) => {
     filters,
     sheetMode,
     editingUser,
+    sheetIsMaster,
+    sheetMasterLocked,
     confirmOff,
     flash: FLASH_OK[flashKey] || null,
     error,
@@ -240,6 +287,7 @@ router.get('/admin/usuarios', requireHubAdmin, async (req, res) => {
 router.post('/admin/usuarios', requireHubAdmin, async (req, res) => {
   const filters = pickListFilters(req);
   try {
+    if (bodyFlag(req.body.is_master)) applyMasterBody(req.body);
     const modules = parseModules(req.body);
     const moduleMeta = parseModuleMeta(req.body);
 
@@ -248,7 +296,7 @@ router.post('/admin/usuarios', requireHubAdmin, async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       displayName: req.body.displayName,
-      isAdmin: bodyFlag(req.body.is_admin),
+      isAdmin: bodyFlag(req.body.is_admin) || bodyFlag(req.body.is_master),
       modules,
       moduleMeta,
     });
@@ -263,8 +311,12 @@ router.post('/admin/usuarios/:id/modulos', requireHubAdmin, async (req, res) => 
   const filters = pickListFilters(req);
   const userId = String(req.params.id || '').trim();
   const isSelf = String(req.hubUser.id) === userId;
-  const nextAdmin = bodyFlag(req.body.is_admin);
   try {
+    const editing = await findUserById(userId);
+    if (isSeedMasterUser(editing)) applyMasterBody(req.body);
+    else if (bodyFlag(req.body.is_master)) applyMasterBody(req.body);
+
+    const nextAdmin = bodyFlag(req.body.is_admin);
     if (isSelf && !nextAdmin) {
       return res.redirect(usersPath(filters, {
         editar: userId,
@@ -299,6 +351,13 @@ router.post('/admin/usuarios/:id/status', requireHubAdmin, async (req, res) => {
       return res.redirect(usersPath(filters, {
         editar: userId,
         erro: 'Você não pode desativar o próprio login.',
+      }));
+    }
+    const editing = await findUserById(userId);
+    if (isSeedMasterUser(editing) && !nextActive) {
+      return res.redirect(usersPath(filters, {
+        editar: userId,
+        erro: 'O login master EXITO não pode ser desativado.',
       }));
     }
     await setUserActive(userId, nextActive);

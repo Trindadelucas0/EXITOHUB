@@ -62,11 +62,11 @@ Sem tela de usuários no módulo. Marque **Folha** em `/admin/usuarios`. Admin F
 
 ### Conciliação
 
-Empresas em `/conci/admin/empresas`. Usuários **somente** em `/admin/usuarios` (módulo Conciliação + empresa + papel).
+Empresas em `/conci/admin/empresas`. Usuários **somente** em `/admin/usuarios` (módulo Conciliação + uma ou mais empresas + papel).
 
 ### NCM
 
-Empresas em `/ncm/escritorio/empresas`. Usuários **somente** em `/admin/usuarios` (módulo NCM + empresa + papel). Tela `/ncm/escritorio/usuarios` é consulta.
+Empresas em `/ncm/escritorio/empresas`. Usuários **somente** em `/admin/usuarios` (módulo NCM + uma ou mais empresas + papel). Tela `/ncm/escritorio/usuarios` é consulta.
 
 ### Checklist manual
 

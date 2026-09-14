@@ -20,12 +20,34 @@ export function resolveCompanyScope(user: AuthUser): CompanyScope | null {
       fromOffice: true,
     };
   }
-  if (!user.companyId) return null;
-  return {
-    companyId: user.companyId,
-    companyName: user.companyName ?? "Empresa",
-    fromOffice: false,
-  };
+  const allowedIds = user.allowedCompanyIds?.length
+    ? user.allowedCompanyIds
+    : user.companyId
+      ? [user.companyId]
+      : [];
+  if (user.activeCompanyId && allowedIds.includes(user.activeCompanyId)) {
+    return {
+      companyId: user.activeCompanyId,
+      companyName: user.activeCompanyName ?? user.companyName ?? "Empresa",
+      fromOffice: false,
+    };
+  }
+  if (user.companyId && allowedIds.includes(user.companyId)) {
+    return {
+      companyId: user.companyId,
+      companyName: user.companyName ?? "Empresa",
+      fromOffice: false,
+    };
+  }
+  if (allowedIds[0]) {
+    const named = user.allowedCompanies?.find((item) => item.id === allowedIds[0]);
+    return {
+      companyId: allowedIds[0],
+      companyName: named?.name ?? user.companyName ?? "Empresa",
+      fromOffice: false,
+    };
+  }
+  return null;
 }
 
 /** Escreve na empresa: admin dela ou o escritório dentro dela. Consulta nunca. */

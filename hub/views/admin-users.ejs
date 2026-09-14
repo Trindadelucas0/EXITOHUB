@@ -50,16 +50,31 @@
       return src.slice(0, 2).toUpperCase();
     }
 
+    function selectedIds(meta, key, fallbackKey) {
+      const ids = meta && Array.isArray(meta[key]) && meta[key].length
+        ? meta[key]
+        : (meta && meta[fallbackKey] ? [meta[fallbackKey]] : []);
+      return ids.map(function (id) { return String(id); });
+    }
+
+    function conciCompanyNames(meta) {
+      const ids = selectedIds(meta, 'empresaIds', 'empresaId');
+      return conciEmpresas.filter(function (row) { return ids.indexOf(String(row.id)) !== -1; })
+        .map(function (row) { return row.nome; });
+    }
+
+    function ncmCompanyNames(meta) {
+      const ids = selectedIds(meta, 'companyIds', 'companyId');
+      return ncmCompanies.filter(function (row) { return ids.indexOf(String(row.id)) !== -1; })
+        .map(function (row) { return row.name; });
+    }
+
     function conciCompanyName(meta) {
-      const id = meta && meta.empresaId ? String(meta.empresaId) : '';
-      const found = conciEmpresas.find(function (row) { return String(row.id) === id; });
-      return found ? found.nome : '';
+      return conciCompanyNames(meta).join(', ');
     }
 
     function ncmCompanyName(meta) {
-      const id = meta && meta.companyId ? String(meta.companyId) : '';
-      const found = ncmCompanies.find(function (row) { return String(row.id) === id; });
-      return found ? found.name : '';
+      return ncmCompanyNames(meta).join(', ');
     }
   %>
 
@@ -165,7 +180,9 @@
                 </div>
               </div>
               <div class="hub-user-access" role="cell">
-                <% if (user.isAdmin) { %>
+                <% if (ncmMeta.role === 'superadmin' && user.isAdmin && user.canFolha && user.canConci && user.canNcm) { %>
+                  <span class="hub-mod-chip hub-mod-chip--admin">Master EXITO</span>
+                <% } else if (user.isAdmin) { %>
                   <span class="hub-mod-chip hub-mod-chip--admin">Admin do HUB</span>
                 <% } %>
                 <% if (user.canFolha) { %>
@@ -186,7 +203,7 @@
                 <% if (user.canNcm) { %>
                   <span class="hub-mod-chip hub-mod-chip--ncm">
                     <span class="hub-mod-dot" aria-hidden="true"></span>
-                    NCM · <%= ncmMeta.role === 'admin' ? 'Admin' : 'Consulta' %><% if (ncmNome) { %> · <%= ncmNome %><% } else { %> · sem empresa<% } %>
+            NCM · <% if (ncmMeta.role === 'superadmin') { %>Escritório (todas)<% } else { %><%= ncmMeta.role === 'admin' ? 'Admin' : 'Consulta' %><% if (ncmNome) { %> · <%= ncmNome %><% } else { %> · sem empresa<% } %><% } %>
                   </span>
                 <% } %>
                 <% if (!user.canFolha && !user.canConci && !user.canNcm && !user.isAdmin) { %>
@@ -288,7 +305,27 @@
           />
         </label>
 
-        <fieldset class="hub-mod-toggles">
+        <%
+          const isMaster = Boolean(typeof sheetIsMaster !== 'undefined' && sheetIsMaster);
+          const masterLocked = Boolean(typeof sheetMasterLocked !== 'undefined' && sheetMasterLocked);
+        %>
+        <label class="hub-check hub-check-admin">
+          <input
+            type="checkbox"
+            name="is_master"
+            value="1"
+            data-master-toggle
+            <%= isMaster || masterLocked ? 'checked' : '' %>
+            <%= masterLocked ? 'disabled' : '' %>
+          />
+          <span>Master EXITO — vê todos os módulos e todas as empresas</span>
+        </label>
+        <% if (masterLocked) { %>
+          <input type="hidden" name="is_master" value="1" />
+          <p class="hub-muted hub-module-hint">Este é o login padrão da Êxito. O acesso master não pode ser removido.</p>
+        <% } %>
+
+        <fieldset class="hub-mod-toggles" data-master-modules>
           <legend>Módulos</legend>
           <label class="hub-mod-toggle">
             <input type="checkbox" name="mod_folha" value="1" data-mod-toggle="folha" <%= isEdit && sheetUser.canFolha ? 'checked' : '' %> />
@@ -316,36 +353,57 @@
               <option value="admin" <%= sheetConci.role === 'admin' ? 'selected' : '' %>>Admin Conciliação</option>
             </select>
           </label>
-          <label class="hub-field" data-conci-empresa-wrap>
-            <span>Empresa</span>
-            <select name="conci_empresa_id">
-              <option value="">Selecione…</option>
-              <% conciEmpresas.forEach(function(e) { %>
-                <option
+          <fieldset class="hub-company-picks" data-conci-empresa-wrap>
+            <legend>Empresas</legend>
+            <p class="hub-muted hub-module-hint">Marque todas as empresas que este login pode abrir.</p>
+            <% const conciSelected = selectedIds(sheetConci, 'empresaIds', 'empresaId'); %>
+            <% if (!conciEmpresas.length) { %>
+              <p class="hub-muted">Nenhuma empresa cadastrada na Conciliação.</p>
+            <% } %>
+            <% conciEmpresas.forEach(function(e) { %>
+              <label class="hub-check hub-check-company">
+                <input
+                  type="checkbox"
+                  name="conci_empresa_ids"
                   value="<%= e.id %>"
-                  <%= String(sheetConci.empresaId || '') === String(e.id) ? 'selected' : '' %>
-                  <%= !e.ativo && String(sheetConci.empresaId || '') !== String(e.id) ? 'disabled' : '' %>
-                ><%= e.nome %><%= e.ativo ? '' : ' (inativa)' %></option>
-              <% }) %>
-            </select>
-          </label>
+                  <%= conciSelected.indexOf(String(e.id)) !== -1 ? 'checked' : '' %>
+                  <%= !e.ativo && conciSelected.indexOf(String(e.id)) === -1 ? 'disabled' : '' %>
+                />
+                <span><%= e.nome %><%= e.ativo ? '' : ' (inativa)' %></span>
+              </label>
+            <% }) %>
+          </fieldset>
         </div>
 
         <div class="hub-module-panel" data-mod-panel="ncm" <%= isEdit && sheetUser.canNcm ? '' : 'hidden' %>>
-          <label class="hub-field">
-            <span>Empresa no NCM</span>
-            <select name="ncm_company_id">
-              <option value="">Selecione…</option>
-              <% ncmCompanies.forEach(function(c) { %>
-                <option value="<%= c.id %>" <%= String(sheetNcm.companyId || '') === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
-              <% }) %>
-            </select>
-          </label>
+          <p class="hub-muted hub-module-hint" data-master-ncm-hint <%= isMaster || masterLocked ? '' : 'hidden' %>>
+            Master vê todas as empresas do Auditor Fiscal pelo painel do escritório. Não precisa marcar empresa.
+          </p>
+          <fieldset class="hub-company-picks" data-ncm-empresa-wrap <%= isMaster || masterLocked ? 'hidden' : '' %>>
+            <legend>Empresas no NCM</legend>
+            <p class="hub-muted hub-module-hint">Marque todas as empresas que este login pode abrir.</p>
+            <% const ncmSelected = selectedIds(sheetNcm, 'companyIds', 'companyId'); %>
+            <% if (!ncmCompanies.length) { %>
+              <p class="hub-muted">Nenhuma empresa cadastrada no NCM.</p>
+            <% } %>
+            <% ncmCompanies.forEach(function(c) { %>
+              <label class="hub-check hub-check-company">
+                <input
+                  type="checkbox"
+                  name="ncm_company_ids"
+                  value="<%= c.id %>"
+                  <%= ncmSelected.indexOf(String(c.id)) !== -1 ? 'checked' : '' %>
+                />
+                <span><%= c.name %></span>
+              </label>
+            <% }) %>
+          </fieldset>
           <label class="hub-field">
             <span>Papel no NCM</span>
-            <select name="ncm_role">
-              <option value="consulta" <%= sheetNcm.role !== 'admin' ? 'selected' : '' %>>Consulta</option>
+            <select name="ncm_role" data-ncm-role>
+              <option value="consulta" <%= sheetNcm.role !== 'admin' && sheetNcm.role !== 'superadmin' ? 'selected' : '' %>>Consulta</option>
               <option value="admin" <%= sheetNcm.role === 'admin' ? 'selected' : '' %>>Admin da empresa</option>
+              <option value="superadmin" <%= sheetNcm.role === 'superadmin' ? 'selected' : '' %>>Escritório (todas as empresas)</option>
             </select>
           </label>
         </div>

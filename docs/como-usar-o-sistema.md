@@ -23,4 +23,8 @@ Quem só tem NCM (consulta de cliente) vê **Fiscal → Auditor Fiscal**.
 
 ## Admin
 
-Cadastro de pessoas do escritório e de clientes continua em **Administrativo → Gerenciar usuários** (`/admin/usuarios`). Clique **Novo usuário**, marque Folha, Conciliação e/ou NCM e vincule a empresa. Sem o módulo marcado, a ferramenta não aparece no menu. A lista filtra por nome, e-mail, empresa e módulo; **Editar** abre o painel à direita.
+O login **EXITO** (`exito` / `escritorio@local`) é o master padrão: vê Folha, Conciliação, Auditor Fiscal, Administração e todas as empresas. Não precisa marcar empresa no cadastro.
+
+Cadastro de pessoas do escritório e de clientes continua em **Administrativo → Gerenciar usuários** (`/admin/usuarios`). Clique **Novo usuário**. Para um acesso completo, marque **Master EXITO**. Para cliente, marque só os módulos e as empresas. Sem o módulo marcado, a ferramenta não aparece no menu.
+
+No Auditor Fiscal e na Conciliação, se o login tiver várias empresas, um seletor no topo troca a empresa ativa. O acesso continua só nas empresas marcadas no cadastro.

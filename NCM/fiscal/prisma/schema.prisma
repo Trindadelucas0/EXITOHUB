@@ -22,6 +22,7 @@ model Company {
   users    User[]
   sessions Session[]      @relation("SessionCompany")
   officeSessions Session[] @relation("SessionActiveCompany")
+  members  UserCompany[]
   rules    FiscalNcmRule[]
   products Product[]
   links    ProductRuleLink[]
@@ -43,9 +44,22 @@ model User {
   sessions Session[]
   batches  ImportBatch[]
   treated  Product[]     @relation("ProductTreatedBy")
+  companies UserCompany[]
 
   @@index([companyId])
   @@map("users")
+}
+
+model UserCompany {
+  userId    String @map("user_id")
+  companyId String @map("company_id")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, companyId])
+  @@index([companyId])
+  @@map("user_companies")
 }
 
 model Session {

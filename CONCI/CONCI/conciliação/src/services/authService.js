@@ -62,21 +62,45 @@ async function verifyPassword(user, password) {
   return bcrypt.compare(String(password || ''), user.password_hash);
 }
 
-function toPublicUser(row) {
+async function listUserEmpresas(userId) {
+  if (!userId) return [];
+  const result = await query(
+    `SELECT e.id, e.nome, e.ativo
+     FROM user_empresas ue
+     JOIN empresas e ON e.id = ue.empresa_id
+     WHERE ue.user_id = $1
+     ORDER BY e.nome ASC`,
+    [userId],
+  );
+  if (result.rows.length) return result.rows;
+  return [];
+}
+
+function toPublicUser(row, empresas) {
   if (!row) return null;
+  const memberships = (Array.isArray(empresas) ? empresas : row.empresas || [])
+    .filter((item) => item && item.ativo !== false);
   const actingEmpresaId = row.acting_empresa_id || null;
   const actingEmpresaNome = row.acting_empresa_nome || null;
-  const baseEmpresaId = row.empresa_id || null;
-  const baseEmpresaNome = row.empresa_nome || null;
-  const empresaId = actingEmpresaId || baseEmpresaId || null;
-  const empresaNome = actingEmpresaId ? actingEmpresaNome : baseEmpresaNome;
+  const actingAllowed = Boolean(
+    actingEmpresaId
+    && (row.role === 'admin' || memberships.some((item) => String(item.id) === String(actingEmpresaId))),
+  );
+  const fallback = memberships[0] || null;
+  const empresaId = actingAllowed
+    ? actingEmpresaId
+    : (row.empresa_id || fallback?.id || null);
+  const empresaNome = actingAllowed
+    ? actingEmpresaNome
+    : (row.empresa_nome || memberships.find((item) => String(item.id) === String(empresaId))?.nome || fallback?.nome || null);
   return {
     id: row.id || row.user_id,
     username: row.username,
     role: row.role,
-    empresaId,
+    empresaId: empresaId || null,
     empresaNome: empresaNome || null,
-    actingAsEmpresa: Boolean(actingEmpresaId && row.role === 'admin'),
+    actingAsEmpresa: Boolean(actingAllowed && row.role === 'admin'),
+    empresas: memberships.map((item) => ({ id: item.id, nome: item.nome })),
   };
 }
 
@@ -116,9 +140,18 @@ async function getAuthSession(sessionId) {
     return null;
   }
   if (!row.user_ativo) return null;
-  if (row.role === 'empresa' && row.empresa_ativo === false) return null;
+  const empresas = await listUserEmpresas(row.user_id);
+  row.empresas = empresas;
+  const activeMemberships = empresas.filter((item) => item.ativo !== false);
+  if (row.role === 'empresa' && !activeMemberships.length && row.empresa_ativo === false) {
+    return null;
+  }
   if (row.acting_empresa_id) {
-    if (row.role !== 'admin' || row.acting_empresa_ativo === false) {
+    const actingOk = row.acting_empresa_ativo !== false && (
+      row.role === 'admin'
+      || activeMemberships.some((item) => String(item.id) === String(row.acting_empresa_id))
+    );
+    if (!actingOk) {
       await clearActingEmpresa(sessionId);
       row.acting_empresa_id = null;
       row.acting_empresa_nome = null;
@@ -141,11 +174,15 @@ async function getEmpresaById(empresaId) {
   return result.rows[0] || null;
 }
 
-async function setActingEmpresa(sessionId, empresaId) {
+async function setActingEmpresa(sessionId, empresaId, options = {}) {
   if (!sessionId || !empresaId) throw new Error('Sessao ou empresa invalida');
   const empresa = await getEmpresaById(empresaId);
   if (!empresa) throw new Error('Empresa nao encontrada');
   if (!empresa.ativo) throw new Error('Empresa desativada');
+  const allowedIds = options.allowedIds;
+  if (Array.isArray(allowedIds) && !allowedIds.some((id) => String(id) === String(empresa.id))) {
+    throw new Error('Sem acesso a esta empresa');
+  }
   await query(
     `UPDATE auth_sessions SET acting_empresa_id = $1 WHERE id = $2`,
     [empresa.id, sessionId],
@@ -218,6 +255,7 @@ module.exports = {
   getAuthSession,
   destroyAuthSession,
   listEmpresas,
+  listUserEmpresas,
   getEmpresaById,
   setActingEmpresa,
   clearActingEmpresa,

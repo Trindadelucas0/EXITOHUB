@@ -51,8 +51,16 @@ describe("papéis", () => {
     role: "admin" as const,
     companyName: "BAIFER",
     activeCompanyName: null,
+    allowedCompanyIds: ["cm_baifer_seed_company"],
+    allowedCompanies: [{ id: "cm_baifer_seed_company", name: "BAIFER" }],
   };
-  const baiferConsulta = { ...baiferAdmin, id: "baifer-consulta", role: "consulta" as const };
+  const baiferConsulta = {
+    ...baiferAdmin,
+    id: "baifer-consulta",
+    role: "consulta" as const,
+    allowedCompanyIds: ["cm_baifer_seed_company"],
+    allowedCompanies: [{ id: "cm_baifer_seed_company", name: "BAIFER" }],
+  };
 
   it("superadmin cai no painel do escritório; com empresa aberta cai na conferência", () => {
     expect(postLoginPath("superadmin")).toBe("/escritorio/empresas");
@@ -116,7 +124,21 @@ describe("papéis", () => {
     expect(homePath("consulta", false)).toBe("/dashboard");
   });
 
-  it("activeCompanyId de usuário de empresa não muda o tenant", () => {
+  it("usuário com várias empresas usa a empresa ativa se ela estiver no vínculo", () => {
+    const multi = {
+      ...baiferConsulta,
+      allowedCompanyIds: ["cm_baifer_seed_company", "cm_loja_seed_company"],
+      allowedCompanies: [
+        { id: "cm_baifer_seed_company", name: "BAIFER" },
+        { id: "cm_loja_seed_company", name: "Loja" },
+      ],
+      activeCompanyId: "cm_loja_seed_company",
+      activeCompanyName: "Loja",
+    };
+    expect(resolveCompanyScope(multi)?.companyId).toBe("cm_loja_seed_company");
+  });
+
+  it("activeCompanyId de usuário de empresa não muda o tenant se a empresa não estiver no vínculo", () => {
     const forged = { ...baiferAdmin, activeCompanyId: "cm_loja_seed_company", activeCompanyName: "Loja" };
     expect(resolveCompanyScope(forged)?.companyId).toBe("cm_baifer_seed_company");
   });

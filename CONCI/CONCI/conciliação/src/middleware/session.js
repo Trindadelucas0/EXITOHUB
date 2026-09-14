@@ -7,6 +7,7 @@ const {
   createAuthSession,
   toPublicUser,
   findUserByUsername,
+  listUserEmpresas,
 } = require('../services/authService');
 
 const COOKIE_NAME = 'conciliacao_sid';
@@ -41,9 +42,13 @@ async function resolveHubSso(req) {
     req.hubSsoMissing = true;
     return null;
   }
-  if (row.role === 'empresa' && row.empresa_ativo === false) {
-    req.hubSsoMissing = true;
-    return null;
+  if (row.role === 'empresa') {
+    const empresas = await listUserEmpresas(row.id);
+    const hasActive = empresas.some((item) => item.ativo !== false) || row.empresa_ativo !== false;
+    if (!hasActive) {
+      req.hubSsoMissing = true;
+      return null;
+    }
   }
 
   const sessionId = req.hubSessionId || randomUUID();
@@ -54,7 +59,8 @@ async function resolveHubSso(req) {
     auth = await getAuthSession(sessionId);
   }
   if (!auth) {
-    return toPublicUser(row);
+    const empresas = await listUserEmpresas(row.id);
+    return toPublicUser(row, empresas);
   }
   return toPublicUser({
     id: auth.user_id,
@@ -65,7 +71,7 @@ async function resolveHubSso(req) {
     empresa_nome: auth.empresa_nome,
     acting_empresa_id: auth.acting_empresa_id,
     acting_empresa_nome: auth.acting_empresa_nome,
-  });
+  }, auth.empresas);
 }
 
 async function sessionMiddleware(req, res, next) {
@@ -98,7 +104,7 @@ async function sessionMiddleware(req, res, next) {
         empresa_nome: auth.empresa_nome,
         acting_empresa_id: auth.acting_empresa_id,
         acting_empresa_nome: auth.acting_empresa_nome,
-      });
+      }, auth.empresas);
     } else {
       req.user = null;
     }

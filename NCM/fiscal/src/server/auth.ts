@@ -12,6 +12,8 @@ const SESSION_HOURS = 8;
 
 export type AppRole = "admin" | "consulta" | "superadmin";
 
+export type AllowedCompany = { id: string; name: string };
+
 export type AuthUser = {
   id: string;
   /** Empresa do usuário. Null só no administrador do escritório. */
@@ -23,6 +25,8 @@ export type AuthUser = {
   role: AppRole;
   companyName: string | null;
   activeCompanyName: string | null;
+  allowedCompanyIds?: string[];
+  allowedCompanies?: AllowedCompany[];
 };
 
 function toAuthUser(
@@ -32,10 +36,16 @@ function toAuthUser(
     email: string;
     name: string;
     role: AppRole;
-    company: { name: string } | null;
+    company: { id?: string; name: string } | null;
   },
   active?: { id: string; name: string } | null,
+  allowed?: AllowedCompany[],
 ): AuthUser {
+  const home =
+    user.companyId && user.company
+      ? { id: user.companyId, name: user.company.name }
+      : null;
+  const allowedCompanies = allowed && allowed.length ? allowed : home ? [home] : [];
   return {
     id: user.id,
     companyId: user.companyId,
@@ -45,7 +55,35 @@ function toAuthUser(
     role: user.role,
     companyName: user.company?.name ?? null,
     activeCompanyName: active?.name ?? null,
+    allowedCompanyIds: allowedCompanies.map((item) => item.id),
+    allowedCompanies,
   };
+}
+
+export async function loadAllowedCompanies(
+  userId: string,
+  home?: AllowedCompany | null,
+): Promise<AllowedCompany[]> {
+  const rows = await prisma.userCompany.findMany({
+    where: { userId },
+    include: { company: { select: { id: true, name: true } } },
+    orderBy: { company: { name: "asc" } },
+  });
+  if (rows.length) {
+    return rows.map((row) => ({ id: row.company.id, name: row.company.name }));
+  }
+  return home?.id ? [home] : [];
+}
+
+function pickSessionCompany(
+  role: AppRole,
+  active: { id: string; name: string } | null,
+  allowedIds: string[],
+): { id: string; name: string } | null {
+  if (!active) return null;
+  if (role === "superadmin") return active;
+  if (allowedIds.includes(active.id)) return active;
+  return null;
 }
 
 export function hashSessionToken(token: string): string {
@@ -83,7 +121,9 @@ export async function authenticate(email: string, password: string): Promise<Aut
   }
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) return null;
-  return toAuthUser(user);
+  const home = user.companyId && user.company ? { id: user.companyId, name: user.company.name } : null;
+  const allowed = await loadAllowedCompanies(user.id, home);
+  return toAuthUser(user, null, allowed);
 }
 
 export async function createSession(
@@ -124,12 +164,18 @@ export async function getUserFromToken(token: string | undefined): Promise<AuthU
     include: { user: { include: { company: true } }, activeCompany: true },
   });
   if (!session) return null;
-  // Só o escritório navega por empresa escolhida; usuário de empresa fica no tenant dele.
-  const active =
-    session.user.role === "superadmin" && session.activeCompany
+  const home =
+    session.user.companyId && session.user.company
+      ? { id: session.user.companyId, name: session.user.company.name }
+      : null;
+  const allowed = await loadAllowedCompanies(session.user.id, home);
+  const allowedIds = allowed.map((item) => item.id);
+  const requested =
+    session.activeCompany
       ? { id: session.activeCompany.id, name: session.activeCompany.name }
       : null;
-  return toAuthUser(session.user, active);
+  const active = pickSessionCompany(session.user.role, requested, allowedIds);
+  return toAuthUser(session.user, active, allowed);
 }
 
 export async function setActiveCompany(

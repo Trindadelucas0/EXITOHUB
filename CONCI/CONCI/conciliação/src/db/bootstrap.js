@@ -64,6 +64,17 @@ async function ensureTables() {
     ALTER TABLE auth_sessions
       ADD COLUMN IF NOT EXISTS acting_empresa_id UUID NULL REFERENCES empresas(id) ON DELETE SET NULL;
 
+    CREATE TABLE IF NOT EXISTS user_empresas (
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      empresa_id UUID NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,
+      PRIMARY KEY (user_id, empresa_id)
+    );
+
+    INSERT INTO user_empresas (user_id, empresa_id)
+    SELECT id, empresa_id FROM users
+    WHERE role = 'empresa' AND empresa_id IS NOT NULL
+    ON CONFLICT DO NOTHING;
+
     CREATE TABLE IF NOT EXISTS bancos (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       nome TEXT NOT NULL UNIQUE,
