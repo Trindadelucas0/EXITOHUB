@@ -47,26 +47,44 @@
 
   <nav class="hub-menu-nav" aria-label="Sistemas">
     <% if (showHome) { %>
-      <a href="/" class="hub-menu-link <%= menuCurrent === 'home' ? 'is-active' : '' %>">Início</a>
+      <a href="/" class="hub-menu-link <%= menuCurrent === 'home' ? 'is-active' : '' %>">
+        <%- include('hub-menu-icon', { iconName: 'home' }) %>
+        <span class="hub-menu-link__text">Início</span>
+      </a>
     <% } %>
 
     <% departments.forEach(function(dept) { %>
       <% const deptOpen = dept.items.some(function(item) { return item.currentKey === menuCurrent; }); %>
       <details class="hub-menu-dept" <%= deptOpen ? 'open' : '' %>>
-        <summary class="hub-menu-dept__summary"><%= dept.label %></summary>
+        <summary class="hub-menu-dept__summary">
+          <svg class="hub-menu-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span><%= dept.label %></span>
+        </summary>
         <div class="hub-menu-dept__items">
           <% dept.items.forEach(function(item) { %>
+            <%
+              const linkClasses = ['hub-menu-link'];
+              if (item.currentKey === menuCurrent) linkClasses.push('is-active');
+              if (item.status === 'soon') linkClasses.push('is-soon');
+            %>
             <a
               href="<%= item.href %>"
-              class="hub-menu-link <%= item.currentKey === menuCurrent ? 'is-active' : '' %>"
+              class="<%= linkClasses.join(' ') %>"
               <% if (item.external) { %>target="_blank" rel="noopener noreferrer"<% } %>
             >
+              <%- include('hub-menu-icon', { iconName: item.icon }) %>
               <span class="hub-menu-link__text"><%= item.label %></span>
               <% if (item.status === 'soon') { %>
                 <span class="hub-menu-badge">Em breve</span>
               <% } %>
               <% if (item.external) { %>
-                <span class="hub-menu-badge hub-menu-badge--ext" aria-hidden="true">↗</span>
+                <svg class="hub-menu-ext" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M15 3h6v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M10 14 21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
               <% } %>
             </a>
           <% }); %>

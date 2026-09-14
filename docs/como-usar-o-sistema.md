@@ -9,7 +9,7 @@ Guia do dia a dia. Regras oficiais: [`DOCUMENTACAO-SISTEMA.md`](../DOCUMENTACAO-
 
 ## Menu por departamento
 
-Clique no ☰ e depois no departamento para abrir as ferramentas:
+Clique no ☰. Cada departamento tem uma seta à esquerda (como o ERP); o clique abre as ferramentas com ícone. Módulo ainda não pronto aparece com a pílula **Em breve**. A página atual fica com fundo verde.
 
 - **Geral** — carteira, certificados (SIEG) e login do cliente (admin; a maioria ainda “Em breve”).
 - **Fiscal** — Auditor Fiscal (`/ncm/`), Controle DAUTO (`/folha/fiscal`) e itens fiscais futuros (admin).

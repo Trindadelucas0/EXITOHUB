@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.3.28 — Usuários do HUB em lista + sheet à direita.
+> Versão: 1.3.29 — Menu hambúrguer no padrão ERP (chevron, ícone, pílula Em breve).
 
 ## 1. Visão geral
 
@@ -44,6 +44,7 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 1.3.29 | 14/09/2026 | Menu ☰ no padrão ERP: chevron 16px à esquerda, ícone em cada item, ativo verde preenchido, pílula “Em breve” |
 | 1.3.28 | 14/09/2026 | Usuários HUB: lista com chips + sheet direito (`?novo=1` / `?editar=`); filtro GET; sem form/senha na linha |
 | 1.3.27 | 14/09/2026 | Menu hambúrguer por 7 departamentos (accordion); Auditor Fiscal = NCM; Projetos → Avadesk; itens novos só admin (página Em breve) |
 | 1.3.26 | 08/09/2026 | Consulta BAIFER não vê Empresas/Usuários; cookie HUB manda e apaga `fiscal_session` antiga do escritório |
@@ -67,7 +68,7 @@ Função: [`postLoginPath`](hub/auth.js).
 
 ## 4. Menu e permissões
 
-O menu hambúrguer (EJS [`hub/views/partials/hub-app-menu.ejs`](hub/views/partials/hub-app-menu.ejs) e React [`hub-systems-menu.tsx`](NCM/fiscal/src/components/shell/hub-systems-menu.tsx)) vem do catálogo [`hub/menu-catalog.js`](hub/menu-catalog.js). Clique no departamento abre o submenu. Departamento sem item visível some.
+O menu hambúrguer (EJS [`hub/views/partials/hub-app-menu.ejs`](hub/views/partials/hub-app-menu.ejs) e React [`hub-systems-menu.tsx`](NCM/fiscal/src/components/shell/hub-systems-menu.tsx)) vem do catálogo [`hub/menu-catalog.js`](hub/menu-catalog.js). Visual no padrão da barra lateral do ERP: chevron 16px à esquerda do departamento (gira 90° ao abrir), ícone 16px em cada item, filhos recuados, item da página atual com fundo verde e texto branco. Itens `soon` mostram pílula **Em breve** (não colada no nome) e continuam indo para `/hub/modulo/:slug`. Clique no departamento abre o submenu. Departamento sem item visível some. `GET /api/hub/menu` inclui `icon` em cada item.
 
 **Quem vê o quê**
 
