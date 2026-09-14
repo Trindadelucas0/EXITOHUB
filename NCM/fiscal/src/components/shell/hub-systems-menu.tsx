@@ -112,7 +112,7 @@ export function HubSystemsMenu({ active = "ncm" }: Props) {
                 {departments.map((dept) => {
                   const deptOpen = dept.items.some((item) => item.currentKey === active);
                   return (
-                    <details key={dept.id} className="grid gap-1" defaultOpen={deptOpen}>
+                    <details key={dept.id} className="grid gap-1" {...(deptOpen ? { open: true } : {})}>
                       <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between rounded-[10px] px-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-ink-muted hover:bg-paper-sunken">
                         {dept.label}
                       </summary>
