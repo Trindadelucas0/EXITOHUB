@@ -30,7 +30,7 @@ function syncFetchPatchScript(basePath: string) {
       id="ncm-fetch-basepath"
       strategy="beforeInteractive"
       dangerouslySetInnerHTML={{
-        __html: `(function(){var bp=${bp};if(!bp||typeof window==="undefined")return;if(window.__NCM_FETCH_PATCHED__===bp)return;var orig=window.fetch.bind(window);window.fetch=function(input,init){if(typeof input==="string"&&input.charAt(0)==="/"&&input.indexOf(bp)!==0){if(input==="/login"||input.indexOf("/login?")===0||input==="/logout"||input.indexOf("/logout?")===0||input.indexOf("/hub-assets")===0||input.indexOf("/folha")===0||input.indexOf("/conci")===0||input.indexOf("/admin/usuarios")===0){return orig(input,init);}return orig(bp+input,init);}return orig(input,init);};window.__NCM_FETCH_PATCHED__=bp;})();`,
+        __html: `(function(){var bp=${bp};if(!bp||typeof window==="undefined")return;if(window.__NCM_FETCH_PATCHED__===bp)return;var orig=window.fetch.bind(window);window.fetch=function(input,init){if(typeof input==="string"&&input.charAt(0)==="/"&&input.indexOf(bp)!==0){if(input==="/login"||input.indexOf("/login?")===0||input==="/logout"||input.indexOf("/logout?")===0||input.indexOf("/hub-assets")===0||input.indexOf("/folha")===0||input.indexOf("/conci")===0||input.indexOf("/admin")===0||input.indexOf("/api/hub")===0||input.indexOf("/projetos")===0||input.indexOf("/hub/")===0){return orig(input,init);}return orig(bp+input,init);}return orig(input,init);};window.__NCM_FETCH_PATCHED__=bp;})();`,
       }}
     />
   );

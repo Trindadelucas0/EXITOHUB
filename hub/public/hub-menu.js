@@ -67,6 +67,15 @@
   if (closeBtn) closeBtn.addEventListener('click', closeMenu);
   overlay.addEventListener('click', closeMenu);
 
+  drawer.addEventListener('toggle', (event) => {
+    const target = event.target;
+    if (!target || !target.classList || !target.classList.contains('hub-menu-dept')) return;
+    if (!target.open) return;
+    drawer.querySelectorAll('details.hub-menu-dept').forEach((el) => {
+      if (el !== target) el.open = false;
+    });
+  });
+
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') {
       setOpen(false);

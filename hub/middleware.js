@@ -8,6 +8,7 @@ const {
   clearSessionCookie,
   clearNcmCookies,
 } = require('./auth');
+const { getMenuForUser } = require('./menu-catalog');
 
 async function hubSessionMiddleware(req, res, next) {
   try {
@@ -16,6 +17,7 @@ async function hubSessionMiddleware(req, res, next) {
     req.hubSessionId = sessionId || null;
     req.hubUser = sessionId ? await getSessionUser(sessionId) : null;
     res.locals.hubUser = req.hubUser;
+    res.locals.hubMenu = getMenuForUser(req.hubUser);
     res.locals.modules = {
       folha: Boolean(req.hubUser?.canFolha),
       conci: Boolean(req.hubUser?.canConci),

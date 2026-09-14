@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/hub-assets/hub.css" />
+</head>
+<body class="hub-body">
+  <%- include('partials/hub-chrome', { current: 'projetos' }) %>
+
+  <main class="hub-main">
+    <header class="hub-hero">
+      <h1>Projetos</h1>
+      <p class="hub-muted">Chamados, bugs e projetos em andamento no Avadesk.</p>
+    </header>
+
+    <a
+      class="hub-project-card"
+      href="<%= avadeskUrl %>"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <p class="hub-project-card__eyebrow">Avadesk</p>
+      <strong class="hub-project-card__title">Suporte e gestão de projetos</strong>
+      <p class="hub-project-card__desc">
+        Abra o portal para cadastrar bug, implementação e acompanhar o que está em andamento.
+      </p>
+      <span class="hub-project-card__cta">Abrir Avadesk ↗</span>
+    </a>
+  </main>
+</body>
+</html>

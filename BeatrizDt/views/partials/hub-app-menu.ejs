@@ -4,11 +4,9 @@
     : (typeof hubUser !== 'undefined' ? hubUser : null);
   const menuCurrent = typeof current !== 'undefined' ? current : '';
   const showHome = typeof showHomeLink === 'undefined' ? true : Boolean(showHomeLink);
-  const canFolha = Boolean(userForMenu && userForMenu.canFolha);
-  const canConci = Boolean(userForMenu && userForMenu.canConci);
-  const canNcm = Boolean(userForMenu && userForMenu.canNcm);
-  const isAdmin = Boolean(userForMenu && userForMenu.isAdmin);
-  const showFiscalGroup = canConci || canNcm;
+  const departments = (typeof hubMenu !== 'undefined' && Array.isArray(hubMenu))
+    ? hubMenu
+    : [];
 %>
 <button
   type="button"
@@ -37,7 +35,7 @@
 >
   <div class="hub-menu-drawer__head">
     <div>
-      <p class="hub-menu-drawer__eyebrow">Êxito</p>
+      <p class="hub-menu-drawer__eyebrow">Êxito Hub</p>
       <strong class="hub-menu-drawer__title">Menu</strong>
     </div>
     <button type="button" class="hub-menu-close" id="hub-menu-close" aria-label="Fechar menu">
@@ -52,31 +50,28 @@
       <a href="/" class="hub-menu-link <%= menuCurrent === 'home' ? 'is-active' : '' %>">Início</a>
     <% } %>
 
-    <% if (canFolha) { %>
-      <div class="hub-menu-group">
-        <p class="hub-menu-group__label">Folha</p>
-        <a href="/folha/dashboard" class="hub-menu-link <%= menuCurrent === 'folha-dashboard' ? 'is-active' : '' %>">Controle de Folha</a>
-        <a href="/folha/fiscal" class="hub-menu-link <%= menuCurrent === 'folha-fiscal' ? 'is-active' : '' %>">Fiscal</a>
-      </div>
-    <% } %>
-
-    <% if (showFiscalGroup) { %>
-      <div class="hub-menu-group">
-        <p class="hub-menu-group__label">Fiscal</p>
-        <% if (canConci) { %>
-          <a href="/conci/" class="hub-menu-link <%= menuCurrent === 'conci' ? 'is-active' : '' %>">Conciliação</a>
-        <% } %>
-        <% if (canNcm) { %>
-          <a href="/ncm/" class="hub-menu-link <%= menuCurrent === 'ncm' ? 'is-active' : '' %>">Auditor NCM</a>
-        <% } %>
-      </div>
-    <% } %>
-
-    <% if (isAdmin) { %>
-      <div class="hub-menu-group">
-        <p class="hub-menu-group__label">Administração</p>
-        <a href="/admin/usuarios" class="hub-menu-link <%= menuCurrent === 'admin' ? 'is-active' : '' %>">Gerenciar usuários</a>
-      </div>
-    <% } %>
+    <% departments.forEach(function(dept) { %>
+      <% const deptOpen = dept.items.some(function(item) { return item.currentKey === menuCurrent; }); %>
+      <details class="hub-menu-dept" <%= deptOpen ? 'open' : '' %>>
+        <summary class="hub-menu-dept__summary"><%= dept.label %></summary>
+        <div class="hub-menu-dept__items">
+          <% dept.items.forEach(function(item) { %>
+            <a
+              href="<%= item.href %>"
+              class="hub-menu-link <%= item.currentKey === menuCurrent ? 'is-active' : '' %>"
+              <% if (item.external) { %>target="_blank" rel="noopener noreferrer"<% } %>
+            >
+              <span class="hub-menu-link__text"><%= item.label %></span>
+              <% if (item.status === 'soon') { %>
+                <span class="hub-menu-badge">Em breve</span>
+              <% } %>
+              <% if (item.external) { %>
+                <span class="hub-menu-badge hub-menu-badge--ext" aria-hidden="true">↗</span>
+              <% } %>
+            </a>
+          <% }); %>
+        </div>
+      </details>
+    <% }); %>
   </nav>
 </aside>

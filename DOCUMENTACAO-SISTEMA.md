@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.3.26 — Consulta BAIFER não vê o painel do escritório; o cookie do HUB manda sobre `fiscal_session` antiga.
+> Versão: 1.3.28 — Usuários do HUB em lista + sheet à direita.
 
 ## 1. Visão geral
 
@@ -19,11 +19,18 @@ Login único em `/login`. Permissões em `exito_hub.hub_user_modules`.
 
 **Usuários são criados somente em `/admin/usuarios`** (admin do HUB).
 
+A tela é uma **lista** (busca, módulo, situação) e um **sheet** à direita (`?novo=1` ou `?editar=:id`). Sem JavaScript os mesmos links/query ainda abrem o editor. Empresas continuam nos módulos, não nesta tela.
+
 | Passo | Onde | O quê |
 |-------|------|-------|
 | 1 | `/conci/admin/empresas` ou `/ncm/escritorio/empresas` | Cadastrar **empresa** (sem usuário) |
-| 2 | `/admin/usuarios` | Criar usuário, marcar módulo(s), vincular empresa Conci/NCM |
-| 3 | `/login` | Entrar com usuário ou e-mail + senha do HUB |
+| 2 | `/admin/usuarios` → **Novo usuário** | Login, e-mail, senha, módulos, papel e empresa Conci/NCM |
+| 3 | `/admin/usuarios?editar=:id` | Corrigir nome, senha, módulos, vínculos, Admin do HUB; desativar no rodapé |
+| 4 | `/login` | Entrar com usuário ou e-mail + senha do HUB |
+
+Filtros GET (`q`, `mod`, `sit`) sobrevivem ao salvar. Usuário e e-mail **não** mudam na edição (SSO Conci/NCM). O admin **não** desativa nem tira o próprio Admin do HUB.
+
+Código: [`hub/views/admin-users.ejs`](hub/views/admin-users.ejs), [`hub/routes.js`](hub/routes.js), [`hub/provision-modules.js`](hub/provision-modules.js), [`hub/auth.js`](hub/auth.js) (`createUser`, `updateUserWithModules`).
 
 O HUB provisiona automaticamente:
 
@@ -31,14 +38,14 @@ O HUB provisiona automaticamente:
 - **NCM** → `fiscal-p.users` (papel `admin` ou `consulta` + `company_id`)
 - **Folha** → sessão espelhada do HUB (sem tabela própria em modo HUB)
 
-Código: [`hub/provision-modules.js`](hub/provision-modules.js), [`hub/auth.js`](hub/auth.js) (`createUser`, `updateUserWithModules`).
-
 Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/seed-baifer-consulta.js) (`npm run seed:baifer-consulta` ou no boot do HUB). Usuário `consulta.baifer` / e-mail `consulta@baifer.local`, módulo só NCM, papel `consulta`, empresa BAIFER. **Não** use o usuário `baifer` — esse é da Conciliação. Senha via `HUB_SEED_BAIFER_CONSULTA_PASSWORD` ou `SEED_ADMIN_PASSWORD` (não fica na documentação).
 
 ### 2.1 Histórico de versões
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 1.3.28 | 14/09/2026 | Usuários HUB: lista com chips + sheet direito (`?novo=1` / `?editar=`); filtro GET; sem form/senha na linha |
+| 1.3.27 | 14/09/2026 | Menu hambúrguer por 7 departamentos (accordion); Auditor Fiscal = NCM; Projetos → Avadesk; itens novos só admin (página Em breve) |
 | 1.3.26 | 08/09/2026 | Consulta BAIFER não vê Empresas/Usuários; cookie HUB manda e apaga `fiscal_session` antiga do escritório |
 | 1.3.25 | 08/09/2026 | Login consulta NCM da BAIFER é `consulta.baifer` / `consulta@baifer.local`; `baifer` continua Conciliação |
 | 1.3.24 | 08/09/2026 | `npm run dev` / `npm start` usam `--max-old-space-size=4096` para o Next do NCM não estourar o heap |
@@ -60,9 +67,30 @@ Função: [`postLoginPath`](hub/auth.js).
 
 ## 4. Menu e permissões
 
-O menu (EJS [`hub/views/partials/hub-app-menu.ejs`](hub/views/partials/hub-app-menu.ejs) e React [`hub-systems-menu.tsx`](NCM/fiscal/src/components/shell/hub-systems-menu.tsx)) mostra **apenas** módulos em `hub_user_modules`.
+O menu hambúrguer (EJS [`hub/views/partials/hub-app-menu.ejs`](hub/views/partials/hub-app-menu.ejs) e React [`hub-systems-menu.tsx`](NCM/fiscal/src/components/shell/hub-systems-menu.tsx)) vem do catálogo [`hub/menu-catalog.js`](hub/menu-catalog.js). Clique no departamento abre o submenu. Departamento sem item visível some.
 
-Rotas sem módulo → 403 via [`requireHubModule`](hub/middleware.js).
+**Quem vê o quê**
+
+- Módulos vivos: só se o usuário tem o módulo em `hub_user_modules` (`folha`, `conci`, `ncm`).
+- Itens novos (carteira, SIEG, CCT, POPs, Projetos, Agenda, etc.): só `hub_users.is_admin`.
+- Consulta BAIFER (só NCM): **Fiscal → Auditor Fiscal** (`/ncm/`). Não vê GERAL, PROJETOS, ADMINISTRATIVO, AGENDA, FOLHA nem CONTÁBIL.
+
+**Destinos (etapa 1)**
+
+- Auditor Fiscal → `/ncm/` (nome antigo: Auditor NCM)
+- Controle DAUTO → `/folha/fiscal`
+- Controle folha mensal → `/folha/dashboard`
+- DAUTO Tintas → `/folha/modulos`
+- Conciliação → `/conci/`
+- Gerenciar usuários → `/admin/usuarios` (admin)
+- Projetos → `/projetos` (admin) com card para https://suporte.avadesk.com.br/
+- Certificados Digitais → URL SIEG (`HUB_SIEG_URL` ou https://www.sieg.com.br), nova aba
+- Google Agenda → `HUB_GOOGLE_CALENDAR_URL` ou https://calendar.google.com/calendar, nova aba
+- Demais itens novos → `/hub/modulo/:slug` (página “Em breve”, admin)
+
+`GET /api/hub/menu` devolve a árvore já filtrada (cookie HUB). Sem sessão → 401 JSON.
+
+Rotas de módulo sem permissão → 403 via [`requireHubModule`](hub/middleware.js). `/projetos` e `/hub/modulo/:slug` → [`requireHubAdmin`](hub/middleware.js).
 
 **Papéis distintos:**
 
@@ -97,6 +125,10 @@ cd NCM/fiscal && npm run db:migrate   # alinha o PostgreSQL fiscal-p ao Prisma (
 | Tela | Rota | Arquivo principal |
 |------|------|-------------------|
 | Login HUB | GET/POST `/login` | [`hub/routes.js`](hub/routes.js) |
+| Home HUB | GET `/` | [`hub/views/home.ejs`](hub/views/home.ejs) |
+| Menu HUB | catálogo + `/api/hub/menu` | [`hub/menu-catalog.js`](hub/menu-catalog.js) |
+| Projetos / Avadesk | GET `/projetos` | [`hub/views/projetos.ejs`](hub/views/projetos.ejs) |
+| Módulo em breve | GET `/hub/modulo/:slug` | [`hub/views/modulo-em-breve.ejs`](hub/views/modulo-em-breve.ejs) |
 | Usuários HUB | `/admin/usuarios` | [`hub/views/admin-users.ejs`](hub/views/admin-users.ejs) |
 | Empresas Conci | `/conci/admin/empresas` | [`adminEmpresas.ejs`](CONCI/CONCI/conciliação/views/adminEmpresas.ejs) |
 | Pré-cadastro Conci | `/conci/pre-cadastro` | [`preCadastro.ejs`](CONCI/CONCI/conciliação/views/preCadastro.ejs) |
@@ -155,12 +187,12 @@ Tela **Revisão** após enviar Extrato + Contas a Pagar. Pré-cadastro por empre
 ## 8. Guia rápido
 
 1. Crie empresas nos módulos Conci e NCM.
-2. Em `/admin/usuarios`, crie o login: marque Conciliação ou NCM, escolha empresa e papel.
-3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu sem Folha/NCM.
+2. Em **Administrativo → Gerenciar usuários** (`/admin/usuarios`), clique **Novo usuário**. Preencha login, e-mail, senha, marque os módulos e vincule empresa/papel. Salvar fecha o sheet. Para corrigir: busque o login → **Editar**. Desativar pede confirmação no rodapé.
+3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu mostra **Contábil → Conciliação** (sem Folha/Auditor Fiscal). Admin do HUB vê os 7 departamentos no hambúrguer; Projetos abre o card do Avadesk.
 4. Empresa Conci: em **Pré-cadastro**, cadastre a Classificação Êxito (descrição que aparece no histórico do extrato) e os códigos Débito/Crédito. Envie Extrato + Contas a Pagar. Na **Revisão**, o que não veio da planilha de CAP é classificado se a descrição estiver no histórico. Se cadastrou depois, clique **Atualizar pré-cadastro**.
-5. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar.
+5. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar. No hambúrguer, o auditor aparece como **Fiscal → Auditor Fiscal**.
 6. **Consulta BAIFER (NCM):** em `/login` use `consulta.baifer` ou `consulta@baifer.local` (senha do seed, não publicada). **Não** use `baifer` — esse usuário é da Conciliação. O NCM abre direto o dashboard da BAIFER (Panorama). Vê Consultar, Divergências e Base fiscal. **Não** vê Empresas/Usuários do escritório (`/ncm/escritorio/empresas` volta ao dashboard). Não vê outras empresas, não importa, não apaga lote, não baixa Excel/PDF. Para outro cliente consulta, o mesmo padrão: `/admin/usuarios` → NCM + empresa + papel Consulta.
 7. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG. Pode importar a Atacadista ou `PLANILHA REGRA FISCAL UNICA.xlsx` (esta última não tem coluna Abrev.; o sistema completa pelo NCM). Importe o CSV em **Planilhas**. No **Panorama**, o card **Corretos** são os itens cuja Abreviação bate com a base (`004` = `4`). **Consulta** e **Divergências**: na barra, **Filtrar segmento** escolhe Autopeças, Tintas, Fora da base etc. (não há chips nem fila de NCM). **Divergências** mostra só o que não bateu (Abreviação diferente ou NCM fora da base). Marcar como já tratado é na **ficha** do produto. Para baixar só os NCM que **não estão na regra** da empresa: **Incluir no arquivo → Fora da base → Exportar Excel** (lote inteiro, detalhado) — só admin da empresa ou escritório. Vale também para BAIFER, Loja e Egaplast.
 8. Egaplast: em Empresas, **Entrar** na Egaplast → **Base fiscal** → Importar `TRIBUTACAO NCM EGAPLAST.xlsx` (NCM, CEST, segmento, alíquotas DF/GO/MG) e `NCM REGRA FISCAL EXITO CONTABILIDADE X EGAPLAST.xlsx` (CST+IVA SIGNATÁRIO — é a regra do escritório). As duas bases ficam juntas. Em **Planilhas**, importe o cadastro do cliente (`PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx`, com CÓDIGO). O arquivo EXITO SIGNATÁRIO **não** entra em Planilhas. Na ficha, **Como deve ficar** preenche o IVA da regra CST+IVA (ouro SP `1.9854` nacional / `2.1659` importado no NCM `84818019`); se a base só tiver TRIBUTACAO NCM, usa o IVA do cadastro (não deixa traço, não usa o MVA %). Cadastro sem IVA na UF = **NADA INFORMADO**. **Consulta** filtra por segmento e mostra SP. Busque pelo **código**: o mesmo NCM pode ter SKU Correto (`10100`) e Divergente (`10200`, origem 0 com IVA de importado). Linha sem SIT.TRIBUTÁRIA (`10255`) fica em **Análise** — não é erro de layout. NCM em nenhuma base e sem IVA no cadastro: o errado é o NCM — abra **Base fiscal**. O fator IVA não é comparado com o MVA % da TRIBUTACAO.
 
-Guia expandido: [`README.md`](README.md). Detalhe do auditor: [`NCM/fiscal/README.md`](NCM/fiscal/README.md).
+Guia expandido: [`README.md`](README.md) e [`docs/como-usar-o-sistema.md`](docs/como-usar-o-sistema.md). Detalhe do auditor: [`NCM/fiscal/README.md`](NCM/fiscal/README.md).

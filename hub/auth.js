@@ -298,6 +298,7 @@ async function updateUserWithModules(userId, {
   password,
   isAdmin,
   active,
+  displayName,
 }) {
   const row = await findUserById(userId);
   if (!row) throw new Error('Usuário não encontrado.');
@@ -313,6 +314,11 @@ async function updateUserWithModules(userId, {
   if (password && String(password).trim()) {
     passwordHash = await bcrypt.hash(String(password), 12);
     await query('UPDATE hub_users SET password_hash = $1 WHERE id = $2', [passwordHash, userId]);
+  }
+
+  if (typeof displayName !== 'undefined' && displayName != null) {
+    const nextName = String(displayName).trim() || row.username;
+    await query('UPDATE hub_users SET display_name = $1 WHERE id = $2', [nextName, userId]);
   }
 
   if (typeof isAdmin !== 'undefined') {

@@ -4,35 +4,34 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 type Props = {
-  active?: "home" | "folha" | "conci" | "ncm" | "admin";
-  /** Se true, mostra Admin só quando /api/auth/me indicar isHubAdmin. */
+  active?: string;
+  /** Mantido por compatibilidade; a API do HUB já filtra por permissão. */
   showAdmin?: boolean;
 };
 
-type HubModules = {
-  folha: boolean;
-  conci: boolean;
-  ncm: boolean;
+type MenuItem = {
+  id: string;
+  label: string;
+  href: string;
+  status: string;
+  external?: boolean;
+  currentKey: string;
+};
+
+type MenuDepartment = {
+  id: string;
+  label: string;
+  items: MenuItem[];
 };
 
 const linkClass =
-  "flex min-h-11 items-center rounded-[10px] border border-transparent px-3 text-sm font-semibold text-ink hover:bg-paper-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
+  "flex min-h-11 items-center gap-2 rounded-[10px] border border-transparent px-3 text-sm font-semibold text-ink hover:bg-paper-sunken focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
 const activeClass = "border-brand bg-brand-soft text-brand";
 
-function apiUrl(path: string) {
-  const prefix =
-    (typeof process !== "undefined" && process.env.NEXT_PUBLIC_BASE_PATH) ||
-    (typeof window !== "undefined" && window.location.pathname.startsWith("/ncm") ? "/ncm" : "") ||
-    "";
-  if (prefix && (path === prefix || path.startsWith(`${prefix}/`))) return path;
-  return `${prefix}${path}`;
-}
-
-export function HubSystemsMenu({ active = "ncm", showAdmin = false }: Props) {
+export function HubSystemsMenu({ active = "ncm" }: Props) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [modules, setModules] = useState<HubModules>({ folha: false, conci: false, ncm: false });
-  const [isHubAdmin, setIsHubAdmin] = useState(false);
+  const [departments, setDepartments] = useState<MenuDepartment[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -40,17 +39,12 @@ export function HubSystemsMenu({ active = "ncm", showAdmin = false }: Props) {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(apiUrl("/api/auth/me"), { signal: controller.signal, credentials: "same-origin" })
+    fetch("/api/hub/menu", { signal: controller.signal, credentials: "same-origin" })
       .then(async (res) => {
         const json = await res.json().catch(() => ({}));
         if (!res.ok) return;
-        const mods = json.data?.modules;
-        setModules({
-          folha: Boolean(mods?.folha),
-          conci: Boolean(mods?.conci),
-          ncm: Boolean(mods?.ncm),
-        });
-        setIsHubAdmin(Boolean(json.data?.isHubAdmin));
+        const next = Array.isArray(json.departments) ? json.departments : [];
+        setDepartments(next);
       })
       .catch((err: Error) => {
         if (err.name === "AbortError") return;
@@ -72,12 +66,6 @@ export function HubSystemsMenu({ active = "ncm", showAdmin = false }: Props) {
     };
   }, [open]);
 
-  const showFolha = modules.folha;
-  const showConci = modules.conci;
-  const showNcm = modules.ncm;
-  const showFiscal = showConci || showNcm;
-  const canShowAdmin = showAdmin && isHubAdmin;
-
   const panel =
     mounted && open
       ? createPortal(
@@ -97,7 +85,7 @@ export function HubSystemsMenu({ active = "ncm", showAdmin = false }: Props) {
             >
               <div className="mb-4 flex items-center justify-between gap-3 border-b border-line pb-3">
                 <div>
-                  <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand">Êxito</p>
+                  <p className="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand">Êxito Hub</p>
                   <strong className="block text-base font-extrabold tracking-tight text-ink">Menu</strong>
                 </div>
                 <button
@@ -116,62 +104,45 @@ export function HubSystemsMenu({ active = "ncm", showAdmin = false }: Props) {
                 </button>
               </div>
 
-              <nav className="grid gap-4" aria-label="Sistemas">
+              <nav className="grid gap-1" aria-label="Sistemas">
                 <a href="/" className={`${linkClass} ${active === "home" ? activeClass : ""}`}>
                   Início
                 </a>
 
-                {showFolha ? (
-                  <div className="grid gap-1">
-                    <p className="px-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-ink-muted">
-                      Folha
-                    </p>
-                    <a href="/folha/dashboard" className={linkClass}>
-                      Controle de Folha
-                    </a>
-                    <a href="/folha/fiscal" className={linkClass}>
-                      Fiscal
-                    </a>
-                  </div>
-                ) : null}
-
-                {showFiscal ? (
-                  <div className="grid gap-1">
-                    <p className="px-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-ink-muted">
-                      Fiscal
-                    </p>
-                    {showConci ? (
-                      <a
-                        href="/conci/"
-                        className={`${linkClass} ${active === "conci" ? activeClass : ""}`}
-                      >
-                        Conciliação
-                      </a>
-                    ) : null}
-                    {showNcm ? (
-                      <a
-                        href="/ncm/"
-                        className={`${linkClass} ${active === "ncm" ? activeClass : ""}`}
-                      >
-                        Auditor NCM
-                      </a>
-                    ) : null}
-                  </div>
-                ) : null}
-
-                {canShowAdmin ? (
-                  <div className="grid gap-1">
-                    <p className="px-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-ink-muted">
-                      Administração
-                    </p>
-                    <a
-                      href="/admin/usuarios"
-                      className={`${linkClass} ${active === "admin" ? activeClass : ""}`}
-                    >
-                      Gerenciar usuários
-                    </a>
-                  </div>
-                ) : null}
+                {departments.map((dept) => {
+                  const deptOpen = dept.items.some((item) => item.currentKey === active);
+                  return (
+                    <details key={dept.id} className="grid gap-1" defaultOpen={deptOpen}>
+                      <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between rounded-[10px] px-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-ink-muted hover:bg-paper-sunken">
+                        {dept.label}
+                      </summary>
+                      <div className="grid gap-1">
+                        {dept.items.map((item) => (
+                          <a
+                            key={item.id}
+                            href={item.href}
+                            className={`${linkClass} ${item.currentKey === active ? activeClass : ""}`}
+                            {...(item.external
+                              ? { target: "_blank", rel: "noopener noreferrer" }
+                              : {})}
+                          >
+                            <span className="min-w-0 flex-1">{item.label}</span>
+                            {item.status === "soon" ? (
+                              <span className="text-[10px] font-extrabold uppercase tracking-wide text-ink-muted">
+                                Em breve
+                              </span>
+                            ) : null}
+                            {item.external ? (
+                              <span aria-hidden className="text-ink-muted">
+                                ↗
+                              </span>
+                            ) : null}
+                          </a>
+                        ))}
+                      </div>
+                    </details>
+                  );
+                })}
               </nav>
             </aside>
           </>,

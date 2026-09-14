@@ -28,7 +28,10 @@ export function BasePathFetchPatch({ basePath }: { basePath: string }) {
           || input.startsWith("/hub-assets")
           || input.startsWith("/folha")
           || input.startsWith("/conci")
-          || input.startsWith("/admin/usuarios")
+          || input.startsWith("/admin")
+          || input.startsWith("/api/hub")
+          || input.startsWith("/projetos")
+          || input.startsWith("/hub/")
         ) {
           return orig(input, init);
         }

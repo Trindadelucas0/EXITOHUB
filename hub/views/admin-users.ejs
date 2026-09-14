@@ -9,215 +9,394 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/hub-assets/hub.css" />
 </head>
-<body class="hub-body">
+<body class="hub-body" data-self-id="<%= hubUser.id %>">
   <%- include('partials/hub-chrome', { current: 'admin' }) %>
 
-  <main class="hub-main hub-main-wide">
-    <header class="hub-hero">
-      <h1>Usuários do HUB</h1>
-      <p class="hub-muted">Única fonte de login: cadastre aqui e vincule Conciliação/NCM às empresas já criadas nos módulos. Empresas continuam em <code>/conci/admin/empresas</code> e <code>/ncm/escritorio/empresas</code>.</p>
+  <%
+    const isEdit = sheetMode === 'edit' && editingUser;
+    const isCreate = sheetMode === 'create';
+    const sheetOpen = Boolean(isEdit || isCreate);
+    const sheetUser = isEdit ? editingUser : null;
+    const sheetMeta = sheetUser ? (userMeta[sheetUser.id] || {}) : {};
+    const sheetConci = sheetMeta.conci || {};
+    const sheetNcm = sheetMeta.ncm || {};
+    const isSelf = Boolean(sheetUser && String(sheetUser.id) === String(hubUser.id));
+    const formAction = isEdit ? '/admin/usuarios/' + sheetUser.id + '/modulos' : '/admin/usuarios';
+    const statusAction = isEdit ? '/admin/usuarios/' + sheetUser.id + '/status' : '';
+    const hasFilter = Boolean(filters.q || filters.mod || filters.sit);
+
+    function listHref(extra) {
+      const params = new URLSearchParams();
+      if (filters.q) params.set('q', filters.q);
+      if (filters.mod) params.set('mod', filters.mod);
+      if (filters.sit) params.set('sit', filters.sit);
+      if (extra) {
+        Object.keys(extra).forEach(function (key) {
+          const value = extra[key];
+          if (value == null || value === false || value === '') params.delete(key);
+          else params.set(key, String(value));
+        });
+      }
+      const qs = params.toString();
+      return qs ? '/admin/usuarios?' + qs : '/admin/usuarios';
+    }
+
+    function initialsOf(user) {
+      const src = String(user.displayName || user.username || '?').trim();
+      const parts = src.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) {
+        return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+      }
+      return src.slice(0, 2).toUpperCase();
+    }
+
+    function conciCompanyName(meta) {
+      const id = meta && meta.empresaId ? String(meta.empresaId) : '';
+      const found = conciEmpresas.find(function (row) { return String(row.id) === id; });
+      return found ? found.nome : '';
+    }
+
+    function ncmCompanyName(meta) {
+      const id = meta && meta.companyId ? String(meta.companyId) : '';
+      const found = ncmCompanies.find(function (row) { return String(row.id) === id; });
+      return found ? found.name : '';
+    }
+  %>
+
+  <main class="hub-main hub-users-page">
+    <header class="hub-users-hero">
+      <div>
+        <h1>Usuários</h1>
+        <p class="hub-muted">Login único do HUB. Empresas ficam nos módulos.</p>
+        <p class="hub-users-links">
+          <a href="/conci/admin/empresas">Empresas na Conciliação</a>
+          <a href="/ncm/escritorio/empresas">Empresas no NCM</a>
+        </p>
+      </div>
+      <a class="hub-btn hub-btn-primary" href="<%= listHref({ novo: '1', editar: '', confirmar: '' }) %>" data-sheet-open="create">Novo usuário</a>
     </header>
 
     <% if (flash) { %>
-      <div class="hub-alert hub-alert-ok">Salvo (<%= flash %>).</div>
+      <div class="hub-alert hub-alert-ok"><%= flash %></div>
     <% } %>
-    <% if (error) { %>
+    <% if (error && !sheetOpen) { %>
       <div class="hub-alert" role="alert"><%= error %></div>
     <% } %>
 
-    <section class="hub-card">
-      <h2>Novo usuário</h2>
-      <form method="post" action="/admin/usuarios" class="hub-form hub-form-create" data-hub-user-form>
-        <div class="hub-form-fields">
-          <label class="hub-field">
-            <span>Usuário (login Conciliação)</span>
-            <input name="username" required autocomplete="off" />
-          </label>
-          <label class="hub-field">
-            <span>E-mail (login NCM)</span>
-            <input name="email" type="email" required autocomplete="off" />
-          </label>
-          <label class="hub-field">
-            <span>Nome</span>
-            <input name="displayName" />
-          </label>
-          <label class="hub-field">
-            <span>Senha</span>
-            <input name="password" type="password" required minlength="6" autocomplete="new-password" />
-          </label>
+    <form class="hub-users-toolbar" method="get" action="/admin/usuarios" data-users-filter>
+      <label class="hub-field hub-users-search">
+        <span class="visually-hidden">Buscar</span>
+        <input
+          type="search"
+          name="q"
+          value="<%= filters.q %>"
+          placeholder="Buscar login, e-mail ou empresa"
+          autocomplete="off"
+        />
+      </label>
+      <label class="hub-field">
+        <span>Módulo</span>
+        <select name="mod">
+          <option value="">Todos</option>
+          <option value="folha" <%= filters.mod === 'folha' ? 'selected' : '' %>>Folha</option>
+          <option value="conci" <%= filters.mod === 'conci' ? 'selected' : '' %>>Conciliação</option>
+          <option value="ncm" <%= filters.mod === 'ncm' ? 'selected' : '' %>>NCM</option>
+        </select>
+      </label>
+      <label class="hub-field">
+        <span>Situação</span>
+        <select name="sit">
+          <option value="">Todas</option>
+          <option value="ativo" <%= filters.sit === 'ativo' ? 'selected' : '' %>>Ativos</option>
+          <option value="inativo" <%= filters.sit === 'inativo' ? 'selected' : '' %>>Inativos</option>
+        </select>
+      </label>
+      <button type="submit" class="hub-btn hub-btn-ghost">Filtrar</button>
+    </form>
+
+    <p class="hub-users-count">
+      <% if (hasFilter) { %>
+        <%= users.length %> <%= users.length === 1 ? 'login' : 'logins' %> neste filtro
+        · <a href="/admin/usuarios">Limpar</a>
+      <% } else { %>
+        <%= users.length %> <%= users.length === 1 ? 'login' : 'logins' %>
+        <% if (users.length) { %> · <%= activeCount %> ativos<% } %>
+      <% } %>
+    </p>
+
+    <section class="hub-card hub-users-card">
+      <% if (!allUserCount) { %>
+        <div class="hub-users-empty">
+          <p>Ainda não há logins no HUB. Cadastre o primeiro e vincule aos módulos.</p>
+          <a class="hub-btn hub-btn-primary" href="<%= listHref({ novo: '1', editar: '', confirmar: '' }) %>" data-sheet-open="create">Novo usuário</a>
         </div>
-        <div class="hub-form-footer">
-          <fieldset class="hub-fieldset">
-            <legend>Módulos</legend>
-            <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" data-mod-toggle="folha" /> Folha</label>
-            <label class="hub-check"><input type="checkbox" name="mod_conci" value="1" data-mod-toggle="conci" /> Conciliação</label>
-            <label class="hub-check"><input type="checkbox" name="mod_ncm" value="1" data-mod-toggle="ncm" /> NCM</label>
-          </fieldset>
-
-          <div class="hub-module-panel" data-mod-panel="folha" hidden>
-            <p class="hub-muted hub-module-hint">Folha não tem cadastro separado: quem tem o módulo entra em <code>/folha/modulos</code>. Admin Folha = checkbox Admin HUB abaixo.</p>
-          </div>
-
-          <div class="hub-module-panel" data-mod-panel="conci" hidden>
-            <fieldset class="hub-fieldset">
-              <legend>Conciliação</legend>
-              <label class="hub-field">
-                <span>Papel</span>
-                <select name="conci_role" data-conci-role>
-                  <option value="empresa">Empresa</option>
-                  <option value="admin">Admin Conciliação</option>
-                </select>
-              </label>
-              <label class="hub-field" data-conci-empresa-wrap>
-                <span>Empresa</span>
-                <select name="conci_empresa_id">
-                  <option value="">Selecione…</option>
-                  <% conciEmpresas.forEach(function(e) { %>
-                    <option value="<%= e.id %>" <%= e.ativo ? '' : 'disabled' %>><%= e.nome %><%= e.ativo ? '' : ' (inativa)' %></option>
-                  <% }) %>
-                </select>
-              </label>
-            </fieldset>
-          </div>
-
-          <div class="hub-module-panel" data-mod-panel="ncm" hidden>
-            <fieldset class="hub-fieldset">
-              <legend>NCM</legend>
-              <label class="hub-field">
-                <span>Empresa</span>
-                <select name="ncm_company_id">
-                  <option value="">Selecione…</option>
-                  <% ncmCompanies.forEach(function(c) { %>
-                    <option value="<%= c.id %>"><%= c.name %></option>
-                  <% }) %>
-                </select>
-              </label>
-              <label class="hub-field">
-                <span>Papel</span>
-                <select name="ncm_role">
-                  <option value="consulta">Consulta</option>
-                  <option value="admin">Admin da empresa</option>
-                </select>
-              </label>
-            </fieldset>
-          </div>
-
-          <label class="hub-check hub-check-admin">
-            <input type="checkbox" name="is_admin" value="1" />
-            <span>Admin do HUB (gerencia usuários e vê menu Administração)</span>
-          </label>
-          <button type="submit" class="hub-btn hub-btn-primary">Criar</button>
+      <% } else if (!users.length) { %>
+        <div class="hub-users-empty">
+          <p>Nenhum usuário com estes filtros.</p>
+          <a href="/admin/usuarios">Limpar busca</a>
         </div>
-      </form>
-    </section>
-
-    <section class="hub-card hub-card-spaced">
-      <h2>Usuários cadastrados</h2>
-      <div class="hub-table-wrap">
-        <table class="hub-table hub-table-users">
-          <thead>
-            <tr>
-              <th>Usuário</th>
-              <th>E-mail</th>
-              <th>Admin</th>
-              <th>Ativo</th>
-              <th>Módulos e vínculos</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% users.forEach(function(user) {
-              const meta = userMeta[user.id] || {};
-              const conciMeta = meta.conci || {};
-              const ncmMeta = meta.ncm || {};
-            %>
-              <tr>
-                <td>
+      <% } else { %>
+        <div class="hub-users-list" role="table" aria-label="Usuários cadastrados">
+          <div class="hub-users-head" role="row">
+            <span role="columnheader">Login</span>
+            <span role="columnheader">Acesso</span>
+            <span role="columnheader">Estado</span>
+            <span role="columnheader"><span class="visually-hidden">Ações</span></span>
+          </div>
+          <% users.forEach(function(user) {
+            const meta = userMeta[user.id] || {};
+            const conciMeta = meta.conci || {};
+            const ncmMeta = meta.ncm || {};
+            const selected = isEdit && String(editingUser.id) === String(user.id);
+            const conciNome = conciCompanyName(conciMeta);
+            const ncmNome = ncmCompanyName(ncmMeta);
+          %>
+            <article
+              class="hub-user-item<%= selected ? ' is-selected' : '' %><%= user.active ? '' : ' is-inactive' %>"
+              role="row"
+              data-user-id="<%= user.id %>"
+            >
+              <div class="hub-user-id" role="cell">
+                <span class="hub-user-avatar" aria-hidden="true"><%= initialsOf(user) %></span>
+                <div>
                   <strong><%= user.username %></strong>
                   <div class="hub-muted"><%= user.displayName %></div>
-                </td>
-                <td><%= user.email %></td>
-                <td>
-                  <span class="hub-badge <%= user.isAdmin ? 'hub-badge-ok' : 'hub-badge-muted' %>">
-                    <%= user.isAdmin ? 'Sim' : 'Não' %>
+                  <div class="hub-user-email"><%= user.email %></div>
+                </div>
+              </div>
+              <div class="hub-user-access" role="cell">
+                <% if (user.isAdmin) { %>
+                  <span class="hub-mod-chip hub-mod-chip--admin">Admin do HUB</span>
+                <% } %>
+                <% if (user.canFolha) { %>
+                  <span class="hub-mod-chip hub-mod-chip--folha"><span class="hub-mod-dot" aria-hidden="true"></span>Folha</span>
+                <% } %>
+                <% if (user.canConci) { %>
+                  <span class="hub-mod-chip hub-mod-chip--conci">
+                    <span class="hub-mod-dot" aria-hidden="true"></span>
+                    <% if (conciMeta.role === 'admin') { %>
+                      Conciliação · Admin
+                    <% } else if (conciNome) { %>
+                      Conciliação · Empresa · <%= conciNome %>
+                    <% } else { %>
+                      Conciliação · sem empresa
+                    <% } %>
                   </span>
-                </td>
-                <td>
-                  <span class="hub-badge <%= user.active ? 'hub-badge-ok' : 'hub-badge-muted' %>">
-                    <%= user.active ? 'Sim' : 'Não' %>
+                <% } %>
+                <% if (user.canNcm) { %>
+                  <span class="hub-mod-chip hub-mod-chip--ncm">
+                    <span class="hub-mod-dot" aria-hidden="true"></span>
+                    NCM · <%= ncmMeta.role === 'admin' ? 'Admin' : 'Consulta' %><% if (ncmNome) { %> · <%= ncmNome %><% } else { %> · sem empresa<% } %>
                   </span>
-                </td>
-                <td>
-                  <form method="post" action="/admin/usuarios/<%= user.id %>/modulos" class="hub-user-edit-form" data-hub-user-form>
-                    <div class="hub-inline-mods">
-                      <label class="hub-check"><input type="checkbox" name="mod_folha" value="1" data-mod-toggle="folha" <%= user.canFolha ? 'checked' : '' %> /> Folha</label>
-                      <label class="hub-check"><input type="checkbox" name="mod_conci" value="1" data-mod-toggle="conci" <%= user.canConci ? 'checked' : '' %> /> Conci</label>
-                      <label class="hub-check"><input type="checkbox" name="mod_ncm" value="1" data-mod-toggle="ncm" <%= user.canNcm ? 'checked' : '' %> /> NCM</label>
-                    </div>
-
-                    <div class="hub-module-panel" data-mod-panel="conci" <%= user.canConci ? '' : 'hidden' %>>
-                      <label class="hub-field hub-field-sm">
-                        <span>Papel Conci</span>
-                        <select name="conci_role" data-conci-role>
-                          <option value="empresa" <%= conciMeta.role === 'empresa' ? 'selected' : '' %>>Empresa</option>
-                          <option value="admin" <%= conciMeta.role === 'admin' ? 'selected' : '' %>>Admin</option>
-                        </select>
-                      </label>
-                      <label class="hub-field hub-field-sm" data-conci-empresa-wrap>
-                        <span>Empresa</span>
-                        <select name="conci_empresa_id">
-                          <option value="">—</option>
-                          <% conciEmpresas.forEach(function(e) { %>
-                            <option value="<%= e.id %>" <%= String(conciMeta.empresaId || '') === String(e.id) ? 'selected' : '' %>><%= e.nome %></option>
-                          <% }) %>
-                        </select>
-                      </label>
-                    </div>
-
-                    <div class="hub-module-panel" data-mod-panel="ncm" <%= user.canNcm ? '' : 'hidden' %>>
-                      <label class="hub-field hub-field-sm">
-                        <span>Empresa NCM</span>
-                        <select name="ncm_company_id">
-                          <option value="">—</option>
-                          <% ncmCompanies.forEach(function(c) { %>
-                            <option value="<%= c.id %>" <%= String(ncmMeta.companyId || '') === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
-                          <% }) %>
-                        </select>
-                      </label>
-                      <label class="hub-field hub-field-sm">
-                        <span>Papel NCM</span>
-                        <select name="ncm_role">
-                          <option value="consulta" <%= ncmMeta.role === 'consulta' ? 'selected' : '' %>>Consulta</option>
-                          <option value="admin" <%= ncmMeta.role === 'admin' ? 'selected' : '' %>>Admin</option>
-                        </select>
-                      </label>
-                    </div>
-
-                    <label class="hub-field hub-field-sm">
-                      <span>Nova senha (opcional)</span>
-                      <input name="password" type="password" minlength="6" autocomplete="new-password" placeholder="Deixe em branco para manter" />
-                    </label>
-
-                    <input type="hidden" name="is_admin" value="<%= user.isAdmin ? '1' : '0' %>" />
-                    <input type="hidden" name="active" value="<%= user.active ? '1' : '0' %>" />
-                    <button type="submit" class="hub-btn hub-btn-sm hub-btn-primary">Salvar</button>
-                  </form>
-                </td>
-                <td>
-                  <form method="post" action="/admin/usuarios/<%= user.id %>/status" class="hub-inline">
-                    <input type="hidden" name="active" value="<%= user.active ? '0' : '1' %>" />
-                    <button type="submit" class="hub-btn hub-btn-sm hub-btn-ghost">
-                      <%= user.active ? 'Desativar' : 'Ativar' %>
-                    </button>
-                  </form>
-                </td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
+                <% } %>
+                <% if (!user.canFolha && !user.canConci && !user.canNcm && !user.isAdmin) { %>
+                  <span class="hub-muted">Sem módulos</span>
+                <% } %>
+              </div>
+              <div class="hub-user-state" role="cell">
+                <span class="hub-status<%= user.active ? ' is-on' : '' %>">
+                  <%= user.active ? 'Ativo' : 'Inativo' %>
+                </span>
+              </div>
+              <div class="hub-user-action" role="cell">
+                <a class="hub-btn hub-btn-ghost hub-btn-sm" href="<%= listHref({ editar: user.id }) %>" data-sheet-open="edit" data-user-id="<%= user.id %>">Editar</a>
+              </div>
+            </article>
+          <% }) %>
+        </div>
+      <% } %>
     </section>
   </main>
+
+  <dialog
+    class="hub-user-sheet"
+    id="hub-user-sheet"
+    aria-labelledby="hub-user-sheet-title"
+    <% if (sheetOpen) { %>open<% } %>
+  >
+    <form
+      method="post"
+      action="<%= formAction %>"
+      class="hub-sheet-form"
+      id="hub-user-form"
+      data-hub-user-form
+      data-sheet-mode="<%= sheetMode || '' %>"
+      autocomplete="off"
+    >
+      <header class="hub-sheet-head">
+        <div>
+          <p class="hub-sheet-kicker">Êxito Hub</p>
+          <h2 id="hub-user-sheet-title"><%= isEdit ? 'Editar usuário' : 'Novo usuário' %></h2>
+          <% if (isEdit) { %>
+            <p class="hub-muted hub-sheet-sub"><%= sheetUser.username %> · <%= sheetUser.email %></p>
+          <% } else { %>
+            <p class="hub-muted hub-sheet-sub">O mesmo login entra em Folha, Conciliação e NCM.</p>
+          <% } %>
+        </div>
+        <a class="hub-menu-close" href="<%= listHref({ novo: '', editar: '', confirmar: '' }) %>" aria-label="Fechar" data-sheet-close>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </a>
+      </header>
+
+      <div class="hub-sheet-body">
+        <% if (error && sheetOpen) { %>
+          <div class="hub-alert" role="alert"><%= error %></div>
+        <% } %>
+
+        <input type="hidden" name="q" value="<%= filters.q %>" />
+        <input type="hidden" name="mod" value="<%= filters.mod %>" />
+        <input type="hidden" name="sit" value="<%= filters.sit %>" />
+        <% if (isEdit) { %>
+          <input type="hidden" name="active" value="<%= sheetUser.active ? '1' : '0' %>" />
+        <% } %>
+
+        <label class="hub-field">
+          <span>Usuário (login Conciliação)</span>
+          <input
+            name="username"
+            value="<%= isEdit ? sheetUser.username : '' %>"
+            <%= isEdit ? 'readonly' : 'required' %>
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </label>
+        <label class="hub-field">
+          <span>E-mail (login NCM)</span>
+          <input
+            name="email"
+            type="email"
+            value="<%= isEdit ? sheetUser.email : '' %>"
+            <%= isEdit ? 'readonly' : 'required' %>
+            autocomplete="off"
+          />
+        </label>
+        <label class="hub-field">
+          <span>Nome</span>
+          <input name="displayName" value="<%= isEdit ? sheetUser.displayName : '' %>" />
+        </label>
+        <label class="hub-field">
+          <span><%= isEdit ? 'Nova senha (opcional)' : 'Senha' %></span>
+          <input
+            name="password"
+            type="password"
+            minlength="6"
+            autocomplete="new-password"
+            <%= isEdit ? '' : 'required' %>
+            placeholder="<%= isEdit ? 'Deixe em branco para manter' : '' %>"
+          />
+        </label>
+
+        <fieldset class="hub-mod-toggles">
+          <legend>Módulos</legend>
+          <label class="hub-mod-toggle">
+            <input type="checkbox" name="mod_folha" value="1" data-mod-toggle="folha" <%= isEdit && sheetUser.canFolha ? 'checked' : '' %> />
+            <span>Folha</span>
+          </label>
+          <label class="hub-mod-toggle">
+            <input type="checkbox" name="mod_conci" value="1" data-mod-toggle="conci" <%= isEdit && sheetUser.canConci ? 'checked' : '' %> />
+            <span>Conciliação</span>
+          </label>
+          <label class="hub-mod-toggle">
+            <input type="checkbox" name="mod_ncm" value="1" data-mod-toggle="ncm" <%= isEdit && sheetUser.canNcm ? 'checked' : '' %> />
+            <span>NCM</span>
+          </label>
+        </fieldset>
+
+        <div class="hub-module-panel" data-mod-panel="folha" <%= isEdit && sheetUser.canFolha ? '' : 'hidden' %>>
+          <p class="hub-muted hub-module-hint">Folha não tem cadastro separado: quem tem o módulo entra em Folha. Admin Folha = Admin do HUB abaixo.</p>
+        </div>
+
+        <div class="hub-module-panel" data-mod-panel="conci" <%= isEdit && sheetUser.canConci ? '' : 'hidden' %>>
+          <label class="hub-field">
+            <span>Papel na Conciliação</span>
+            <select name="conci_role" data-conci-role>
+              <option value="empresa" <%= sheetConci.role !== 'admin' ? 'selected' : '' %>>Empresa</option>
+              <option value="admin" <%= sheetConci.role === 'admin' ? 'selected' : '' %>>Admin Conciliação</option>
+            </select>
+          </label>
+          <label class="hub-field" data-conci-empresa-wrap>
+            <span>Empresa</span>
+            <select name="conci_empresa_id">
+              <option value="">Selecione…</option>
+              <% conciEmpresas.forEach(function(e) { %>
+                <option
+                  value="<%= e.id %>"
+                  <%= String(sheetConci.empresaId || '') === String(e.id) ? 'selected' : '' %>
+                  <%= !e.ativo && String(sheetConci.empresaId || '') !== String(e.id) ? 'disabled' : '' %>
+                ><%= e.nome %><%= e.ativo ? '' : ' (inativa)' %></option>
+              <% }) %>
+            </select>
+          </label>
+        </div>
+
+        <div class="hub-module-panel" data-mod-panel="ncm" <%= isEdit && sheetUser.canNcm ? '' : 'hidden' %>>
+          <label class="hub-field">
+            <span>Empresa no NCM</span>
+            <select name="ncm_company_id">
+              <option value="">Selecione…</option>
+              <% ncmCompanies.forEach(function(c) { %>
+                <option value="<%= c.id %>" <%= String(sheetNcm.companyId || '') === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+              <% }) %>
+            </select>
+          </label>
+          <label class="hub-field">
+            <span>Papel no NCM</span>
+            <select name="ncm_role">
+              <option value="consulta" <%= sheetNcm.role !== 'admin' ? 'selected' : '' %>>Consulta</option>
+              <option value="admin" <%= sheetNcm.role === 'admin' ? 'selected' : '' %>>Admin da empresa</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="hub-check hub-check-admin">
+          <input
+            type="checkbox"
+            name="is_admin"
+            value="1"
+            <%= (isEdit ? sheetUser.isAdmin : false) ? 'checked' : '' %>
+            <%= isSelf ? 'disabled' : '' %>
+          />
+          <span>Admin do HUB — gerencia usuários e vê Administração</span>
+        </label>
+        <% if (isSelf) { %>
+          <input type="hidden" name="is_admin" value="1" />
+          <p class="hub-muted hub-module-hint">Você não pode remover o próprio acesso de admin.</p>
+        <% } %>
+      </div>
+
+      <footer class="hub-sheet-foot">
+        <div class="hub-sheet-foot-row" data-foot-default <%= confirmOff ? 'hidden' : '' %>>
+          <% if (isEdit && !isSelf && sheetUser.active) { %>
+            <a class="hub-btn hub-btn-ghost hub-btn-danger" href="<%= listHref({ editar: sheetUser.id, confirmar: 'desativar' }) %>" data-deactivate-start>Desativar</a>
+          <% } else if (isEdit && !isSelf && !sheetUser.active) { %>
+            <button class="hub-btn hub-btn-ghost" type="submit" formaction="<%= statusAction %>" name="active" value="1">Ativar</button>
+          <% } else if (isEdit && isSelf) { %>
+            <span class="hub-muted">Você não pode desativar o próprio login.</span>
+          <% } else { %>
+            <span></span>
+          <% } %>
+          <div class="hub-sheet-foot-actions">
+            <a class="hub-btn hub-btn-ghost" href="<%= listHref({ novo: '', editar: '', confirmar: '' }) %>" data-sheet-close>Cancelar</a>
+            <button type="submit" class="hub-btn hub-btn-primary" data-save-submit>
+              <%= isEdit ? 'Salvar' : 'Criar usuário' %>
+            </button>
+          </div>
+        </div>
+        <% if (isEdit && !isSelf) { %>
+          <div class="hub-sheet-foot-row hub-sheet-confirm" data-foot-confirm <%= confirmOff ? '' : 'hidden' %>>
+            <p>Desativar o login <strong><%= sheetUser.username %></strong>? Ele não entra mais no HUB.</p>
+            <div class="hub-sheet-foot-actions">
+              <a class="hub-btn hub-btn-ghost" href="<%= listHref({ editar: sheetUser.id, confirmar: '' }) %>" data-deactivate-cancel>Voltar</a>
+              <button class="hub-btn hub-btn-danger-fill" type="submit" formaction="<%= statusAction %>" name="active" value="0" data-status-submit>Desativar agora</button>
+            </div>
+          </div>
+        <% } %>
+      </footer>
+    </form>
+  </dialog>
+
   <script src="/hub-assets/hub-admin-users.js"></script>
 </body>
 </html>
