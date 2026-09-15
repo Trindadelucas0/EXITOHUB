@@ -56,6 +56,50 @@ describe('pre-cadastro por sessao', () => {
     assert.equal(item.credito, 9);
   });
 
+  it('findBestPreByHistorico: prefixo e barra em TAR/CUSTAS', () => {
+    writeSession(SID, [{
+      id: 'tar1',
+      descricao: 'TAR/CUSTAS COBRANCA',
+      debito: 1025,
+      credito: 8,
+    }]);
+    const found = store.findBestPreByHistorico(SID, 'BB TAR/CUSTAS COBRANCA');
+    assert.ok(found);
+    assert.equal(found.descricao, 'TAR/CUSTAS COBRANCA');
+    assert.equal(found.debito, 1025);
+  });
+
+  it('findBestPreByHistorico: ENERGIA nao casa NEOENERGIA', () => {
+    writeSession(SID, [{ id: 't1', descricao: 'ENERGIA', debito: 2101, credito: 9 }]);
+    assert.equal(store.findBestPreByHistorico(SID, 'BOLETO PAGO NEOENERGIA'), null);
+  });
+
+  it('findBestPreByHistorico: ignora chave de recebimento', () => {
+    writeSession(SID, [{
+      id: 'r1',
+      descricao: 'RECEBIMENTO DE CLIENTES',
+      debito: 9,
+      credito: 1001,
+    }]);
+    assert.equal(
+      store.findBestPreByHistorico(SID, 'RECEBIMENTO DE CLIENTES AVULSO'),
+      null,
+    );
+  });
+
+  it('enrichCapFromHistorico nao sobrescreve CAP preenchida', () => {
+    writeSession(SID, [{ id: 't2', descricao: 'BOLETO PAGO', debito: 9999, credito: 1 }]);
+    const out = store.enrichCapFromHistorico({
+      tipo: 'pagamento',
+      status: 'MATCHED',
+      classificacaoCap: 'FORNECEDORES',
+      categoria: 'FORNECEDORES',
+      historico: 'BOLETO PAGO MENEGOTTI MA',
+    }, SID);
+    assert.equal(out.classificacaoCap, 'FORNECEDORES');
+    assert.notEqual(out.motivo, 'historico+precadastro');
+  });
+
   it('findByDescricao: trim e case-insensitive, sem match parcial', () => {
     writeSession(SID, [{ id: 't1', descricao: 'ENERGIA', debito: 2101, credito: 9 }]);
 

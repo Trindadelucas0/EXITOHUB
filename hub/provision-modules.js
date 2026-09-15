@@ -1,5 +1,6 @@
 "use strict";
 
+const { randomUUID } = require("crypto");
 const bcrypt = require("bcryptjs");
 const { Client } = require("pg");
 const { conciHubEmail, normalizeUsername, normalizeEmail } = require("./provision");
@@ -356,13 +357,12 @@ async function provisionNcmUser({
     let userId;
     if (!existing.rowCount) {
       if (!hash) throw new Error("Senha é obrigatória para provisionar NCM.");
-      const inserted = await client.query(
-        `INSERT INTO users (company_id, email, password_hash, name, role)
-         VALUES ($1, $2, $3, $4, $5)
-         RETURNING id`,
-        [primaryId, mail, hash, displayName, role],
+      userId = randomUUID();
+      await client.query(
+        `INSERT INTO users (id, company_id, email, password_hash, name, role)
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [userId, primaryId, mail, hash, displayName, role],
       );
-      userId = inserted.rows[0].id;
     } else {
       userId = existing.rows[0].id;
       const sets = ["company_id = $1", "name = $2", "role = $3"];

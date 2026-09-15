@@ -28,3 +28,11 @@ O login **EXITO** (`exito` / `escritorio@local`) é o master padrão: vê Folha,
 Cadastro de pessoas do escritório e de clientes continua em **Administrativo → Gerenciar usuários** (`/admin/usuarios`). Clique **Novo usuário**. Para um acesso completo, marque **Master EXITO**. Para cliente, marque só os módulos e as empresas. Sem o módulo marcado, a ferramenta não aparece no menu.
 
 No Auditor Fiscal e na Conciliação, se o login tiver várias empresas, um seletor no topo troca a empresa ativa. O acesso continua só nas empresas marcadas no cadastro.
+
+## Conciliação — Classificação Êxito pelo histórico
+
+1. Em `/conci/pre-cadastro`, escolha o banco. Cadastre a descrição (o texto ou um trecho do histórico do extrato) e Débito/Crédito.
+2. Tarifas bancárias: cadastre **TARIFAS BANCARIAS** com os códigos. O extrato pode mostrar `TAR/CUSTAS COBRANCA` ou `BB TAR/CUSTAS COBRANCA`.
+3. Envie Extrato + Contas a Pagar. O que casar com a planilha de CAP **não** muda. O que ficar sem classificação usa o histórico contra o pré-cadastro; se houver códigos, a linha já vem aprovada.
+4. Recebimentos (valor positivo) continuam **RECEBIMENTO** — não entram nessa regra.
+5. Se o pré-cadastro foi feito depois do envio, na Revisão use **Atualizar pré-cadastro** (só preenche Classificação Êxito vazia).

@@ -1,7 +1,7 @@
 {
   "regrasHistorico": [
     {
-      "pattern": "^TAR",
+      "pattern": "TAR/|CUSTAS\\s+COBRANCA|(?:^|[^A-Za-z0-9])TAR(?:[^A-Za-z0-9]|$)",
       "label": "TARIFAS BANCARIAS",
       "preCadastroDescricao": "TARIFAS BANCARIAS"
     }

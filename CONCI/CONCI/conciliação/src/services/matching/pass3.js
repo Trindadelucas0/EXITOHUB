@@ -3,7 +3,8 @@
 const mapa = require('../../config/mapaContas.json');
 
 /**
- * Marca tarifas por historico. Codigos so via pre-cadastro TARIFAS BANCARIAS.
+ * Marca tarifas por historico (TAR/ ou TAR como token, inclusive apos prefixo BB).
+ * Codigos so via pre-cadastro TARIFAS BANCARIAS. Padroes vem de mapaContas.json.
  */
 function applyRegrasHistorico(pag) {
   const hist = String(pag.historico || '');

@@ -147,6 +147,16 @@ const RECEBIMENTO_LOOKUP_KEYS = new Set([
 ]);
 
 /**
+ * Barra vira espaco para casar TAR/CUSTAS com prefixo (ex.: BB TAR/CUSTAS COBRANCA).
+ */
+function normalizeMatchText(value) {
+  return stripAccentsUpper(value)
+    .replace(/\//g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
  * Descricao contida no historico com limite de palavra
  * (evita ENERGIA dentro de NEOENERGIA).
  */
@@ -165,7 +175,8 @@ function containsAsWords(haystack, needle) {
  */
 function findBestPreByHistorico(storeKey, historico) {
   if (!storeKey) return null;
-  const hist = stripAccentsUpper(historico);
+  const histRaw = stripAccentsUpper(historico);
+  const hist = normalizeMatchText(historico);
   if (!hist) return null;
 
   let best = null;
@@ -173,11 +184,12 @@ function findBestPreByHistorico(storeKey, historico) {
   let bestExact = false;
 
   for (const item of list(storeKey)) {
-    const desc = stripAccentsUpper(item.descricao);
+    const descRaw = stripAccentsUpper(item.descricao);
+    const desc = normalizeMatchText(item.descricao);
     if (desc.length < 4) continue;
     if (RECEBIMENTO_LOOKUP_KEYS.has(normalizeDescricao(item.descricao))) continue;
 
-    const exact = hist === desc;
+    const exact = histRaw === descRaw || hist === desc;
     const contained = !exact && containsAsWords(hist, desc);
     if (!exact && !contained) continue;
 

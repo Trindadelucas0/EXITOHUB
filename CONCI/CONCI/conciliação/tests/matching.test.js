@@ -50,6 +50,32 @@ describe('matching unitario', () => {
     assert.equal(item.classificacaoCap, 'TARIFAS BANCARIAS');
   });
 
+  it('regra TAR casa no meio do historico com prefixo BB', () => {
+    const item = applyRegrasHistorico({
+      id: 'x',
+      data: '2026-04-01',
+      historico: 'BB TAR/CUSTAS COBRANCA',
+      razaoSocial: '',
+      cnpj: '',
+      valor: -1.89,
+    });
+    assert.ok(item);
+    assert.equal(item.status, 'REGRA');
+    assert.equal(item.classificacaoCap, 'TARIFAS BANCARIAS');
+  });
+
+  it('TARIFARIO nao dispara regra TAR', () => {
+    const item = applyRegrasHistorico({
+      id: 'x',
+      data: '2026-04-01',
+      historico: 'BOLETO PAGO TARIFARIO MUNICIPAL',
+      razaoSocial: '',
+      cnpj: '',
+      valor: -10,
+    });
+    assert.equal(item, null);
+  });
+
   it('match por valor+nome no historico preenche classificacao', () => {
     const { itens } = runMatching({
       sessionId: SID,
@@ -333,6 +359,32 @@ describe('matching unitario', () => {
     assert.equal(itens[0].classificacaoCap, 'TARIFAS BANCARIAS');
   });
 
+  it('TAR com prefixo BB aplica codigos do pre-cadastro e auto-aprova', () => {
+    writeSession([{
+      id: 't1',
+      descricao: store.DESCRICAO_TARIFAS_BANCARIAS,
+      debito: 1025,
+      credito: 9,
+    }]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'p1',
+        data: '2026-04-01',
+        historico: 'BB TAR/CUSTAS COBRANCA',
+        razaoSocial: '',
+        cnpj: '',
+        valor: -1.89,
+      }],
+      contas: [],
+    });
+    assert.equal(itens[0].status, 'REGRA');
+    assert.equal(itens[0].classificacaoCap, 'TARIFAS BANCARIAS');
+    assert.equal(itens[0].debito, 1025);
+    assert.equal(itens[0].credito, 9);
+    assert.equal(itens[0].aprovado, true);
+  });
+
   it('matching com so credito no pre-cadastro deixa debito null', () => {
     writeSession([{ id: 'f2', descricao: 'FORNECEDORES', debito: null, credito: 9 }]);
     const { itens } = runMatching({
@@ -473,6 +525,30 @@ describe('matching unitario', () => {
     assert.equal(itens[0].classificacaoCap, 'PIX ENVIADO FORNECEDOR X');
     assert.equal(itens[0].motivo, 'historico+precadastro');
     assert.equal(itens[0].debito, 1004);
+  });
+
+  it('residual PIX no historico (trecho) auto-aprova com codigos do pre-cadastro', () => {
+    writeSession([{ id: 'pix1', descricao: 'PIX ENVIADO FORNECEDOR X', debito: 1004, credito: 9 }]);
+
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'p1',
+        data: '2026-04-01',
+        historico: 'BB PIX ENVIADO FORNECEDOR X 15H',
+        razaoSocial: '',
+        cnpj: '',
+        valor: -80,
+      }],
+      contas: [],
+    });
+
+    assert.equal(itens[0].status, 'SUGERIDO');
+    assert.equal(itens[0].motivo, 'historico+precadastro');
+    assert.equal(itens[0].classificacaoCap, 'PIX ENVIADO FORNECEDOR X');
+    assert.equal(itens[0].debito, 1004);
+    assert.equal(itens[0].credito, 9);
+    assert.equal(itens[0].aprovado, true);
   });
 
   it('CAP da Contas a Pagar nao e sobrescrita pelo historico', () => {

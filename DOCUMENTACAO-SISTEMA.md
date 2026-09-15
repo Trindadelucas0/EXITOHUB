@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.3.34 — Forms da Conciliação usam prefixo `/conci` (Abrir empresa no HUB).
+> Versão: 1.3.36 — Conciliação: residual sem CAP classifica pelo histórico do extrato.
 
 ## 1. Visão geral
 
@@ -36,7 +36,7 @@ O HUB provisiona automaticamente:
 
 - **Master EXITO** (seed `HUB_SEED_ADMIN_USER` / `HUB_SEED_ADMIN_EMAIL`, padrão `exito` / `escritorio@local`) → Admin do HUB + Folha + Conciliação admin (todas as empresas) + NCM `superadmin` (painel do escritório, todas as empresas). Garantido no boot (`ensureMasterUser`). Não exige marcar empresa no cadastro.
 - **Conciliação** → `CONCI.users` (papel `admin` ou `empresa` + `empresa_id` principal) e `CONCI.user_empresas` (todas as empresas do login)
-- **NCM** → `fiscal-p.users` (papel `superadmin` sem empresa, ou `admin`/`consulta` + `company_id` principal) e `fiscal-p.user_companies` (todas as empresas do login, se não for escritório)
+- **NCM** → `fiscal-p.users` (papel `superadmin` sem empresa, ou `admin`/`consulta` + `company_id` principal) e `fiscal-p.user_companies` (todas as empresas do login, se não for escritório). O INSERT do HUB gera `users.id` (`crypto.randomUUID`); o default `cuid()` do Prisma só vale no client Next, não no Postgres.
 - **Folha** → sessão espelhada do HUB (sem tabela própria em modo HUB)
 
 Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/seed-baifer-consulta.js) (`npm run seed:baifer-consulta` ou no boot do HUB). Usuário `consulta.baifer` / e-mail `consulta@baifer.local`, módulo só NCM, papel `consulta`, empresa BAIFER. **Não** use o usuário `baifer` — esse é da Conciliação. Senha via `HUB_SEED_BAIFER_CONSULTA_PASSWORD` ou `SEED_ADMIN_PASSWORD` (não fica na documentação).
@@ -45,6 +45,8 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 1.3.36 | 15/09/2026 | Conciliação: residual sem CAP (não só TAR) classifica pelo histórico vs descrição do pré-cadastro; `TAR/CUSTAS` com prefixo (ex. BB) → TARIFAS BANCARIAS; auto-aprova com códigos; CAP da planilha não é sobrescrita |
+| 1.3.35 | 15/09/2026 | Cadastro Master/NCM no HUB: `provisionNcmUser` envia `users.id` (UUID). Sem isso o Postgres rejeitava INSERT com id nulo (`cuid()` do Prisma não é DEFAULT no banco) |
 | 1.3.34 | 14/09/2026 | Conci no HUB: forms/links do módulo usam `u()` + `CONCI_BASE_PATH` (`POST /conci/admin/empresas/:id`). `/admin/usuarios` e `/logout` continuam no HUB |
 | 1.3.33 | 14/09/2026 | Panorama NCM: percentual nos cards, tratados/regras, donut de situação, top NCMs, segmentos (Unica/Egaplast) e sparkline dos lotes |
 | 1.3.32 | 14/09/2026 | Produção: `/home/exito/projetos/EXITOHUB` + PM2 `exito-hub` (3010); migrate `user_companies`; boot master EXITO |
@@ -186,22 +188,25 @@ A conferência compara o lote com a **base fiscal da empresa da sessão**. Na te
 
 ### Conciliação — Classificação Êxito × histórico
 
-Tela **Revisão** após enviar Extrato + Contas a Pagar. Pré-cadastro por empresa+banco em `/conci/pre-cadastro`. Código: [`preCadastroStore.js`](CONCI/CONCI/conciliação/src/services/preCadastroStore.js) (`findBestPreByHistorico`, `enrichCapFromHistorico`), [`orchestrator.js`](CONCI/CONCI/conciliação/src/services/matching/orchestrator.js), [`revisaoBulk.js`](CONCI/CONCI/conciliação/src/services/revisaoBulk.js).
+Tela **Revisão** após enviar Extrato + Contas a Pagar. Pré-cadastro por empresa+banco em `/conci/pre-cadastro`. Código: [`preCadastroStore.js`](CONCI/CONCI/conciliação/src/services/preCadastroStore.js) (`findBestPreByHistorico`, `enrichCapFromHistorico`), [`pass3.js`](CONCI/CONCI/conciliação/src/services/matching/pass3.js), [`mapaContas.json`](CONCI/CONCI/conciliação/src/config/mapaContas.json), [`orchestrator.js`](CONCI/CONCI/conciliação/src/services/matching/orchestrator.js), [`revisaoBulk.js`](CONCI/CONCI/conciliação/src/services/revisaoBulk.js).
+
+A Contas a Pagar **vence**. O histórico só classifica residual (qualquer pagamento sem Classificação Êxito, não só tarifa). Não há campo extra no pré-cadastro: a descrição cadastrada é o texto (ou trecho) do histórico.
 
 | Situação | O que acontece |
 |----------|----------------|
 | Classificação Êxito já preenchida (Contas a Pagar ou edição) | Não sobrescreve. Débito/Crédito vêm da descrição igual no pré-cadastro |
-| Classificação Êxito vazia | Procura a descrição do pré-cadastro no histórico do extrato (igualdade ou como palavra). A mais longa vence. Preenche CAP + Débito/Crédito; auto-aprova se houver códigos |
+| Classificação Êxito vazia (residual) | Procura a descrição do pré-cadastro no histórico do extrato (igualdade ou como palavra; barra `/` conta como espaço). A mais longa vence. Preenche CAP + Débito/Crédito; auto-aprova se houver códigos |
+| `TAR/CUSTAS COBRANCA` (também `BB TAR/CUSTAS COBRANCA`) | Classificação Êxito `TARIFAS BANCARIAS`. Códigos da linha `TARIFAS BANCARIAS` do pré-cadastro. Não casa `TARIFARIO` |
 | `ENERGIA` no pré-cadastro e histórico `NEOENERGIA` | Não classifica (evita pedaço de outra palavra) |
 | Recebimento (valor positivo) | Continua CAP `RECEBIMENTO`; não classifica pelo histórico |
-| Cadastrou o pré-cadastro depois do upload | **Atualizar pré-cadastro** na revisão aplica a mesma regra. Salvar uma linha com CAP em branco também tenta o histórico |
+| Cadastrou o pré-cadastro depois do upload | **Atualizar pré-cadastro** na revisão só preenche CAP vazia. Salvar uma linha com CAP em branco também tenta o histórico |
 
 ## 8. Guia rápido
 
 1. Crie empresas nos módulos Conci e NCM.
 2. Em **Administrativo → Gerenciar usuários** (`/admin/usuarios`), clique **Novo usuário**. Preencha login, e-mail, senha, marque os módulos e **marque todas as empresas** que o login pode abrir (Conciliação e/ou NCM). Salvar fecha o sheet. Para corrigir: busque o login → **Editar**. Desativar pede confirmação no rodapé.
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu mostra **Contábil → Conciliação** (sem Folha/Auditor Fiscal). Admin do HUB vê os 7 departamentos no hambúrguer; Projetos abre o card do Avadesk.
-4. Empresa Conci: em **Pré-cadastro**, cadastre a Classificação Êxito (descrição que aparece no histórico do extrato) e os códigos Débito/Crédito. Envie Extrato + Contas a Pagar. Na **Revisão**, o que não veio da planilha de CAP é classificado se a descrição estiver no histórico. Se cadastrou depois, clique **Atualizar pré-cadastro**.
+4. Empresa Conci: em **Pré-cadastro**, cadastre a Classificação Êxito (texto ou trecho do histórico do extrato) e os códigos Débito/Crédito. Tarifas: cadastre `TARIFAS BANCARIAS` (o extrato pode vir `TAR/CUSTAS COBRANCA` ou `BB TAR/CUSTAS COBRANCA`). Envie Extrato + Contas a Pagar. Na **Revisão**, o que **não** veio da planilha de CAP é classificado se a descrição estiver no histórico; o que já veio da CAP não muda. Se cadastrou depois, clique **Atualizar pré-cadastro** (só preenche CAP vazia).
 5. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar. No hambúrguer, o auditor aparece como **Fiscal → Auditor Fiscal**. No **Panorama**, escolha o lote; os quatro cards (Analisados, Corretos, Divergentes, Análise) mostram quantidade e %. Tratados, A tratar e Regras na base ficam na faixa abaixo. O donut é a composição do lote; as barras são os NCMs (e segmentos na Unica/Egaplast) com mais pendência — clique abre Consultar. As barras pequenas são as últimas importações (clique troca o lote). Clique num card para a lista filtrada.
 6. **Consulta BAIFER (NCM):** em `/login` use `consulta.baifer` ou `consulta@baifer.local` (senha do seed, não publicada). **Não** use `baifer` — esse usuário é da Conciliação. O NCM abre direto o dashboard da BAIFER (Panorama). Vê Consultar, Divergências e Base fiscal. **Não** vê Empresas/Usuários do escritório (`/ncm/escritorio/empresas` volta ao dashboard). Não vê empresas fora do vínculo, não importa, não apaga lote, não baixa Excel/PDF. Para outro cliente consulta, o mesmo padrão: `/admin/usuarios` → NCM + empresas + papel Consulta. Com várias empresas marcadas, o seletor no topo do Auditor Fiscal troca a empresa ativa.
 7. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG. Pode importar a Atacadista ou `PLANILHA REGRA FISCAL UNICA.xlsx` (esta última não tem coluna Abrev.; o sistema completa pelo NCM). Importe o CSV em **Planilhas**. No **Panorama**, o card **Corretos** são os itens cuja Abreviação bate com a base (`004` = `4`). **Consulta** e **Divergências**: na barra, **Filtrar segmento** escolhe Autopeças, Tintas, Fora da base etc. (não há chips nem fila de NCM). **Divergências** mostra só o que não bateu (Abreviação diferente ou NCM fora da base). Marcar como já tratado é na **ficha** do produto. Para baixar só os NCM que **não estão na regra** da empresa: **Incluir no arquivo → Fora da base → Exportar Excel** (lote inteiro, detalhado) — só admin da empresa ou escritório. Vale também para BAIFER, Loja e Egaplast.
