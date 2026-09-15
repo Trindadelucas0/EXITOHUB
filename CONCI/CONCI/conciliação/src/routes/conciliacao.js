@@ -16,6 +16,14 @@ const {
   deleteSession,
 } = require('../services/sessionStore');
 const conciliacaoStore = require('../services/conciliacaoStore');
+const CONCI_BASE_PATH = process.env.CONCI_BASE_PATH || '';
+function conciPath(p) {
+  const pathPart = String(p).startsWith('/') ? p : `/${p}`;
+  if (CONCI_BASE_PATH && (pathPart === CONCI_BASE_PATH || pathPart.startsWith(`${CONCI_BASE_PATH}/`))) {
+    return pathPart;
+  }
+  return `${CONCI_BASE_PATH}${pathPart}`;
+}
 const { exportDominio, exportDominioTxt } = require('../services/exportDominio');
 const { exportRelatorioExcel, exportRelatorioPdf } = require('../services/exportRelatorio');
 const {
@@ -459,7 +467,7 @@ router.post(
           percent: 100,
           step: 'Concluído',
           done: true,
-          revisaoUrl: `/revisao/${session.id}`,
+          revisaoUrl: conciPath(`/revisao/${session.id}`),
         });
       } catch (err) {
         console.error(err);

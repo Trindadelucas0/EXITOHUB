@@ -6,7 +6,7 @@ describe("rotas leves do Panorama", () => {
   it("dashboard não compara o cadastro inteiro", () => {
     const src = readFileSync(path.join(process.cwd(), "app/api/dashboard/route.ts"), "utf8");
     expect(src).not.toContain("compareCompanyProducts");
-    expect(src).toContain("dashboardTotalsFromBatch");
+    expect(src).toContain("loadDashboardBreakdown");
   });
 
   it("consulta não remonta a página ao gravar o lote na URL", () => {

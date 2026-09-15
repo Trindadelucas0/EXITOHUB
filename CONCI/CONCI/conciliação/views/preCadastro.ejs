@@ -28,7 +28,7 @@
 </details>
 
 <% if (banco) { %>
-  <form method="get" action="/pre-cadastro" class="toolbar" style="margin-bottom: 1rem;">
+  <form method="get" action="<%= u('/pre-cadastro') %>" class="toolbar" style="margin-bottom: 1rem;">
     <div style="flex: 1; min-width: 220px;">
       <label class="field-label" for="banco-select">Banco</label>
       <select id="banco-select" name="banco" required class="field-select" onchange="this.form.submit()">
@@ -44,7 +44,7 @@
     </p>
   </form>
 
-  <form method="post" action="/pre-cadastro" class="card card-pad" style="margin-bottom: 1rem;">
+  <form method="post" action="<%= u('/pre-cadastro') %>" class="card card-pad" style="margin-bottom: 1rem;">
     <input type="hidden" name="bancoId" value="<%= banco.id %>" />
     <h3 class="card-title">Novo item</h3>
     <div style="display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); align-items: end;">
@@ -81,7 +81,7 @@
           <tr>
             <% if (editId === item.id) { %>
               <td colspan="4">
-                <form method="post" action="/pre-cadastro/<%= item.id %>" style="display: grid; gap: 0.65rem; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); align-items: end;">
+                <form method="post" action="<%= u('/pre-cadastro/' + item.id) %>" style="display: grid; gap: 0.65rem; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); align-items: end;">
                   <input type="hidden" name="bancoId" value="<%= banco.id %>" />
                   <div style="grid-column: span 2;">
                     <label class="field-label">Descrição</label>
@@ -97,7 +97,7 @@
                   </div>
                   <div class="row-actions">
                     <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
-                    <a href="/pre-cadastro?banco=<%= banco.id %>" class="btn btn-ghost btn-sm">Cancelar</a>
+                    <a href="<%= u('/pre-cadastro?banco=' + banco.id) %>" class="btn btn-ghost btn-sm">Cancelar</a>
                   </div>
                 </form>
               </td>
@@ -107,8 +107,8 @@
               <td><%= item.credito ?? '' %></td>
               <td>
                 <div class="row-actions">
-                  <a href="/pre-cadastro?banco=<%= banco.id %>&edit=<%= item.id %>" class="btn btn-ghost btn-sm">Editar</a>
-                  <form method="post" action="/pre-cadastro/<%= item.id %>" onsubmit="return confirm('Excluir este cadastro?')" class="inline">
+                  <a href="<%= u('/pre-cadastro?banco=' + banco.id + '&edit=' + item.id) %>" class="btn btn-ghost btn-sm">Editar</a>
+                  <form method="post" action="<%= u('/pre-cadastro/' + item.id) %>" onsubmit="return confirm('Excluir este cadastro?')" class="inline">
                     <input type="hidden" name="bancoId" value="<%= banco.id %>" />
                     <input type="hidden" name="_method" value="DELETE" />
                     <button type="submit" class="btn btn-danger btn-sm">Excluir</button>

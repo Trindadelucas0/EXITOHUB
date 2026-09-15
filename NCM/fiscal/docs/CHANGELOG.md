@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.23 — 14/09/2026
+
+Adicionado:
+
+- Panorama: percentual nos quatro cards, faixa Tratados / A tratar / Regras na base, donut da situação, ranking dos NCMs com mais pendência, segmentos na Unica/Egaplast e sparkline das últimas importações. `GET /api/dashboard` passa a devolver o breakdown agregado (sem comparar o cadastro linha a linha).
+
 ## v1.6.22 — 08/09/2026
 
 Adicionado:

@@ -37,7 +37,7 @@
   <div class="flash flash-error">Não foi possível concluir a ação. Tente novamente.</div>
 <% } %>
 
-<form method="get" action="/historico" class="toolbar historico-filters">
+<form method="get" action="<%= u('/historico') %>" class="toolbar historico-filters">
   <div>
     <label class="field-label" for="filtro-competencia">Competência</label>
     <input id="filtro-competencia" type="month" name="competencia" value="<%= filters.competencia || '' %>" class="field-input" />
@@ -52,7 +52,7 @@
   </div>
   <div class="historico-filters-actions">
     <button type="submit" class="btn btn-secondary">Filtrar</button>
-    <a href="/historico" class="btn btn-ghost">Limpar</a>
+    <a href="<%= u('/historico') %>" class="btn btn-ghost">Limpar</a>
   </div>
 </form>
 
@@ -111,12 +111,12 @@
           </td>
           <td>
             <div class="row-actions">
-              <a href="/revisao/<%= row.id %>" class="btn btn-primary btn-sm">Abrir</a>
+              <a href="<%= u('/revisao/' + row.id) %>" class="btn btn-primary btn-sm">Abrir</a>
               <% if (row.enviado) { %>
                 <button type="button" onclick="abrirDesbloquearModal('<%= row.id %>')" class="btn btn-ghost btn-sm">Desbloquear</button>
                 <button type="button" disabled title="Desbloqueie antes de excluir" class="btn btn-ghost btn-sm" style="opacity: 0.45;">Excluir</button>
               <% } else { %>
-                <form method="post" action="/historico/<%= row.id %>/marcar-enviado" class="inline">
+                <form method="post" action="<%= u('/historico/' + row.id + '/marcar-enviado') %>" class="inline">
                   <input type="hidden" name="competencia" value="<%= filters.competencia || '' %>" />
                   <input type="hidden" name="de" value="<%= filters.de || '' %>" />
                   <input type="hidden" name="ate" value="<%= filters.ate || '' %>" />
@@ -124,7 +124,7 @@
                     onclick="return confirm('Marcar esta conciliação como enviada? Ela ficará somente leitura até ser desbloqueada.');"
                     class="btn btn-ghost btn-sm">Marcar enviado</button>
                 </form>
-                <form method="post" action="/historico/<%= row.id %>/excluir" class="inline"
+                <form method="post" action="<%= u('/historico/' + row.id + '/excluir') %>" class="inline"
                   onsubmit="return confirm('Excluir esta conciliação do histórico? Esta ação não pode ser desfeita.');">
                   <input type="hidden" name="competencia" value="<%= filters.competencia || '' %>" />
                   <input type="hidden" name="de" value="<%= filters.de || '' %>" />
@@ -166,7 +166,7 @@
 <script>
   function abrirDesbloquearModal(id) {
     const form = document.getElementById('desbloquear-form');
-    form.action = '/historico/' + id + '/desbloquear';
+    form.action = <%- JSON.stringify(u('/historico/')) %> + id + '/desbloquear';
     const modal = document.getElementById('desbloquear-modal');
     modal.classList.add('is-open');
     modal.setAttribute('aria-hidden', 'false');

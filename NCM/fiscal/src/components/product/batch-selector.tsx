@@ -39,7 +39,7 @@ export function clearImportListCache() {
   importListCache = null;
 }
 
-async function persistSelection(batchId: string) {
+export async function persistSelection(batchId: string) {
   const selectRes = await fetch(ncmApiUrl("/api/import/select"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -57,10 +57,12 @@ async function persistSelection(batchId: string) {
 export function BatchSelector({
   onChange,
   preferredId,
+  syncId,
   compact = false,
 }: {
   onChange: (batchId: string | null, batches: BatchOption[]) => void;
   preferredId?: string | null;
+  syncId?: string | null;
   compact?: boolean;
 }) {
   const onChangeRef = useRef(onChange);
@@ -130,6 +132,12 @@ export function BatchSelector({
       controller.abort();
     };
   }, [preferred]);
+
+  useEffect(() => {
+    if (syncId && syncId !== activeIdRef.current) {
+      setActiveId(syncId);
+    }
+  }, [syncId]);
 
   async function select(batchId: string) {
     if (batchId === activeId) return;

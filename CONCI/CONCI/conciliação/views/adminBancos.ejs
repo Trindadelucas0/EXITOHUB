@@ -14,7 +14,7 @@
 
 <%- include('partials/flash') %>
 
-<form method="post" action="/admin/bancos" class="card card-pad" style="margin-bottom: 1rem;">
+<form method="post" action="<%= u('/admin/bancos') %>" class="card card-pad" style="margin-bottom: 1rem;">
   <h3 class="card-title">Novo banco</h3>
   <div style="display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); align-items: end;">
     <div>
@@ -40,7 +40,7 @@
   <% } %>
   <% bancos.forEach(function(b) { %>
     <div class="admin-row admin-row--banco">
-      <form method="post" action="/admin/bancos/<%= b.id %>" style="display: contents;">
+      <form method="post" action="<%= u('/admin/bancos/' + b.id) %>" style="display: contents;">
         <div>
           <label class="field-label">Nome</label>
           <input name="nome" value="<%= b.nome %>" required class="field-input" />
@@ -54,7 +54,7 @@
           <span class="badge <%= b.ativo ? 'badge-enviado' : 'badge-pendente' %>"><%= b.ativo ? 'Ativo' : 'Inativo' %></span>
         </div>
       </form>
-      <form method="post" action="/admin/bancos/<%= b.id %>" style="grid-column: 1 / -1;">
+      <form method="post" action="<%= u('/admin/bancos/' + b.id) %>" style="grid-column: 1 / -1;">
         <input type="hidden" name="action" value="toggle" />
         <input type="hidden" name="ativo" value="<%= b.ativo ? 'true' : 'false' %>" />
         <button type="submit" class="btn btn-ghost btn-sm">

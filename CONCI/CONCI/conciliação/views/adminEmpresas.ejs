@@ -20,15 +20,15 @@
       Empresa em uso: <strong><%= user.empresaNome %></strong>
     </div>
     <div class="row-actions">
-      <a href="/" class="btn btn-primary btn-sm">Ir para conciliação</a>
-      <form method="post" action="/admin/sair-empresa" class="inline">
+      <a href="<%= u('/') %>" class="btn btn-primary btn-sm">Ir para conciliação</a>
+      <form method="post" action="<%= u('/admin/sair-empresa') %>" class="inline">
         <button type="submit" class="btn btn-ghost btn-sm">Trocar empresa</button>
       </form>
     </div>
   </div>
 <% } %>
 
-<form method="post" action="/admin/empresas" class="card card-pad empresa-create">
+<form method="post" action="<%= u('/admin/empresas') %>" class="card card-pad empresa-create">
   <h3 class="card-title">Nova empresa</h3>
   <div class="empresa-create-grid">
     <div>
@@ -71,7 +71,7 @@
           </div>
           <div class="empresa-actions">
             <% if (e.ativo) { %>
-              <form method="post" action="/admin/empresas/<%= e.id %>" class="inline">
+              <form method="post" action="<%= u('/admin/empresas/' + e.id) %>" class="inline">
                 <input type="hidden" name="action" value="abrir" />
                 <button type="submit" class="btn <%= isOpen ? 'btn-ghost' : 'btn-primary' %> btn-sm">
                   <%= isOpen ? 'Continuar' : 'Abrir' %>
@@ -85,7 +85,7 @@
               data-nome="<%= e.nome %>">
               Editar
             </button>
-            <form method="post" action="/admin/empresas/<%= e.id %>" class="inline">
+            <form method="post" action="<%= u('/admin/empresas/' + e.id) %>" class="inline">
               <input type="hidden" name="action" value="toggle" />
               <input type="hidden" name="ativo" value="<%= e.ativo ? 'true' : 'false' %>" />
               <button type="submit" class="btn btn-ghost btn-sm">
@@ -123,7 +123,7 @@
     if (!modal || !form) return;
 
     function openModal(id, nome) {
-      form.action = '/admin/empresas/' + id;
+      form.action = <%- JSON.stringify(u('/admin/empresas/')) %> + id;
       nomeInput.value = nome || '';
       modal.classList.add('is-open');
       modal.setAttribute('aria-hidden', 'false');

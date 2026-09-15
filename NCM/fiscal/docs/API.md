@@ -11,7 +11,7 @@ Respostas: `{ success, data }` ou `{ success: false, error: { code, message } }`
 | GET | `/api/auth/me` | sessão | usuário, empresa efetiva, `fromOffice` e `canWrite` |
 | POST | `/api/auth/select-company` | superadmin | abre a empresa (`companyId`) na sessão do escritório |
 | POST | `/api/auth/clear-company` | superadmin | fecha a empresa e volta ao painel do escritório |
-| GET | `/api/dashboard` | sessão | totais do lote ativo (`lote`) |
+| GET | `/api/dashboard` | sessão | breakdown do lote (`lote`): `totals`, `ruleCount`, `treatedCount`, `untreatedAttention`, `topNcm` (até 8), `segmento` (Unica/Egaplast ou `null`), `hasCadastro`, `batch`. Sem lote: zeros e arrays vazios (não 404) |
 | GET | `/api/rules` | sessão | lista NCM (`q`, `situacao`; Unica inclui `ufTributacao`, `cest`) |
 | POST | `/api/rules/import` | admin | importa XLSX/CSV/ODS de regras na empresa aberta |
 | GET | `/api/rules/:id` | sessão | regra; outro tenant → 404 |

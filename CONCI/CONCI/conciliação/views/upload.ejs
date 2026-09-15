@@ -13,7 +13,7 @@
 
 <%- include('partials/flash') %>
 
-<form id="form-conciliar" action="/conciliar" method="post" enctype="multipart/form-data" class="card card-pad space-y-5">
+<form id="form-conciliar" action="<%= u('/conciliar') %>" method="post" enctype="multipart/form-data" class="card card-pad space-y-5">
   <div>
     <label class="field-label" for="bancoId">Banco do extrato</label>
     <p class="field-hint">Obrigatório. A conciliação usa o pré-cadastro e o código de crédito deste banco.</p>
@@ -70,6 +70,7 @@
 
 <script>
   (function () {
+    const bp = <%- JSON.stringify(typeof basePath !== 'undefined' ? basePath : '') %>;
     const form = document.getElementById('form-conciliar');
     const overlay = document.getElementById('progress-overlay');
     const bar = document.getElementById('progress-bar');
@@ -111,7 +112,7 @@
 
       try {
         const fd = new FormData(form);
-        const res = await fetch('/conciliar?async=1', {
+        const res = await fetch(bp + '/conciliar?async=1', {
           method: 'POST',
           body: fd,
           headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
@@ -129,7 +130,7 @@
         }
 
         const poll = async function () {
-          const st = await fetch('/conciliar/status/' + jobId, {
+          const st = await fetch(bp + '/conciliar/status/' + jobId, {
             headers: { 'Accept': 'application/json' },
             credentials: 'same-origin',
           });

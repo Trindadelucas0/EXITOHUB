@@ -13,7 +13,7 @@ Clique no ☰. Cada departamento tem uma seta à esquerda (como o ERP); o clique
 
 - **Geral** — carteira, certificados (SIEG) e login do cliente (admin; a maioria ainda “Em breve”).
 - **Fiscal** — Auditor Fiscal (`/ncm/`), Controle DAUTO (`/folha/fiscal`) e itens fiscais futuros (admin).
-- **Contábil** — Conciliação (`/conci/`).
+- **Contábil** — Conciliação (`/conci/`). Admin da Conciliação cai em **Empresas** (`/conci/admin/empresas`): **Abrir** entra na conciliação daquela empresa. Não use `/admin/empresas` sem `/conci` — isso é o HUB, não o módulo.
 - **Folha de pagamento** — folha mensal, DAUTO Tintas e CCT/calculadora (admin, em breve).
 - **Administrativo** — POPs, informativos, organograma (em breve) e **Gerenciar usuários**.
 - **Projetos** — página com o card do Avadesk. Use o portal para chamados, bugs e projetos em andamento: https://suporte.avadesk.com.br/

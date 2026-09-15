@@ -97,15 +97,18 @@ export function UserManual() {
             <li>Abra o Panorama.</li>
             <li>Escolha a planilha (lote) que quer conferir. Cada importação vira um lote separado.</li>
             <li>
-              Olhe os quatro números: quantos itens foram analisados, quantos estão corretos,
-              divergentes ou precisam de análise.
+              Olhe os números e os gráficos: quantos itens foram analisados, o percentual de
+              corretos, divergentes e análise, quantos já foram tratados e quantas regras há na
+              base. O donut mostra a composição; as barras listam os NCMs (e, na Unica/Egaplast, os
+              segmentos) que mais pedem conferência. As barras pequenas são as últimas planilhas —
+              clique para trocar o lote.
             </li>
             <li>
               Se houver lote anterior, o painel “O que mudou” mostra códigos novos, que saíram, com
               NCM diferente ou com situação diferente.
             </li>
           </ol>
-          <p>Clique em um número para ir direto à lista filtrada.</p>
+          <p>Clique em um card, num NCM ou num segmento para ir à lista filtrada.</p>
           <ScreenLink href="/dashboard">Ir para o Panorama</ScreenLink>
         </ManualCard>
 

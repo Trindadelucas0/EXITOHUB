@@ -42,8 +42,8 @@
         Exporta todos os lançamentos (aprovação não é obrigatória).
       </p>
       <div style="display: grid; gap: 0.5rem;">
-        <a href="/export/<%= session.id %>.txt" class="btn btn-primary btn-block">Baixar .txt Domínio</a>
-        <a href="/export/<%= session.id %>" class="btn btn-ghost btn-block">Baixar .xlsx Domínio</a>
+        <a href="<%= u('/export/' + session.id + '.txt') %>" class="btn btn-primary btn-block">Baixar .txt Domínio</a>
+        <a href="<%= u('/export/' + session.id) %>" class="btn btn-ghost btn-block">Baixar .xlsx Domínio</a>
       </div>
     </div>
     <div class="card card-pad">
@@ -52,8 +52,8 @@
         Mesma tabela da Revisão, com Banco e Competência no cabeçalho.
       </p>
       <div style="display: grid; gap: 0.5rem;">
-        <a href="/export/<%= session.id %>/detalhado.xlsx" class="btn btn-primary btn-block">Gerar Excel detalhado</a>
-        <a href="/export/<%= session.id %>/detalhado.pdf" class="btn btn-ghost btn-block">Gerar PDF detalhado</a>
+        <a href="<%= u('/export/' + session.id + '/detalhado.xlsx') %>" class="btn btn-primary btn-block">Gerar Excel detalhado</a>
+        <a href="<%= u('/export/' + session.id + '/detalhado.pdf') %>" class="btn btn-ghost btn-block">Gerar PDF detalhado</a>
       </div>
     </div>
   </div>
@@ -61,6 +61,6 @@
   <div class="flash flash-warning">Nenhum lançamento nesta conciliação.</div>
 <% } %>
 
-<a href="/revisao/<%= session.id %>" class="btn btn-ghost">Voltar à revisão</a>
+<a href="<%= u('/revisao/' + session.id) %>" class="btn btn-ghost">Voltar à revisão</a>
 
 <%- include('partials/app-shell-end') %>
