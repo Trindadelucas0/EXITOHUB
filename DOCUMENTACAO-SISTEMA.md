@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM).
-> Versão: 1.3.31 — Login master EXITO (`exito` / `escritorio@local`) vê todos os módulos e empresas.
+> Versão: 1.3.32 — Deploy VPS: PM2 `exito-hub`, migrate `user_companies`, master EXITO no boot.
 
 ## 1. Visão geral
 
@@ -45,6 +45,7 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 1.3.32 | 14/09/2026 | Produção: `/home/exito/projetos/EXITOHUB` + PM2 `exito-hub` (3010); migrate `user_companies`; boot master EXITO |
 | 1.3.31 | 14/09/2026 | Login padrão EXITO (`HUB_SEED_ADMIN_*`, usuário `exito`) é master: Folha+Conci+NCM, Admin do HUB, Conci admin, NCM superadmin (todas as empresas). Checkbox Master no cadastro. |
 | 1.3.30 | 14/09/2026 | `/admin/usuarios`: checkboxes de várias empresas em Conciliação (papel empresa) e NCM; troca da empresa ativa no módulo |
 | 1.3.28 | 14/09/2026 | Usuários HUB: lista com chips + sheet direito (`?novo=1` / `?editar=`); filtro GET; sem form/senha na linha |
@@ -123,6 +124,8 @@ npm run reconcile:modules:dry     # simula correção de módulos fantasmas
 npm run reconcile:modules         # aplica correção (Conci/NCM módulo único)
 cd NCM/fiscal && npm run db:migrate   # alinha o PostgreSQL fiscal-p ao Prisma (o HUB não aplica migrate no boot)
 ```
+
+Produção (VPS): repo `/home/exito/projetos/EXITOHUB`, PM2 `exito-hub` na porta 3010. Depois do `git pull`: `npm ci`, migrate NCM com `NCM_DATABASE_URL` do `.env`, `pm2 restart exito-hub`. O boot garante `user_empresas` e o master EXITO.
 
 ## 7. Mapa tela → código
 
