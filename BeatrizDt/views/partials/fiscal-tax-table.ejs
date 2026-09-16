@@ -14,8 +14,6 @@
       <thead>
         <tr>
           <th scope="col">Nº DOMINIO</th>
-          <th scope="col">SISTEMA DAUTO</th>
-          <th scope="col">LOCAL</th>
           <th scope="col">EMPRESA</th>
           <% fields.forEach(field => { %>
             <th scope="col"><%= labels[field] || field %></th>
@@ -37,20 +35,6 @@
             </td>
             <td>
               <% if (readOnly || printing) { %>
-                <%= row.sistemaDauto || '—' %>
-              <% } else { %>
-                <input type="text" class="fiscal-input js-fiscal-field" data-field="sistemaDauto" value="<%= row.sistemaDauto || '' %>" />
-              <% } %>
-            </td>
-            <td>
-              <% if (readOnly || printing) { %>
-                <%= row.local || '—' %>
-              <% } else { %>
-                <input type="text" class="fiscal-input js-fiscal-field" data-field="local" value="<%= row.local || '' %>" />
-              <% } %>
-            </td>
-            <td>
-              <% if (readOnly || printing) { %>
                 <%= row.empresa || '—' %>
               <% } else { %>
                 <input type="text" class="fiscal-input js-fiscal-field" data-field="empresa" value="<%= row.empresa || '' %>" required />
@@ -66,7 +50,7 @@
                       type="text"
                       class="fiscal-input fiscal-input--tax js-fiscal-field"
                       data-field="<%= field %>"
-                      value="<%= row[field] === null || row[field] === undefined ? '' : row[field] %>"
+                      value="<% if (row[field] === null || row[field] === undefined || row[field] === '') { %><% } else if (typeof row[field] === 'number') { %><%= helpers.formatFiscalCell(row[field]) %><% } else { %><%= row[field] %><% } %>"
                       placeholder="R$ -"
                     />
                     <button
@@ -89,7 +73,7 @@
       </tbody>
       <tfoot>
         <tr class="fiscal-table__total">
-          <th colspan="4" scope="row">TOTAL</th>
+          <th colspan="2" scope="row">TOTAL</th>
           <% fields.forEach(field => { %>
             <td class="js-fiscal-total" data-field="<%= field %>"><%= helpers.formatFiscalCell(record.totals?.[field] ?? 0) %></td>
           <% }) %>

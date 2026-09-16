@@ -12,7 +12,7 @@ Guia do dia a dia. Regras oficiais: [`DOCUMENTACAO-SISTEMA.md`](../DOCUMENTACAO-
 Clique no ☰. Cada departamento tem uma seta à esquerda (como o ERP); o clique abre as ferramentas com ícone. Módulo ainda não pronto aparece com a pílula **Em breve**. A página atual fica com fundo verde.
 
 - **Geral** — carteira, certificados (SIEG) e login do cliente (admin; a maioria ainda “Em breve”).
-- **Fiscal** — Auditor Fiscal (`/ncm/`), Controle DAUTO (`/folha/fiscal`) e itens fiscais futuros (admin).
+- **Fiscal** — Auditor Fiscal (`/ncm/`), Controle DAUTO (`/folha/fiscal`: Nº Domínio + Empresa + impostos, valores em R$ com vírgula, **Baixar PDF**) e itens fiscais futuros (admin).
 - **Contábil** — Conciliação (`/conci/`). Admin da Conciliação cai em **Empresas** (`/conci/admin/empresas`): **Abrir** entra na conciliação daquela empresa. Não use `/admin/empresas` sem `/conci` — isso é o HUB, não o módulo.
 - **Folha de pagamento** — folha mensal, DAUTO Tintas e CCT/calculadora (admin, em breve).
 - **Administrativo** — POPs, informativos, organograma (em breve) e **Gerenciar usuários**.

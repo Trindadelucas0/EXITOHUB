@@ -28,6 +28,10 @@ function formatEmitidoEm(date = new Date()) {
   }).format(date);
 }
 
+function toPdfBuffer(bytes) {
+  return Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes);
+}
+
 function createMockPdfBuffer() {
   return Buffer.from('%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF', 'utf-8');
 }
@@ -96,7 +100,7 @@ async function generateFiscalRecordPdf(record, helpers, options = {}) {
       deviceScaleFactor: 1,
     });
     await page.setContent(html, { waitUntil: 'load' });
-    return await page.pdf({
+    const pdfBytes = await page.pdf({
       format: 'A4',
       landscape: true,
       printBackground: true,
@@ -108,6 +112,7 @@ async function generateFiscalRecordPdf(record, helpers, options = {}) {
         left: '5mm',
       },
     });
+    return toPdfBuffer(pdfBytes);
   } finally {
     await browser.close();
   }

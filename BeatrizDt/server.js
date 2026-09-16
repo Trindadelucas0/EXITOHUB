@@ -411,7 +411,7 @@ function createApp() {
         'Content-Disposition',
         `attachment; filename="Demonstrativo_Impostos_${toCompetenciaSlug(record.competencia)}.pdf"`,
       );
-      return res.send(pdfBuffer);
+      return res.end(pdfBuffer);
     } catch (error) {
       console.error('Falha ao gerar PDF:', error.message);
       return res.status(500).send('Nao foi possivel gerar o PDF. Tente novamente.');
@@ -434,7 +434,7 @@ function createApp() {
         'Content-Disposition',
         `attachment; filename="Resumo_Fiscal_${toCompetenciaSlug(record.competencia)}.pdf"`,
       );
-      return res.send(pdfBuffer);
+      return res.end(pdfBuffer);
     } catch (error) {
       console.error('Falha ao gerar PDF fiscal:', error.message);
       return res.status(500).send('Nao foi possivel gerar o PDF fiscal. Tente novamente.');

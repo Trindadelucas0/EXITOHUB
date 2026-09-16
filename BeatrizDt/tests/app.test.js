@@ -195,6 +195,7 @@ describe('aplicacao web', () => {
     const pdfResponse = await agent.get('/dashboard/pdf/04-2026');
     expect(pdfResponse.statusCode).toBe(200);
     expect(pdfResponse.headers['content-type']).toContain('application/pdf');
+    expect(Buffer.from(pdfResponse.body).subarray(0, 5).toString()).toBe('%PDF-');
   });
 
   it('realiza autosave e retorna status da competencia', async () => {
@@ -277,6 +278,7 @@ describe('aplicacao web', () => {
 
     expect(pdfResponse.statusCode).toBe(200);
     expect(pdfResponse.headers['content-type']).toContain('application/pdf');
+    expect(Buffer.from(pdfResponse.body).subarray(0, 5).toString()).toBe('%PDF-');
   });
 
   it('recusa PDF falso quando NODE_ENV e production', async () => {
@@ -306,7 +308,9 @@ describe('aplicacao web', () => {
     expect(fiscal.text).toContain('Controle fiscal');
     expect(fiscal.text).toContain('RESUMO DE IMPOSTOS GRUPO DAUTO');
     expect(fiscal.text).toContain('ICMS PROTEGE');
-    expect(fiscal.text).toContain('GUARA II');
+    expect(fiscal.text).toContain('DT TINTAS');
+    expect(fiscal.text).not.toContain('SISTEMA DAUTO');
+    expect(fiscal.text).not.toContain('>LOCAL<');
     expect(fiscal.text).toContain('Trocar módulo');
     expect(fiscal.text).toContain('07/2026');
   });
@@ -355,6 +359,7 @@ describe('aplicacao web', () => {
     const pdfResponse = await agent.get('/fiscal/pdf/05-2026');
     expect(pdfResponse.statusCode).toBe(200);
     expect(pdfResponse.headers['content-type']).toContain('application/pdf');
+    expect(Buffer.from(pdfResponse.body).subarray(0, 5).toString()).toBe('%PDF-');
   });
 });
 

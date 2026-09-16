@@ -77,6 +77,40 @@
     return currencyFormatter.format(value);
   }
 
+  function bindTaxCurrencyInput(input) {
+    if (!input || input.dataset.taxCurrencyBound === '1') {
+      return;
+    }
+
+    input.dataset.taxCurrencyBound = '1';
+
+    input.addEventListener('focus', () => {
+      const parsed = parseCellValue(input.value);
+      if (typeof parsed === 'number') {
+        input.value = String(input.value || '').replace(/[R$\s\u00a0]/g, '');
+      }
+    });
+
+    input.addEventListener('blur', () => {
+      const parsed = parseCellValue(input.value);
+      if (typeof parsed === 'number') {
+        input.value = formatCell(parsed);
+      } else if (typeof parsed === 'string') {
+        input.value = parsed;
+      } else {
+        const text = String(input.value || '').trim();
+        if (!text || text === '-' || text.toUpperCase() === 'R$ -') {
+          input.value = '';
+        }
+      }
+      refreshTotals();
+    });
+  }
+
+  function bindAllTaxCurrencyInputs(root) {
+    (root || document).querySelectorAll('.fiscal-input--tax').forEach(bindTaxCurrencyInput);
+  }
+
   function calculateTotals(rows) {
     const totals = {};
     TAX_FIELDS.forEach((field) => {
@@ -120,16 +154,20 @@
 
     const desktopRows = Array.from(document.querySelectorAll('.fiscal-desktop tbody tr[data-row-id]'));
     const rows = desktopRows.map((node) => {
+      const previous = (workingRecord.rows || []).find((entry) => entry.id === node.dataset.rowId) || {};
       const row = {
+        ...previous,
         id: node.dataset.rowId,
         dominio: '',
-        sistemaDauto: '',
-        local: '',
+        sistemaDauto: previous.sistemaDauto || '',
+        local: previous.local || '',
         empresa: '',
       };
 
       TAX_FIELDS.forEach((field) => {
-        row[field] = null;
+        if (!(field in row) || row[field] === undefined) {
+          row[field] = null;
+        }
       });
 
       node.querySelectorAll('.js-fiscal-field').forEach((input) => {
@@ -245,8 +283,6 @@
 
     return `<tr data-row-index="0" data-row-id="${row.id}">
       <td><input type="text" class="fiscal-input js-fiscal-field" data-field="dominio" value="" /></td>
-      <td><input type="text" class="fiscal-input js-fiscal-field" data-field="sistemaDauto" value="" /></td>
-      <td><input type="text" class="fiscal-input js-fiscal-field" data-field="local" value="" /></td>
       <td><input type="text" class="fiscal-input js-fiscal-field" data-field="empresa" value="" required /></td>
       ${taxCells}
       <td class="fiscal-table__actions">
@@ -270,8 +306,6 @@
       </header>
       <div class="fiscal-mobile-card__grid">
         <label><span>Nº Domínio</span><input type="text" class="fiscal-input js-fiscal-field" data-field="dominio" value="" /></label>
-        <label><span>Sistema Dauto</span><input type="text" class="fiscal-input js-fiscal-field" data-field="sistemaDauto" value="" /></label>
-        <label><span>Local</span><input type="text" class="fiscal-input js-fiscal-field" data-field="local" value="" /></label>
         <label><span>Empresa</span><input type="text" class="fiscal-input js-fiscal-field" data-field="empresa" value="" /></label>
         ${taxFields}
       </div>
@@ -320,6 +354,7 @@
         mobile.insertAdjacentHTML('beforeend', buildMobileCardHtml(row));
       }
 
+      bindAllTaxCurrencyInputs();
       refreshTotals();
       markDirty();
       return;
@@ -341,5 +376,6 @@
     markDirty();
   });
 
+  bindAllTaxCurrencyInputs();
   refreshTotals();
 })();

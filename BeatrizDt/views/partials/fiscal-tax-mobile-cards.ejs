@@ -22,22 +22,6 @@
           <% } %>
         </label>
         <label>
-          <span>Sistema Dauto</span>
-          <% if (isReadOnly) { %>
-            <strong><%= row.sistemaDauto || '—' %></strong>
-          <% } else { %>
-            <input type="text" class="fiscal-input js-fiscal-field" data-field="sistemaDauto" value="<%= row.sistemaDauto || '' %>" />
-          <% } %>
-        </label>
-        <label>
-          <span>Local</span>
-          <% if (isReadOnly) { %>
-            <strong><%= row.local || '—' %></strong>
-          <% } else { %>
-            <input type="text" class="fiscal-input js-fiscal-field" data-field="local" value="<%= row.local || '' %>" />
-          <% } %>
-        </label>
-        <label>
           <span>Empresa</span>
           <% if (isReadOnly) { %>
             <strong><%= row.empresa || '—' %></strong>
@@ -57,7 +41,7 @@
                   type="text"
                   class="fiscal-input fiscal-input--tax js-fiscal-field"
                   data-field="<%= field %>"
-                  value="<%= row[field] === null || row[field] === undefined ? '' : row[field] %>"
+                  value="<% if (row[field] === null || row[field] === undefined || row[field] === '') { %><% } else if (typeof row[field] === 'number') { %><%= helpers.formatFiscalCell(row[field]) %><% } else { %><%= row[field] %><% } %>"
                   placeholder="R$ -"
                 />
                 <button
