@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM, Portal Corporativo).
-> Versão: 1.4.5 — Conciliação: histórico e pré-cadastro no Postgres; admin reabre a última empresa.
+> Versão: 1.4.6 — Conciliação: histórico do extrato Itaú junta Lançamento e Razão Social.
 
 ## 1. Visão geral
 
@@ -45,6 +45,7 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 1.4.6 | 22/09/2026 | Conciliação: histórico do extrato Itaú junta Lançamento e Razão Social (` - `; vazio = só lançamento). Sessão já gravada não muda; é preciso reenviar o extrato |
 | 1.4.5 | 22/09/2026 | Conciliação: histórico e pré-cadastro ficam no Postgres. Admin reabre a última empresa. Edição que não gravar no banco mostra erro. Backup diário do banco CONCI |
 | 1.4.4 | 21/09/2026 | Portal: `/portal/videos` em coluna única com player YouTube grande; assistir in-app (play no iframe). Link “Abrir no YouTube” secundário |
 | 1.4.3 | 21/09/2026 | Portal: Vídeos de Integração usam link do YouTube (obrigatório); `/portal/videos` exibe iframe embed (`youtube-nocookie`). Sem upload de MP4 no admin de vídeos |
@@ -239,13 +240,14 @@ A conciliação pronta fica na tabela `conciliacoes`. A tela **Histórico** lê 
 | `ENERGIA` no pré-cadastro e histórico `NEOENERGIA` | Não classifica (evita pedaço de outra palavra) |
 | Recebimento (valor positivo) | Continua CAP `RECEBIMENTO`; não classifica pelo histórico |
 | Cadastrou o pré-cadastro depois do upload | **Atualizar pré-cadastro** na revisão só preenche CAP vazia. Salvar uma linha com CAP em branco também tenta o histórico |
+| Extrato Itaú — histórico da revisão, relatório e TXT Domínio | Coluna Lançamento + ` - ` + Razão Social quando preenchida. Sem razão social, só o lançamento. CNPJ e razão social internos continuam para o matching. Pré-cadastro passa a procurar a descrição nesse texto maior (a CAP da planilha continua vencendo) |
 
 ## 8. Guia rápido
 
 1. Crie empresas nos módulos Conci e NCM.
 2. Em **Administrativo → Gerenciar usuários** (`/admin/usuarios`), clique **Novo usuário**. Preencha login, e-mail, senha, marque os módulos e **marque todas as empresas** que o login pode abrir (Conciliação e/ou NCM). Salvar fecha o sheet. Para corrigir: busque o login → **Editar**. Desativar pede confirmação no rodapé.
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu mostra **Contábil → Conciliação** (sem Folha/Auditor Fiscal). Admin do HUB vê os 7 departamentos no hambúrguer; Projetos abre o card do Avadesk.
-4. Empresa Conci: em **Pré-cadastro**, cadastre a Classificação Êxito (texto ou trecho do histórico do extrato) e os códigos Débito/Crédito. Tarifas: cadastre `TARIFAS BANCARIAS` (o extrato pode vir `TAR/CUSTAS COBRANCA`, prefixo de banco ou `TARIFA`). Essas tarifas **não** pegam CAP só por valor+data. Envie Extrato + Contas a Pagar. Na **Revisão**, o que **não** veio da planilha de CAP (nome/CNPJ) é classificado se a descrição estiver no histórico; tarifa vira `TARIFAS BANCARIAS`. Se cadastrou depois, clique **Atualizar pré-cadastro** (só preenche CAP vazia).
+4. Empresa Conci: em **Pré-cadastro**, cadastre a Classificação Êxito (texto ou trecho do histórico do extrato) e os códigos Débito/Crédito. Tarifas: cadastre `TARIFAS BANCARIAS` (o extrato pode vir `TAR/CUSTAS COBRANCA`, prefixo de banco ou `TARIFA`). Essas tarifas **não** pegam CAP só por valor+data. Envie Extrato + Contas a Pagar. Na **Revisão**, o que **não** veio da planilha de CAP (nome/CNPJ) é classificado se a descrição estiver no histórico; tarifa vira `TARIFAS BANCARIAS`. Se cadastrou depois, clique **Atualizar pré-cadastro** (só preenche CAP vazia). No Itaú o histórico mostra lançamento e razão social; conciliação já salva só atualiza se reenviar o extrato.
 5. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar. No hambúrguer, o auditor aparece como **Fiscal → Auditor Fiscal**. No **Panorama**, escolha o lote; os quatro cards (Analisados, Corretos, Divergentes, Análise) mostram quantidade e %. Tratados, A tratar e Regras na base ficam na faixa abaixo. O donut é a composição do lote; as barras são os NCMs (e segmentos na Unica/Egaplast) com mais pendência — clique abre Consultar. As barras pequenas são as últimas importações (clique troca o lote). Clique num card para a lista filtrada.
 6. **Consulta BAIFER (NCM):** em `/login` use `consulta.baifer` ou `consulta@baifer.local` (senha do seed, não publicada). **Não** use `baifer` — esse usuário é da Conciliação. O NCM abre direto o dashboard da BAIFER (Panorama). Vê Consultar, Divergências e Base fiscal. **Não** vê Empresas/Usuários do escritório (`/ncm/escritorio/empresas` volta ao dashboard). Não vê empresas fora do vínculo, não importa, não apaga lote, não baixa Excel/PDF. Para outro cliente consulta, o mesmo padrão: `/admin/usuarios` → NCM + empresas + papel Consulta. Com várias empresas marcadas, o seletor no topo do Auditor Fiscal troca a empresa ativa.
 7. Escritório NCM: em Empresas, **Entrar** na Unica → **Base fiscal** para ver CEST, **Abrev.** e alíquotas DF/GO/MG. Pode importar a Atacadista ou `PLANILHA REGRA FISCAL UNICA.xlsx` (esta última não tem coluna Abrev.; o sistema completa pelo NCM). Importe o CSV em **Planilhas**. No **Panorama**, o card **Corretos** são os itens cuja Abreviação bate com a base (`004` = `4`). **Consulta** e **Divergências**: na barra, **Filtrar segmento** escolhe Autopeças, Tintas, Fora da base etc. (não há chips nem fila de NCM). **Divergências** mostra só o que não bateu (Abreviação diferente ou NCM fora da base). Marcar como já tratado é na **ficha** do produto. Para baixar só os NCM que **não estão na regra** da empresa: **Incluir no arquivo → Fora da base → Exportar Excel** (lote inteiro, detalhado) — só admin da empresa ou escritório. Vale também para BAIFER, Loja e Egaplast.

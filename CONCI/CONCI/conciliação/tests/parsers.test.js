@@ -99,6 +99,33 @@ describe('parsers', () => {
     assert.equal(qr.historico, 'Pix-Recebido QR Code - 01/04 09:22 00000189238100 JERRI NAIM');
   });
 
+  it('extrato Itau: historico junta Lancamento e Razao Social sem duplicar', () => {
+    const rows = [
+      ['Data', 'Lançamento', 'Razão Social', 'CPF/CNPJ', 'Valor (R$)', 'Saldo (R$)'],
+      ['01/04/2026', 'BOLETO PAGO MAKITA BR FE', 'MAKITA BR FER ELETRICAS LTDA', '45.865.920/0001-00', '-5876,80', '10000,00'],
+      ['02/04/2026', 'TAR/CUSTAS COBRANCA', '', '', '-1,89', '9998,11'],
+      ['03/04/2026', 'PIX RECEBIDO MAKITA BR FER ELETRICAS LTDA', 'MAKITA BR FER ELETRICAS LTDA', '45.865.920/0001-00', '100,00', '10098,11'],
+    ];
+    const result = parseExtratoMatrix(rows);
+    const boleto = result.lancamentos.find((l) => l.historico.startsWith('BOLETO PAGO MAKITA'));
+    const tar = result.lancamentos.find((l) => l.historico.includes('TAR/CUSTAS'));
+    const pix = result.lancamentos.find((l) => l.historico.startsWith('PIX RECEBIDO'));
+
+    assert.ok(boleto);
+    assert.equal(boleto.historico, 'BOLETO PAGO MAKITA BR FE - MAKITA BR FER ELETRICAS LTDA');
+    assert.equal(boleto.razaoSocial, 'MAKITA BR FER ELETRICAS LTDA');
+    assert.equal(boleto.cnpj, '45865920000100');
+    assert.equal(boleto.valor, -5876.8);
+
+    assert.ok(tar);
+    assert.equal(tar.historico, 'TAR/CUSTAS COBRANCA');
+
+    assert.ok(pix);
+    assert.equal(pix.historico, 'PIX RECEBIDO MAKITA BR FER ELETRICAS LTDA');
+    assert.equal(pix.razaoSocial, 'MAKITA BR FER ELETRICAS LTDA');
+    assert.equal(pix.valor, 100);
+  });
+
   it('valor absoluto + historico: inferir saida/entrada', () => {
     const rows = [
       ['Data', 'Historico', 'Valor (R$)'],

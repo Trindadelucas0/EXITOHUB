@@ -34,7 +34,7 @@
       "tipo": "extrato",
       "bancoOuOrigem": "Itau BAIFER 04-2026",
       "cabecalhosChave": ["data", "lancamento", "valor", "historico"],
-      "ajustes": ["parser Itau; TAR* via mapaContas.json"],
+      "ajustes": ["historico = Lancamento + Razao Social (separador ' - '; vazio = so Lancamento); TAR* via mapaContas.json"],
       "fixture": "fixtures/calibracao/extrato-itau-baifer-04-2026.xlsx",
       "aprendidoEm": "2026-07-16"
     },

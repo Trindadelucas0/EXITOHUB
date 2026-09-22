@@ -104,11 +104,34 @@ function emptyExtra() {
   };
 }
 
+function foldParty(s) {
+  return stripAccents(String(s || ''))
+    .toUpperCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 /**
- * Completa detalhamentoIdx a partir do cabecalho quando o mapa (ex.: Gemini) nao trouxe a coluna.
+ * Junta Razao Social ao historico com " - ".
+ * Nao duplica se o nome (sem acento, maiusculo, espacos colapsados) ja estiver no texto.
+ * Sem razao, devolve so o historico (lancamento, ou lancamento + detalhamento BB).
+ */
+function appendRazaoToHistorico(historico, razaoSocial) {
+  const hist = String(historico || '').trim();
+  const razao = String(razaoSocial || '').trim();
+  if (!hist || !razao) return hist;
+  const foldedRazao = foldParty(razao);
+  if (!foldedRazao) return hist;
+  if (foldParty(hist).includes(foldedRazao)) return hist;
+  return `${hist} - ${razao}`;
+}
+
+/**
+ * Completa detalhamentoIdx, razaoIdx e cnpjIdx pelo cabecalho quando o mapa (ex.: Gemini) nao trouxe.
+ * So pula o indice que ja esta preenchido (>= 0). Indices usados nao colidem.
  */
 function enrichDetalhamentoIdx(rows, map) {
-  if (!map || (map.detalhamentoIdx != null && map.detalhamentoIdx >= 0)) return map;
+  if (!map) return map;
   const headerIdx = map.headerIdx >= 0 ? map.headerIdx : (map.headerRow >= 0 ? map.headerRow : 0);
   const headers = (rows[headerIdx] || []).map(normalizeHeader);
   const used = new Set(
@@ -121,10 +144,29 @@ function enrichDetalhamentoIdx(rows, map) {
       map.tipoIdx,
       map.razaoIdx,
       map.cnpjIdx,
+      map.detalhamentoIdx,
     ].filter((i) => i != null && i >= 0),
   );
-  const detalhamentoIdx = findColumnIndex(headers, DETALHAMENTO_SYNONYMS, used);
-  return { ...map, detalhamentoIdx };
+
+  let detalhamentoIdx = map.detalhamentoIdx;
+  if (!(detalhamentoIdx != null && detalhamentoIdx >= 0)) {
+    detalhamentoIdx = findColumnIndex(headers, DETALHAMENTO_SYNONYMS, used);
+    if (detalhamentoIdx >= 0) used.add(detalhamentoIdx);
+  }
+
+  let razaoIdx = map.razaoIdx;
+  if (!(razaoIdx != null && razaoIdx >= 0)) {
+    razaoIdx = findColumnIndex(headers, RAZAO_SYNONYMS, used);
+    if (razaoIdx >= 0) used.add(razaoIdx);
+  }
+
+  let cnpjIdx = map.cnpjIdx;
+  if (!(cnpjIdx != null && cnpjIdx >= 0)) {
+    cnpjIdx = findColumnIndex(headers, CNPJ_SYNONYMS, used);
+    if (cnpjIdx >= 0) used.add(cnpjIdx);
+  }
+
+  return { ...map, detalhamentoIdx, razaoIdx, cnpjIdx };
 }
 
 /**
@@ -417,6 +459,8 @@ function buildHistoricoAndParty(row, map, valor) {
   if (historico && detalhe) {
     historico = `${historico} - ${detalhe}`;
   }
+
+  historico = appendRazaoToHistorico(historico, razaoSocial);
 
   return { historico, razaoSocial, cnpj };
 }

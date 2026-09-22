@@ -76,3 +76,4 @@ No Auditor Fiscal e na Conciliação, se o login tiver várias empresas, um sele
 4. Recebimentos (valor positivo) continuam **RECEBIMENTO** — não entram nessa regra.
 5. Se o pré-cadastro foi feito depois do envio, na Revisão use **Atualizar pré-cadastro** (só preenche Classificação Êxito vazia).
 6. Para ver de novo uma conciliação já feita, abra **Histórico** e clique **Abrir**. O botão Voltar do navegador volta para a tela Nova e não mostra os lançamentos. O administrador, ao entrar outra vez, continua na última empresa que abriu.
+7. No extrato Itaú, o histórico mostra lançamento e razão social; conciliação já salva só atualiza se reenviar o extrato.
