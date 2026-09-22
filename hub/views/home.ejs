@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="/hub-assets/hub.css" />
 </head>
 <body class="hub-body">
-  <div class="hub-home">
+  <div class="hub-home hub-home--portal">
     <section class="hub-home-top">
       <div class="hub-home-bar">
         <div class="hub-home-leading">
@@ -21,6 +21,10 @@
           </a>
         </div>
         <div class="hub-home-actions">
+          <button type="button" class="hub-btn hub-btn-ghost hub-btn-sm hub-btn-icon" aria-label="Notificações" disabled title="Em breve">
+            <%- include('partials/hub-menu-icon', { iconName: 'bell' }) %>
+          </button>
+          <span class="hub-home-user-name"><%= hubUser.displayName || hubUser.username %></span>
           <form method="post" action="/logout" class="hub-inline">
             <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -32,17 +36,219 @@
           </form>
         </div>
       </div>
-
-      <div class="hub-home-welcome">
-        <h1>Bem-vindo, <%= hubUser.displayName || hubUser.username %></h1>
-        <p>Abra o menu por departamento para escolher o sistema</p>
-      </div>
     </section>
 
-    <% if (!hubUser.canFolha && !hubUser.canConci && !hubUser.canNcm) { %>
-      <div class="hub-alert">Nenhum módulo liberado. Peça ao administrador do HUB.</div>
-    <% } %>
+    <main class="hub-portal">
+      <% if (flash) { %><div class="hub-alert hub-alert-ok" role="status"><%= flash %></div><% } %>
+      <% if (error) { %><div class="hub-alert hub-alert-error" role="alert"><%= error %></div><% } %>
+
+      <% if (needsOnboarding) { %>
+        <aside class="hub-onboarding-banner hub-onboarding-banner--rich" aria-label="Integração pendente">
+          <div class="hub-onboarding-banner__copy">
+            <p class="hub-onboarding-banner__eyebrow">Bem-vindo ao Êxito</p>
+            <strong>Vamos apresentar a empresa e ajudar você a começar.</strong>
+            <% if (onboardingProgress && onboardingProgress.total) { %>
+              <div class="hub-onboarding-meter" role="progressbar"
+                   aria-valuenow="<%= onboardingProgress.percent %>"
+                   aria-valuemin="0" aria-valuemax="100"
+                   aria-label="Progresso da integração">
+                <span class="hub-onboarding-meter__bar" style="width: <%= onboardingProgress.percent %>%"></span>
+              </div>
+              <p class="hub-muted">
+                <%= onboardingProgress.doneCount %> de <%= onboardingProgress.total %> etapas concluídas
+                · <%= onboardingProgress.percent %>%
+              </p>
+            <% } else { %>
+              <p class="hub-muted">Conheça os conteúdos do portal e conclua a trilha de integração.</p>
+            <% } %>
+          </div>
+          <a class="hub-btn hub-btn-primary" href="/portal/onboarding">Continuar integração</a>
+        </aside>
+      <% } %>
+
+      <header class="hub-portal-welcome">
+        <h1><%= greeting %></h1>
+        <p>Tudo o que você precisa para trabalhar no Êxito.</p>
+      </header>
+
+      <% if (!hubUser.canFolha && !hubUser.canConci && !hubUser.canNcm && !hubUser.isAdmin) { %>
+        <div class="hub-alert">Nenhum módulo liberado. Peça ao administrador do HUB.</div>
+      <% } %>
+
+      <% if (needsOnboarding) { %>
+        <section class="hub-portal-cards" aria-label="Áreas de integração">
+          <% (cards || []).forEach(function (card) { %>
+            <a class="hub-portal-card" href="<%= card.route %>">
+              <span class="hub-portal-card__media">
+                <% if (card.cover) { %>
+                  <img src="<%= card.cover %>" alt="" width="220" height="160" loading="lazy" />
+                <% } else { %>
+                  <span class="hub-portal-card__icon" aria-hidden="true">
+                    <%- include('partials/hub-menu-icon', { iconName: card.icon }) %>
+                  </span>
+                <% } %>
+              </span>
+              <strong><%= card.label %></strong>
+              <span><%= card.description %></span>
+            </a>
+          <% }) %>
+        </section>
+      <% } else { %>
+        <%- include('partials/hub-portal-quick-bar', { quickCards: quickCards || [] }) %>
+      <% } %>
+
+      <section class="hub-portal-section" aria-labelledby="conteudos-titulo">
+        <h2 id="conteudos-titulo" class="hub-portal-section__title">Conteúdos Êxito</h2>
+        <% if (!(contents || []).length) { %>
+          <p class="hub-muted hub-portal-empty"><%= (emptyStates && emptyStates.contents) || 'Em breve, novidades do Êxito.' %></p>
+        <% } else { %>
+          <div class="hub-carousel" data-carousel data-autoplay="6000">
+            <button type="button" class="hub-carousel__nav hub-carousel__nav--prev" data-carousel-prev aria-label="Anterior">‹</button>
+            <div class="hub-carousel__track" data-carousel-track>
+              <% contents.forEach(function (item, idx) { %>
+                <% if (item.href) { %>
+                <a
+                  class="hub-carousel__slide<%= idx === 0 ? ' is-active' : '' %>"
+                  data-carousel-slide
+                  href="<%= item.href %>"
+                  <% if (item.target_type === 'external') { %>target="_blank" rel="noopener noreferrer"<% } %>
+                >
+                  <% if (item.image_url) { %>
+                    <img src="<%= item.image_url %>" alt="" width="640" height="360" loading="lazy" />
+                  <% } %>
+                  <div class="hub-carousel__caption">
+                    <strong><%= item.title %></strong>
+                    <% if (item.description) { %><span><%= item.description %></span><% } %>
+                  </div>
+                </a>
+                <% } else { %>
+                <div class="hub-carousel__slide<%= idx === 0 ? ' is-active' : '' %>" data-carousel-slide>
+                  <% if (item.image_url) { %>
+                    <img src="<%= item.image_url %>" alt="" width="640" height="360" loading="lazy" />
+                  <% } %>
+                  <div class="hub-carousel__caption">
+                    <strong><%= item.title %></strong>
+                    <% if (item.description) { %><span><%= item.description %></span><% } %>
+                  </div>
+                </div>
+                <% } %>
+              <% }) %>
+            </div>
+            <button type="button" class="hub-carousel__nav hub-carousel__nav--next" data-carousel-next aria-label="Próximo">›</button>
+            <div class="hub-carousel__dots" data-carousel-dots role="tablist" aria-label="Slides"></div>
+          </div>
+        <% } %>
+      </section>
+
+      <section class="hub-portal-grid-2" aria-label="Acontece no Êxito">
+        <article class="hub-portal-panel">
+          <header>
+            <h2>Comunicados</h2>
+            <a href="/portal/comunicados">Ver todos →</a>
+          </header>
+          <p class="hub-muted"><%= (emptyStates && emptyStates.announcements) || 'Nenhum comunicado disponível.' %></p>
+        </article>
+        <article class="hub-portal-panel">
+          <header>
+            <h2>Próximos eventos</h2>
+            <a href="/portal/eventos">Ver todos →</a>
+          </header>
+          <p class="hub-muted"><%= (emptyStates && emptyStates.events) || 'Nenhum evento próximo.' %></p>
+        </article>
+      </section>
+
+      <a class="hub-portal-agenda" href="/portal/agenda">
+        <div>
+          <strong>Agenda Êxito</strong>
+          <span>Reuniões, treinamentos e eventos internos</span>
+        </div>
+        <span>Ver agenda →</span>
+      </a>
+
+      <section class="hub-portal-grid-2" aria-label="Links e contatos">
+        <article class="hub-portal-panel">
+          <header><h2>Links úteis</h2></header>
+          <% if (!(links || []).length) { %>
+            <p class="hub-muted"><%= (emptyStates && emptyStates.links) || 'Nenhum link útil disponível.' %></p>
+          <% } else { %>
+            <ul class="hub-portal-list">
+              <% links.forEach(function (link) { %>
+                <li>
+                  <a href="<%= link.url %>" target="_blank" rel="noopener noreferrer">
+                    <strong><%= link.name %></strong>
+                    <% if (link.description) { %><span><%= link.description %></span><% } %>
+                  </a>
+                </li>
+              <% }) %>
+            </ul>
+          <% } %>
+        </article>
+        <article class="hub-portal-panel">
+          <header>
+            <h2>Contatos úteis</h2>
+            <% if ((contacts || []).length && (contactDepartments || []).length) { %>
+              <label class="hub-portal-dept-filter">
+                <span class="visually-hidden">Filtrar por departamento</span>
+                <select id="hub-contact-dept" data-contact-filter aria-label="Filtrar contatos por departamento">
+                  <option value="">Todos</option>
+                  <% contactDepartments.forEach(function (d) { %>
+                    <option value="<%= d %>"><%= d %></option>
+                  <% }) %>
+                </select>
+              </label>
+            <% } %>
+          </header>
+          <% if (!(contacts || []).length) { %>
+            <p class="hub-muted"><%= (emptyStates && emptyStates.contacts) || 'Nenhum contato cadastrado.' %></p>
+          <% } else { %>
+            <ul class="hub-portal-list hub-portal-contacts" data-contact-list>
+              <% contacts.forEach(function (c) { %>
+                <li data-department="<%= c.department || '' %>">
+                  <div class="hub-portal-contact hub-portal-contact--card">
+                    <% if (c.photo_url) { %>
+                      <img src="<%= c.photo_url %>" alt="" width="48" height="48" loading="lazy" />
+                    <% } else { %>
+                      <span class="hub-portal-contact__avatar" aria-hidden="true"><%= String(c.name || '?').charAt(0).toUpperCase() %></span>
+                    <% } %>
+                    <div class="hub-portal-contact__body">
+                      <strong><%= c.name %></strong>
+                      <% if (c.role || c.department) { %>
+                        <span><%= [c.role, c.department].filter(Boolean).join(' · ') %></span>
+                      <% } %>
+                      <% if (c.description) { %><span class="hub-muted"><%= c.description %></span><% } %>
+                      <div class="hub-portal-contact__actions">
+                        <% if (c.email) { %>
+                          <a class="hub-btn hub-btn-ghost hub-btn-sm" href="mailto:<%= c.email %>">E-mail</a>
+                        <% } %>
+                        <% if (c.whatsapp) { %>
+                          <a class="hub-btn hub-btn-ghost hub-btn-sm" href="https://wa.me/<%= c.whatsapp %>" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              <% }) %>
+            </ul>
+          <% } %>
+        </article>
+      </section>
+    </main>
   </div>
   <script src="/hub-assets/hub-menu.js"></script>
+  <script src="/hub-assets/hub-carousel.js"></script>
+  <script>
+    (function () {
+      var select = document.querySelector('[data-contact-filter]');
+      var list = document.querySelector('[data-contact-list]');
+      if (!select || !list) return;
+      select.addEventListener('change', function () {
+        var value = select.value;
+        list.querySelectorAll('li').forEach(function (li) {
+          var dept = li.getAttribute('data-department') || '';
+          li.hidden = Boolean(value) && dept !== value;
+        });
+      });
+    })();
+  </script>
 </body>
 </html>

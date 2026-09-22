@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/hub-assets/hub.css" />
+</head>
+<body class="hub-body">
+  <%- include('../partials/hub-chrome', { current: 'admin-portal' }) %>
+  <main class="hub-main hub-portal-page">
+    <section class="hub-card">
+      <p class="hub-breadcrumb"><a href="/admin/portal">Portal Corporativo</a> / Configurações</p>
+      <h1>Configurações</h1>
+      <p class="hub-muted">Integrações futuras de Comunicados, Eventos e Agenda serão configuradas aqui.</p>
+      <p>Nesta versão não há flags ativas — a Home já exibe as seções como placeholders.</p>
+      <p><a class="hub-btn hub-btn-primary" href="/admin/portal">Voltar</a></p>
+    </section>
+  </main>
+</body>
+</html>

@@ -76,6 +76,20 @@ describe('matching unitario', () => {
     assert.equal(item, null);
   });
 
+  it('TARIFA PACOTE dispara regra TARIFAS BANCARIAS', () => {
+    const item = applyRegrasHistorico({
+      id: 'x',
+      data: '2026-04-01',
+      historico: 'TARIFA PACOTE SERVICOS',
+      razaoSocial: '',
+      cnpj: '',
+      valor: -1.89,
+    });
+    assert.ok(item);
+    assert.equal(item.status, 'REGRA');
+    assert.equal(item.classificacaoCap, 'TARIFAS BANCARIAS');
+  });
+
   it('match por valor+nome no historico preenche classificacao', () => {
     const { itens } = runMatching({
       sessionId: SID,
@@ -382,6 +396,66 @@ describe('matching unitario', () => {
     assert.equal(itens[0].classificacaoCap, 'TARIFAS BANCARIAS');
     assert.equal(itens[0].debito, 1025);
     assert.equal(itens[0].credito, 9);
+    assert.equal(itens[0].aprovado, true);
+  });
+
+  it('TAR mesmo valor e data que CAP nao casa fornecedor; usa TARIFAS BANCARIAS', () => {
+    writeSession([{
+      id: 't1',
+      descricao: store.DESCRICAO_TARIFAS_BANCARIAS,
+      debito: 1025,
+      credito: 9,
+    }]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'p1',
+        data: '2026-04-01',
+        historico: 'TAR/CUSTAS COBRANCA',
+        razaoSocial: '',
+        cnpj: '',
+        valor: -1.89,
+      }],
+      contas: [{
+        id: 'c1',
+        categoria: 'FORNECEDORES',
+        nome: 'MENEGOTTI INDUSTRIAS',
+        cnpj: '84431154000128',
+        nrNota: '1',
+        vencimento: '2026-04-01',
+        pagamento: '2026-04-01',
+        valor: 1.89,
+      }],
+    });
+    assert.equal(itens[0].status, 'REGRA');
+    assert.equal(itens[0].classificacaoCap, 'TARIFAS BANCARIAS');
+    assert.equal(itens[0].debito, 1025);
+    assert.equal(itens[0].credito, 9);
+    assert.equal(itens[0].aprovado, true);
+  });
+
+  it('TARIFA PACOTE com pre-cadastro aplica codigos', () => {
+    writeSession([{
+      id: 't1',
+      descricao: store.DESCRICAO_TARIFAS_BANCARIAS,
+      debito: 1025,
+      credito: 9,
+    }]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'p1',
+        data: '2026-04-01',
+        historico: 'TARIFA PACOTE SERVICOS',
+        razaoSocial: '',
+        cnpj: '',
+        valor: -12.5,
+      }],
+      contas: [],
+    });
+    assert.equal(itens[0].status, 'REGRA');
+    assert.equal(itens[0].classificacaoCap, 'TARIFAS BANCARIAS');
+    assert.equal(itens[0].debito, 1025);
     assert.equal(itens[0].aprovado, true);
   });
 

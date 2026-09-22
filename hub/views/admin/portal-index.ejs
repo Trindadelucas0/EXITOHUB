@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/hub-assets/hub.css" />
+</head>
+<body class="hub-body">
+  <%- include('../partials/hub-chrome', { current: 'admin-portal' }) %>
+  <main class="hub-main hub-portal-page">
+    <section class="hub-card">
+      <h1>Portal Corporativo</h1>
+      <p class="hub-muted">Administre os conteúdos exibidos na Home e nas áreas do portal.</p>
+      <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
+      <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+
+      <nav class="hub-admin-portal-nav" aria-label="Seções do portal">
+        <a href="/admin/portal/conteudos">Conteúdos Êxito</a>
+        <a href="/admin/portal/links">Links Úteis</a>
+        <a href="/admin/portal/contatos">Contatos Úteis</a>
+        <% Object.keys(itemKinds).forEach(function (kind) { %>
+          <a href="/admin/portal/itens/<%= kind %>"><%= itemKinds[kind].label %></a>
+        <% }) %>
+        <a href="/admin/portal/onboarding">Onboarding — Trilha</a>
+        <a href="/admin/portal/onboarding/acompanhamento">Onboarding — Acompanhamento</a>
+        <a href="/admin/portal/configuracoes">Configurações</a>
+      </nav>
+    </section>
+  </main>
+</body>
+</html>

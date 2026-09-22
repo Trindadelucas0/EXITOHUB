@@ -1,0 +1,15 @@
+<% if ((quickCards || []).length) { %>
+<section class="hub-portal-quick" aria-label="Áreas da empresa">
+  <h2 class="hub-portal-section__title hub-portal-section__title--sm">Áreas da empresa</h2>
+  <div class="hub-portal-quick__row">
+    <% quickCards.forEach(function (card) { %>
+      <a class="hub-portal-quick__item" href="<%= card.route %>" title="<%= card.label %>">
+        <span class="hub-portal-quick__icon" aria-hidden="true">
+          <%- include('hub-menu-icon', { iconName: card.icon }) %>
+        </span>
+        <strong><%= card.short || card.label %></strong>
+      </a>
+    <% }) %>
+  </div>
+</section>
+<% } %>

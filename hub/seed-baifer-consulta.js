@@ -101,7 +101,8 @@ async function seedBaiferConsulta() {
   });
   await query(
     `UPDATE hub_users
-     SET display_name = $1, is_admin = false, active = true, landing_path = '/ncm/dashboard'
+     SET display_name = $1, is_admin = false, active = true, landing_path = '/ncm/dashboard',
+         onboarding_status = 'COMPLETED'
      WHERE id = $2`,
     [displayName, user.id],
   );

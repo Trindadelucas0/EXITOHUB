@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/hub-assets/hub.css" />
+</head>
+<body class="hub-body">
+  <%- include('../partials/hub-chrome', { current: 'admin-portal' }) %>
+  <main class="hub-main hub-portal-page">
+    <section class="hub-card">
+      <p class="hub-breadcrumb"><a href="/admin/portal">Portal Corporativo</a> / <a href="/admin/portal/onboarding">Onboarding</a> / Acompanhamento</p>
+      <div class="hub-admin-head">
+        <h1>Acompanhamento</h1>
+      </div>
+
+      <form method="get" action="/admin/portal/onboarding/acompanhamento" class="hub-admin-filters">
+        <label>
+          Buscar
+          <input name="q" type="search" maxlength="80" value="<%= filterQ || '' %>" placeholder="Nome, usuário ou e-mail" />
+        </label>
+        <label>
+          Departamento
+          <select name="department">
+            <option value="">Todos</option>
+            <% (departments || []).forEach(function (d) { %>
+              <option value="<%= d %>" <%= filterDepartment === d ? 'selected' : '' %>><%= d %></option>
+            <% }) %>
+          </select>
+        </label>
+        <label>
+          Status
+          <select name="status">
+            <option value="">Todos</option>
+            <% [
+              { v: 'PENDING', l: 'Pendente' },
+              { v: 'IN_PROGRESS', l: 'Em curso' },
+              { v: 'COMPLETED', l: 'Concluído' }
+            ].forEach(function (s) { %>
+              <option value="<%= s.v %>" <%= filterStatus === s.v ? 'selected' : '' %>><%= s.l %></option>
+            <% }) %>
+          </select>
+        </label>
+        <button type="submit" class="hub-btn hub-btn-primary hub-btn-sm">Filtrar</button>
+      </form>
+
+      <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
+      <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+
+      <% if (detail) { %>
+        <div class="hub-onboarding-detail">
+          <h2>Detalhes — <%= detail.user.displayName %></h2>
+          <p class="hub-muted">
+            <%= detail.user.department || 'Sem departamento' %> ·
+            <%= detail.user.onboardingStatus === 'COMPLETED' ? 'Concluído' : (detail.user.onboardingStatus === 'IN_PROGRESS' ? 'Em curso' : 'Pendente') %>
+            · <%= detail.percent %>%
+          </p>
+          <% if (!(detail.steps || []).length) { %>
+            <p class="hub-muted">Nenhuma etapa na trilha ativa.</p>
+          <% } else { %>
+            <ol class="hub-onboarding-steps hub-onboarding-steps--admin">
+              <% detail.steps.forEach(function (step, idx) { %>
+                <li class="hub-onboarding-step<%= step.completed ? ' is-done' : '' %>">
+                  <span class="hub-onboarding-step__num"><%= String(idx + 1).padStart(2, '0') %></span>
+                  <div>
+                    <strong><%= step.title %></strong>
+                    <% if (step.description) { %><p class="hub-muted"><%= step.description %></p><% } %>
+                  </div>
+                  <span class="hub-pill<%= step.completed ? ' hub-pill-ok' : '' %>"><%= step.completed ? 'Concluída' : 'Pendente' %></span>
+                </li>
+              <% }) %>
+            </ol>
+          <% } %>
+          <p><a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/onboarding/acompanhamento">Fechar detalhes</a></p>
+        </div>
+      <% } %>
+
+      <% if (!(users || []).length) { %>
+        <p class="hub-muted">Nenhum usuário encontrado.</p>
+      <% } else { %>
+        <div class="hub-admin-table-wrap">
+          <table class="hub-admin-table">
+            <thead>
+              <tr>
+                <th>Funcionário</th>
+                <th>Departamento</th>
+                <th>Progresso</th>
+                <th>Status</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% users.forEach(function (u) { %>
+                <tr>
+                  <td>
+                    <strong><%= u.displayName %></strong>
+                    <span class="hub-muted"><%= u.username %></span>
+                  </td>
+                  <td><%= u.department || '—' %></td>
+                  <td>
+                    <div class="hub-onboarding-meter hub-onboarding-meter--sm" aria-hidden="true">
+                      <span class="hub-onboarding-meter__bar" style="width: <%= u.percent %>%"></span>
+                    </div>
+                    <span class="hub-muted"><%= u.doneCount %>/<%= u.totalSteps %> · <%= u.percent %>%</span>
+                  </td>
+                  <td>
+                    <span class="hub-pill<%= u.onboardingStatus === 'COMPLETED' ? ' hub-pill-ok' : '' %>">
+                      <%= u.onboardingStatus === 'COMPLETED' ? 'Concluído' : (u.onboardingStatus === 'IN_PROGRESS' ? 'Em curso' : 'Pendente') %>
+                    </span>
+                  </td>
+                  <td class="hub-admin-list__actions">
+                    <a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/onboarding/acompanhamento?detalhe=<%= u.id %><%= filterStatus ? '&status=' + filterStatus : '' %><%= filterDepartment ? '&department=' + encodeURIComponent(filterDepartment) : '' %><%= filterQ ? '&q=' + encodeURIComponent(filterQ) : '' %>">Detalhes</a>
+                    <% if (u.onboardingStatus !== 'COMPLETED') { %>
+                      <form method="post" action="/admin/portal/onboarding/usuarios/<%= u.id %>/status">
+                        <input type="hidden" name="status" value="COMPLETED" />
+                        <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm">Marcar concluído</button>
+                      </form>
+                    <% } %>
+                    <% if (u.onboardingStatus !== 'PENDING') { %>
+                      <form method="post" action="/admin/portal/onboarding/usuarios/<%= u.id %>/status">
+                        <input type="hidden" name="status" value="PENDING" />
+                        <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm">Reiniciar</button>
+                      </form>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </section>
+  </main>
+</body>
+</html>

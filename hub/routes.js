@@ -22,8 +22,11 @@ const {
 } = require('./provision-modules');
 const { requireHubAuth, requireHubAdmin, logoutHub } = require('./middleware');
 const { getMenuForUser, findSoonModule, AVADESK_URL } = require('./menu-catalog');
+const portalRoutes = require('./portal/routes');
 
 const router = express.Router();
+
+router.use(portalRoutes.router);
 
 const FLASH_OK = {
   criado: 'Usuário criado.',
@@ -192,11 +195,30 @@ router.get('/logout', requireHubAuth, async (req, res) => {
   return res.redirect('/login');
 });
 
-router.get('/', requireHubAuth, (req, res) => {
-  return res.render('home', {
-    title: 'EXITO HUB',
-    hubUser: req.hubUser,
-  });
+router.get('/', requireHubAuth, async (req, res) => {
+  try {
+    const portal = await portalRoutes.loadHomeForRequest(req.hubUser);
+    const flashKey = String(req.query.ok || '');
+    return res.render('home', {
+      title: 'EXITO HUB',
+      hubUser: req.hubUser,
+      greeting: portal.greeting,
+      needsOnboarding: portal.needsOnboarding,
+      onboardingProgress: portal.onboardingProgress,
+      cards: portal.cards,
+      quickCards: portal.quickCards,
+      links: portal.links,
+      contacts: portal.contacts,
+      contents: portal.contents,
+      emptyStates: portal.emptyStates,
+      contactDepartments: portal.contactDepartments,
+      flash: flashKey === 'concluido' ? 'Integração concluída. Bem-vindo ao HUB.' : null,
+      error: req.query.erro ? String(req.query.erro).slice(0, 300) : null,
+    });
+  } catch (err) {
+    console.error('[hub] home', err);
+    return res.status(500).send('Erro ao carregar a Home');
+  }
 });
 
 router.get('/api/hub/menu', (req, res) => {

@@ -83,6 +83,198 @@ async function ensureTables() {
     CREATE INDEX IF NOT EXISTS idx_hub_sessions_expires ON hub_sessions(expires_at);
   `);
   await query(`ALTER TABLE hub_users ADD COLUMN IF NOT EXISTS landing_path TEXT`);
+  await query(`
+    ALTER TABLE hub_users
+    ADD COLUMN IF NOT EXISTS onboarding_status TEXT NOT NULL DEFAULT 'PENDING'
+  `);
+  await query(`
+    DO $$ BEGIN
+      ALTER TABLE hub_users
+        ADD CONSTRAINT hub_users_onboarding_status_check
+        CHECK (onboarding_status IN ('PENDING', 'IN_PROGRESS', 'COMPLETED'));
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$
+  `);
+  await query(`ALTER TABLE hub_users ADD COLUMN IF NOT EXISTS department TEXT`);
+
+  await query(`
+    CREATE TABLE IF NOT EXISTS portal_files (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      stored_path TEXT NOT NULL,
+      original_name TEXT NOT NULL,
+      mime TEXT NOT NULL,
+      size_bytes INTEGER NOT NULL,
+      created_by UUID REFERENCES hub_users(id) ON DELETE SET NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS portal_links (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name TEXT NOT NULL,
+      description TEXT,
+      url TEXT NOT NULL,
+      category TEXT NOT NULL DEFAULT 'Outros',
+      icon TEXT,
+      is_active BOOLEAN NOT NULL DEFAULT true,
+      show_on_home BOOLEAN NOT NULL DEFAULT true,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS portal_contacts (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name TEXT NOT NULL,
+      role TEXT,
+      department TEXT NOT NULL DEFAULT 'Outros',
+      email TEXT,
+      phone TEXT,
+      whatsapp TEXT,
+      description TEXT,
+      photo_file_id UUID REFERENCES portal_files(id) ON DELETE SET NULL,
+      is_active BOOLEAN NOT NULL DEFAULT true,
+      show_on_home BOOLEAN NOT NULL DEFAULT true,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS portal_contents (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      title TEXT NOT NULL,
+      description TEXT,
+      image_file_id UUID REFERENCES portal_files(id) ON DELETE SET NULL,
+      category TEXT NOT NULL DEFAULT 'Empresa',
+      target_type TEXT NOT NULL DEFAULT 'none'
+        CHECK (target_type IN ('none', 'internal', 'external')),
+      target_url TEXT,
+      target_route TEXT,
+      is_published BOOLEAN NOT NULL DEFAULT false,
+      show_on_home BOOLEAN NOT NULL DEFAULT true,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      published_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS portal_items (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      kind TEXT NOT NULL
+        CHECK (kind IN ('video', 'pop', 'informative', 'catalog', 'logo', 'diagram', 'document')),
+      title TEXT NOT NULL,
+      description TEXT,
+      body TEXT,
+      category TEXT,
+      department TEXT,
+      version TEXT,
+      file_id UUID REFERENCES portal_files(id) ON DELETE SET NULL,
+      thumbnail_file_id UUID REFERENCES portal_files(id) ON DELETE SET NULL,
+      external_url TEXT,
+      is_onboarding_required BOOLEAN NOT NULL DEFAULT false,
+      is_active BOOLEAN NOT NULL DEFAULT true,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS onboarding_tracks (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name TEXT NOT NULL,
+      department TEXT,
+      is_active BOOLEAN NOT NULL DEFAULT true,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS onboarding_steps (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      track_id UUID NOT NULL REFERENCES onboarding_tracks(id) ON DELETE CASCADE,
+      position INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT,
+      target_kind TEXT NOT NULL DEFAULT 'none'
+        CHECK (target_kind IN ('item', 'content', 'route', 'none')),
+      target_id UUID,
+      target_route TEXT,
+      is_active BOOLEAN NOT NULL DEFAULT true,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS onboarding_user_progress (
+      user_id UUID NOT NULL REFERENCES hub_users(id) ON DELETE CASCADE,
+      step_id UUID NOT NULL REFERENCES onboarding_steps(id) ON DELETE CASCADE,
+      completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (user_id, step_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_portal_links_home
+      ON portal_links (is_active, show_on_home, sort_order);
+    CREATE INDEX IF NOT EXISTS idx_portal_contacts_home
+      ON portal_contacts (is_active, show_on_home, sort_order);
+    CREATE INDEX IF NOT EXISTS idx_portal_contents_home
+      ON portal_contents (is_published, show_on_home, sort_order);
+    CREATE INDEX IF NOT EXISTS idx_portal_items_kind
+      ON portal_items (kind, is_active, sort_order);
+    CREATE INDEX IF NOT EXISTS idx_onboarding_steps_track
+      ON onboarding_steps (track_id, position);
+  `);
+
+  // Portal 1.4.2: documentos + metadados ricos em portal_items
+  await query(`ALTER TABLE portal_items ADD COLUMN IF NOT EXISTS category TEXT`);
+  await query(`ALTER TABLE portal_items ADD COLUMN IF NOT EXISTS department TEXT`);
+  await query(`ALTER TABLE portal_items ADD COLUMN IF NOT EXISTS version TEXT`);
+  await query(`ALTER TABLE portal_items ADD COLUMN IF NOT EXISTS thumbnail_file_id UUID`);
+  await query(`ALTER TABLE portal_items ADD COLUMN IF NOT EXISTS is_onboarding_required BOOLEAN NOT NULL DEFAULT false`);
+  await query(`
+    DO $$ BEGIN
+      ALTER TABLE portal_items
+        ADD CONSTRAINT portal_items_thumbnail_file_id_fkey
+        FOREIGN KEY (thumbnail_file_id) REFERENCES portal_files(id) ON DELETE SET NULL;
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$
+  `);
+  await query(`
+    DO $$ BEGIN
+      ALTER TABLE portal_items DROP CONSTRAINT IF EXISTS portal_items_kind_check;
+      ALTER TABLE portal_items
+        ADD CONSTRAINT portal_items_kind_check
+        CHECK (kind IN ('video', 'pop', 'informative', 'catalog', 'logo', 'diagram', 'document'));
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$
+  `);
+  await query(`ALTER TABLE onboarding_tracks ADD COLUMN IF NOT EXISTS department TEXT`);
+  await query(`
+    CREATE INDEX IF NOT EXISTS idx_portal_items_kind_active
+      ON portal_items (kind, is_active, sort_order);
+    CREATE INDEX IF NOT EXISTS idx_portal_contents_published_home
+      ON portal_contents (is_published, show_on_home, sort_order);
+    CREATE INDEX IF NOT EXISTS idx_hub_users_department
+      ON hub_users (department);
+  `);
+
+  // Uma vez: quem já existia antes do portal não deve cair na trilha.
+  // Usuários novos continuam PENDING via createUser.
+  await query(`
+    CREATE TABLE IF NOT EXISTS hub_meta (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  const backfill = await query(
+    `SELECT 1 FROM hub_meta WHERE key = 'portal_onboarding_backfill_v1' LIMIT 1`,
+  );
+  if (!backfill.rowCount) {
+    await query(
+      `UPDATE hub_users SET onboarding_status = 'COMPLETED' WHERE onboarding_status = 'PENDING'`,
+    );
+    await query(
+      `INSERT INTO hub_meta (key, value) VALUES ('portal_onboarding_backfill_v1', '1')
+       ON CONFLICT (key) DO NOTHING`,
+    );
+    console.log('[hub] backfill onboarding: usuários existentes → COMPLETED');
+  }
 }
 
 async function seedAdmin() {
@@ -108,8 +300,8 @@ async function seedAdmin() {
 
   const hash = await bcrypt.hash(password, 12);
   const inserted = await query(
-    `INSERT INTO hub_users (username, email, password_hash, display_name, is_admin, active)
-     VALUES ($1, $2, $3, $4, true, true)
+    `INSERT INTO hub_users (username, email, password_hash, display_name, is_admin, active, onboarding_status)
+     VALUES ($1, $2, $3, $4, true, true, 'COMPLETED')
      RETURNING id`,
     [username, email, hash, 'EXITO'],
   );
@@ -164,7 +356,8 @@ async function ensureMasterUser() {
 
   await query(
     `UPDATE hub_users
-     SET is_admin = true, active = true, display_name = $1, landing_path = NULL
+     SET is_admin = true, active = true, display_name = $1, landing_path = NULL,
+         onboarding_status = 'COMPLETED'
      WHERE id = $2`,
     [nextName, row.id],
   );
@@ -202,6 +395,12 @@ async function bootstrapHubDatabase() {
     await ensureMasterUser();
   } catch (err) {
     console.warn('[hub] master EXITO falhou:', err.message);
+  }
+  try {
+    const { seedDefaultOnboardingTrack } = require('./portal/seed-onboarding');
+    await seedDefaultOnboardingTrack();
+  } catch (err) {
+    console.warn('[hub] seed onboarding falhou:', err.message);
   }
   try {
     const { syncModuleUsers } = require('./sync-module-users');

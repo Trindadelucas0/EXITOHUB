@@ -16,6 +16,9 @@
     <div class="hub-chrome-user">
       <% if (u) { %>
         <a href="/" class="hub-nav-link hub-nav-btn">Início</a>
+        <button type="button" class="hub-nav-link hub-nav-btn hub-btn-icon" aria-label="Notificações" disabled title="Em breve">
+          <%- include('hub-menu-icon', { iconName: 'bell' }) %>
+        </button>
         <span class="hub-user-name"><%= u.displayName || u.username %></span>
         <form method="post" action="/logout" class="hub-inline">
           <button type="submit" class="hub-nav-link hub-nav-btn">Sair</button>

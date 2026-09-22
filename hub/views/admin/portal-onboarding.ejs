@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/hub-assets/hub.css" />
+</head>
+<body class="hub-body">
+  <%- include('../partials/hub-chrome', { current: 'admin-portal' }) %>
+  <main class="hub-main hub-portal-page">
+    <section class="hub-card">
+      <p class="hub-breadcrumb"><a href="/admin/portal">Portal Corporativo</a> / Onboarding</p>
+      <div class="hub-admin-head">
+        <h1>Trilha de integração</h1>
+        <a class="hub-btn hub-btn-ghost" href="/admin/portal/onboarding/acompanhamento">Acompanhamento</a>
+      </div>
+      <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
+      <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+
+      <% if (!track) { %>
+        <p class="hub-muted">Nenhuma trilha ativa. Reinicie o HUB para seedar a trilha padrão.</p>
+      <% } else { %>
+        <p class="hub-muted"><%= track.name %></p>
+
+        <% if (editingStep) { %>
+          <form method="post" action="/admin/portal/onboarding/etapas/<%= editingStep.id %>" class="hub-admin-form">
+            <h2>Editar etapa</h2>
+            <label>Título <input name="title" required maxlength="200" value="<%= editingStep.title %>" /></label>
+            <label>Descrição <textarea name="description" rows="2" maxlength="1000"><%= editingStep.description || '' %></textarea></label>
+            <label>Tipo de destino
+              <select name="target_kind">
+                <% ['none','route','item','content'].forEach(function (k) { %>
+                  <option value="<%= k %>" <%= editingStep.target_kind === k ? 'selected' : '' %>><%= k %></option>
+                <% }) %>
+              </select>
+            </label>
+            <label>Rota interna <input name="target_route" maxlength="300" value="<%= editingStep.target_route || '' %>" placeholder="/portal/..." /></label>
+            <label>Posição <input name="position" type="number" value="<%= editingStep.position %>" /></label>
+            <label class="hub-check"><input type="checkbox" name="is_active" value="1" <%= editingStep.is_active ? 'checked' : '' %> /> Ativa</label>
+            <div class="hub-form-actions">
+              <a class="hub-btn hub-btn-ghost" href="/admin/portal/onboarding">Cancelar</a>
+              <button type="submit" class="hub-btn hub-btn-primary">Salvar</button>
+            </div>
+          </form>
+        <% } %>
+
+        <ol class="hub-admin-list hub-onboarding-admin-list">
+          <% steps.forEach(function (step, idx) { %>
+            <li class="hub-admin-list__item">
+              <div>
+                <strong><%= String(step.position).padStart(2, '0') %>. <%= step.title %></strong>
+                <% if (step.description) { %><span class="hub-muted"><%= step.description %></span><% } %>
+                <span class="hub-muted"><%= step.target_kind %><% if (step.target_route) { %> → <%= step.target_route %><% } %></span>
+                <span class="hub-pill<%= step.is_active ? ' hub-pill-ok' : '' %>"><%= step.is_active ? 'Ativa' : 'Inativa' %></span>
+              </div>
+              <div class="hub-admin-list__actions">
+                <form method="post" action="/admin/portal/onboarding/etapas/<%= step.id %>/mover">
+                  <input type="hidden" name="direction" value="up" />
+                  <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm" <%= idx === 0 ? 'disabled' : '' %>>↑</button>
+                </form>
+                <form method="post" action="/admin/portal/onboarding/etapas/<%= step.id %>/mover">
+                  <input type="hidden" name="direction" value="down" />
+                  <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm" <%= idx === steps.length - 1 ? 'disabled' : '' %>>↓</button>
+                </form>
+                <a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/onboarding/etapas/<%= step.id %>/editar">Editar</a>
+              </div>
+            </li>
+          <% }) %>
+        </ol>
+      <% } %>
+    </section>
+  </main>
+</body>
+</html>

@@ -78,6 +78,10 @@ function clearNcmCookies(res) {
 function toPublicUser(row, modules) {
   if (!row) return null;
   const list = Array.isArray(modules) ? modules : [];
+  const status = String(row.onboarding_status || 'PENDING').toUpperCase();
+  const onboardingStatus = ['PENDING', 'IN_PROGRESS', 'COMPLETED'].includes(status)
+    ? status
+    : 'PENDING';
   return {
     id: row.id,
     username: row.username,
@@ -90,6 +94,8 @@ function toPublicUser(row, modules) {
     canConci: list.includes('conci'),
     canNcm: list.includes('ncm'),
     landingPath: row.landing_path || null,
+    onboardingStatus,
+    department: row.department || null,
   };
 }
 
@@ -103,7 +109,7 @@ async function loadModules(userId) {
 
 async function findUserByUsername(username) {
   const result = await query(
-    `SELECT id, username, email, password_hash, display_name, is_admin, active, landing_path
+    `SELECT id, username, email, password_hash, display_name, is_admin, active, landing_path, onboarding_status, department
      FROM hub_users
      WHERE LOWER(username) = LOWER($1)
      LIMIT 1`,
@@ -118,7 +124,7 @@ async function findUserByLogin(login) {
   const byUsername = await findUserByUsername(value);
   if (byUsername) return byUsername;
   const byEmail = await query(
-    `SELECT id, username, email, password_hash, display_name, is_admin, active, landing_path
+    `SELECT id, username, email, password_hash, display_name, is_admin, active, landing_path, onboarding_status, department
      FROM hub_users
      WHERE LOWER(email) = LOWER($1)
      LIMIT 1`,
@@ -129,7 +135,7 @@ async function findUserByLogin(login) {
 
 async function findUserById(id) {
   const result = await query(
-    `SELECT id, username, email, display_name, is_admin, active, landing_path
+    `SELECT id, username, email, display_name, is_admin, active, landing_path, onboarding_status, department
      FROM hub_users WHERE id = $1 LIMIT 1`,
     [id],
   );
@@ -186,7 +192,7 @@ async function getSessionUser(sessionId) {
   if (!sessionId || !/^[a-zA-Z0-9_-]+$/.test(sessionId)) return null;
   const result = await query(
     `SELECT s.id AS session_id, s.expires_at,
-            u.id, u.username, u.email, u.display_name, u.is_admin, u.active, u.landing_path
+            u.id, u.username, u.email, u.display_name, u.is_admin, u.active, u.landing_path, u.onboarding_status, u.department
      FROM hub_sessions s
      JOIN hub_users u ON u.id = s.user_id
      WHERE s.id = $1
@@ -212,7 +218,7 @@ async function getUserFromRequest(req) {
 
 async function listUsers() {
   const users = await query(
-    `SELECT id, username, email, display_name, is_admin, active, landing_path, created_at
+    `SELECT id, username, email, display_name, is_admin, active, landing_path, onboarding_status, department, created_at
      FROM hub_users
      ORDER BY username`,
   );
@@ -257,9 +263,9 @@ async function createUser({
   const landingPath = landingPathForModules(allowed, moduleMeta);
   const hash = await bcrypt.hash(String(password), 12);
   const inserted = await query(
-    `INSERT INTO hub_users (username, email, password_hash, display_name, is_admin, active, landing_path)
-     VALUES ($1, $2, $3, $4, $5, true, $6)
-     RETURNING id, username, email, display_name, is_admin, active, landing_path`,
+    `INSERT INTO hub_users (username, email, password_hash, display_name, is_admin, active, landing_path, onboarding_status)
+     VALUES ($1, $2, $3, $4, $5, true, $6, $7)
+     RETURNING id, username, email, display_name, is_admin, active, landing_path, onboarding_status`,
     [
       String(username).trim().toLowerCase(),
       String(email).trim().toLowerCase(),
@@ -267,6 +273,7 @@ async function createUser({
       String(displayName || username).trim(),
       Boolean(isAdmin),
       landingPath,
+      Boolean(isAdmin) ? 'COMPLETED' : 'PENDING',
     ],
   );
   const user = inserted.rows[0];
@@ -378,6 +385,14 @@ async function setUserAdmin(userId, isAdmin) {
   await query('UPDATE hub_users SET is_admin = $1 WHERE id = $2', [Boolean(isAdmin), userId]);
 }
 
+async function setOnboardingStatus(userId, status) {
+  const next = String(status || '').toUpperCase();
+  if (!['PENDING', 'IN_PROGRESS', 'COMPLETED'].includes(next)) {
+    throw new Error('Status de onboarding inválido.');
+  }
+  await query('UPDATE hub_users SET onboarding_status = $1 WHERE id = $2', [next, userId]);
+}
+
 module.exports = {
   COOKIE_NAME,
   MAX_AGE_MS,
@@ -397,6 +412,7 @@ module.exports = {
   updateUserWithModules,
   setUserActive,
   setUserAdmin,
+  setOnboardingStatus,
   findUserByUsername,
   findUserByLogin,
   findUserById,

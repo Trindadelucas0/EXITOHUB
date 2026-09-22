@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/hub-assets/hub.css" />
+</head>
+<body class="hub-body">
+  <%- include('../partials/hub-chrome', { current: typeof current !== 'undefined' ? current : '' }) %>
+  <main class="hub-main hub-portal-page">
+    <section class="hub-card">
+      <p class="hub-breadcrumb"><a href="/">Início</a> / <%= meta.label %></p>
+      <h1><%= meta.label %></h1>
+      <p class="hub-muted"><%= meta.description %></p>
+
+      <% if (!(items || []).length) { %>
+        <p class="hub-portal-empty"><%= typeof emptyMessage !== 'undefined' && emptyMessage ? emptyMessage : 'Nenhum item disponível no momento.' %></p>
+      <% } else if (meta.slug === 'videos') { %>
+        <p class="hub-muted hub-portal-video-hint">Assista o vídeo nesta página — clique em play no player abaixo.</p>
+        <ul class="hub-portal-video-list">
+          <% items.forEach(function (item) { %>
+            <li class="hub-portal-video-block">
+              <% if (item.youtube_embed_url) { %>
+                <div class="hub-portal-video hub-portal-video--large">
+                  <iframe
+                    src="<%= item.youtube_embed_url %>"
+                    title="<%= item.title %>"
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen
+                    referrerpolicy="strict-origin-when-cross-origin"
+                  ></iframe>
+                </div>
+                <div class="hub-portal-video-block__meta">
+                  <strong><%= item.title %></strong>
+                  <% if (item.description) { %><p><%= item.description %></p><% } %>
+                  <% if (item.href) { %>
+                    <a class="hub-portal-video__open" href="<%= item.href %>" target="_blank" rel="noopener noreferrer">Abrir no YouTube</a>
+                  <% } %>
+                </div>
+              <% } else { %>
+                <div class="hub-portal-video-block__meta">
+                  <strong><%= item.title %></strong>
+                  <% if (item.description) { %><p><%= item.description %></p><% } %>
+                  <p class="hub-muted">Link do YouTube inválido ou ausente. Peça ao administrador para atualizar.</p>
+                </div>
+              <% } %>
+            </li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <ul class="hub-portal-item-cards">
+          <% items.forEach(function (item) { %>
+            <li>
+              <% if (item.href) { %>
+              <a
+                class="hub-portal-item-card"
+                href="<%= item.href %>"
+                <% if (item.file_url || item.external_url) { %>target="_blank" rel="noopener noreferrer"<% } %>
+              >
+                <span class="hub-portal-item-card__media<%= item.is_image ? ' hub-portal-item-card__media--photo' : '' %>">
+                  <% if (item.cover_url) { %>
+                    <img src="<%= item.cover_url %>" alt="" width="280" height="180" loading="lazy" />
+                  <% } %>
+                </span>
+                <strong><%= item.title %></strong>
+                <% if (item.description) { %><span><%= item.description %></span><% } %>
+                <% if (item.department || item.version || item.category) { %>
+                  <span class="hub-muted hub-portal-item-card__meta">
+                    <% if (item.department) { %><%= item.department %><% } %>
+                    <% if (item.version) { %><%= item.department ? ' · ' : '' %>v<%= item.version %><% } %>
+                    <% if (item.category) { %><%= (item.department || item.version) ? ' · ' : '' %><%= item.category %><% } %>
+                  </span>
+                <% } %>
+              </a>
+              <% } else { %>
+              <div class="hub-portal-item-card hub-portal-item-card--static">
+                <span class="hub-portal-item-card__media<%= item.is_image ? ' hub-portal-item-card__media--photo' : '' %>">
+                  <% if (item.cover_url) { %>
+                    <img src="<%= item.cover_url %>" alt="" width="280" height="180" loading="lazy" />
+                  <% } %>
+                </span>
+                <strong><%= item.title %></strong>
+                <% if (item.description) { %><span><%= item.description %></span><% } %>
+                <% if (item.department || item.version || item.category) { %>
+                  <span class="hub-muted hub-portal-item-card__meta">
+                    <% if (item.department) { %><%= item.department %><% } %>
+                    <% if (item.version) { %><%= item.department ? ' · ' : '' %>v<%= item.version %><% } %>
+                    <% if (item.category) { %><%= (item.department || item.version) ? ' · ' : '' %><%= item.category %><% } %>
+                  </span>
+                <% } %>
+              </div>
+              <% } %>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </section>
+  </main>
+</body>
+</html>
