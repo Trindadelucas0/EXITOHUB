@@ -100,17 +100,14 @@ async function resolveSession(id, empresaId) {
 
 async function persistSessionUpdate(sessionId, patch) {
   const next = updateSession(sessionId, patch);
-  if (next) {
-    try {
-      await conciliacaoStore.update(sessionId, {
-        itens: next.itens,
-        resumo: next.resumo,
-      });
-    } catch (err) {
-      console.error('[conciliacao] falha ao persistir update:', err.message);
-    }
+  const itens = next ? next.itens : patch.itens;
+  const resumo = next ? next.resumo : patch.resumo;
+  const saved = await conciliacaoStore.update(sessionId, { itens, resumo });
+  if (!saved) {
+    throw new Error('Conciliação não encontrada para salvar');
   }
-  return next;
+  if (!next) putSession(saved);
+  return next || saved;
 }
 
 const uploadDir = path.join(__dirname, '..', '..', 'uploads');
@@ -215,6 +212,7 @@ function formatDateTimeBr(isoOrDate) {
 }
 
 router.get('/', async (req, res) => {
+  setNoCacheHeaders(res);
   res.render('upload', await loadUploadLocals(null));
 });
 
@@ -232,6 +230,7 @@ router.get('/historico', async (req, res) => {
     console.error(err);
     error = err.message || 'Erro ao carregar historico';
   }
+  setNoCacheHeaders(res);
   res.render('historico', {
     lista,
     filters,
@@ -538,6 +537,7 @@ router.get('/revisao/:id', async (req, res) => {
       : 'Pré-cadastro atualizado.';
   }
 
+  setNoCacheHeaders(res);
   res.render('revisao', {
     session,
     itens,

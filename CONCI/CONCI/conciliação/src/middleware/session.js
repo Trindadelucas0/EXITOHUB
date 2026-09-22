@@ -5,6 +5,7 @@ const {
   getAuthSession,
   destroyAuthSession,
   createAuthSession,
+  setActingEmpresa,
   toPublicUser,
   findUserByUsername,
   listUserEmpresas,
@@ -54,9 +55,18 @@ async function resolveHubSso(req) {
   const sessionId = req.hubSessionId || randomUUID();
   req.sessionId = sessionId;
   let auth = await getAuthSession(sessionId);
-  if (!auth || auth.user_id !== row.id) {
+  const novaSessao = !auth || auth.user_id !== row.id;
+  if (novaSessao) {
     await createAuthSession(sessionId, row.id, MAX_AGE_MS);
     auth = await getAuthSession(sessionId);
+    if (auth && !auth.acting_empresa_id && row.role === 'admin' && row.last_empresa_id) {
+      try {
+        await setActingEmpresa(sessionId, row.last_empresa_id);
+        auth = await getAuthSession(sessionId);
+      } catch (err) {
+        console.error('[conci] nao restaurou a empresa aberta:', err.message);
+      }
+    }
   }
   if (!auth) {
     const empresas = await listUserEmpresas(row.id);

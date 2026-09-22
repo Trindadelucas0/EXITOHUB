@@ -107,6 +107,19 @@ async function ensureTables() {
       ON conciliacoes (empresa_id, created_at DESC);
     CREATE INDEX IF NOT EXISTS idx_conciliacoes_empresa_competencia
       ON conciliacoes (empresa_id, competencia);
+
+    -- Empresa que o admin abriu por último. Nova sessão do HUB reabre essa empresa
+    -- para o Histórico não sumir da tela.
+    ALTER TABLE users
+      ADD COLUMN IF NOT EXISTS last_empresa_id UUID NULL REFERENCES empresas(id) ON DELETE SET NULL;
+
+    -- Pré-cadastro por empresa+banco. O JSON em disco some num deploy que substitui a pasta.
+    CREATE TABLE IF NOT EXISTS precadastros (
+      store_key TEXT PRIMARY KEY,
+      user_id TEXT NULL,
+      itens JSONB NOT NULL DEFAULT '[]'::jsonb,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
   `);
 }
 
@@ -164,6 +177,8 @@ async function bootstrapDatabase() {
   await ensureTables();
   await ensureBancosSeed();
   await ensureAdmin();
+  const { enablePrecadastroDb } = require('../services/preCadastroStore');
+  await enablePrecadastroDb();
 }
 
 module.exports = {

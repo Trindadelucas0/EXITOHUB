@@ -96,7 +96,21 @@ function toOptionalNumber(value) {
   return Number.isFinite(n) ? n : null;
 }
 
+const memoryDocs = new Map();
+let usePg = false;
+
+function cloneDoc(doc, storeKey) {
+  return {
+    sessionId: doc.sessionId || storeKey,
+    userId: doc.userId ?? null,
+    itens: Array.isArray(doc.itens) ? doc.itens.map((item) => ({ ...item })) : [],
+  };
+}
+
 function readSession(storeKey) {
+  if (usePg && memoryDocs.has(storeKey)) {
+    return cloneDoc(memoryDocs.get(storeKey), storeKey);
+  }
   const fp = filePathFor(storeKey);
   if (!fs.existsSync(fp)) {
     return emptyDoc(storeKey);
@@ -109,6 +123,22 @@ function readSession(storeKey) {
   };
 }
 
+function persistPrecadastroPg(storeKey, payload) {
+  if (!usePg) return;
+  const { query } = require('../db/pool');
+  query(
+    `INSERT INTO precadastros (store_key, user_id, itens, updated_at)
+     VALUES ($1, $2, $3::jsonb, NOW())
+     ON CONFLICT (store_key) DO UPDATE SET
+       user_id = EXCLUDED.user_id,
+       itens = EXCLUDED.itens,
+       updated_at = NOW()`,
+    [storeKey, payload.userId, JSON.stringify(payload.itens || [])],
+  ).catch((err) => {
+    console.error('[precadastro] falha ao gravar no Postgres:', err.message);
+  });
+}
+
 function writeSession(storeKey, doc) {
   ensureDir();
   const payload = {
@@ -117,7 +147,64 @@ function writeSession(storeKey, doc) {
     itens: doc.itens || [],
   };
   fs.writeFileSync(filePathFor(storeKey), `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  if (usePg) {
+    memoryDocs.set(storeKey, cloneDoc(payload, storeKey));
+    persistPrecadastroPg(storeKey, payload);
+  }
   return payload;
+}
+
+/**
+ * Carrega o pré-cadastro do Postgres e importa JSON que ainda só existe em disco.
+ * Chamado no boot, depois das tabelas. Testes não ligam isso.
+ */
+async function enablePrecadastroDb() {
+  const { query } = require('../db/pool');
+  const result = await query('SELECT store_key, user_id, itens FROM precadastros');
+  memoryDocs.clear();
+  for (const row of result.rows) {
+    memoryDocs.set(row.store_key, {
+      sessionId: row.store_key,
+      userId: row.user_id ?? null,
+      itens: Array.isArray(row.itens) ? row.itens : [],
+    });
+  }
+
+  const dir = getDataDir();
+  if (fs.existsSync(dir)) {
+    for (const name of fs.readdirSync(dir)) {
+      if (!name.endsWith('.json')) continue;
+      const key = name.slice(0, -'.json'.length);
+      if (!/^[a-zA-Z0-9_-]+$/.test(key)) continue;
+      const current = memoryDocs.get(key);
+      if (current && current.itens.length) continue;
+      let doc;
+      try {
+        doc = JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8'));
+      } catch (err) {
+        console.error('[precadastro] json ignorado:', name, err.message);
+        continue;
+      }
+      const itens = Array.isArray(doc.itens) ? doc.itens : [];
+      if (!itens.length) continue;
+      const payload = {
+        sessionId: key,
+        userId: doc.userId ?? null,
+        itens,
+      };
+      await query(
+        `INSERT INTO precadastros (store_key, user_id, itens, updated_at)
+         VALUES ($1, $2, $3::jsonb, NOW())
+         ON CONFLICT (store_key) DO UPDATE SET
+           user_id = EXCLUDED.user_id,
+           itens = EXCLUDED.itens,
+           updated_at = NOW()`,
+        [key, payload.userId, JSON.stringify(itens)],
+      );
+      memoryDocs.set(key, payload);
+    }
+  }
+  usePg = true;
 }
 
 function list(storeKey) {
@@ -310,6 +397,7 @@ function migrateLegacyEmpresaToBanco(empresaId, bancoId) {
   if (!empresaId || !bancoId) return false;
   const legacyKey = storeKeyForEmpresa(empresaId);
   const bankKey = storeKeyForEmpresaBanco(empresaId, bancoId);
+  if (readSession(bankKey).itens.length > 0) return false;
   const bankPath = filePathFor(bankKey);
   const legacyPath = filePathFor(legacyKey);
 
@@ -464,6 +552,7 @@ module.exports = {
   legacyKeyFromBankStoreKey,
   toOptionalNumber,
   readSession,
+  enablePrecadastroDb,
   list,
   findByDescricao,
   findBestPreByHistorico,

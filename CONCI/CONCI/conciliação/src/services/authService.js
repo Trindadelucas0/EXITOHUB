@@ -34,6 +34,7 @@ async function syncConciUserToHub({
 async function findUserByUsername(username) {
   const result = await query(
     `SELECT u.id, u.username, u.password_hash, u.role, u.empresa_id, u.ativo,
+            u.last_empresa_id,
             e.nome AS empresa_nome, e.ativo AS empresa_ativo
      FROM users u
      LEFT JOIN empresas e ON e.id = u.empresa_id
@@ -110,9 +111,12 @@ async function createAuthSession(sessionId, userId, maxAgeMs) {
     `INSERT INTO auth_sessions (id, user_id, expires_at, acting_empresa_id)
      VALUES ($1, $2, $3, NULL)
      ON CONFLICT (id) DO UPDATE SET
-       user_id = EXCLUDED.user_id,
        expires_at = EXCLUDED.expires_at,
-       acting_empresa_id = NULL`,
+       acting_empresa_id = CASE
+         WHEN auth_sessions.user_id = EXCLUDED.user_id THEN auth_sessions.acting_empresa_id
+         ELSE NULL
+       END,
+       user_id = EXCLUDED.user_id`,
     [sessionId, userId, expiresAt.toISOString()],
   );
   return expiresAt;
@@ -122,7 +126,7 @@ async function getAuthSession(sessionId) {
   if (!sessionId) return null;
   const result = await query(
     `SELECT s.id, s.user_id, s.expires_at, s.acting_empresa_id,
-            u.username, u.role, u.empresa_id, u.ativo AS user_ativo,
+            u.username, u.role, u.empresa_id, u.last_empresa_id, u.ativo AS user_ativo,
             e.nome AS empresa_nome, e.ativo AS empresa_ativo,
             ae.nome AS acting_empresa_nome, ae.ativo AS acting_empresa_ativo
      FROM auth_sessions s
@@ -185,6 +189,11 @@ async function setActingEmpresa(sessionId, empresaId, options = {}) {
   }
   await query(
     `UPDATE auth_sessions SET acting_empresa_id = $1 WHERE id = $2`,
+    [empresa.id, sessionId],
+  );
+  await query(
+    `UPDATE users SET last_empresa_id = $1
+     WHERE id = (SELECT user_id FROM auth_sessions WHERE id = $2)`,
     [empresa.id, sessionId],
   );
   return empresa;
