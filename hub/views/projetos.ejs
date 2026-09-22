@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/hub-assets/hub.css" />
+  <%- include('partials/hub-head') %>
 </head>
 <body class="hub-body">
-  <%- include('partials/hub-chrome', { current: 'projetos' }) %>
+  <%- include('partials/hub-chrome', { current: 'projetos', breadcrumb: 'Projetos & Chamados' }) %>
 
-  <main class="hub-main">
-    <header class="hub-hero">
-      <h1>Projetos</h1>
-      <p class="hub-muted">Chamados, bugs e projetos em andamento no Avadesk.</p>
-    </header>
+  <main class="hub-shell-main">
+    <p class="hub-muted" style="font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 0.5rem;">
+      Projetos &amp; Chamados
+    </p>
+    <h1 style="margin: 0 0 1.25rem; font-size: 1.5rem; font-weight: 600;">Projetos e Chamados (Avadesk)</h1>
 
-    <a
-      class="hub-project-card"
-      href="<%= avadeskUrl %>"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <p class="hub-project-card__eyebrow">Avadesk</p>
-      <strong class="hub-project-card__title">Suporte e gestão de projetos</strong>
-      <p class="hub-project-card__desc">
-        Abra o portal para cadastrar bug, implementação e acompanhar o que está em andamento.
-      </p>
-      <span class="hub-project-card__cta">Abrir Avadesk ↗</span>
-    </a>
+    <section class="hub-project-hero">
+      <div>
+        <p class="hub-muted" style="font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 0.35rem;">
+          Plataforma Homologada
+        </p>
+        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 700;">Avadesk — Central de Suporte e Gestão de Projetos</h2>
+        <p class="hub-muted" style="margin: 0.75rem 0 0; max-width: 40rem;">
+          Abra o portal corporativo para cadastrar chamados de suporte técnico, melhorias operacionais, bugs nos módulos e acompanhar o que está em andamento.
+        </p>
+      </div>
+      <div class="hub-project-hero__actions">
+        <a
+          class="hub-btn hub-btn-primary"
+          href="<%= avadeskUrl %>"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Abrir Avadesk
+          <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 1rem;">open_in_new</span>
+        </a>
+      </div>
+    </section>
   </main>
+
+  <%- include('partials/hub-chrome-end') %>
 </body>
 </html>

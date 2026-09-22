@@ -1,105 +1,332 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/hub-assets/hub.css" />
+  <%- include('../partials/hub-head') %>
 </head>
 <body class="hub-body">
-  <%- include('../partials/hub-chrome', { current: typeof current !== 'undefined' ? current : '' }) %>
-  <main class="hub-main hub-portal-page">
-    <section class="hub-card">
-      <p class="hub-breadcrumb"><a href="/">Início</a> / <%= meta.label %></p>
-      <h1><%= meta.label %></h1>
-      <p class="hub-muted"><%= meta.description %></p>
+  <%- include('../partials/hub-chrome', {
+    current: typeof current !== 'undefined' ? current : '',
+    breadcrumb: meta.label
+  }) %>
+
+  <main class="hub-shell-main">
+    <div class="hub-area-page">
+      <p class="hub-breadcrumb hub-area-page__crumb">
+        <a href="/">Início</a> / <%= meta.label %>
+      </p>
+
+      <header class="hub-area-page__header">
+        <h1><%= meta.label %></h1>
+        <p>
+          <% if (meta.slug === 'videos') { %>
+            Assista o vídeo nesta página — clique em play no player abaixo sem sair do HUB.
+          <% } else { %>
+            <%= meta.description %>
+          <% } %>
+        </p>
+      </header>
+
+      <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
+      <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
 
       <% if (!(items || []).length) { %>
-        <p class="hub-portal-empty"><%= typeof emptyMessage !== 'undefined' && emptyMessage ? emptyMessage : 'Nenhum item disponível no momento.' %></p>
+        <div class="hub-empty-panel">
+          <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 2.5rem; color: var(--exito-muted);">inventory_2</span>
+          <h3><%= meta.slug === 'pops' ? 'Nenhum procedimento encontrado' : 'Nenhum item disponível' %></h3>
+          <p class="hub-muted"><%= typeof emptyMessage !== 'undefined' && emptyMessage ? emptyMessage : 'Nenhum item disponível no momento.' %></p>
+        </div>
       <% } else if (meta.slug === 'videos') { %>
-        <p class="hub-muted hub-portal-video-hint">Assista o vídeo nesta página — clique em play no player abaixo.</p>
-        <ul class="hub-portal-video-list">
-          <% items.forEach(function (item) { %>
-            <li class="hub-portal-video-block">
-              <% if (item.youtube_embed_url) { %>
-                <div class="hub-portal-video hub-portal-video--large">
-                  <iframe
-                    src="<%= item.youtube_embed_url %>"
-                    title="<%= item.title %>"
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen
-                    referrerpolicy="strict-origin-when-cross-origin"
-                  ></iframe>
-                </div>
-                <div class="hub-portal-video-block__meta">
-                  <strong><%= item.title %></strong>
-                  <% if (item.description) { %><p><%= item.description %></p><% } %>
-                  <% if (item.href) { %>
-                    <a class="hub-portal-video__open" href="<%= item.href %>" target="_blank" rel="noopener noreferrer">Abrir no YouTube</a>
+        <%
+          const selectedId = typeof selectedVideoId !== 'undefined' ? selectedVideoId : null;
+          let featured = items[0];
+          let featuredIdx = 0;
+          if (selectedId) {
+            const foundIdx = items.findIndex(function (it) { return String(it.id) === String(selectedId); });
+            if (foundIdx >= 0) {
+              featured = items[foundIdx];
+              featuredIdx = foundIdx;
+            }
+          }
+          const modLabel = 'MOD-' + String(featuredIdx + 1).padStart(2, '0');
+        %>
+        <% if (featured && featured.youtube_embed_url) { %>
+          <article class="hub-video-feature">
+            <div class="hub-video-feature__bar">
+              <div class="hub-video-feature__bar-left">
+                <span class="hub-video-feature__mod"><%= modLabel %></span>
+                <span class="hub-video-feature__label">
+                  <% if (featured.is_onboarding_required) { %>
+                    Vídeo obrigatório
+                  <% } else if (featured.department) { %>
+                    <%= featured.department %>
+                  <% } else { %>
+                    Vídeo de integração
                   <% } %>
+                </span>
+              </div>
+            </div>
+            <div class="hub-video-feature__player">
+              <iframe
+                src="<%= featured.youtube_embed_url %>"
+                title="<%= featured.title %>"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+              ></iframe>
+            </div>
+            <div class="hub-video-feature__meta">
+              <div class="hub-video-feature__meta-row">
+                <div>
+                  <h2><%= featured.title %></h2>
+                  <p class="hub-video-feature__meta-sub">
+                    <% if (featured.department) { %><%= featured.department %><% } %>
+                    <% if (featured.version) { %><%= featured.department ? ' · ' : '' %>v<%= featured.version %><% } %>
+                    <% if (featured.category) { %><%= (featured.department || featured.version) ? ' · ' : '' %><%= featured.category %><% } %>
+                  </p>
                 </div>
+                <% if (featured.href) { %>
+                  <a class="hub-video-feature__yt" href="<%= featured.href %>" target="_blank" rel="noopener noreferrer">
+                    Abrir no YouTube
+                    <span class="material-symbols-outlined" aria-hidden="true">north_east</span>
+                  </a>
+                <% } %>
+              </div>
+              <% if (featured.description) { %>
+                <p class="hub-video-feature__desc"><%= featured.description %></p>
+              <% } %>
+            </div>
+          </article>
+        <% } else if (featured) { %>
+          <div class="hub-alert">Link do YouTube inválido ou ausente. Peça ao administrador para atualizar.</div>
+        <% } %>
+
+        <section class="hub-video-playlist" aria-label="Lista de vídeos">
+          <div class="hub-video-playlist__head">
+            <div>
+              <h3>Trilha completa de vídeos de integração</h3>
+              <p>Selecione um vídeo para assistir nesta página.</p>
+            </div>
+            <span class="hub-video-playlist__total">
+              Total: <%= items.length %> vídeo<%= items.length === 1 ? '' : 's' %>
+            </span>
+          </div>
+          <div class="hub-video-playlist__grid">
+            <% items.forEach(function (item, idx) { %>
+              <a
+                class="hub-video-playlist__card<%= featured && String(featured.id) === String(item.id) ? ' is-active' : '' %>"
+                href="/portal/videos?v=<%= item.id %>"
+              >
+                <span class="hub-video-playlist__num">MÓDULO <%= String(idx + 1).padStart(2, '0') %></span>
+                <strong><%= item.title %></strong>
+                <% if (item.description) { %>
+                  <span class="hub-video-playlist__card-desc"><%= item.description %></span>
+                <% } %>
+                <span class="hub-video-playlist__status">
+                  <%= featured && String(featured.id) === String(item.id) ? 'Assistindo' : 'Disponível' %>
+                </span>
+              </a>
+            <% }) %>
+            <a class="hub-video-playlist__card hub-video-playlist__cta-card" href="/portal/pops">
+              <span class="hub-video-playlist__num">Documentação</span>
+              <strong>Prefere ler os manuais?</strong>
+              <span class="hub-video-playlist__card-desc">Acesse a biblioteca de POPs com passos detalhados em texto e PDF.</span>
+              <span class="hub-video-playlist__status">Explorar POPs →</span>
+            </a>
+          </div>
+        </section>
+      <% } else if (meta.slug === 'pops') { %>
+        <div class="hub-area-toolbar" data-pop-filter>
+          <label class="hub-field-search">
+            <span class="visually-hidden">Buscar POPs</span>
+            <span class="material-symbols-outlined" aria-hidden="true">search</span>
+            <input type="search" id="pop-search" placeholder="Buscar por título, departamento ou palavra-chave..." autocomplete="off" />
+          </label>
+          <label>
+            <span class="visually-hidden">Filtrar por departamento</span>
+            <select id="pop-dept" aria-label="Filtrar por departamento">
+              <option value="">Todos os departamentos</option>
+              <%
+                const depts = [];
+                items.forEach(function (it) {
+                  if (it.department && depts.indexOf(it.department) === -1) depts.push(it.department);
+                });
+                depts.sort();
+                depts.forEach(function (d) { %>
+                  <option value="<%= d %>"><%= d %></option>
+                <% });
+              %>
+            </select>
+          </label>
+        </div>
+
+        <ul class="hub-pop-grid" data-item-list>
+          <% items.forEach(function (item) { %>
+            <li
+              data-title="<%= String(item.title || '').toLowerCase() %>"
+              data-department="<%= item.department || '' %>"
+              data-category="<%= item.category || '' %>"
+              data-description="<%= String(item.description || '').toLowerCase() %>"
+            >
+              <% if (item.href) { %>
+                <a
+                  class="hub-pop-card"
+                  href="<%= item.href %>"
+                  <% if (item.file_url || item.external_url) { %>target="_blank" rel="noopener noreferrer"<% } %>
+                >
+                  <div>
+                    <div class="hub-pop-card__top">
+                      <span class="hub-pop-card__icon" aria-hidden="true">
+                        <% if (item.cover_url) { %>
+                          <img src="<%= item.cover_url %>" alt="" width="40" height="40" loading="lazy" />
+                        <% } else { %>
+                          <span class="material-symbols-outlined">menu_book</span>
+                        <% } %>
+                      </span>
+                      <div class="hub-pop-card__chips">
+                        <% if (item.department) { %>
+                          <span class="hub-pop-card__chip"><%= item.department %></span>
+                        <% } %>
+                        <% if (item.is_onboarding_required) { %>
+                          <span class="hub-pop-card__chip hub-pop-card__chip--req">Obrigatório</span>
+                        <% } %>
+                      </div>
+                    </div>
+                    <% if (item.category || item.version) { %>
+                      <div class="hub-pop-card__code-row">
+                        <% if (item.category) { %><span class="hub-pop-card__code"><%= item.category %></span><% } %>
+                        <% if (item.category && item.version) { %><span aria-hidden="true">·</span><% } %>
+                        <% if (item.version) { %><span>v<%= item.version %></span><% } %>
+                      </div>
+                    <% } %>
+                    <h2 class="hub-pop-card__title"><%= item.title %></h2>
+                    <% if (item.description) { %>
+                      <p class="hub-pop-card__desc"><%= item.description %></p>
+                    <% } %>
+                  </div>
+                  <span class="hub-pop-card__cta">
+                    Visualizar procedimento
+                    <span class="material-symbols-outlined" aria-hidden="true">arrow_outward</span>
+                  </span>
+                </a>
               <% } else { %>
-                <div class="hub-portal-video-block__meta">
-                  <strong><%= item.title %></strong>
-                  <% if (item.description) { %><p><%= item.description %></p><% } %>
-                  <p class="hub-muted">Link do YouTube inválido ou ausente. Peça ao administrador para atualizar.</p>
+                <div class="hub-pop-card hub-pop-card--static">
+                  <div>
+                    <div class="hub-pop-card__top">
+                      <span class="hub-pop-card__icon" aria-hidden="true">
+                        <span class="material-symbols-outlined">menu_book</span>
+                      </span>
+                      <% if (item.department) { %>
+                        <div class="hub-pop-card__chips">
+                          <span class="hub-pop-card__chip"><%= item.department %></span>
+                        </div>
+                      <% } %>
+                    </div>
+                    <h2 class="hub-pop-card__title"><%= item.title %></h2>
+                    <% if (item.description) { %>
+                      <p class="hub-pop-card__desc"><%= item.description %></p>
+                    <% } %>
+                  </div>
                 </div>
               <% } %>
             </li>
           <% }) %>
         </ul>
+        <div class="hub-empty-panel" data-filter-empty hidden aria-hidden="true" style="display: none;">
+          <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 2rem; color: var(--exito-muted);">manage_search</span>
+          <h3>Nenhum procedimento encontrado</h3>
+          <p class="hub-muted">Não localizamos itens com os filtros selecionados. Ajuste a busca ou o departamento.</p>
+          <button type="button" class="hub-btn hub-btn-ghost" data-clear-filters>Limpar filtros</button>
+        </div>
       <% } else { %>
-        <ul class="hub-portal-item-cards">
+        <ul class="hub-area-item-grid" data-item-list>
           <% items.forEach(function (item) { %>
             <li>
               <% if (item.href) { %>
-              <a
-                class="hub-portal-item-card"
-                href="<%= item.href %>"
-                <% if (item.file_url || item.external_url) { %>target="_blank" rel="noopener noreferrer"<% } %>
-              >
-                <span class="hub-portal-item-card__media<%= item.is_image ? ' hub-portal-item-card__media--photo' : '' %>">
-                  <% if (item.cover_url) { %>
-                    <img src="<%= item.cover_url %>" alt="" width="280" height="180" loading="lazy" />
-                  <% } %>
-                </span>
-                <strong><%= item.title %></strong>
-                <% if (item.description) { %><span><%= item.description %></span><% } %>
-                <% if (item.department || item.version || item.category) { %>
-                  <span class="hub-muted hub-portal-item-card__meta">
-                    <% if (item.department) { %><%= item.department %><% } %>
-                    <% if (item.version) { %><%= item.department ? ' · ' : '' %>v<%= item.version %><% } %>
-                    <% if (item.category) { %><%= (item.department || item.version) ? ' · ' : '' %><%= item.category %><% } %>
+                <a
+                  class="hub-area-item-card"
+                  href="<%= item.href %>"
+                  <% if (item.file_url || item.external_url) { %>target="_blank" rel="noopener noreferrer"<% } %>
+                >
+                  <span class="hub-area-item-card__media<%= item.is_image ? ' hub-area-item-card__media--photo' : '' %>">
+                    <% if (item.cover_url) { %>
+                      <img src="<%= item.cover_url %>" alt="" width="280" height="180" loading="lazy" />
+                    <% } else { %>
+                      <span class="hub-area-item-card__media-fallback">
+                        <%- include('../partials/hub-menu-icon', { iconName: meta.icon }) %>
+                      </span>
+                    <% } %>
                   </span>
-                <% } %>
-              </a>
+                  <strong><%= item.title %></strong>
+                  <% if (item.description) { %><span class="hub-muted" style="font-size: 0.8125rem;"><%= item.description %></span><% } %>
+                  <span class="hub-muted" style="font-size: 0.75rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    <% if (item.department) { %><span><%= item.department %></span><% } %>
+                    <% if (item.version) { %><span>v<%= item.version %></span><% } %>
+                    <% if (item.category) { %><span><%= item.category %></span><% } %>
+                  </span>
+                </a>
               <% } else { %>
-              <div class="hub-portal-item-card hub-portal-item-card--static">
-                <span class="hub-portal-item-card__media<%= item.is_image ? ' hub-portal-item-card__media--photo' : '' %>">
-                  <% if (item.cover_url) { %>
-                    <img src="<%= item.cover_url %>" alt="" width="280" height="180" loading="lazy" />
-                  <% } %>
-                </span>
-                <strong><%= item.title %></strong>
-                <% if (item.description) { %><span><%= item.description %></span><% } %>
-                <% if (item.department || item.version || item.category) { %>
-                  <span class="hub-muted hub-portal-item-card__meta">
-                    <% if (item.department) { %><%= item.department %><% } %>
-                    <% if (item.version) { %><%= item.department ? ' · ' : '' %>v<%= item.version %><% } %>
-                    <% if (item.category) { %><%= (item.department || item.version) ? ' · ' : '' %><%= item.category %><% } %>
-                  </span>
-                <% } %>
-              </div>
+                <div class="hub-area-item-card">
+                  <strong><%= item.title %></strong>
+                  <% if (item.description) { %><span class="hub-muted" style="font-size: 0.8125rem;"><%= item.description %></span><% } %>
+                </div>
               <% } %>
             </li>
           <% }) %>
         </ul>
       <% } %>
-    </section>
+    </div>
   </main>
+
+  <%- include('../partials/hub-chrome-end') %>
+  <% if (meta.slug === 'pops') { %>
+  <script>
+    (function () {
+      var search = document.getElementById('pop-search');
+      var dept = document.getElementById('pop-dept');
+      var list = document.querySelector('[data-item-list]');
+      var empty = document.querySelector('[data-filter-empty]');
+      var clearBtn = document.querySelector('[data-clear-filters]');
+      if (!search || !list) return;
+
+      function setEmptyVisible(show) {
+        if (!empty) return;
+        empty.hidden = !show;
+        empty.setAttribute('aria-hidden', show ? 'false' : 'true');
+        empty.style.display = show ? '' : 'none';
+      }
+
+      function apply() {
+        var q = (search.value || '').trim().toLowerCase();
+        var d = dept ? dept.value : '';
+        var visible = 0;
+        list.querySelectorAll('li').forEach(function (li) {
+          var title = li.getAttribute('data-title') || '';
+          var description = li.getAttribute('data-description') || '';
+          var category = (li.getAttribute('data-category') || '').toLowerCase();
+          var department = li.getAttribute('data-department') || '';
+          var matchQ = !q || title.indexOf(q) !== -1 || description.indexOf(q) !== -1 || category.indexOf(q) !== -1 || department.toLowerCase().indexOf(q) !== -1;
+          var matchD = !d || department === d;
+          var show = matchQ && matchD;
+          li.hidden = !show;
+          if (show) visible += 1;
+        });
+        list.hidden = visible === 0;
+        setEmptyVisible(visible === 0);
+      }
+
+      search.addEventListener('input', apply);
+      if (dept) dept.addEventListener('change', apply);
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function () {
+          search.value = '';
+          if (dept) dept.value = '';
+          apply();
+        });
+      }
+      setEmptyVisible(false);
+    })();
+  </script>
+  <% } %>
 </body>
 </html>

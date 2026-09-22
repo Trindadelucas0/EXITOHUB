@@ -1,17 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/hub-assets/hub.css" />
+  <%- include('../partials/hub-head') %>
 </head>
 <body class="hub-body">
-  <%- include('../partials/hub-chrome', { current: 'admin-portal' }) %>
-  <main class="hub-main hub-portal-page">
+  <%- include('../partials/hub-chrome', { current: 'admin-portal', breadcrumb: 'Portal Corporativo' }) %>
+  <main class="hub-shell-main">
     <section class="hub-card">
       <p class="hub-breadcrumb"><a href="/admin/portal">Portal Corporativo</a> / Conteúdos Êxito</p>
       <div class="hub-admin-head">
@@ -88,5 +82,6 @@
       <% } %>
     </section>
   </main>
+  <%- include('../partials/hub-chrome-end') %>
 </body>
 </html>

@@ -1,30 +1,65 @@
 <%
   const u = hubUser || (typeof locals !== 'undefined' ? locals.hubUser : null);
   const cur = typeof current !== 'undefined' ? current : '';
+  const crumb = typeof breadcrumb !== 'undefined' && breadcrumb
+    ? breadcrumb
+    : 'Portal Corporativo';
+  const displayName = u ? (u.displayName || u.username || '') : '';
+  const deptLabel = u && u.department ? u.department : '';
+  const initials = (function () {
+    const src = String(displayName || '?').trim();
+    const parts = src.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+    return src.slice(0, 2).toUpperCase();
+  })();
 %>
-<header class="hub-chrome hub-chrome--exito">
-  <div class="hub-chrome-inner">
-    <%- include('hub-app-menu', { menuUser: u, current: cur, showHomeLink: true }) %>
+<div class="hub-shell-overlay" id="hub-menu-overlay" hidden></div>
 
-    <a href="/" class="hub-chrome-brand">
-      <div>
-        <p class="hub-eyebrow">Êxito</p>
-        <strong>HUB</strong>
-      </div>
-    </a>
+<aside class="hub-sidebar" id="hub-app-menu" aria-label="Navegação do HUB">
+  <%- include('hub-app-menu', { menuUser: u, current: cur, showHomeLink: true }) %>
+</aside>
 
-    <div class="hub-chrome-user">
+<div class="hub-shell">
+  <header class="hub-topbar">
+    <div class="hub-topbar__left">
+      <button
+        type="button"
+        class="hub-menu-btn"
+        id="hub-menu-btn"
+        aria-expanded="false"
+        aria-controls="hub-app-menu"
+        aria-label="Abrir menu"
+      >
+        <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+      </button>
+      <nav class="hub-topbar__crumb" aria-label="Localização">
+        <span class="hub-topbar__crumb-root">Êxito HUB</span>
+        <span class="hub-topbar__crumb-sep" aria-hidden="true">/</span>
+        <span class="hub-topbar__crumb-page"><%= crumb %></span>
+        <span class="hub-topbar__secure">
+          <span class="material-symbols-outlined" aria-hidden="true">verified_user</span>
+          Ambiente Seguro
+        </span>
+      </nav>
+    </div>
+    <div class="hub-topbar__right">
+      <button type="button" class="hub-topbar__icon-btn" aria-label="Notificações" disabled title="Em breve">
+        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+      </button>
       <% if (u) { %>
-        <a href="/" class="hub-nav-link hub-nav-btn">Início</a>
-        <button type="button" class="hub-nav-link hub-nav-btn hub-btn-icon" aria-label="Notificações" disabled title="Em breve">
-          <%- include('hub-menu-icon', { iconName: 'bell' }) %>
-        </button>
-        <span class="hub-user-name"><%= u.displayName || u.username %></span>
+        <div class="hub-topbar__user">
+          <span class="hub-topbar__avatar" aria-hidden="true"><%= initials %></span>
+          <span class="hub-topbar__user-meta">
+            <strong><%= displayName %></strong>
+            <% if (deptLabel) { %><span><%= deptLabel %></span><% } %>
+          </span>
+        </div>
         <form method="post" action="/logout" class="hub-inline">
-          <button type="submit" class="hub-nav-link hub-nav-btn">Sair</button>
+          <button type="submit" class="hub-topbar__logout">
+            <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+            Sair
+          </button>
         </form>
       <% } %>
     </div>
-  </div>
-</header>
-<script src="/hub-assets/hub-menu.js"></script>
+  </header>

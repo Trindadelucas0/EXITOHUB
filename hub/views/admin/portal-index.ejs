@@ -1,35 +1,63 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/hub-assets/hub.css" />
+  <%- include('../partials/hub-head') %>
 </head>
 <body class="hub-body">
-  <%- include('../partials/hub-chrome', { current: 'admin-portal' }) %>
-  <main class="hub-main hub-portal-page">
-    <section class="hub-card">
-      <h1>Portal Corporativo</h1>
-      <p class="hub-muted">Administre os conteúdos exibidos na Home e nas áreas do portal.</p>
-      <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
-      <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+  <%- include('../partials/hub-chrome', { current: 'admin-portal', breadcrumb: 'Portal Corporativo' }) %>
 
-      <nav class="hub-admin-portal-nav" aria-label="Seções do portal">
-        <a href="/admin/portal/conteudos">Conteúdos Êxito</a>
-        <a href="/admin/portal/links">Links Úteis</a>
-        <a href="/admin/portal/contatos">Contatos Úteis</a>
-        <% Object.keys(itemKinds).forEach(function (kind) { %>
-          <a href="/admin/portal/itens/<%= kind %>"><%= itemKinds[kind].label %></a>
-        <% }) %>
-        <a href="/admin/portal/onboarding">Onboarding — Trilha</a>
-        <a href="/admin/portal/onboarding/acompanhamento">Onboarding — Acompanhamento</a>
-        <a href="/admin/portal/configuracoes">Configurações</a>
-      </nav>
-    </section>
+  <main class="hub-shell-main">
+    <header style="margin-bottom: 0.5rem;">
+      <h1 style="margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.015em;">Portal Corporativo — Painel de Gestão</h1>
+      <p class="hub-muted" style="margin: 0.35rem 0 0;">Administre os conteúdos exibidos na Home e nas áreas do portal.</p>
+    </header>
+
+    <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
+    <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+
+    <nav class="hub-admin-portal-grid" aria-label="Seções do portal">
+      <a class="hub-admin-portal-card" href="/admin/portal/conteudos">
+        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">auto_stories</span></span>
+        <h2>Conteúdos Êxito</h2>
+        <p>Carrossel e destaques da Home.</p>
+      </a>
+      <a class="hub-admin-portal-card" href="/admin/portal/links">
+        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">link</span></span>
+        <h2>Links Úteis</h2>
+        <p>Atalhos exibidos no portal.</p>
+      </a>
+      <a class="hub-admin-portal-card" href="/admin/portal/contatos">
+        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">contacts</span></span>
+        <h2>Contatos Úteis</h2>
+        <p>Equipes e canais de apoio.</p>
+      </a>
+      <% Object.keys(itemKinds).forEach(function (kind) { %>
+        <a class="hub-admin-portal-card" href="/admin/portal/itens/<%= kind %>">
+          <span class="hub-admin-portal-card__icon" aria-hidden="true">
+            <%- include('../partials/hub-menu-icon', { iconName: itemKinds[kind].icon }) %>
+          </span>
+          <h2><%= itemKinds[kind].label %></h2>
+          <p><%= itemKinds[kind].description %></p>
+        </a>
+      <% }) %>
+      <a class="hub-admin-portal-card" href="/admin/portal/onboarding">
+        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">route</span></span>
+        <h2>Trilha de Onboarding</h2>
+        <p>Etapas da integração do colaborador.</p>
+      </a>
+      <a class="hub-admin-portal-card" href="/admin/portal/onboarding/acompanhamento">
+        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">monitoring</span></span>
+        <h2>Acompanhamento do Onboarding</h2>
+        <p>Progresso por colaborador.</p>
+      </a>
+      <a class="hub-admin-portal-card" href="/admin/portal/configuracoes">
+        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">tune</span></span>
+        <h2>Configurações</h2>
+        <p>Parâmetros gerais do portal.</p>
+      </a>
+    </nav>
   </main>
+
+  <%- include('../partials/hub-chrome-end') %>
 </body>
 </html>

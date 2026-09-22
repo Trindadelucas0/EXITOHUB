@@ -4,7 +4,7 @@ Documento visual e funcional das telas do **Êxito HUB** (login, Home/portal, ad
 
 **Fora deste arquivo:** Folha (`/folha`), Conciliação (`/conci`), Auditor Fiscal / NCM (`/ncm`).
 
-Fonte de cores: [`hub/public/hub.css`](../hub/public/hub.css).
+Fonte de cores: [`hub/public/hub.css`](../hub/public/hub.css) (tokens do mockup Stitch: primary `#006b2b`, canvas `#f9f9ff`).
 
 ---
 
@@ -12,21 +12,32 @@ Fonte de cores: [`hub/public/hub.css`](../hub/public/hub.css).
 
 | Elemento | Classe / token | Cor |
 |----------|----------------|-----|
-| Botão primário (Entrar, Salvar, Continuar) | `.hub-btn-primary` / `--exito-green` | Fundo `#2ea44f`, texto branco |
-| Botão primário hover | `--exito-green-hover` | `#248a41` |
-| Botão ghost (Cancelar, Editar, Sair, Desativar) | `.hub-btn-ghost` | Transparente, borda `#d9e1ea` / `#e5e7eb`, texto escuro |
-| Fundo da página | `--hub-bg` | `#f4f6f8` |
+| Botão primário (Entrar, Salvar, Continuar) | `.hub-btn-primary` / `--exito-green` | Fundo `#006b2b`, texto branco |
+| Botão primário hover | `--exito-green-hover` | `#008738` |
+| Botão ghost (Cancelar, Editar, Sair, Desativar) | `.hub-btn-ghost` | Transparente / borda suave, texto escuro |
+| Fundo da página | `--hub-bg` / `--surface` | `#f9f9ff` |
 | Card / painel | `--exito-card` | `#ffffff` |
-| Texto principal | `--exito-ink` / `--hub-ink` | `#1a1a1a` / `#142033` |
-| Texto secundário / muted | `--exito-muted` | `#6b7280` |
-| Banner onboarding | `--exito-green-soft` | `#dff0e4` |
+| Texto principal | `--exito-ink` / `--on-surface` | `#101c2f` |
+| Texto secundário / muted | `--exito-muted` | `#536259` |
+| Banner onboarding | `--exito-green-soft` | `#d6e7db` |
 | Alerta sucesso | `.hub-alert-ok` | Verde suave |
 | Alerta erro | `.hub-alert-error` / `--hub-danger` | `#b42318` |
 | Pílula ativa / ok | `.hub-pill-ok` | Verde |
-| Item do menu (página atual) | fundo ativo | `#2ea44f` + texto branco |
-| Link secundário (Abrir no YouTube) | `.hub-portal-video__open` | Texto `#6b7280` (hover verde) |
+| Item do menu (página atual) | `.hub-sidebar__link.is-active` | `#006b2b` + texto branco |
+| Link secundário (Abrir no YouTube) | `.hub-portal-video__open` | Texto muted (hover verde) |
 
-Nos wireframes: `[ Entrar #2ea44f ]` = botão primário; `[ Cancelar ghost ]` = botão ghost.
+Nos wireframes: `[ Entrar #006b2b ]` = botão primário; `[ Cancelar ghost ]` = botão ghost.
+
+Shell padrão (todas as telas autenticadas):
+
+```text
+┌────────────┬──────────────────────────────────────────────────────┐
+│ LOGO HUB   │ ☰ (mobile)  Êxito HUB / Página  [Ambiente Seguro]   │
+│ sidebar    │                              🔔  Nome  [ Sair ]      │
+│ grupos…    ├──────────────────────────────────────────────────────┤
+│            │  conteúdo da tela                                    │
+└────────────┴──────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -77,31 +88,18 @@ Nos wireframes: `[ Entrar #2ea44f ]` = botão primário; `[ Cancelar ghost ]` = 
 ### Wireframe
 
 ```text
-┌────────────────────────────────────────────────────────────────────────────┐
-│ ☰  ÊXITO HUB                              🔔  Nome  [ Sair ghost ]         │
-├────────────────────────────────────────────────────────────────────────────┤
-│ Fundo #f4f6f8                                                              │
-│                                                                            │
-│ ┌─ banner #dff0e4 ─────────────────────────────────────────────────────┐   │
-│ │ BEM-VINDO AO ÊXITO                                                   │   │
-│ │ Vamos apresentar a empresa...                                        │   │
-│ │ [████████████░░░░] 65%                                               │   │
-│ │ 5 de 8 etapas                              [ Continuar #2ea44f ]     │   │
-│ └──────────────────────────────────────────────────────────────────────┘   │
-│                                                                            │
-│ Bom dia, Nome.                                                             │
-│ Tudo o que você precisa para trabalhar no Êxito.                           │
-│                                                                            │
-│ ┌────────────┐ ┌────────────┐ ┌────────────┐                               │
-│ │ [imagem]   │ │ [imagem]   │ │ [imagem]   │                               │
-│ │ Vídeos     │ │ POPs       │ │ Diagrama   │                               │
-│ └────────────┘ └────────────┘ └────────────┘                               │
-│ ┌────────────┐ ┌────────────┐ ┌────────────┐                               │
-│ │ Informativos│ │ Catálogos │ │ Logos      │                               │
-│ └────────────┘ └────────────┘ └────────────┘                               │
-│                                                                            │
-│ (abaixo: Conteúdos Êxito, Acontece, Agenda, Links, Contatos — ver §3)      │
-└────────────────────────────────────────────────────────────────────────────┘
+┌────────────┬──────────────────────────────────────────────────────────────┐
+│ LOGO       │ Êxito HUB / Portal Corporativo     🔔  Nome  [ Sair ]        │
+│ sidebar    ├──────────────────────────────────────────────────────────────┤
+│            │ ┌─ banner #d6e7db ─────────────────────────────────────────┐ │
+│            │ │ ONBOARDING EM CURSO · 5 de 8 · 65%                       │ │
+│            │ │ BEM-VINDO AO ÊXITO                                       │ │
+│            │ │ [ Ver checklist ]  [ Continuar integração #006b2b ]      │ │
+│            │ └──────────────────────────────────────────────────────────┘ │
+│            │ Bom dia, Nome.                                               │
+│            │ ┌ card ┐ ┌ card ┐ ┌ card ┐  (6 cards com ícone)              │
+│            │ (abaixo: Conteúdos Êxito, Acontece, Agenda, Links, Contatos) │
+└────────────┴──────────────────────────────────────────────────────────────┘
 ```
 
 ### Cores e ações
@@ -148,20 +146,23 @@ Nos wireframes: `[ Entrar #2ea44f ]` = botão primário; `[ Cancelar ghost ]` = 
 │         ● ○ ○   (vazio: "Em breve, novidades do Êxito.")                   │
 │                                                                            │
 │ ┌──────────────────────────┐ ┌──────────────────────────┐                  │
-│ │ COMUNICADOS  Ver todos → │ │ PRÓXIMOS EVENTOS Ver →  │                  │
-│ │ Nenhum comunicado...     │ │ Nenhum evento próximo.  │                  │
+│ │ 🔔 COMUNICADOS  Ver →    │ │ 📅 EVENTOS       Ver →  │                  │
+│ │   (ícone em círculo)     │ │   (ícone em círculo)    │                  │
+│ │ Nenhum novo comunicado…  │ │ Nenhum evento próximo…  │                  │
+│ │ texto de apoio           │ │ texto de apoio          │                  │
+│ │ Canal interna      —     │ │ Agenda do portal   —    │                  │
 │ └──────────────────────────┘ └──────────────────────────┘                  │
 │                                                                            │
-│ ┌─ AGENDA ÊXITO ──────────────────────────────────── Ver agenda → ───────┐ │
-│ │ Reuniões, treinamentos e eventos internos                              │ │
+│ ┌─ [📅] AGENDA ÊXITO [Semanal] ──────────── [ Ver agenda completa ] ─────┐ │
+│ │ Reuniões, treinamentos e eventos internos da semana                    │ │
 │ └────────────────────────────────────────────────────────────────────────┘ │
 │                                                                            │
-│ ┌──────────────────────────┐ ┌──────────────────────────┐                  │
-│ │ LINKS ÚTEIS              │ │ CONTATOS ÚTEIS [Dept ▼] │                  │
-│ │ • Link ↗                 │ │ 👤 Nome · Fiscal        │                  │
-│ │                          │ │ [ E-mail ghost ]        │                  │
-│ │                          │ │ [ WhatsApp ghost ]      │                  │
-│ └──────────────────────────┘ └──────────────────────────┘                  │
+│ ┌ LINKS ÚTEIS ─────────────┐ ┌ CONTATOS ÚTEIS [Dept ▼] ─────────────────┐ │
+│ │ [icon] Nome          ↗   │ │ ○ Nome · cargo · dept                    │ │
+│ │ [icon] Nome          ↗   │ │   [ E-mail ] [ WhatsApp ]                │ │
+│ │ (grade 2 col; empty se   │ │ (linhas; empty se sem contatos)          │ │
+│ │  sem links)              │ │                                          │ │
+│ └──────────────────────────┘ └──────────────────────────────────────────┘ │
 └────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -172,108 +173,134 @@ Nos wireframes: `[ Entrar #2ea44f ]` = botão primário; `[ Cancelar ghost ]` = 
 | Pills da barra rápida | `.hub-portal-quick__item` | branco + ícone verde | Atalho para áreas do portal |
 | Setas do carrossel | `.hub-carousel__nav` | botão branco/borda | Troca slide |
 | Dot ativo | `.hub-carousel__dot.is-active` | `#2ea44f` | Indica slide atual |
-| E-mail / WhatsApp | `.hub-btn-ghost` | ghost | `mailto:` ou `https://wa.me/...` |
-| Links externos | link | abre nova aba | Só `https://` |
+| Painéis feed | `.hub-home-feed__panel` | branco `rounded-xl` | Empty Comunicados/Eventos |
+| Agenda CTA | `.hub-home-agenda` | faixa branca + badge | Vai para `/portal/agenda` |
+| Tile de link | `.hub-home-link-tile` | grade 2 col | Abre URL externa (`noopener`) |
+| E-mail / WhatsApp | `.hub-home-contact__actions` | ghost | `mailto:` ou `https://wa.me/...` |
 
 ### Como funciona
 
 1. Sem banner de integração; foco no dia a dia corporativo.
 2. Barra compacta dá acesso a áreas (inclui Documentos).
 3. Carrossel usa conteúdos publicados com `show_on_home`.
-4. Comunicados / Eventos / Agenda são placeholders (sem dados inventados).
+4. Comunicados / Eventos / Agenda são placeholders visuais Stitch (sem dados inventados; sem “sync Google”).
 5. Links e contatos vêm do admin (`show_on_home` + ativos); contatos filtráveis por departamento.
+6. A mesma faixa inferior aparece na Home pendente (abaixo dos 6 cards e do carrossel).
 
 ---
 
-## 4. Menu hambúrguer
+## 4. Menu lateral (shell)
 
-**Componente:** [`hub/views/partials/hub-app-menu.ejs`](../hub/views/partials/hub-app-menu.ejs)  
-**Catálogo:** [`hub/menu-catalog.js`](../hub/menu-catalog.js)
+**Arquivos:** [`hub/views/partials/hub-chrome.ejs`](../hub/views/partials/hub-chrome.ejs), [`hub/views/partials/hub-app-menu.ejs`](../hub/views/partials/hub-app-menu.ejs)
 
 ### Wireframe
 
 ```text
-┌─────────────────────────────┐
-│ ☰  Sistemas                 │
-│                             │
-│ ▸ Geral                     │
-│ ▸ Fiscal                    │
-│   · Auditor Fiscal          │  ← item ativo: fundo #2ea44f, texto branco
-│ ▸ Contábil                  │
-│ ▸ Folha de pagamento        │
-│ ▸ Administrativo            │
-│   · Integração              │
-│   · Vídeos / POPs / ...     │
-│   · Portal Corporativo      │  ← só admin
-│   · Gerenciar usuários      │  ← só admin
-│ ▸ Projetos                  │
-│ ▸ Agenda                    │
-│                             │
-│ Itens "Em breve" → pílula   │
-└─────────────────────────────┘
+┌────────────────────┐
+│ [logo] Êxito HUB   │
+│ Portal Corporativo │
+├────────────────────┤
+│ Início             │
+│ MÓDULOS & SISTEMAS │
+│  Geral / Fiscal…   │
+│ ADMINISTRATIVO     │
+│  Integração        │
+│  Vídeos / POPs…    │
+│  Portal [Admin]    │
+│ OPERAÇÕES          │
+│  Projetos [Admin]  │
+│  Agenda            │
+├────────────────────┤
+│ Versão 1.5.2       │
+│ [Operacional]      │
+└────────────────────┘
 ```
+
+No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão ☰ do topbar.
+
+**Catálogo:** [`hub/menu-catalog.js`](../hub/menu-catalog.js)
 
 ### Cores e ações
 
 | Ação | Cor | O que faz |
 |------|-----|-----------|
-| Item da página atual | fundo `#2ea44f`, texto branco | Indica onde o usuário está |
+| Item da página atual | fundo `#006b2b`, texto branco | Indica onde o usuário está |
 | Pílula Em breve | muted | Módulo ainda não pronto → `/hub/modulo/:slug` |
-| Chevron departamento | ícone | Abre/fecha submenu |
+| Badge Admin | muted | Só em rotas admin, para quem é admin |
 
 ### Como funciona
 
 1. Menu filtra por auth/módulo/admin (`require` no catálogo).
-2. Clique no departamento expande itens.
+2. Sidebar agrupa em Módulos & Sistemas / Administrativo / Operações & Gestão.
 3. Módulos live abrem a rota real; `soon` vão para página “em breve”.
 4. API `GET /api/hub/menu` devolve a árvore já filtrada.
 
 ---
 
-## 5. Área genérica (POPs, Diagrama, Informativos, Catálogos, Logos, Documentos)
+## 5. Área genérica (Diagrama, Informativos, Catálogos, Logos, Documentos)
 
-**Rotas:** `/portal/pops`, `/diagrama`, `/informativos`, `/catalogos`, `/logos`, `/documentos`  
+**Rotas:** `/portal/diagrama`, `/informativos`, `/catalogos`, `/logos`, `/documentos`  
+**Arquivo:** [`hub/views/portal/area.ejs`](../hub/views/portal/area.ejs)  
+**POPs:** ver §5b (layout compacto próprio).
+
+### Wireframe
+
+```text
+┌──────────────── max ~1040px ────────────────┐
+│ Início / Documentos Corporativos              │
+│ ┌─ header ──────────────────────────────────┐ │
+│ │ Título + descrição                        │ │
+│ └───────────────────────────────────────────┘ │
+│ ┌ card ┐ ┌ card ┐ ┌ card ┐  (capa limitada) │
+└───────────────────────────────────────────────┘
+```
+
+### Como funciona
+
+1. Lista só itens `is_active` do `kind` correspondente.
+2. Coluna central max 1040px (`.hub-area-page`).
+3. Auth obrigatória (`requireHubAuth`).
+
+---
+
+## 5b. POPs da Empresa (cards compactos)
+
+**Rota:** `/portal/pops`  
 **Arquivo:** [`hub/views/portal/area.ejs`](../hub/views/portal/area.ejs)
 
 ### Wireframe
 
 ```text
-┌────────────────────────────────────────────────────────────────────────────┐
-│ ☰  ÊXITO HUB · chrome                                                      │
-├────────────────────────────────────────────────────────────────────────────┤
-│ Início / POPs da Empresa                                                   │
-│                                                                            │
-│ POPs da Empresa                                                            │
-│ Procedimentos e instruções                                                 │
-│                                                                            │
-│ ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐             │
-│ │   [ capa ]       │ │   [ capa ]       │ │   [ capa ]       │             │
-│ │ Título           │ │ Título           │ │ Título           │             │
-│ │ Descrição        │ │                  │ │                  │             │
-│ │ Fiscal · v1.2    │ │                  │ │                  │             │
-│ └──────────────────┘ └──────────────────┘ └──────────────────┘             │
-│ card branco · borda #e5e7eb · hover borda verde                            │
-│ (vazio: "Nenhum item disponível no momento.")                              │
-└────────────────────────────────────────────────────────────────────────────┘
+┌──────────────── max ~1040px ────────────────┐
+│ Início / POPs da Empresa                      │
+│ [ Buscar… ]              [ Departamento ▼ ]   │
+│ ┌──────────┐ ┌──────────┐ ┌──────────┐      │
+│ │ [icon] Dept│ │          │ │          │      │
+│ │ COD · vX  │ │          │ │          │      │
+│ │ Título    │ │          │ │          │      │
+│ │ desc 2ln  │ │          │ │          │      │
+│ │ [Abrir →] │ │          │ │          │      │
+│ └──────────┘ └──────────┘ └──────────┘      │
+└───────────────────────────────────────────────┘
 ```
 
 ### Cores e ações
 
-| Ação | Cor | O que faz |
-|------|-----|-----------|
-| Card clicável | branco / hover `#2ea44f` na borda | Abre arquivo (`/portal/media/...`) ou URL externa em nova aba |
-| Empty state | texto muted `#6b7280` | Sem itens ativos |
+| Ação | Classe | O que faz |
+|------|--------|-----------|
+| Card | `.hub-pop-card` | Abre arquivo/URL (`noopener` se externo) |
+| CTA | `.hub-pop-card__cta` | “Visualizar procedimento” |
+| Empty filtro | `.hub-empty-panel` | Limpar filtros |
 
 ### Como funciona
 
-1. Lista só itens `is_active` do `kind` correspondente.
-2. Capa: thumbnail do item, imagem do arquivo, ou ilustração padrão da área.
-3. Metadados (departamento, versão, categoria) aparecem quando preenchidos.
-4. Auth obrigatória (`requireHubAuth`).
+1. Sem capa 16/10 dominante — ícone Material ou miniatura 40×40.
+2. Código = `category` real; versão = `version` real (omitidos se vazios).
+3. Sem botão “Sugerir POP” nem KPIs inventados.
 
 ---
 
-## 6. Vídeos de Integração (player grande)
+## 6. Vídeos de Integração (player contido)
 
 **Rota:** `/portal/videos`  
 **Arquivo:** [`hub/views/portal/area.ejs`](../hub/views/portal/area.ejs) (branch `meta.slug === 'videos'`)
@@ -281,41 +308,39 @@ Nos wireframes: `[ Entrar #2ea44f ]` = botão primário; `[ Cancelar ghost ]` = 
 ### Wireframe
 
 ```text
-┌────────────────────────────────────────────────────────────────────────────┐
-│ Início / Vídeos de Integração                                              │
-│ Conheça a empresa                                                          │
-│ Assista o vídeo nesta página — clique em play no player abaixo.            │
-│                                                                            │
-│ ┌──────────────────────────────────────────────────────────────────────┐   │
-│ │                                                                      │   │
-│ │         [ IFRAME YOUTUBE 16:9 — play DENTRO do HUB ]                 │   │
-│ │              max-width ~960px · fundo player #0f172a                 │   │
-│ │                                                                      │   │
-│ └──────────────────────────────────────────────────────────────────────┘   │
-│ Bem-vindo ao Êxito                                                         │
-│ Descrição...                                                               │
-│ Abrir no YouTube  (link secundário #6b7280)                                │
-│                                                                            │
-│ ┌──────────────────────────────────────────────────────────────────────┐   │
-│ │              [ PLAYER YOUTUBE GRANDE — vídeo 2 ]                     │   │
-│ └──────────────────────────────────────────────────────────────────────┘   │
-└────────────────────────────────────────────────────────────────────────────┘
+┌──────────────── max ~1040px ────────────────┐
+│ Início / Vídeos de Integração                 │
+│ ┌─ header ──────────────────────────────────┐ │
+│ │ Assista in-app…                           │ │
+│ └───────────────────────────────────────────┘ │
+│ ┌─ featured ────────────────────────────────┐ │
+│ │ [MOD-01] · Vídeo obrigatório / dept       │ │
+│ │ ┌───────────────────────────────────────┐ │ │
+│ │ │   YouTube iframe 16:9 (real)          │ │ │
+│ │ └───────────────────────────────────────┘ │ │
+│ │ Título · Abrir no YouTube (ghost)         │ │
+│ └───────────────────────────────────────────┘ │
+│ Trilha completa · Total: N                    │
+│ ┌────┐ ┌────┐ ┌────┐  cards compactos       │
+│ │M01 │ │M02 │ │POP→│                        │
+│ └────┘ └────┘ └────┘                        │
+└───────────────────────────────────────────────┘
 ```
 
 ### Cores e ações
 
-| Ação | Cor | O que faz |
-|------|-----|-----------|
-| Play no iframe | UI do YouTube | Assiste **dentro** do HUB (embed `youtube-nocookie`) |
-| Abrir no YouTube | muted / hover verde | Opcional; nova aba |
-| Hint | muted | Orienta a assistir na página |
+| Ação | Classe | O que faz |
+|------|--------|-----------|
+| Play no iframe | UI do YouTube | Assiste **dentro** do HUB |
+| Abrir no YouTube | `.hub-video-feature__yt` | Opcional; nova aba |
+| Módulo da playlist | `.hub-video-playlist__card` | `?v=` troca o featured |
 
 ### Como funciona
 
 1. Admin cadastra só o **link do YouTube** (sem MP4).
-2. Sistema extrai o ID e monta o embed.
-3. Layout em **coluna única** (player grande).
-4. Funcionário dá play no player embutido; não precisa sair do sistema.
+2. Coluna max **1040px** + `max-height` no player evita estouro no shell largo.
+3. Um player featured + playlist (não N players empilhados).
+4. Sem duração, views ou capítulos inventados.
 
 ---
 
@@ -365,33 +390,37 @@ Nos wireframes: `[ Entrar #2ea44f ]` = botão primário; `[ Cancelar ghost ]` = 
 ## 8. Placeholders — Comunicados / Eventos / Agenda
 
 **Rotas:** `/portal/comunicados`, `/portal/eventos`, `/portal/agenda`  
-**Arquivo:** [`hub/views/portal/placeholder.ejs`](../hub/views/portal/placeholder.ejs)
+**Arquivo:** [`hub/views/portal/placeholder.ejs`](../hub/views/portal/placeholder.ejs)  
+**Textos:** [`EMPTY_STATES`](../hub/portal/constants.js)
 
 ### Wireframe
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────┐
 │ Início / Comunicados                                                       │
-│                                                                            │
 │ Comunicados                                                                │
-│ Nenhum comunicado disponível.          ← texto muted                       │
-│                                                                            │
-│ Esta área será integrada a uma fonte de dados em uma próxima etapa.        │
+│ ┌────────────────────────────────────────────────────────────────────────┐ │
+│ │              (ícone Material em círculo)                               │ │
+│ │         Nenhum novo comunicado no momento.                             │ │
+│ │         texto de apoio (EMPTY_STATES.*Support)                         │ │
+│ └────────────────────────────────────────────────────────────────────────┘ │
+│ [ Voltar ao início  #006b2b ]                                              │
 └────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Cores e ações
 
-| Elemento | Cor | O que faz |
-|----------|-----|-----------|
-| Título / lead | ink / muted | Empty state oficial |
-| Sem CTA primário | — | Sem integração externa nesta versão |
+| Elemento | Classe | O que faz |
+|----------|--------|-----------|
+| Empty central | `.hub-home-feed__empty` | Mesmo idioma visual da Home |
+| CTA | `.hub-btn-primary` | Volta para `/` |
 
 ### Como funciona
 
-1. Estrutura visual preparada; **sem dados inventados**.
-2. Home aponta “Ver todos →” para essas rotas.
-3. Integração real (Calendar, etc.) fica para etapa futura.
+1. Empty state idêntico ao da Home; **sem dados inventados**.
+2. Home aponta “Ver todos →” / “Ver agenda completa” para essas rotas.
+3. Ícone por tipo: `mark_email_read` / `event_busy` / `calendar_month`.
+4. Integração real (CRUD / Calendar) fica para etapa futura.
 
 ---
 

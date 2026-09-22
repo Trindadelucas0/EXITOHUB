@@ -40,9 +40,17 @@ const CONTENT_CATEGORIES = [
 const EMPTY_STATES = {
   contents: 'Em breve, novidades do Êxito.',
   links: 'Nenhum link útil disponível.',
+  linksSupport: 'Cadastre atalhos em Portal Corporativo → Links Úteis.',
   contacts: 'Nenhum contato cadastrado.',
-  announcements: 'Nenhum comunicado disponível.',
-  events: 'Nenhum evento próximo.',
+  contactsSupport: 'Cadastre contatos em Portal Corporativo → Contatos Úteis.',
+  announcements: 'Nenhum novo comunicado no momento.',
+  announcementsSupport:
+    'Você está com todas as leituras operacionais e comunicados internos em dia.',
+  events: 'Nenhum evento próximo agendado.',
+  eventsSupport:
+    'Não há reuniões gerais, bancas corporativas ou seminários marcados nas próximas horas.',
+  agenda: 'Reuniões, treinamentos e eventos internos da semana.',
+  agendaSupport: 'A agenda corporativa será integrada em uma próxima etapa.',
   items: 'Nenhum item disponível no momento.',
 };
 

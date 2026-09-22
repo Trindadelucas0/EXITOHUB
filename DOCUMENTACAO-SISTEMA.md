@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM, Portal Corporativo).
-> Versão: 1.4.6 — Conciliação: histórico do extrato Itaú junta Lançamento e Razão Social.
+> Versão: 1.5.2 — Portal: Vídeos e POPs compactos (max 1040px) no visual Stitch.
 
 ## 1. Visão geral
 
@@ -45,6 +45,9 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 1.5.2 | 22/09/2026 | Portal: `/portal/videos` e `/portal/pops` em coluna max 1040px (Stitch). Player YouTube real contido; playlist e cards POP compactos (ícone+código+versão, sem capa 16/10 dominante). Sem duração/views/capítulos inventados |
+| 1.5.1 | 22/09/2026 | Portal: faixa inferior da Home (Comunicados, Eventos, Agenda Êxito, Links, Contatos) no visual Stitch — empty states ricos, grade de links, linhas de contato. Placeholders `/portal/comunicados`, `/eventos`, `/agenda` com o mesmo empty. Sem inventar eventos/comunicados nem claim de sync Google Agenda |
+| 1.5.0 | 22/09/2026 | Portal: shell com sidebar fixa + topbar (mockup Stitch). Verde `#006b2b`, fundo `#f9f9ff`. Home pendente/concluída, vídeos (player + grade), POPs com busca/filtro, trilha, admin em cards, KPIs em usuários. Menu inclui Acompanhamento e Agenda do portal. Sem SSO/SLA/matrícula do mockup |
 | 1.4.6 | 22/09/2026 | Conciliação: histórico do extrato Itaú junta Lançamento e Razão Social (` - `; vazio = só lançamento). Sessão já gravada não muda; é preciso reenviar o extrato |
 | 1.4.5 | 22/09/2026 | Conciliação: histórico e pré-cadastro ficam no Postgres. Admin reabre a última empresa. Edição que não gravar no banco mostra erro. Backup diário do banco CONCI |
 | 1.4.4 | 21/09/2026 | Portal: `/portal/videos` em coluna única com player YouTube grande; assistir in-app (play no iframe). Link “Abrir no YouTube” secundário |
@@ -86,7 +89,7 @@ Função: [`postLoginPath`](hub/auth.js).
 
 ## 4. Menu e permissões
 
-O menu hambúrguer (EJS [`hub/views/partials/hub-app-menu.ejs`](hub/views/partials/hub-app-menu.ejs) e React [`hub-systems-menu.tsx`](NCM/fiscal/src/components/shell/hub-systems-menu.tsx)) vem do catálogo [`hub/menu-catalog.js`](hub/menu-catalog.js). Visual no padrão da barra lateral do ERP: chevron 16px à esquerda do departamento (gira 90° ao abrir), ícone 16px em cada item, filhos recuados, item da página atual com fundo verde e texto branco. Itens `soon` mostram pílula **Em breve** (não colada no nome) e continuam indo para `/hub/modulo/:slug`. Clique no departamento abre o submenu. Departamento sem item visível some. `GET /api/hub/menu` inclui `icon` em cada item.
+O menu lateral (EJS [`hub/views/partials/hub-app-menu.ejs`](hub/views/partials/hub-app-menu.ejs) + topbar em [`hub-chrome.ejs`](hub/views/partials/hub-chrome.ejs); React [`hub-systems-menu.tsx`](NCM/fiscal/src/components/shell/hub-systems-menu.tsx) nos módulos) vem do catálogo [`hub/menu-catalog.js`](hub/menu-catalog.js). No portal EJS: sidebar fixa (~288px) com grupos **Módulos & Sistemas**, **Administrativo** e **Operações & Gestão**; item ativo com fundo verde `#006b2b` e texto branco; badges **Admin** / **Em breve**. No mobile/tablet (&lt;1024px) a sidebar vira gaveta (botão menu no topo). Item da página atual destacado. Itens `soon` mostram pílula **Em breve** e vão para `/hub/modulo/:slug`. Departamento sem item visível some. `GET /api/hub/menu` inclui `icon` em cada item.
 
 **Quem vê o quê**
 
@@ -103,10 +106,12 @@ O menu hambúrguer (EJS [`hub/views/partials/hub-app-menu.ejs`](hub/views/partia
 - Controle folha mensal → `/folha/dashboard`
 - DAUTO Tintas → `/folha/modulos`
 - Conciliação → `/conci/`
-- Home / Portal → `/` (onboarding: 6 cards + banner com %; concluído: barra rápida + carrossel)
+- Home / Portal → `/` (onboarding: banner + 6 cards com ícone; concluído: saudação + pills + carrossel split)
 - Integração (onboarding) → `/portal/onboarding`
 - Documentos Corporativos → `/portal/documentos`
-- Portal Corporativo (admin) → `/admin/portal`
+- Portal Corporativo (admin) → `/admin/portal` (grade de cards)
+- Acompanhamento onboarding → `/admin/portal/onboarding/acompanhamento`
+- Agenda (placeholder) → `/portal/agenda`
 - Gerenciar usuários → `/admin/usuarios` (admin)
 - Projetos → `/projetos` (admin) com card para https://suporte.avadesk.com.br/
 - Certificados Digitais → URL SIEG (`HUB_SIEG_URL` ou https://www.sieg.com.br), nova aba
@@ -124,8 +129,11 @@ Rotas de módulo sem permissão → 403 via [`requireHubModule`](hub/middleware.
 - Usuário novo (não admin) nasce `PENDING`. Master EXITO e seed admin nascem `COMPLETED`.
 - Quem abre `/` com status ≠ `COMPLETED` vê banner de progresso (percentual + etapas) e os **6 cards** de integração (Vídeos, POPs, Diagrama, Informativos, Catálogos, Logos).
 - Quem está `COMPLETED` vê a **barra rápida** de áreas (inclui Documentos Corporativos) e prioriza Conteúdos Êxito, Acontece no Êxito, Agenda, Links e Contatos.
+- Faixa inferior da Home (pendente e concluída): painéis Comunicados/Eventos com empty state (ícone em círculo + título + apoio + rodapé estático “Canal de transmissão interna” / “Agenda do portal”); faixa Agenda Êxito com badge Semanal e CTA para `/portal/agenda`; Links em grade 2 colunas (`portal_links`); Contatos em linhas com avatar/iniciais e E-mail/WhatsApp (`portal_contacts`). Sem lista inventada de eventos/comunicados; sem timestamp fake nem “sync Google Agenda”.
+- Placeholders `/portal/comunicados`, `/eventos`, `/agenda` reutilizam o mesmo empty visual + CTA Voltar ao início. Textos em [`EMPTY_STATES`](hub/portal/constants.js).
 - `portal_items` aceita kind `document` e metadados: categoria, departamento, versão, thumbnail, obrigatório no onboarding.
-- Vídeos (`kind = video`): `external_url` obrigatória e só YouTube (`youtube.com` / `youtu.be`); `/portal/videos` embute o player em **coluna única** (`youtube-nocookie.com/embed/...`) para assistir dentro do HUB. Sem upload de MP4. “Abrir no YouTube” é link secundário.
+- Vídeos (`kind = video`): `external_url` obrigatória e só YouTube (`youtube.com` / `youtu.be`); `/portal/videos` embute o player em destaque + grade dos demais (`?v=` para selecionar), em coluna **max 1040px** para o 16:9 não estourar no shell largo. Sem upload de MP4. “Abrir no YouTube” é link secundário. Sem duração/views/capítulos inventados.
+- POPs: busca e filtro por departamento no cliente; cards compactos (ícone ou capa 40×40, chip de departamento, `category`/`version` reais, CTA Visualizar). Coluna max 1040px.
 - Trilha padrão (8 etapas) seedada no boot em [`hub/portal/seed-onboarding.js`](hub/portal/seed-onboarding.js).
 - **Não** altera `postLoginPath`: quem tem um único módulo continua indo direto ao módulo no login.
 

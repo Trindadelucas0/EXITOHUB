@@ -124,12 +124,14 @@ router.get('/portal/videos', requireHubAuth, async (req, res) => {
   const kind = 'video';
   const meta = kindMeta(kind);
   const items = await listItems(kind, { activeOnly: true });
+  const selectedVideoId = req.query.v ? String(req.query.v).slice(0, 64) : null;
   return res.render('portal/area', {
     title: `${meta.label} — EXITO HUB`,
     hubUser: req.hubUser,
     current: 'portal-videos',
     meta,
     items,
+    selectedVideoId,
     ...pickFlash(req),
   });
 });
@@ -226,8 +228,9 @@ router.get('/portal/comunicados', requireHubAuth, (req, res) => {
     hubUser: req.hubUser,
     current: 'portal-comunicados',
     pageTitle: 'Comunicados',
+    pageIcon: 'mark_email_read',
     pageLead: EMPTY_STATES.announcements,
-    pageHint: 'Esta área será integrada a uma fonte de dados em uma próxima etapa.',
+    pageHint: EMPTY_STATES.announcementsSupport,
   });
 });
 
@@ -237,8 +240,9 @@ router.get('/portal/eventos', requireHubAuth, (req, res) => {
     hubUser: req.hubUser,
     current: 'portal-eventos',
     pageTitle: 'Próximos eventos',
+    pageIcon: 'event_busy',
     pageLead: EMPTY_STATES.events,
-    pageHint: 'Esta área será integrada a uma fonte de dados em uma próxima etapa.',
+    pageHint: EMPTY_STATES.eventsSupport,
   });
 });
 
@@ -248,8 +252,9 @@ router.get('/portal/agenda', requireHubAuth, (req, res) => {
     hubUser: req.hubUser,
     current: 'portal-agenda',
     pageTitle: 'Agenda Êxito',
-    pageLead: 'Reuniões, treinamentos e eventos internos.',
-    pageHint: 'Esta área será integrada a uma fonte de dados em uma próxima etapa.',
+    pageIcon: 'calendar_month',
+    pageLead: EMPTY_STATES.agenda,
+    pageHint: EMPTY_STATES.agendaSupport,
   });
 });
 
@@ -754,7 +759,7 @@ router.get('/admin/portal/onboarding/acompanhamento', requireHubAdmin, async (re
   return res.render('admin/portal-onboarding-users', {
     title: 'Acompanhamento — Onboarding',
     hubUser: req.hubUser,
-    current: 'admin-portal',
+    current: 'admin-onboarding-users',
     users,
     filterStatus: status || '',
     filterDepartment: department,

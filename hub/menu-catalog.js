@@ -276,6 +276,16 @@ function buildCatalog() {
           currentKey: 'admin',
           description: 'Cadastro de logins e módulos do HUB.',
         },
+        {
+          id: 'acompanhamento',
+          label: 'Acompanhamento Onboarding',
+          href: '/admin/portal/onboarding/acompanhamento',
+          require: 'admin',
+          status: 'live',
+          icon: 'clipboard',
+          currentKey: 'admin-onboarding-users',
+          description: 'Progresso da trilha de integração dos colaboradores.',
+        },
       ],
     },
     {
@@ -284,7 +294,7 @@ function buildCatalog() {
       items: [
         {
           id: 'avadesk',
-          label: 'Avadesk — Chamados',
+          label: 'Projetos (Avadesk)',
           href: '/projetos',
           require: 'admin',
           status: 'live',
@@ -300,6 +310,16 @@ function buildCatalog() {
       items: [
         {
           id: 'google-agenda',
+          label: 'Agenda',
+          href: '/portal/agenda',
+          require: 'auth',
+          status: 'live',
+          icon: 'calendar',
+          currentKey: 'portal-agenda',
+          description: 'Reuniões, treinamentos e eventos internos.',
+        },
+        {
+          id: 'google-agenda-ext',
           label: 'Google Agenda',
           href: calendarUrl(),
           require: 'admin',

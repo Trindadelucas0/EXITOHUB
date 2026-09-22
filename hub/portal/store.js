@@ -121,23 +121,44 @@ function mapFileFields(row, idKey, urlKey) {
 
 /* ───────────── Home ───────────── */
 
+async function countActiveItemsByKind() {
+  const result = await query(
+    `SELECT kind, COUNT(*)::int AS total
+     FROM portal_items
+     WHERE is_active = true
+     GROUP BY kind`,
+  );
+  const map = {};
+  for (const row of result.rows) {
+    map[row.kind] = row.total;
+  }
+  return map;
+}
+
 async function loadHome() {
-  const [links, contacts, contents] = await Promise.all([
+  const [links, contacts, contents, itemCounts] = await Promise.all([
     listLinks({ homeOnly: true, activeOnly: true }),
     listContacts({ homeOnly: true, activeOnly: true }),
     listContents({ homeOnly: true, publishedOnly: true }),
+    countActiveItemsByKind(),
   ]);
   const integrationCards = HOME_INTEGRATION_KINDS.map((kind) => ({
     kind,
     ...ITEM_KINDS[kind],
+    itemCount: itemCounts[kind] || 0,
   }));
-  const quickCards = Object.entries(ITEM_KINDS).map(([kind, meta]) => ({ kind, ...meta }));
+  const quickCards = Object.entries(ITEM_KINDS).map(([kind, meta]) => ({
+    kind,
+    ...meta,
+    itemCount: itemCounts[kind] || 0,
+  }));
   return {
     cards: integrationCards,
     quickCards,
     links,
     contacts,
     contents,
+    itemCounts,
     emptyStates: EMPTY_STATES,
   };
 }

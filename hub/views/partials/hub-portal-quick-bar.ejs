@@ -1,6 +1,8 @@
 <% if ((quickCards || []).length) { %>
 <section class="hub-portal-quick" aria-label="Áreas da empresa">
-  <h2 class="hub-portal-section__title hub-portal-section__title--sm">Áreas da empresa</h2>
+  <span class="font-label-sm hub-muted" style="display: block; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 0.5rem;">
+    Áreas da Empresa · Atalhos Rápidos
+  </span>
   <div class="hub-portal-quick__row">
     <% quickCards.forEach(function (card) { %>
       <a class="hub-portal-quick__item" href="<%= card.route %>" title="<%= card.label %>">

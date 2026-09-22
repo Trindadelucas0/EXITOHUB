@@ -1,24 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/hub-assets/hub.css" />
+  <%- include('../partials/hub-head') %>
 </head>
 <body class="hub-body">
-  <%- include('../partials/hub-chrome', { current: typeof current !== 'undefined' ? current : '' }) %>
-  <main class="hub-main hub-portal-page">
-    <section class="hub-card">
-      <p class="hub-breadcrumb"><a href="/">Início</a> / <%= pageTitle %></p>
-      <h1><%= pageTitle %></h1>
-      <p class="hub-muted"><%= pageLead %></p>
-      <p><%= pageHint %></p>
-      <p><a class="hub-btn hub-btn-primary" href="/">Voltar ao início</a></p>
-    </section>
+  <%
+    const crumb = typeof pageTitle !== 'undefined' ? pageTitle : 'Portal';
+    const emptyIcon = typeof pageIcon !== 'undefined' && pageIcon
+      ? pageIcon
+      : 'inbox';
+    const emptyTitle = typeof pageLead !== 'undefined' ? pageLead : 'Nada por aqui ainda.';
+    const emptyText = typeof pageHint !== 'undefined' ? pageHint : '';
+  %>
+  <%- include('../partials/hub-chrome', {
+    current: typeof current !== 'undefined' ? current : '',
+    breadcrumb: crumb
+  }) %>
+  <main class="hub-shell-main">
+    <div class="hub-placeholder-page">
+      <p class="hub-breadcrumb" style="margin: 0 0 0.75rem; font-size: 0.8125rem;">
+        <a href="/">Início</a> / <%= crumb %>
+      </p>
+      <h1 style="margin: 0 0 1rem; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.015em;"><%= crumb %></h1>
+      <div class="hub-home-feed__panel">
+        <div class="hub-home-feed__empty">
+          <span class="hub-home-feed__empty-icon" aria-hidden="true">
+            <span class="material-symbols-outlined"><%= emptyIcon %></span>
+          </span>
+          <p class="hub-home-feed__empty-title"><%= emptyTitle %></p>
+          <% if (emptyText) { %>
+            <p class="hub-home-feed__empty-text"><%= emptyText %></p>
+          <% } %>
+        </div>
+      </div>
+      <p style="margin-top: 1.25rem;">
+        <a class="hub-btn hub-btn-primary" href="/">Voltar ao início</a>
+      </p>
+    </div>
   </main>
+  <%- include('../partials/hub-chrome-end') %>
 </body>
 </html>

@@ -1,16 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/hub-assets/hub.css" />
+  <%- include('partials/hub-head') %>
 </head>
 <body class="hub-body" data-self-id="<%= hubUser.id %>">
-  <%- include('partials/hub-chrome', { current: 'admin' }) %>
+  <%- include('partials/hub-chrome', { current: 'admin', breadcrumb: 'Gerenciar Usuários' }) %>
 
   <%
     const isEdit = sheetMode === 'edit' && editingUser;
@@ -24,6 +18,14 @@
     const formAction = isEdit ? '/admin/usuarios/' + sheetUser.id + '/modulos' : '/admin/usuarios';
     const statusAction = isEdit ? '/admin/usuarios/' + sheetUser.id + '/status' : '';
     const hasFilter = Boolean(filters.q || filters.mod || filters.sit);
+    const kpiTotal = typeof allUserCount === 'number' ? allUserCount : (users || []).length;
+    const kpiActive = typeof activeCount === 'number' ? activeCount : 0;
+    const kpiAdmins = (typeof allUsersForKpi !== 'undefined' && allUsersForKpi)
+      ? allUsersForKpi.filter(function (u) { return u.isAdmin; }).length
+      : (users || []).filter(function (u) { return u.isAdmin; }).length;
+    const kpiOnboarding = (typeof allUsersForKpi !== 'undefined' && allUsersForKpi)
+      ? allUsersForKpi.filter(function (u) { return u.onboardingStatus !== 'COMPLETED'; }).length
+      : 0;
 
     function listHref(extra) {
       const params = new URLSearchParams();
@@ -78,18 +80,50 @@
     }
   %>
 
-  <main class="hub-main hub-users-page">
+  <main class="hub-shell-main hub-users-page">
     <header class="hub-users-hero">
       <div>
-        <h1>Usuários</h1>
-        <p class="hub-muted">Login único do HUB. Empresas ficam nos módulos.</p>
+        <h1>Gerenciar Usuários</h1>
+        <p class="hub-muted">Controle de acessos, provisionamento de módulos corporativos e permissões administrativas.</p>
         <p class="hub-users-links">
           <a href="/conci/admin/empresas">Empresas na Conciliação</a>
           <a href="/ncm/escritorio/empresas">Empresas no NCM</a>
         </p>
       </div>
-      <a class="hub-btn hub-btn-primary" href="<%= listHref({ novo: '1', editar: '', confirmar: '' }) %>" data-sheet-open="create">Novo usuário</a>
+      <a class="hub-btn hub-btn-primary" href="<%= listHref({ novo: '1', editar: '', confirmar: '' }) %>" data-sheet-open="create">+ Novo Usuário</a>
     </header>
+
+    <div class="hub-kpi-row" aria-label="Resumo de usuários">
+      <div class="hub-kpi-card">
+        <div>
+          <span class="hub-kpi-card__label">Total de Usuários</span>
+          <span class="hub-kpi-card__value"><%= kpiTotal %></span>
+        </div>
+        <span class="hub-kpi-card__icon" aria-hidden="true"><span class="material-symbols-outlined">group</span></span>
+      </div>
+      <div class="hub-kpi-card">
+        <div>
+          <span class="hub-kpi-card__label">Usuários Ativos</span>
+          <span class="hub-kpi-card__value"><%= kpiActive %></span>
+          <span class="hub-muted" style="font-size: 0.75rem;">/ <%= kpiTotal %></span>
+        </div>
+        <span class="hub-kpi-card__icon" aria-hidden="true"><span class="material-symbols-outlined">verified</span></span>
+      </div>
+      <div class="hub-kpi-card">
+        <div>
+          <span class="hub-kpi-card__label">Administradores</span>
+          <span class="hub-kpi-card__value"><%= kpiAdmins %></span>
+        </div>
+        <span class="hub-kpi-card__icon" aria-hidden="true"><span class="material-symbols-outlined">admin_panel_settings</span></span>
+      </div>
+      <div class="hub-kpi-card">
+        <div>
+          <span class="hub-kpi-card__label">Pendentes Onboarding</span>
+          <span class="hub-kpi-card__value"><%= kpiOnboarding %></span>
+        </div>
+        <span class="hub-kpi-card__icon" aria-hidden="true" style="background: #fee4e2; color: var(--hub-danger);"><span class="material-symbols-outlined">pending_actions</span></span>
+      </div>
+    </div>
 
     <% if (flash) { %>
       <div class="hub-alert hub-alert-ok"><%= flash %></div>
@@ -456,5 +490,6 @@
   </dialog>
 
   <script src="/hub-assets/hub-admin-users.js"></script>
+  <%- include('partials/hub-chrome-end') %>
 </body>
 </html>

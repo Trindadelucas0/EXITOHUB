@@ -1,87 +1,101 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/hub-assets/hub.css" />
+  <%- include('../partials/hub-head') %>
 </head>
 <body class="hub-body">
-  <%- include('../partials/hub-chrome', { current: 'portal-onboarding' }) %>
-  <main class="hub-main hub-portal-page">
-    <section class="hub-card">
-      <p class="hub-breadcrumb"><a href="/">Início</a> / Integração</p>
-      <div class="hub-onboarding-head">
-        <div>
-          <h1>Integração</h1>
-          <p class="hub-muted">
-            <% if (track) { %><%= track.name %><% } else { %>Nenhuma trilha ativa.<% } %>
-          </p>
-        </div>
-        <% if (total) { %>
-          <p class="hub-onboarding-progress" aria-label="Progresso"><%= doneCount %> / <%= total %></p>
-        <% } %>
+  <%- include('../partials/hub-chrome', { current: 'portal-onboarding', breadcrumb: 'Integração' }) %>
+
+  <main class="hub-shell-main">
+    <p class="hub-breadcrumb" style="margin: 0 0 0.75rem; font-size: 0.8125rem;">
+      <a href="/">Início</a> / Integração
+    </p>
+
+    <div class="hub-onboarding-head" style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem;">
+      <div>
+        <h1 style="margin: 0; font-size: 1.5rem; font-weight: 600;">Integração</h1>
+        <p class="hub-muted" style="margin: 0.35rem 0 0;">
+          <% if (track) { %><%= track.name %><% } else { %>Nenhuma trilha ativa.<% } %>
+        </p>
       </div>
-
       <% if (total) { %>
-        <div class="hub-onboarding-meter" role="progressbar"
-             aria-valuenow="<%= Math.round((doneCount / total) * 100) %>"
-             aria-valuemin="0" aria-valuemax="100">
-          <span class="hub-onboarding-meter__bar" style="width: <%= Math.round((doneCount / total) * 100) %>%"></span>
-        </div>
-        <p class="hub-muted"><%= Math.round((doneCount / total) * 100) %>% concluído</p>
+        <p class="hub-onboarding-progress" aria-label="Progresso" style="font-size: 1.25rem; font-weight: 700; color: var(--exito-green);">
+          <%= doneCount %> / <%= total %>
+        </p>
       <% } %>
+    </div>
 
-      <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
-      <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+    <% if (total && hubUser.onboardingStatus !== 'COMPLETED') { %>
+      <div class="hub-onboarding-meter" role="progressbar"
+           aria-valuenow="<%= Math.round((doneCount / total) * 100) %>"
+           aria-valuemin="0" aria-valuemax="100"
+           style="max-width: 32rem;">
+        <span class="hub-onboarding-meter__bar" style="width: <%= Math.round((doneCount / total) * 100) %>%"></span>
+      </div>
+      <p class="hub-muted" style="margin: 0.35rem 0 0;"><%= Math.round((doneCount / total) * 100) %>% concluído</p>
+    <% } %>
 
-      <% if (hubUser.onboardingStatus === 'COMPLETED') { %>
-        <p>Você já concluiu a integração.</p>
-        <p><a class="hub-btn hub-btn-primary" href="/">Ir para a Home</a></p>
-      <% } else if (!(steps || []).length) { %>
+    <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
+    <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+
+    <% if (hubUser.onboardingStatus === 'COMPLETED') { %>
+      <div class="hub-onboarding-finish--panel">
+        <p style="margin: 0 0 1rem;">Você já concluiu a integração.</p>
+        <a class="hub-btn hub-btn-primary" href="/">Ir para a Home</a>
+      </div>
+    <% } else if (!(steps || []).length) { %>
+      <div class="hub-empty-panel">
+        <h3>Trilha em preparação</h3>
         <p class="hub-muted">Aguarde o administrador configurar a trilha de integração.</p>
-      <% } else { %>
-        <ol class="hub-onboarding-steps">
-          <% steps.forEach(function (step, idx) { %>
-            <li class="hub-onboarding-step<%= step.completed ? ' is-done' : '' %><%= !step.unlocked ? ' is-locked' : '' %>">
-              <div class="hub-onboarding-step__main">
-                <span class="hub-onboarding-step__num"><%= String(idx + 1).padStart(2, '0') %></span>
-                <div>
-                  <strong><%= step.title %></strong>
-                  <% if (step.description) { %><p><%= step.description %></p><% } %>
-                </div>
+      </div>
+    <% } else { %>
+      <h2 class="hub-portal-section__title" style="margin-top: 1.5rem;">Módulos da Trilha Corporativa</h2>
+      <ol class="hub-onboarding-steps hub-onboarding-steps--cards">
+        <% steps.forEach(function (step, idx) { %>
+          <li class="hub-onboarding-step hub-onboarding-step--card<%= step.completed ? ' is-done' : '' %><%= !step.unlocked ? ' is-locked' : '' %>">
+            <div class="hub-onboarding-step__main" style="display: flex; gap: 0.75rem; align-items: flex-start; min-width: 0; flex: 1;">
+              <span class="hub-onboarding-step__num" style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: <%= step.completed ? 'var(--exito-green)' : 'var(--exito-muted)' %>;">
+                <%= String(idx + 1).padStart(2, '0') %>
+              </span>
+              <div>
+                <strong style="font-size: 1rem;"><%= step.title %></strong>
+                <% if (step.description) { %><p class="hub-muted" style="margin: 0.25rem 0 0; font-size: 0.875rem;"><%= step.description %></p><% } %>
               </div>
-              <div class="hub-onboarding-step__actions">
-                <% if (step.completed) { %>
-                  <span class="hub-pill hub-pill-ok">Concluída</span>
-                <% } else if (!step.unlocked) { %>
-                  <span class="hub-pill">Bloqueada</span>
-                <% } else { %>
-                  <% if (step.href) { %>
-                    <a class="hub-btn hub-btn-ghost hub-btn-sm" href="<%= step.href %>">Abrir</a>
-                  <% } %>
-                  <form method="post" action="/portal/onboarding/steps/<%= step.id %>/complete">
-                    <button type="submit" class="hub-btn hub-btn-primary hub-btn-sm">Marcar como concluída</button>
-                  </form>
+            </div>
+            <div class="hub-onboarding-step__actions" style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+              <% if (step.completed) { %>
+                <span class="hub-pill hub-pill-ok">Concluída</span>
+              <% } else if (!step.unlocked) { %>
+                <span class="hub-pill">Bloqueada</span>
+              <% } else { %>
+                <% if (step.href) { %>
+                  <a class="hub-btn hub-btn-ghost hub-btn-sm" href="<%= step.href %>">Abrir</a>
                 <% } %>
-              </div>
-            </li>
-          <% }) %>
-        </ol>
+                <form method="post" action="/portal/onboarding/steps/<%= step.id %>/complete">
+                  <button type="submit" class="hub-btn hub-btn-primary hub-btn-sm">Marcar como concluída</button>
+                </form>
+              <% } %>
+            </div>
+          </li>
+        <% }) %>
+      </ol>
 
-        <form method="post" action="/portal/onboarding/complete" class="hub-onboarding-finish">
-          <button type="submit" class="hub-btn hub-btn-primary" <%= canComplete ? '' : 'disabled' %>>
-            Concluir integração
-          </button>
-          <% if (!canComplete) { %>
-            <p class="hub-muted">Conclua todas as etapas para finalizar.</p>
+      <form method="post" action="/portal/onboarding/complete" class="hub-onboarding-finish hub-onboarding-finish--panel">
+        <h3 style="margin: 0 0 0.5rem; font-size: 1.25rem;">Finalização da Integração</h3>
+        <p class="hub-muted" style="margin: 0 0 1rem;">
+          <% if (canComplete) { %>
+            Todas as etapas foram concluídas. Confirme para liberar a Home operacional.
+          <% } else { %>
+            Conclua todas as etapas para finalizar.
           <% } %>
-        </form>
-      <% } %>
-    </section>
+        </p>
+        <button type="submit" class="hub-btn hub-btn-primary" <%= canComplete ? '' : 'disabled' %>>
+          Concluir integração
+        </button>
+      </form>
+    <% } %>
   </main>
+
+  <%- include('../partials/hub-chrome-end') %>
 </body>
 </html>

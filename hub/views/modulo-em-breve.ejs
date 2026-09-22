@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= title %></title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/hub-assets/hub.css" />
+  <%- include('partials/hub-head') %>
 </head>
 <body class="hub-body">
-  <%- include('partials/hub-chrome', { current: typeof current !== 'undefined' ? current : '' }) %>
-
-  <main class="hub-main">
-    <section class="hub-card">
-      <h1><%= moduleTitle %></h1>
+  <%- include('partials/hub-chrome', {
+    current: typeof current !== 'undefined' ? current : '',
+    breadcrumb: moduleTitle
+  }) %>
+  <main class="hub-shell-main">
+    <section class="hub-empty-panel" style="text-align: left;">
+      <h1 style="margin: 0 0 0.5rem; font-size: 1.5rem;"><%= moduleTitle %></h1>
       <% if (notFound) { %>
         <p class="hub-muted"><%= moduleDescription %></p>
       <% } else { %>
@@ -23,8 +19,9 @@
           <p><%= moduleDescription %></p>
         <% } %>
       <% } %>
-      <p><a class="hub-btn hub-btn-primary" href="/">Voltar ao início</a></p>
+      <p style="margin-top: 1.25rem;"><a class="hub-btn hub-btn-primary" href="/">Voltar ao início</a></p>
     </section>
   </main>
+  <%- include('partials/hub-chrome-end') %>
 </body>
 </html>
