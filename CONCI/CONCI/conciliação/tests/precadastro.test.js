@@ -496,3 +496,46 @@ describe('pre-cadastro por sessao', () => {
     assert.equal(store.findByDescricao(bbKey, 'FORNECEDORES'), null);
   });
 });
+
+describe('boot: JSON x Postgres', () => {
+  const regra = [{ id: 'r1', descricao: 'ENERGIA', debito: 354, credito: 9 }];
+  const pgAt = new Date('2026-09-23T12:00:00Z');
+
+  it('JSON mais novo que o banco substitui (gravacao no banco falhou)', () => {
+    assert.equal(store.jsonDeveSubstituirPg({
+      pgUpdatedAt: pgAt,
+      pgItens: regra,
+      fileMtimeMs: pgAt.getTime() + 60000,
+      fileItens: [...regra, { id: 'r2', descricao: 'NOVA', debito: 1, credito: 9 }],
+    }), true);
+  });
+
+  it('JSON mais novo e vazio tambem vence (exclusao nao volta)', () => {
+    assert.equal(store.jsonDeveSubstituirPg({
+      pgUpdatedAt: pgAt,
+      pgItens: regra,
+      fileMtimeMs: pgAt.getTime() + 60000,
+      fileItens: [],
+    }), true);
+  });
+
+  it('JSON da mesma gravacao ou mais antigo nao substitui o banco', () => {
+    assert.equal(store.jsonDeveSubstituirPg({
+      pgUpdatedAt: pgAt,
+      pgItens: regra,
+      fileMtimeMs: pgAt.getTime() - 500,
+      fileItens: [],
+    }), false);
+    assert.equal(store.jsonDeveSubstituirPg({
+      pgUpdatedAt: pgAt,
+      pgItens: regra,
+      fileMtimeMs: pgAt.getTime() - 86400000,
+      fileItens: regra,
+    }), false);
+  });
+
+  it('sem linha no banco importa so se o JSON tiver regras', () => {
+    assert.equal(store.jsonDeveSubstituirPg({ fileMtimeMs: Date.now(), fileItens: regra }), true);
+    assert.equal(store.jsonDeveSubstituirPg({ fileMtimeMs: Date.now(), fileItens: [] }), false);
+  });
+});

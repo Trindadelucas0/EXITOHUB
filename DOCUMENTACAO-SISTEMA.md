@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM, Portal Corporativo).
-> Versão: 1.5.12 — Conciliação: Contas a Pagar .xlsx que falha na leitura não é mais tratada como ODS; o erro aparece na tela e a conciliação só segue se o arquivo for lido.
+> Versão: 1.5.13 — Conciliação: salvar linha grava no banco antes da tela; falha mostra erro. Reiniciar o PM2 não apaga conciliação nem pré-cadastro.
 
 ## 1. Visão geral
 
@@ -55,6 +55,7 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 1.5.13 | 23/09/2026 | Conciliação: Salvar/Aprovar/Rejeitar linha e ações em lote gravam em `conciliacoes` antes de atualizar a memória. Se o banco falhar, a resposta é HTTP 500 "Não foi possível salvar. Nada foi alterado, tente de novo." No boot, o pré-cadastro usa o JSON de `data/precadastro` quando ele é mais novo que `precadastros.updated_at` (gravação no banco que falhou) |
 | 1.5.12 | 23/09/2026 | Conciliação: `.xlsx`/`.xls` de Contas a Pagar não cai mais no leitor de ODS. Se a planilha não tiver Nome, CNPJ e Valor, a tela mostra esse erro e não grava. ODS sem `content.xml` também avisa em vez de quebrar |
 | 1.5.11 | 23/09/2026 | Portal: cada card da trilha é um módulo (`GET /portal/onboarding/etapas/:id`) com YouTube in-app, link para baixar o vídeo e PDF (upload). Admin cadastra na edição da etapa. Abrir na lista aponta para o módulo (não mais para rotas genéricas) |
 | 1.5.10 | 23/09/2026 | Projetos (`/projetos`): hero + três canais (Suporte de TI e Infraestrutura, **Equipe de TI**, Solicitação de novos módulos). CTA Abrir Portal Avadesk. Sem KPI, SLA, SSO, fila ou pessoas fictícias do mockup |
@@ -265,7 +266,7 @@ Tela **Revisão** após enviar Extrato + Contas a Pagar. Pré-cadastro por empre
 
 A Contas a Pagar **vence**. O histórico só classifica residual (qualquer pagamento sem Classificação Êxito, não só tarifa). Não há campo extra no pré-cadastro: a descrição cadastrada é o texto (ou trecho) do histórico.
 
-A conciliação só é gravada depois que Extrato e Contas a Pagar são lidos. Arquivo `.xlsx` ou `.xls` não passa pelo leitor de ODS. Se faltar Nome do fornecedor, CNPJ ou Valor, a tela mostra o erro e o Histórico não ganha linha nova. A conciliação pronta fica na tabela `conciliacoes`. A tela **Histórico** lê só essa tabela, da empresa aberta. Sair da revisão ou reiniciar o servidor não apaga o que já foi gravado. O admin do HUB, ao entrar de novo, reabre a última empresa (`users.last_empresa_id`). O pré-cadastro fica na tabela `precadastros` (o JSON em `data/precadastro` é cópia). Backup diário: `CONCI/CONCI/conciliação/scripts/backup-conci.sh` → `/root/PROJETOS/exito/backups/conci/`.
+A conciliação só é gravada depois que Extrato e Contas a Pagar são lidos. Arquivo `.xlsx` ou `.xls` não passa pelo leitor de ODS. Se faltar Nome do fornecedor, CNPJ ou Valor, a tela mostra o erro e o Histórico não ganha linha nova. A conciliação pronta fica na tabela `conciliacoes`. A tela **Histórico** lê só essa tabela, da empresa aberta. Sair da revisão ou reiniciar o servidor (`pm2 restart`) não apaga o que já foi gravado. Cada Salvar/Aprovar/Rejeitar e cada ação em lote grava no banco na hora; se falhar, a tela mostra "Não foi possível salvar" e nada muda. O admin do HUB, ao entrar de novo, reabre a última empresa (`users.last_empresa_id`). O pré-cadastro fica na tabela `precadastros` (o JSON em `data/precadastro` é cópia). Backup diário: `CONCI/CONCI/conciliação/scripts/backup-conci.sh` → `/root/PROJETOS/exito/backups/conci/`.
 
 | Situação | O que acontece |
 |----------|----------------|

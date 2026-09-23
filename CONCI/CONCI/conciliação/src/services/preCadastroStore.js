@@ -154,20 +154,41 @@ function writeSession(storeKey, doc) {
   return payload;
 }
 
+/** O JSON é gravado antes do Postgres; diferença menor que isso é a mesma gravação. */
+const JSON_MAIS_NOVO_TOLERANCIA_MS = 2000;
+
 /**
- * Carrega o pré-cadastro do Postgres e importa JSON que ainda só existe em disco.
+ * Decide no boot se o JSON em disco substitui o que está no Postgres.
+ * JSON mais novo que o banco = gravação no banco falhou; o JSON vence (mesmo vazio).
+ */
+function jsonDeveSubstituirPg({ pgUpdatedAt, pgItens, fileMtimeMs, fileItens }) {
+  const temNoArquivo = Array.isArray(fileItens) && fileItens.length > 0;
+  if (!pgUpdatedAt) return temNoArquivo;
+  if (!Array.isArray(pgItens) || !pgItens.length) {
+    if (temNoArquivo) return true;
+  }
+  const pgMs = new Date(pgUpdatedAt).getTime();
+  if (!Number.isFinite(pgMs) || !Number.isFinite(fileMtimeMs)) return false;
+  return fileMtimeMs - pgMs > JSON_MAIS_NOVO_TOLERANCIA_MS;
+}
+
+/**
+ * Carrega o pré-cadastro do Postgres e importa JSON que só existe em disco
+ * ou que ficou mais novo que o banco.
  * Chamado no boot, depois das tabelas. Testes não ligam isso.
  */
 async function enablePrecadastroDb() {
   const { query } = require('../db/pool');
-  const result = await query('SELECT store_key, user_id, itens FROM precadastros');
+  const result = await query('SELECT store_key, user_id, itens, updated_at FROM precadastros');
   memoryDocs.clear();
+  const pgUpdatedAt = new Map();
   for (const row of result.rows) {
     memoryDocs.set(row.store_key, {
       sessionId: row.store_key,
       userId: row.user_id ?? null,
       itens: Array.isArray(row.itens) ? row.itens : [],
     });
+    pgUpdatedAt.set(row.store_key, row.updated_at);
   }
 
   const dir = getDataDir();
@@ -176,17 +197,23 @@ async function enablePrecadastroDb() {
       if (!name.endsWith('.json')) continue;
       const key = name.slice(0, -'.json'.length);
       if (!/^[a-zA-Z0-9_-]+$/.test(key)) continue;
-      const current = memoryDocs.get(key);
-      if (current && current.itens.length) continue;
+      const fp = path.join(dir, name);
       let doc;
       try {
-        doc = JSON.parse(fs.readFileSync(path.join(dir, name), 'utf8'));
+        doc = JSON.parse(fs.readFileSync(fp, 'utf8'));
       } catch (err) {
         console.error('[precadastro] json ignorado:', name, err.message);
         continue;
       }
       const itens = Array.isArray(doc.itens) ? doc.itens : [];
-      if (!itens.length) continue;
+      const substituir = jsonDeveSubstituirPg({
+        pgUpdatedAt: pgUpdatedAt.get(key),
+        pgItens: memoryDocs.get(key)?.itens,
+        fileMtimeMs: fs.statSync(fp).mtimeMs,
+        fileItens: itens,
+      });
+      if (!substituir) continue;
+      console.log('[precadastro] importando JSON mais novo que o banco:', key, itens.length);
       const payload = {
         sessionId: key,
         userId: doc.userId ?? null,
@@ -553,6 +580,7 @@ module.exports = {
   toOptionalNumber,
   readSession,
   enablePrecadastroDb,
+  jsonDeveSubstituirPg,
   list,
   findByDescricao,
   findBestPreByHistorico,

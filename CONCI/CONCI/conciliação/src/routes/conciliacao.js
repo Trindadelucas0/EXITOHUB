@@ -99,15 +99,28 @@ async function resolveSession(id, empresaId) {
 }
 
 async function persistSessionUpdate(sessionId, patch) {
-  const next = updateSession(sessionId, patch);
-  const itens = next ? next.itens : patch.itens;
-  const resumo = next ? next.resumo : patch.resumo;
-  const saved = await conciliacaoStore.update(sessionId, { itens, resumo });
+  const saved = await conciliacaoStore.update(sessionId, {
+    itens: patch.itens,
+    resumo: patch.resumo,
+  });
   if (!saved) {
     throw new Error('Conciliação não encontrada para salvar');
   }
-  if (!next) putSession(saved);
-  return next || saved;
+  return updateSession(sessionId, patch) || putSession(saved);
+}
+
+const MSG_FALHA_SALVAR = 'Não foi possível salvar. Nada foi alterado, tente de novo.';
+
+/** Grava antes de mexer na memória; em falha responde 500 e retorna false. */
+async function salvarOuResponderErro(res, sessionId, patch) {
+  try {
+    await persistSessionUpdate(sessionId, patch);
+    return true;
+  } catch (err) {
+    console.error('[conciliacao] falha ao salvar', sessionId, err);
+    res.status(500).send(MSG_FALHA_SALVAR);
+    return false;
+  }
 }
 
 const uploadDir = path.join(__dirname, '..', '..', 'uploads');
@@ -681,7 +694,7 @@ router.post('/revisao/:id/item/:rowId', express.urlencoded({ extended: true }), 
     return next;
   });
 
-  await persistSessionUpdate(session.id, { itens, resumo: buildResumo(itens) });
+  if (!await salvarOuResponderErro(res, session.id, { itens, resumo: buildResumo(itens) })) return;
   return redirectRevisao(res, session.id, req.body);
 });
 
@@ -695,7 +708,7 @@ router.post('/revisao/:id/excluir-selecionados', express.urlencoded({ extended: 
   if (!removed) {
     return redirectRevisao(res, session.id, req.body);
   }
-  await persistSessionUpdate(session.id, { itens, resumo: buildResumo(itens) });
+  if (!await salvarOuResponderErro(res, session.id, { itens, resumo: buildResumo(itens) })) return;
   return redirectRevisao(res, session.id, req.body);
 });
 
@@ -707,7 +720,7 @@ router.post('/revisao/:id/reaplicar-precadastro', express.urlencoded({ extended:
   if (!garantirEditavel(req, res, session)) return;
   const preKey = sessionPreKey(session);
   const { itens } = reapplyPreCadastroItems(session.itens || [], preKey, req.body.rowIds);
-  await persistSessionUpdate(session.id, { itens, resumo: buildResumo(itens) });
+  if (!await salvarOuResponderErro(res, session.id, { itens, resumo: buildResumo(itens) })) return;
   const comCodigos = itens.filter((i) => i.debito != null || i.credito != null).length;
   return redirectRevisao(res, session.id, req.body, { ok: 'precadastro', preN: comCodigos });
 });
@@ -744,10 +757,11 @@ router.post('/revisao/:id/aplicar-cap-lote', express.urlencoded({ extended: true
       currentNav: 'revisao',
     });
   }
-  await persistSessionUpdate(session.id, {
+  const salvo = await salvarOuResponderErro(res, session.id, {
     itens: result.itens,
     resumo: buildResumo(result.itens),
   });
+  if (!salvo) return;
   return redirectRevisao(res, session.id, req.body);
 });
 
@@ -765,7 +779,7 @@ router.post('/revisao/:id/aprovar-altos', async (req, res) => {
     }
     return item;
   });
-  await persistSessionUpdate(session.id, { itens, resumo: buildResumo(itens) });
+  if (!await salvarOuResponderErro(res, session.id, { itens, resumo: buildResumo(itens) })) return;
   return redirectRevisao(res, session.id, req.body);
 });
 
