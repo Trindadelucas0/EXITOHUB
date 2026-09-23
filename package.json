@@ -11,6 +11,7 @@
     "validate:login": "node hub/validate-login-flows.js",
     "reconcile:modules": "node hub/reconcile-hub-modules.js",
     "reconcile:modules:dry": "node hub/reconcile-hub-modules.js --dry-run",
+    "migrate-conci": "node \"CONCI/CONCI/conciliação/scripts/migrate-conci.js\"",
     "postinstall": "npm install --prefix BeatrizDt && npm install --prefix \"CONCI/CONCI/conciliação\" && npm install --prefix NCM/fiscal"
   },
   "engines": {
