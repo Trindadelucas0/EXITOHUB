@@ -241,7 +241,11 @@ async function odsToMatrix(bufferOrPath) {
     : fs.readFileSync(bufferOrPath);
 
   const zip = await JSZip.loadAsync(buf);
-  const contentXml = await zip.file('content.xml').async('string');
+  const contentFile = zip.file('content.xml');
+  if (!contentFile) {
+    throw new Error('Contas a Pagar não é um ODS válido. Envie o .ods original ou um .xlsx.');
+  }
+  const contentXml = await contentFile.async('string');
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
@@ -278,26 +282,24 @@ function parseContasPagarXlsx(bufferOrPath) {
 
 async function parseContasPagar(bufferOrPath, originalName = '') {
   const name = (originalName || (typeof bufferOrPath === 'string' ? path.basename(bufferOrPath) : '')).toLowerCase();
-  if (name.endsWith('.ods')) {
-    return parseContasPagarOds(bufferOrPath);
-  }
-  if (Buffer.isBuffer(bufferOrPath) && bufferOrPath[0] === 0x50 && bufferOrPath[1] === 0x4b && name.endsWith('.ods') === false) {
-    try {
-      return parseContasPagarXlsx(bufferOrPath);
-    } catch {
-      return parseContasPagarOds(bufferOrPath);
-    }
-  }
-  if (name.endsWith('.xlsx') || name.endsWith('.xls')) {
-    return parseContasPagarXlsx(bufferOrPath);
-  }
-  if (typeof bufferOrPath === 'string' && bufferOrPath.toLowerCase().endsWith('.ods')) {
-    return parseContasPagarOds(bufferOrPath);
-  }
+  const isOds = name.endsWith('.ods');
+  const isExcel = name.endsWith('.xlsx') || name.endsWith('.xls');
+  if (isOds) return parseContasPagarOds(bufferOrPath);
+  if (isExcel) return parseContasPagarXlsx(bufferOrPath);
+
+  const isZip = Buffer.isBuffer(bufferOrPath)
+    && bufferOrPath[0] === 0x50
+    && bufferOrPath[1] === 0x4b;
+  if (!isZip) return parseContasPagarXlsx(bufferOrPath);
+
   try {
     return parseContasPagarXlsx(bufferOrPath);
-  } catch {
-    return parseContasPagarOds(bufferOrPath);
+  } catch (xlsxErr) {
+    try {
+      return await parseContasPagarOds(bufferOrPath);
+    } catch {
+      throw xlsxErr;
+    }
   }
 }
 

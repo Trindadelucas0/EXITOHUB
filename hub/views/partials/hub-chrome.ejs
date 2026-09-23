@@ -47,13 +47,19 @@
         <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
       </button>
       <% if (u) { %>
-        <div class="hub-topbar__user">
-          <span class="hub-topbar__avatar" aria-hidden="true"><%= initials %></span>
+        <a class="hub-topbar__user hub-topbar__user-link" href="/perfil" title="Meu perfil">
+          <span class="hub-topbar__avatar" aria-hidden="true">
+            <% if (u.photoUrl) { %>
+              <img src="<%= u.photoUrl %>" alt="" width="32" height="32" />
+            <% } else { %>
+              <%= initials %>
+            <% } %>
+          </span>
           <span class="hub-topbar__user-meta">
             <strong><%= displayName %></strong>
             <% if (deptLabel) { %><span><%= deptLabel %></span><% } %>
           </span>
-        </div>
+        </a>
         <form method="post" action="/logout" class="hub-inline">
           <button type="submit" class="hub-topbar__logout">
             <span class="material-symbols-outlined" aria-hidden="true">logout</span>

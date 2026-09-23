@@ -227,16 +227,6 @@ function buildCatalog() {
           description: 'Materiais da empresa.',
         },
         {
-          id: 'logos',
-          label: 'Logos',
-          href: '/portal/logos',
-          require: 'auth',
-          status: 'live',
-          icon: 'image',
-          currentKey: 'portal-logos',
-          description: 'Identidade visual oficial.',
-        },
-        {
           id: 'documentos',
           label: 'Documentos Corporativos',
           href: '/portal/documentos',

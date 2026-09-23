@@ -18,7 +18,12 @@
           <% if (track) { %><%= track.name %><% } else { %>Nenhuma trilha ativa.<% } %>
         </p>
       </div>
-      <% if (total) { %>
+      <% if (hubUser.onboardingStatus === 'COMPLETED') { %>
+        <span class="hub-onboarding-chip hub-onboarding-chip--done">
+          <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+          Integração concluída
+        </span>
+      <% } else if (total) { %>
         <p class="hub-onboarding-progress" aria-label="Progresso" style="font-size: 1.25rem; font-weight: 700; color: var(--exito-green);">
           <%= doneCount %> / <%= total %>
         </p>
@@ -39,10 +44,76 @@
     <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
 
     <% if (hubUser.onboardingStatus === 'COMPLETED') { %>
-      <div class="hub-onboarding-finish--panel">
-        <p style="margin: 0 0 1rem;">Você já concluiu a integração.</p>
-        <a class="hub-btn hub-btn-primary" href="/">Ir para a Home</a>
+      <div class="hub-onboarding-finish--panel hub-onboarding-done">
+        <h2 class="hub-onboarding-done__title">Integração concluída</h2>
+        <p class="hub-muted" style="margin: 0 0 1rem;">
+          A Home operacional está liberada. Os materiais continuam disponíveis nesta trilha.
+        </p>
+        <% if (total) { %>
+          <div class="hub-onboarding-meter" role="progressbar"
+               aria-valuenow="100"
+               aria-valuemin="0" aria-valuemax="100"
+               aria-label="Progresso da integração"
+               style="max-width: 32rem;">
+            <span class="hub-onboarding-meter__bar" style="width: 100%"></span>
+          </div>
+          <p class="hub-muted" style="margin: 0.35rem 0 1rem;">
+            <span style="color: var(--exito-green); font-weight: 600;"><%= total %> de <%= total %> etapas</span>
+          </p>
+        <% } %>
+        <a class="hub-btn hub-btn-primary hub-onboarding-done__home" href="/">Ir para a Home</a>
       </div>
+
+      <section class="hub-portal-section" style="margin-top: 1.5rem;" aria-label="Continuar pelo portal">
+        <h2 class="hub-portal-section__title" style="margin: 0 0 1rem;">Continuar pelo portal</h2>
+        <div class="hub-portal-cards hub-portal-cards--icons hub-onboarding-done__links">
+          <% (completionLinks || []).forEach(function (link) { %>
+            <a class="hub-portal-card hub-portal-card--icon" href="<%= link.route %>">
+              <div class="hub-portal-card__top">
+                <span class="hub-portal-card__icon-box" aria-hidden="true">
+                  <span class="material-symbols-outlined"><%= link.materialIcon || 'link' %></span>
+                </span>
+                <span class="hub-portal-card__tag"><%= link.short || link.label %></span>
+              </div>
+              <div>
+                <strong><%= link.label %></strong>
+                <% if (link.description) { %>
+                  <span class="hub-portal-card__desc"><%= link.description %></span>
+                <% } %>
+              </div>
+              <div class="hub-portal-card__foot">
+                <span><%= link.short || link.label %></span>
+                <span class="hub-portal-card__cta">Acessar →</span>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+      </section>
+
+      <% if ((steps || []).length) { %>
+        <h2 class="hub-portal-section__title" style="margin-top: 0.5rem;">Etapas da trilha</h2>
+        <ol class="hub-onboarding-steps hub-onboarding-steps--cards">
+          <% steps.forEach(function (step, idx) { %>
+            <li class="hub-onboarding-step hub-onboarding-step--card is-done">
+              <div class="hub-onboarding-step__main" style="display: flex; gap: 0.75rem; align-items: flex-start; min-width: 0; flex: 1;">
+                <span class="hub-onboarding-step__num" style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--exito-green);">
+                  <%= String(idx + 1).padStart(2, '0') %>
+                </span>
+                <div>
+                  <strong style="font-size: 1rem;"><%= step.title %></strong>
+                  <% if (step.description) { %><p class="hub-muted" style="margin: 0.25rem 0 0; font-size: 0.875rem;"><%= step.description %></p><% } %>
+                </div>
+              </div>
+              <div class="hub-onboarding-step__actions" style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+                <span class="hub-pill hub-pill-ok">Concluída</span>
+                <% if (step.href) { %>
+                  <a class="hub-btn hub-btn-ghost hub-btn-sm" href="<%= step.href %>">Abrir</a>
+                <% } %>
+              </div>
+            </li>
+          <% }) %>
+        </ol>
+      <% } %>
     <% } else if (!(steps || []).length) { %>
       <div class="hub-empty-panel">
         <h3>Trilha em preparação</h3>

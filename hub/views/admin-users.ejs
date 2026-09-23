@@ -206,7 +206,13 @@
               data-user-id="<%= user.id %>"
             >
               <div class="hub-user-id" role="cell">
-                <span class="hub-user-avatar" aria-hidden="true"><%= initialsOf(user) %></span>
+                <span class="hub-user-avatar" aria-hidden="true">
+                  <% if (user.photoUrl) { %>
+                    <img src="<%= user.photoUrl %>" alt="" width="40" height="40" />
+                  <% } else { %>
+                    <%= initialsOf(user) %>
+                  <% } %>
+                </span>
                 <div>
                   <strong><%= user.username %></strong>
                   <div class="hub-muted"><%= user.displayName %></div>
@@ -273,6 +279,7 @@
       data-hub-user-form
       data-sheet-mode="<%= sheetMode || '' %>"
       autocomplete="off"
+      enctype="multipart/form-data"
     >
       <header class="hub-sheet-head">
         <div>
@@ -326,6 +333,16 @@
         <label class="hub-field">
           <span>Nome</span>
           <input name="displayName" value="<%= isEdit ? sheetUser.displayName : '' %>" />
+        </label>
+        <label class="hub-field">
+          <span>Foto de perfil <% if (isEdit && sheetUser.photoUrl) { %><span class="hub-muted">(já existe — envie outra para substituir)</span><% } %></span>
+          <% if (isEdit && sheetUser.photoUrl) { %>
+            <div class="hub-profile-photo-preview">
+              <img src="<%= sheetUser.photoUrl %>" alt="" width="64" height="64" />
+            </div>
+          <% } %>
+          <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" />
+          <span class="hub-muted" style="font-size: 0.75rem;">JPEG, PNG ou WebP. Opcional.</span>
         </label>
         <label class="hub-field">
           <span><%= isEdit ? 'Nova senha (opcional)' : 'Senha' %></span>

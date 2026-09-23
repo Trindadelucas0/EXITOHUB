@@ -21,6 +21,7 @@
           <label>Imagem <%= editing.id ? '' : '(obrigatória)' %>
             <input name="image" type="file" accept="image/jpeg,image/png,image/webp" <%= editing.id ? '' : 'required' %> />
           </label>
+          <p class="hub-muted" style="margin: -0.35rem 0 0.75rem;">Recomendado: 1280 × 720 px (16:9). JPG, PNG ou WebP, até 8 MB. A Home recorta a foto para preencher o card.</p>
           <% if (editing.image_url) { %>
             <p><img src="<%= editing.image_url %>" alt="" width="240" height="135" style="object-fit:cover;border-radius:8px;" /></p>
           <% } %>

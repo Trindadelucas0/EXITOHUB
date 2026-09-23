@@ -545,17 +545,19 @@ function decorateItem(row) {
   let youtube_embed_url = null;
   let href = withThumb.file_url || withThumb.external_url || null;
 
-  if (withThumb.kind === 'video' && withThumb.external_url) {
+  if (withThumb.external_url) {
     try {
       const yt = parseYoutubeEmbed(withThumb.external_url);
       youtube_id = yt.videoId;
       youtube_embed_url = yt.embedUrl;
-      href = yt.watchUrl;
-      if (!withThumb.thumbnail_url) {
+      if (withThumb.kind === 'video') {
+        href = yt.watchUrl;
+      }
+      if (!withThumb.thumbnail_url && withThumb.kind === 'video') {
         cover_url = `https://i.ytimg.com/vi/${yt.videoId}/hqdefault.jpg`;
       }
     } catch (_) {
-      /* URL antiga inválida: não quebra a listagem */
+      /* URL não é YouTube (ou inválida): mantém href/arquivo normal */
     }
   }
 
@@ -721,9 +723,15 @@ async function listTracks() {
 
 async function listSteps(trackId) {
   const result = await query(
-    `SELECT id, track_id, position, title, description, target_kind, target_id, target_route, is_active, created_at, updated_at
-     FROM onboarding_steps WHERE track_id = $1
-     ORDER BY position ASC`,
+    `SELECT s.id, s.track_id, s.position, s.title, s.description,
+            s.target_kind, s.target_id, s.target_route, s.is_active,
+            s.youtube_url, s.video_download_url, s.pdf_file_id,
+            s.created_at, s.updated_at,
+            f.original_name AS pdf_original_name
+     FROM onboarding_steps s
+     LEFT JOIN portal_files f ON f.id = s.pdf_file_id
+     WHERE s.track_id = $1
+     ORDER BY s.position ASC`,
     [trackId],
   );
   return result.rows;
@@ -731,8 +739,14 @@ async function listSteps(trackId) {
 
 async function getStep(id) {
   const result = await query(
-    `SELECT id, track_id, position, title, description, target_kind, target_id, target_route, is_active, created_at, updated_at
-     FROM onboarding_steps WHERE id = $1 LIMIT 1`,
+    `SELECT s.id, s.track_id, s.position, s.title, s.description,
+            s.target_kind, s.target_id, s.target_route, s.is_active,
+            s.youtube_url, s.video_download_url, s.pdf_file_id,
+            s.created_at, s.updated_at,
+            f.original_name AS pdf_original_name
+     FROM onboarding_steps s
+     LEFT JOIN portal_files f ON f.id = s.pdf_file_id
+     WHERE s.id = $1 LIMIT 1`,
     [id],
   );
   return result.rows[0] || null;
@@ -750,8 +764,35 @@ async function listUserProgress(userId, trackId) {
 }
 
 function stepHref(step) {
-  if (step.target_kind === 'route' && step.target_route) return step.target_route;
-  return null;
+  if (!step || !step.id) return null;
+  return `/portal/onboarding/etapas/${step.id}`;
+}
+
+function enrichStepMedia(step) {
+  if (!step) return null;
+  let youtube_embed_url = null;
+  if (step.youtube_url) {
+    try {
+      youtube_embed_url = parseYoutubeEmbed(step.youtube_url).embedUrl;
+    } catch (_) {
+      youtube_embed_url = null;
+    }
+  }
+  const pdf_url = step.pdf_file_id ? mediaUrl(step.pdf_file_id) : null;
+  const hasYoutube = Boolean(youtube_embed_url);
+  const hasVideoDownload = Boolean(step.video_download_url);
+  const hasPdf = Boolean(pdf_url);
+  return {
+    ...step,
+    youtube_embed_url,
+    pdf_url,
+    pdf_name: step.pdf_original_name || null,
+    hasYoutube,
+    hasVideoDownload,
+    hasPdf,
+    hasMedia: hasYoutube || hasVideoDownload || hasPdf,
+    href: stepHref(step),
+  };
 }
 
 async function loadOnboardingForUser(user) {
@@ -764,9 +805,9 @@ async function loadOnboardingForUser(user) {
   const enriched = steps.map((step, index) => {
     const done = progress.has(step.id);
     const prevDone = index === 0 || progress.has(steps[index - 1].id);
+    const media = enrichStepMedia(step);
     return {
-      ...step,
-      href: stepHref(step),
+      ...media,
       completed: done,
       unlocked: done || prevDone || user.onboardingStatus === 'COMPLETED',
     };
@@ -825,25 +866,45 @@ async function completeOnboarding(userId) {
   return true;
 }
 
-async function updateStep(id, body) {
+async function updateStep(id, body, pdfFileId) {
   const existing = await getStep(id);
   if (!existing) return null;
   const title = trimStr(body.title, 200) || existing.title;
   const description = trimStr(body.description, 1000) || null;
-  const target_kind = trimStr(body.target_kind, 20) || existing.target_kind;
-  if (!['item', 'content', 'route', 'none'].includes(target_kind)) {
-    throw Object.assign(new Error('Destino da etapa inválido.'), { status: 400 });
-  }
-  const target_route = target_kind === 'route' ? assertInternalRoute(body.target_route) : null;
+  const target_kind = existing.target_kind;
+  const target_route = existing.target_route;
   const position = parseSortOrder(body.position, existing.position);
   const is_active = Object.prototype.hasOwnProperty.call(body, 'is_active')
     ? bodyFlag(body.is_active)
     : existing.is_active;
+
+  let youtube_url = existing.youtube_url || null;
+  if (Object.prototype.hasOwnProperty.call(body, 'youtube_url')) {
+    const raw = trimStr(body.youtube_url, 2000);
+    youtube_url = raw ? parseYoutubeEmbed(raw).watchUrl : null;
+  }
+
+  let video_download_url = existing.video_download_url || null;
+  if (Object.prototype.hasOwnProperty.call(body, 'video_download_url')) {
+    video_download_url = assertOptionalHttpsUrl(body.video_download_url);
+  }
+
+  let pdf_file_id = existing.pdf_file_id || null;
+  if (bodyFlag(body.remove_pdf)) {
+    pdf_file_id = null;
+  } else if (pdfFileId) {
+    pdf_file_id = pdfFileId;
+  }
+
   await query(
     `UPDATE onboarding_steps SET
-      title=$1, description=$2, target_kind=$3, target_route=$4, position=$5, is_active=$6, updated_at=NOW()
-     WHERE id=$7`,
-    [title, description, target_kind, target_route, position, is_active, id],
+      title=$1, description=$2, target_kind=$3, target_route=$4, position=$5, is_active=$6,
+      youtube_url=$7, video_download_url=$8, pdf_file_id=$9, updated_at=NOW()
+     WHERE id=$10`,
+    [
+      title, description, target_kind, target_route, position, is_active,
+      youtube_url, video_download_url, pdf_file_id, id,
+    ],
   );
   return getStep(id);
 }
@@ -1003,6 +1064,7 @@ module.exports = {
   listTracks,
   listSteps,
   getStep,
+  enrichStepMedia,
   loadOnboardingForUser,
   startOnboarding,
   completeStep,

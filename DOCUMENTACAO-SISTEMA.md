@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM, Portal Corporativo).
-> Versão: 1.5.2 — Portal: Vídeos e POPs compactos (max 1040px) no visual Stitch.
+> Versão: 1.5.12 — Conciliação: Contas a Pagar .xlsx que falha na leitura não é mais tratada como ODS; o erro aparece na tela e a conciliação só segue se o arquivo for lido.
 
 ## 1. Visão geral
 
@@ -24,13 +24,23 @@ A tela é uma **lista** (busca, módulo, situação) e um **sheet** à direita (
 | Passo | Onde | O quê |
 |-------|------|-------|
 | 1 | `/conci/admin/empresas` ou `/ncm/escritorio/empresas` | Cadastrar **empresa** (sem usuário) |
-| 2 | `/admin/usuarios` → **Novo usuário** | Login, e-mail, senha, módulos, papel e **uma ou mais** empresas Conci/NCM |
-| 3 | `/admin/usuarios?editar=:id` | Corrigir nome, senha, módulos, vínculos, Admin do HUB; desativar no rodapé |
-| 4 | `/login` | Entrar com usuário ou e-mail + senha do HUB |
+| 2 | `/admin/usuarios` → **Novo usuário** | Login, e-mail, senha, foto opcional (jpeg/png/webp), módulos, papel e **uma ou mais** empresas Conci/NCM |
+| 3 | `/admin/usuarios?editar=:id` | Corrigir nome, senha, foto, módulos, vínculos, Admin do HUB; desativar no rodapé |
+| 4 | `/perfil` | O próprio usuário troca só a **foto** (login/e-mail só o admin) |
+| 5 | `/login` | Entrar com usuário ou e-mail + senha do HUB |
 
 Filtros GET (`q`, `mod`, `sit`) sobrevivem ao salvar. Usuário e e-mail **não** mudam na edição (SSO Conci/NCM). O admin **não** desativa nem tira o próprio Admin do HUB.
 
-Código: [`hub/views/admin-users.ejs`](hub/views/admin-users.ejs), [`hub/routes.js`](hub/routes.js), [`hub/provision-modules.js`](hub/provision-modules.js), [`hub/auth.js`](hub/auth.js) (`createUser`, `updateUserWithModules`).
+Foto de perfil: coluna `hub_users.photo_file_id` → `portal_files` → `/portal/media/:id` (mesmo padrão dos contatos). Sem foto, topbar e lista admin mostram iniciais. Topbar: avatar/nome clicáveis abrem `/perfil`.
+
+```text
+┌─ topbar ──────────────────────────────────────────────────────────┐
+│ ☰  Êxito HUB / Portal    [🔔]  (foto) Nome          [ Sair ]     │
+│                             dept                                   │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+Código: [`hub/views/admin-users.ejs`](hub/views/admin-users.ejs), [`hub/views/perfil.ejs`](hub/views/perfil.ejs), [`hub/views/partials/hub-chrome.ejs`](hub/views/partials/hub-chrome.ejs), [`hub/routes.js`](hub/routes.js), [`hub/provision-modules.js`](hub/provision-modules.js), [`hub/auth.js`](hub/auth.js) (`createUser`, `updateUserWithModules`, `setUserPhotoFileId`).
 
 O HUB provisiona automaticamente:
 
@@ -45,6 +55,16 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 1.5.12 | 23/09/2026 | Conciliação: `.xlsx`/`.xls` de Contas a Pagar não cai mais no leitor de ODS. Se a planilha não tiver Nome, CNPJ e Valor, a tela mostra esse erro e não grava. ODS sem `content.xml` também avisa em vez de quebrar |
+| 1.5.11 | 23/09/2026 | Portal: cada card da trilha é um módulo (`GET /portal/onboarding/etapas/:id`) com YouTube in-app, link para baixar o vídeo e PDF (upload). Admin cadastra na edição da etapa. Abrir na lista aponta para o módulo (não mais para rotas genéricas) |
+| 1.5.10 | 23/09/2026 | Projetos (`/projetos`): hero + três canais (Suporte de TI e Infraestrutura, **Equipe de TI**, Solicitação de novos módulos). CTA Abrir Portal Avadesk. Sem KPI, SLA, SSO, fila ou pessoas fictícias do mockup |
+| 1.5.9 | 23/09/2026 | Portal: layout/UX mais próximo do mockup Stitch — gutter 1.25rem, coluna Home 1520px, gap 1.5rem único, raios 0.5rem, shadow-sm, topbar padding 1.5rem + blur, sidebar sem borda no brand, carrossel Conteúdos com toolbar interna, lista usuários até 1600px |
+| 1.5.8 | 23/09/2026 | Foto de perfil: `hub_users.photo_file_id` + upload no admin (criar/editar) e self-service em `/perfil`. Topbar e lista de usuários mostram imagem circular ou iniciais. Mídia via `/portal/media` |
+| 1.5.7 | 23/09/2026 | Portal: `/portal/onboarding` com status `COMPLETED` mostra selo Integração concluída, barra 100%, Ir para a Home, atalhos (Vídeos, Diagrama, POPs, Documentos) e etapas em leitura (Abrir se houver rota). Contador 0/N não aparece mais nesse estado. Trilha em curso inalterada |
+| 1.5.6 | 23/09/2026 | Portal: admin Conteúdos Êxito mostra tamanho recomendado da imagem (1280 × 720 px, 16:9, até 8 MB). Boot semeia 4 conteúdos de exemplo com fotos ([`hub/portal/seed-contents.js`](hub/portal/seed-contents.js)) só se `portal_contents` estiver vazio; o cliente troca depois |
+| 1.5.5 | 23/09/2026 | Portal: área Logos retirada da Home (5 cards), menu, barra rápida e admin. `GET /portal/logos` redireciona para `/`. Itens `kind=logo` no banco permanecem sem tela. |
+| 1.5.4 | 22/09/2026 | Portal: POPs com YouTube embutido in-app (como Vídeos); removidos CTAs “Abrir no YouTube” / “Abrir em nova aba” na visualização pública |
+| 1.5.3 | 22/09/2026 | Portal: `/portal/pops` espelha Vídeos de Integração — featured in-app (PDF/imagem via `/portal/media`), trilha com `?p=`, Abrir em nova aba. Coluna max 1040px |
 | 1.5.2 | 22/09/2026 | Portal: `/portal/videos` e `/portal/pops` em coluna max 1040px (Stitch). Player YouTube real contido; playlist e cards POP compactos (ícone+código+versão, sem capa 16/10 dominante). Sem duração/views/capítulos inventados |
 | 1.5.1 | 22/09/2026 | Portal: faixa inferior da Home (Comunicados, Eventos, Agenda Êxito, Links, Contatos) no visual Stitch — empty states ricos, grade de links, linhas de contato. Placeholders `/portal/comunicados`, `/eventos`, `/agenda` com o mesmo empty. Sem inventar eventos/comunicados nem claim de sync Google Agenda |
 | 1.5.0 | 22/09/2026 | Portal: shell com sidebar fixa + topbar (mockup Stitch). Verde `#006b2b`, fundo `#f9f9ff`. Home pendente/concluída, vídeos (player + grade), POPs com busca/filtro, trilha, admin em cards, KPIs em usuários. Menu inclui Acompanhamento e Agenda do portal. Sem SSO/SLA/matrícula do mockup |
@@ -94,7 +114,7 @@ O menu lateral (EJS [`hub/views/partials/hub-app-menu.ejs`](hub/views/partials/h
 **Quem vê o quê**
 
 - Módulos vivos: só se o usuário tem o módulo em `hub_user_modules` (`folha`, `conci`, `ncm`).
-- Portal corporativo (vídeos, POPs, diagrama, informativos, catálogos, logos, documentos, integração): qualquer autenticado (`require: 'auth'`).
+- Portal corporativo (vídeos, POPs, diagrama, informativos, catálogos, documentos, integração): qualquer autenticado (`require: 'auth'`).
 - Admin do portal (`/admin/portal`) e Gerenciar usuários: só `hub_users.is_admin`.
 - Itens ainda “Em breve” (carteira, SIEG, CCT, etc.): só admin.
 - Consulta BAIFER (só NCM): **Fiscal → Auditor Fiscal** (`/ncm/`). Também vê **Administrativo** (portal). Não vê GERAL, PROJETOS, AGENDA, FOLHA nem CONTÁBIL.
@@ -106,14 +126,15 @@ O menu lateral (EJS [`hub/views/partials/hub-app-menu.ejs`](hub/views/partials/h
 - Controle folha mensal → `/folha/dashboard`
 - DAUTO Tintas → `/folha/modulos`
 - Conciliação → `/conci/`
-- Home / Portal → `/` (onboarding: banner + 6 cards com ícone; concluído: saudação + pills + carrossel split)
+- Home / Portal → `/` (onboarding: banner + 5 cards com ícone; concluído: saudação + pills + carrossel split)
 - Integração (onboarding) → `/portal/onboarding`
+- Módulo da trilha (etapa) → `/portal/onboarding/etapas/:id`
 - Documentos Corporativos → `/portal/documentos`
 - Portal Corporativo (admin) → `/admin/portal` (grade de cards)
 - Acompanhamento onboarding → `/admin/portal/onboarding/acompanhamento`
 - Agenda (placeholder) → `/portal/agenda`
 - Gerenciar usuários → `/admin/usuarios` (admin)
-- Projetos → `/projetos` (admin) com card para https://suporte.avadesk.com.br/
+- Projetos → `/projetos` (admin): hero + três canais (Suporte de TI e Infraestrutura, Equipe de TI, Solicitação de novos módulos) e botão Abrir Portal Avadesk (https://suporte.avadesk.com.br/). Sem fila, SLA ou SSO no HUB
 - Certificados Digitais → URL SIEG (`HUB_SIEG_URL` ou https://www.sieg.com.br), nova aba
 - Google Agenda (menu) → `HUB_GOOGLE_CALENDAR_URL` ou https://calendar.google.com/calendar, nova aba
 - Demais itens novos → `/hub/modulo/:slug` (página “Em breve”, admin)
@@ -126,15 +147,20 @@ Rotas de módulo sem permissão → 403 via [`requireHubModule`](hub/middleware.
 
 - Coluna `hub_users.onboarding_status`: `PENDING` | `IN_PROGRESS` | `COMPLETED`.
 - Coluna `hub_users.department` (opcional; usada no acompanhamento admin).
+- Coluna `hub_users.photo_file_id` (opcional; FK `portal_files`; foto no topbar, lista admin e `/perfil`).
 - Usuário novo (não admin) nasce `PENDING`. Master EXITO e seed admin nascem `COMPLETED`.
-- Quem abre `/` com status ≠ `COMPLETED` vê banner de progresso (percentual + etapas) e os **6 cards** de integração (Vídeos, POPs, Diagrama, Informativos, Catálogos, Logos).
-- Quem está `COMPLETED` vê a **barra rápida** de áreas (inclui Documentos Corporativos) e prioriza Conteúdos Êxito, Acontece no Êxito, Agenda, Links e Contatos.
+- Quem abre `/` com status ≠ `COMPLETED` vê banner de progresso (percentual + etapas) e os **5 cards** de integração (Vídeos, POPs, Diagrama, Informativos, Catálogos).
+- Quem está `COMPLETED` vê a **barra rápida** de áreas (inclui Documentos Corporativos; sem Logos) e prioriza Conteúdos Êxito, Acontece no Êxito, Agenda, Links e Contatos.
+- Em `/portal/onboarding` com status `COMPLETED`: selo **Integração concluída** (sem contador `doneCount/total`), painel com barra 100% e texto “N de N etapas” quando a trilha tem etapas, botão **Ir para a Home**, grade de atalhos (Vídeos, Diagrama, POPs, Documentos) e lista das etapas em leitura (pílula Concluída; **Abrir** abre o módulo da etapa). Sem formulário de marcar etapa nem de finalizar. A exibição 100% é só visual nessa tela; o acompanhamento admin continua com o percentual real de `onboarding_user_progress`.
+- Cada etapa da trilha é um **módulo**: **Abrir** vai para `GET /portal/onboarding/etapas/:id` (não para rotas genéricas como `/` ou `/portal/videos`). Colunas em `onboarding_steps`: `youtube_url` (assistir in-app, mesmo player YouTube de Vídeos), `video_download_url` (HTTPS para Baixar vídeo) e `pdf_file_id` (PDF via `/portal/media`). Sem mídia → empty “Material em preparação”. Admin cadastra em `/admin/portal/onboarding/etapas/:id/editar` (multipart). `target_kind` / `target_route` permanecem no banco (seed antigo) mas não controlam o Abrir.
 - Faixa inferior da Home (pendente e concluída): painéis Comunicados/Eventos com empty state (ícone em círculo + título + apoio + rodapé estático “Canal de transmissão interna” / “Agenda do portal”); faixa Agenda Êxito com badge Semanal e CTA para `/portal/agenda`; Links em grade 2 colunas (`portal_links`); Contatos em linhas com avatar/iniciais e E-mail/WhatsApp (`portal_contacts`). Sem lista inventada de eventos/comunicados; sem timestamp fake nem “sync Google Agenda”.
 - Placeholders `/portal/comunicados`, `/eventos`, `/agenda` reutilizam o mesmo empty visual + CTA Voltar ao início. Textos em [`EMPTY_STATES`](hub/portal/constants.js).
 - `portal_items` aceita kind `document` e metadados: categoria, departamento, versão, thumbnail, obrigatório no onboarding.
 - Vídeos (`kind = video`): `external_url` obrigatória e só YouTube (`youtube.com` / `youtu.be`); `/portal/videos` embute o player em destaque + grade dos demais (`?v=` para selecionar), em coluna **max 1040px** para o 16:9 não estourar no shell largo. Sem upload de MP4. “Abrir no YouTube” é link secundário. Sem duração/views/capítulos inventados.
-- POPs: busca e filtro por departamento no cliente; cards compactos (ícone ou capa 40×40, chip de departamento, `category`/`version` reais, CTA Visualizar). Coluna max 1040px.
+- POPs: mesmo padrão de `/portal/videos` — conteúdo **in-app** (YouTube embutido se a URL for YouTube; PDF/imagem via `/portal/media`). Sem botão “Abrir em nova aba” / link externo na visualização. Trilha com `?p=`, busca/filtro. Coluna max 1040px.
+- Vídeos: player YouTube embutido; sem CTA “Abrir no YouTube” na página pública.
 - Trilha padrão (8 etapas) seedada no boot em [`hub/portal/seed-onboarding.js`](hub/portal/seed-onboarding.js).
+- Conteúdos Êxito (`portal_contents`): imagem recomendada **1280 × 720 px (16:9)**, JPG/PNG/WebP até 8 MB (texto no formulário admin). A Home usa carrossel split com `object-fit: cover`. No boot, [`hub/portal/seed-contents.js`](hub/portal/seed-contents.js) grava 4 slides de exemplo (Empresa, Equipe, Informações, Novidades) **somente se a tabela estiver vazia**; fotos em [`hub/portal/seed-assets/contents/`](hub/portal/seed-assets/contents/). O admin substitui título, texto e imagem quando estiver no ar.
 - **Não** altera `postLoginPath`: quem tem um único módulo continua indo direto ao módulo no login.
 
 **Papéis distintos:**
@@ -177,8 +203,9 @@ Produção (VPS): repo `/home/exito/projetos/EXITOHUB`, PM2 `exito-hub` na porta
 | Login HUB | GET/POST `/login` | [`hub/routes.js`](hub/routes.js) |
 | Home / Portal | GET `/` | [`hub/views/home.ejs`](hub/views/home.ejs) + [`hub/portal/store.js`](hub/portal/store.js) |
 | Menu HUB | catálogo + `/api/hub/menu` | [`hub/menu-catalog.js`](hub/menu-catalog.js) |
-| Portal — áreas | `/portal/videos` `/pops` `/diagrama` `/informativos` `/catalogos` `/logos` `/documentos` | [`hub/views/portal/area.ejs`](hub/views/portal/area.ejs) |
+| Portal — áreas | `/portal/videos` `/pops` `/diagrama` `/informativos` `/catalogos` `/documentos` | [`hub/views/portal/area.ejs`](hub/views/portal/area.ejs) |
 | Portal — onboarding | `/portal/onboarding` | [`hub/views/portal/onboarding.ejs`](hub/views/portal/onboarding.ejs) |
+| Portal — módulo da trilha | `/portal/onboarding/etapas/:id` | [`hub/views/portal/onboarding-step.ejs`](hub/views/portal/onboarding-step.ejs) |
 | Portal — placeholders | `/portal/comunicados` `/eventos` `/agenda` | [`hub/views/portal/placeholder.ejs`](hub/views/portal/placeholder.ejs) |
 | Portal — mídia | GET `/portal/media/:fileId` | [`hub/portal/upload.js`](hub/portal/upload.js) (auth; não é static) |
 | Admin Portal | `/admin/portal` | [`hub/views/admin/portal-index.ejs`](hub/views/admin/portal-index.ejs) + [`hub/portal/routes.js`](hub/portal/routes.js) |
@@ -238,7 +265,7 @@ Tela **Revisão** após enviar Extrato + Contas a Pagar. Pré-cadastro por empre
 
 A Contas a Pagar **vence**. O histórico só classifica residual (qualquer pagamento sem Classificação Êxito, não só tarifa). Não há campo extra no pré-cadastro: a descrição cadastrada é o texto (ou trecho) do histórico.
 
-A conciliação pronta fica na tabela `conciliacoes`. A tela **Histórico** lê só essa tabela, da empresa aberta. Sair da revisão ou reiniciar o servidor não apaga o que já foi gravado. O admin do HUB, ao entrar de novo, reabre a última empresa (`users.last_empresa_id`). O pré-cadastro fica na tabela `precadastros` (o JSON em `data/precadastro` é cópia). Backup diário: `CONCI/CONCI/conciliação/scripts/backup-conci.sh` → `/root/PROJETOS/exito/backups/conci/`.
+A conciliação só é gravada depois que Extrato e Contas a Pagar são lidos. Arquivo `.xlsx` ou `.xls` não passa pelo leitor de ODS. Se faltar Nome do fornecedor, CNPJ ou Valor, a tela mostra o erro e o Histórico não ganha linha nova. A conciliação pronta fica na tabela `conciliacoes`. A tela **Histórico** lê só essa tabela, da empresa aberta. Sair da revisão ou reiniciar o servidor não apaga o que já foi gravado. O admin do HUB, ao entrar de novo, reabre a última empresa (`users.last_empresa_id`). O pré-cadastro fica na tabela `precadastros` (o JSON em `data/precadastro` é cópia). Backup diário: `CONCI/CONCI/conciliação/scripts/backup-conci.sh` → `/root/PROJETOS/exito/backups/conci/`.
 
 | Situação | O que acontece |
 |----------|----------------|
@@ -253,7 +280,7 @@ A conciliação pronta fica na tabela `conciliacoes`. A tela **Histórico** lê 
 ## 8. Guia rápido
 
 1. Crie empresas nos módulos Conci e NCM.
-2. Em **Administrativo → Gerenciar usuários** (`/admin/usuarios`), clique **Novo usuário**. Preencha login, e-mail, senha, marque os módulos e **marque todas as empresas** que o login pode abrir (Conciliação e/ou NCM). Salvar fecha o sheet. Para corrigir: busque o login → **Editar**. Desativar pede confirmação no rodapé.
+2. Em **Administrativo → Gerenciar usuários** (`/admin/usuarios`), clique **Novo usuário**. Preencha login, e-mail, senha, foto opcional (jpeg/png/webp), marque os módulos e **marque todas as empresas** que o login pode abrir (Conciliação e/ou NCM). Salvar fecha o sheet. Para corrigir: busque o login → **Editar**. Desativar pede confirmação no rodapé. Qualquer usuário troca a própria foto em **Meu perfil** (clique no avatar/nome no topo → `/perfil`).
 3. Admin Conciliação: papel **Admin Conciliação**, módulo só Conci → menu mostra **Contábil → Conciliação** (sem Folha/Auditor Fiscal). Admin do HUB vê os 7 departamentos no hambúrguer; Projetos abre o card do Avadesk.
 4. Empresa Conci: em **Pré-cadastro**, cadastre a Classificação Êxito (texto ou trecho do histórico do extrato) e os códigos Débito/Crédito. Tarifas: cadastre `TARIFAS BANCARIAS` (o extrato pode vir `TAR/CUSTAS COBRANCA`, prefixo de banco ou `TARIFA`). Essas tarifas **não** pegam CAP só por valor+data. Envie Extrato + Contas a Pagar. Na **Revisão**, o que **não** veio da planilha de CAP (nome/CNPJ) é classificado se a descrição estiver no histórico; tarifa vira `TARIFAS BANCARIAS`. Se cadastrou depois, clique **Atualizar pré-cadastro** (só preenche CAP vazia). No Itaú o histórico mostra lançamento e razão social; conciliação já salva só atualiza se reenviar o extrato.
 5. Empresa NCM: e-mail + módulo NCM + empresa → `/ncm/dashboard` ao logar. No hambúrguer, o auditor aparece como **Fiscal → Auditor Fiscal**. No **Panorama**, escolha o lote; os quatro cards (Analisados, Corretos, Divergentes, Análise) mostram quantidade e %. Tratados, A tratar e Regras na base ficam na faixa abaixo. O donut é a composição do lote; as barras são os NCMs (e segmentos na Unica/Egaplast) com mais pendência — clique abre Consultar. As barras pequenas são as últimas importações (clique troca o lote). Clique num card para a lista filtrada.

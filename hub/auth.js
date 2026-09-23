@@ -3,6 +3,7 @@
 const { randomUUID } = require('crypto');
 const bcrypt = require('bcryptjs');
 const { query, MODULES } = require('./db');
+const { mediaUrl } = require('./portal/upload');
 
 const COOKIE_NAME = 'exito_hub_sid';
 const NCM_SESSION_COOKIE = 'fiscal_session';
@@ -82,6 +83,7 @@ function toPublicUser(row, modules) {
   const onboardingStatus = ['PENDING', 'IN_PROGRESS', 'COMPLETED'].includes(status)
     ? status
     : 'PENDING';
+  const photoFileId = row.photo_file_id || null;
   return {
     id: row.id,
     username: row.username,
@@ -96,8 +98,15 @@ function toPublicUser(row, modules) {
     landingPath: row.landing_path || null,
     onboardingStatus,
     department: row.department || null,
+    photoFileId,
+    photoUrl: mediaUrl(photoFileId),
   };
 }
+
+const USER_PUBLIC_COLS =
+  'id, username, email, password_hash, display_name, is_admin, active, landing_path, onboarding_status, department, photo_file_id';
+const USER_PUBLIC_COLS_NO_HASH =
+  'id, username, email, display_name, is_admin, active, landing_path, onboarding_status, department, photo_file_id';
 
 async function loadModules(userId) {
   const result = await query(
@@ -109,7 +118,7 @@ async function loadModules(userId) {
 
 async function findUserByUsername(username) {
   const result = await query(
-    `SELECT id, username, email, password_hash, display_name, is_admin, active, landing_path, onboarding_status, department
+    `SELECT ${USER_PUBLIC_COLS}
      FROM hub_users
      WHERE LOWER(username) = LOWER($1)
      LIMIT 1`,
@@ -124,7 +133,7 @@ async function findUserByLogin(login) {
   const byUsername = await findUserByUsername(value);
   if (byUsername) return byUsername;
   const byEmail = await query(
-    `SELECT id, username, email, password_hash, display_name, is_admin, active, landing_path, onboarding_status, department
+    `SELECT ${USER_PUBLIC_COLS}
      FROM hub_users
      WHERE LOWER(email) = LOWER($1)
      LIMIT 1`,
@@ -135,7 +144,7 @@ async function findUserByLogin(login) {
 
 async function findUserById(id) {
   const result = await query(
-    `SELECT id, username, email, display_name, is_admin, active, landing_path, onboarding_status, department
+    `SELECT ${USER_PUBLIC_COLS_NO_HASH}
      FROM hub_users WHERE id = $1 LIMIT 1`,
     [id],
   );
@@ -192,7 +201,7 @@ async function getSessionUser(sessionId) {
   if (!sessionId || !/^[a-zA-Z0-9_-]+$/.test(sessionId)) return null;
   const result = await query(
     `SELECT s.id AS session_id, s.expires_at,
-            u.id, u.username, u.email, u.display_name, u.is_admin, u.active, u.landing_path, u.onboarding_status, u.department
+            u.id, u.username, u.email, u.display_name, u.is_admin, u.active, u.landing_path, u.onboarding_status, u.department, u.photo_file_id
      FROM hub_sessions s
      JOIN hub_users u ON u.id = s.user_id
      WHERE s.id = $1
@@ -218,7 +227,7 @@ async function getUserFromRequest(req) {
 
 async function listUsers() {
   const users = await query(
-    `SELECT id, username, email, display_name, is_admin, active, landing_path, onboarding_status, department, created_at
+    `SELECT ${USER_PUBLIC_COLS_NO_HASH}, created_at
      FROM hub_users
      ORDER BY username`,
   );
@@ -255,6 +264,7 @@ async function createUser({
   isAdmin,
   modules,
   moduleMeta = {},
+  photoFileId = null,
 }) {
   const allowed = (modules || []).filter((m) => MODULES.includes(m));
   const { validateModuleMeta, provisionUserToModules } = require('./provision-modules');
@@ -262,10 +272,11 @@ async function createUser({
 
   const landingPath = landingPathForModules(allowed, moduleMeta);
   const hash = await bcrypt.hash(String(password), 12);
+  const photoId = photoFileId || null;
   const inserted = await query(
-    `INSERT INTO hub_users (username, email, password_hash, display_name, is_admin, active, landing_path, onboarding_status)
-     VALUES ($1, $2, $3, $4, $5, true, $6, $7)
-     RETURNING id, username, email, display_name, is_admin, active, landing_path, onboarding_status`,
+    `INSERT INTO hub_users (username, email, password_hash, display_name, is_admin, active, landing_path, onboarding_status, photo_file_id)
+     VALUES ($1, $2, $3, $4, $5, true, $6, $7, $8)
+     RETURNING ${USER_PUBLIC_COLS_NO_HASH}`,
     [
       String(username).trim().toLowerCase(),
       String(email).trim().toLowerCase(),
@@ -274,6 +285,7 @@ async function createUser({
       Boolean(isAdmin),
       landingPath,
       Boolean(isAdmin) ? 'COMPLETED' : 'PENDING',
+      photoId,
     ],
   );
   const user = inserted.rows[0];
@@ -299,6 +311,18 @@ async function createUser({
   return publicUser;
 }
 
+async function setUserPhotoFileId(userId, photoFileId) {
+  const row = await findUserById(userId);
+  if (!row) throw new Error('Usuário não encontrado.');
+  await query('UPDATE hub_users SET photo_file_id = $1 WHERE id = $2', [
+    photoFileId || null,
+    userId,
+  ]);
+  const refreshed = await findUserById(userId);
+  const modules = await loadModules(userId);
+  return toPublicUser(refreshed, modules);
+}
+
 async function updateUserWithModules(userId, {
   modules,
   moduleMeta = {},
@@ -306,6 +330,7 @@ async function updateUserWithModules(userId, {
   isAdmin,
   active,
   displayName,
+  photoFileId,
 }) {
   const row = await findUserById(userId);
   if (!row) throw new Error('Usuário não encontrado.');
@@ -326,6 +351,10 @@ async function updateUserWithModules(userId, {
   if (typeof displayName !== 'undefined' && displayName != null) {
     const nextName = String(displayName).trim() || row.username;
     await query('UPDATE hub_users SET display_name = $1 WHERE id = $2', [nextName, userId]);
+  }
+
+  if (photoFileId) {
+    await query('UPDATE hub_users SET photo_file_id = $1 WHERE id = $2', [photoFileId, userId]);
   }
 
   if (typeof isAdmin !== 'undefined') {
@@ -410,6 +439,7 @@ module.exports = {
   createUser,
   updateUserModules,
   updateUserWithModules,
+  setUserPhotoFileId,
   setUserActive,
   setUserAdmin,
   setOnboardingStatus,

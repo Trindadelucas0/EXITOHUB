@@ -97,7 +97,7 @@ Shell padrão (todas as telas autenticadas):
 │            │ │ [ Ver checklist ]  [ Continuar integração #006b2b ]      │ │
 │            │ └──────────────────────────────────────────────────────────┘ │
 │            │ Bom dia, Nome.                                               │
-│            │ ┌ card ┐ ┌ card ┐ ┌ card ┐  (6 cards com ícone)              │
+│            │ ┌ card ┐ ┌ card ┐ ┌ card ┐  (5 cards com ícone)              │
 │            │ (abaixo: Conteúdos Êxito, Acontece, Agenda, Links, Contatos) │
 └────────────┴──────────────────────────────────────────────────────────────┘
 ```
@@ -107,13 +107,13 @@ Shell padrão (todas as telas autenticadas):
 | Ação | Classe | Cor | O que faz |
 |------|--------|-----|-----------|
 | Continuar integração | `.hub-btn-primary` | `#2ea44f` | Vai para `/portal/onboarding` |
-| Cards das 6 áreas | cards brancos | borda `#e5e7eb` | Abrem `/portal/videos`, `/pops`, etc. |
+| Cards das 5 áreas | cards brancos | borda `#e5e7eb` | Abrem `/portal/videos`, `/pops`, etc. |
 | Sair | `.hub-btn-ghost` | ghost | Encerra sessão |
 
 ### Como funciona
 
 1. Quem ainda não concluiu a trilha vê o **banner** com percentual (dados de `onboarding_user_progress`).
-2. Os **6 cards** de integração dominam o topo (Vídeos, POPs, Diagrama, Informativos, Catálogos, Logos).
+2. Os **5 cards** de integração dominam o topo (Vídeos, POPs, Diagrama, Informativos, Catálogos).
 3. O restante da Home (carrossel, comunicados, links, contatos) continua abaixo.
 4. Ao concluir todas as etapas e finalizar, o status vira `COMPLETED` e a Home muda para o layout da §3.
 
@@ -135,7 +135,7 @@ Shell padrão (todas as telas autenticadas):
 │ Tudo o que você precisa para trabalhar no Êxito.                           │
 │                                                                            │
 │ ÁREAS DA EMPRESA                                                           │
-│ (Vídeos) (POPs) (Diagrama) (Informativos) (Catálogos) (Logos) (Documentos) │
+│ (Vídeos) (POPs) (Diagrama) (Informativos) (Catálogos) (Documentos)         │
 │  ← pills brancas, borda #e5e7eb, ícone verde                               │
 │                                                                            │
 │ ────────────────── CONTEÚDOS ÊXITO ─────────────────────────────────────── │
@@ -170,7 +170,7 @@ Shell padrão (todas as telas autenticadas):
 
 | Ação | Classe | Cor | O que faz |
 |------|--------|-----|-----------|
-| Pills da barra rápida | `.hub-portal-quick__item` | branco + ícone verde | Atalho para áreas do portal |
+| Pills da barra rápida | `.hub-portal-quick__item` | pill branca + sombra + Material Symbol | Atalho para áreas do portal |
 | Setas do carrossel | `.hub-carousel__nav` | botão branco/borda | Troca slide |
 | Dot ativo | `.hub-carousel__dot.is-active` | `#2ea44f` | Indica slide atual |
 | Painéis feed | `.hub-home-feed__panel` | branco `rounded-xl` | Empty Comunicados/Eventos |
@@ -185,7 +185,7 @@ Shell padrão (todas as telas autenticadas):
 3. Carrossel usa conteúdos publicados com `show_on_home`.
 4. Comunicados / Eventos / Agenda são placeholders visuais Stitch (sem dados inventados; sem “sync Google”).
 5. Links e contatos vêm do admin (`show_on_home` + ativos); contatos filtráveis por departamento.
-6. A mesma faixa inferior aparece na Home pendente (abaixo dos 6 cards e do carrossel).
+6. A mesma faixa inferior aparece na Home pendente (abaixo dos 5 cards e do carrossel).
 
 ---
 
@@ -237,9 +237,9 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 
 ---
 
-## 5. Área genérica (Diagrama, Informativos, Catálogos, Logos, Documentos)
+## 5. Área genérica (Diagrama, Informativos, Catálogos, Documentos)
 
-**Rotas:** `/portal/diagrama`, `/informativos`, `/catalogos`, `/logos`, `/documentos`  
+**Rotas:** `/portal/diagrama`, `/informativos`, `/catalogos`, `/documentos`  
 **Arquivo:** [`hub/views/portal/area.ejs`](../hub/views/portal/area.ejs)  
 **POPs:** ver §5b (layout compacto próprio).
 
@@ -263,9 +263,9 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 
 ---
 
-## 5b. POPs da Empresa (cards compactos)
+## 5b. POPs da Empresa (igual Vídeos de Integração)
 
-**Rota:** `/portal/pops`  
+**Rota:** `/portal/pops` · query `?p=:id`  
 **Arquivo:** [`hub/views/portal/area.ejs`](../hub/views/portal/area.ejs)
 
 ### Wireframe
@@ -273,14 +273,21 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 ```text
 ┌──────────────── max ~1040px ────────────────┐
 │ Início / POPs da Empresa                      │
-│ [ Buscar… ]              [ Departamento ▼ ]   │
-│ ┌──────────┐ ┌──────────┐ ┌──────────┐      │
-│ │ [icon] Dept│ │          │ │          │      │
-│ │ COD · vX  │ │          │ │          │      │
-│ │ Título    │ │          │ │          │      │
-│ │ desc 2ln  │ │          │ │          │      │
-│ │ [Abrir →] │ │          │ │          │      │
-│ └──────────┘ └──────────┘ └──────────┘      │
+│ ┌─ header ──────────────────────────────────┐ │
+│ │ Abra o procedimento nesta página…         │ │
+│ └───────────────────────────────────────────┘ │
+│ ┌─ featured ────────────────────────────────┐ │
+│ │ [POP-01] · dept / obrigatório             │ │
+│ │ ┌───────────────────────────────────────┐ │ │
+│ │ │  YouTube / PDF / imagem (in-app)      │ │ │
+│ │ └───────────────────────────────────────┘ │ │
+│ │ Título                                    │ │
+│ └───────────────────────────────────────────┘ │
+│ [ Buscar ] [ Dept ▼ ]                         │
+│ Trilha completa · Total: N                    │
+│ ┌────┐ ┌────┐ ┌────┐  ?p=id                 │
+│ │P01 │ │P02 │ │víd→│                        │
+│ └────┘ └────┘ └────┘                        │
 └───────────────────────────────────────────────┘
 ```
 
@@ -288,15 +295,15 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 
 | Ação | Classe | O que faz |
 |------|--------|-----------|
-| Card | `.hub-pop-card` | Abre arquivo/URL (`noopener` se externo) |
-| CTA | `.hub-pop-card__cta` | “Visualizar procedimento” |
-| Empty filtro | `.hub-empty-panel` | Limpar filtros |
+| Viewer YouTube/PDF/img | `.hub-video-feature__player` | Assiste/lê **dentro** do HUB |
+| Card da trilha | `.hub-video-playlist__card` | `?p=` troca o featured |
 
 ### Como funciona
 
-1. Sem capa 16/10 dominante — ícone Material ou miniatura 40×40.
-2. Código = `category` real; versão = `version` real (omitidos se vazios).
-3. Sem botão “Sugerir POP” nem KPIs inventados.
+1. Mesma hierarquia de `/portal/videos` (featured + trilha).
+2. YouTube na URL → player embutido; PDF/imagem anexados → viewer in-app. Sem CTA externo na página pública.
+3. Busca/dept filtram cards da trilha; featured permanece.
+4. Sem “Sugerir POP” nem KPIs inventados.
 
 ---
 
@@ -318,7 +325,7 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 │ │ ┌───────────────────────────────────────┐ │ │
 │ │ │   YouTube iframe 16:9 (real)          │ │ │
 │ │ └───────────────────────────────────────┘ │ │
-│ │ Título · Abrir no YouTube (ghost)         │ │
+│ │ Título                                    │ │
 │ └───────────────────────────────────────────┘ │
 │ Trilha completa · Total: N                    │
 │ ┌────┐ ┌────┐ ┌────┐  cards compactos       │
@@ -332,7 +339,6 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 | Ação | Classe | O que faz |
 |------|--------|-----------|
 | Play no iframe | UI do YouTube | Assiste **dentro** do HUB |
-| Abrir no YouTube | `.hub-video-feature__yt` | Opcional; nova aba |
 | Módulo da playlist | `.hub-video-playlist__card` | `?v=` troca o featured |
 
 ### Como funciona
@@ -340,7 +346,7 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 1. Admin cadastra só o **link do YouTube** (sem MP4).
 2. Coluna max **1040px** + `max-height` no player evita estouro no shell largo.
 3. Um player featured + playlist (não N players empilhados).
-4. Sem duração, views ou capítulos inventados.
+4. Sem duração, views ou capítulos inventados; sem CTA “Abrir no YouTube” na página pública.
 
 ---
 
@@ -439,7 +445,7 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 │                                                                            │
 │ [ Conteúdos Êxito ] [ Links Úteis ] [ Contatos Úteis ]                     │
 │ [ Vídeos ] [ POPs ] [ Diagrama ] [ Informativos ] [ Catálogos ]            │
-│ [ Logos ] [ Documentos Corporativos ]                                      │
+│ [ Documentos Corporativos ]                                                │
 │ [ Onboarding — Trilha ] [ Onboarding — Acompanhamento ] [ Configurações ]  │
 │  ← links de navegação (não são botões primary)                             │
 └────────────────────────────────────────────────────────────────────────────┘
@@ -471,7 +477,9 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 │ Portal / Conteúdos Êxito                    [ + Novo conteúdo #2ea44f ]    │
 │                                                                            │
 │ ┌─ FORM ───────────────────────────────────────────────────────────────┐   │
-│ │ Imagem * | Título | Descrição | Categoria                            │   │
+│ │ Imagem *                                                             │   │
+│ │ Recomendado: 1280 × 720 px (16:9). JPG/PNG/WebP, até 8 MB.           │   │
+│ │ Título | Descrição | Categoria                                       │   │
 │ │ Destino: nenhum / interna / externa                                  │   │
 │ │ Ordem | [x] Publicado | [x] Exibir na Home                           │   │
 │ │                    [ Cancelar ghost ]  [ Salvar #2ea44f ]            │   │
@@ -493,7 +501,8 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 1. Conteúdos publicados com “Exibir na Home” entram no carrossel.
 2. Destino pode ser nenhum, rota `/portal/...` ou URL `https`.
 3. Empty na Home: “Em breve, novidades do Êxito.”
-
+4. Imagem recomendada: **1280 × 720 px (16:9)**, JPG/PNG/WebP até 8 MB (texto no formulário).
+5. Boot semeia 4 exemplos ([`hub/portal/seed-contents.js`](../hub/portal/seed-contents.js)) só se `portal_contents` estiver vazio.
 ---
 
 ## 11. Admin — Links Úteis
@@ -764,28 +773,41 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────┐
-│ Projetos                                                                   │
-│ Chamados, bugs e projetos em andamento no Avadesk.                         │
+│ Projetos & Chamados                                                        │
+│ Projetos e Chamados (Avadesk)                                              │
 │                                                                            │
-│ ┌─ card ───────────────────────────────────────────────────────────────┐   │
-│ │ Avadesk                                                              │   │
-│ │ Suporte e gestão de projetos                                         │   │
-│ │ Abra o portal para cadastrar bug, implementação...                   │   │
-│ │ Abrir Avadesk ↗                                                      │   │
+│ ┌─ hero ───────────────────────────────────────────────────────────────┐   │
+│ │ Plataforma homologada                                                │   │
+│ │ Avadesk — Central de Suporte e Gestão de Projetos                    │   │
+│ │ Chamados da Equipe de TI entram no portal Avadesk.                   │   │
+│ │ [ Abrir Portal Avadesk ↗ ]                                           │   │
 │ └──────────────────────────────────────────────────────────────────────┘   │
+│                                                                            │
+│ Diretrizes rápidas · Canais                                                │
+│ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐                         │
+│ │ Suporte de   │ │ Equipe de TI │ │ Solicitação  │                         │
+│ │ TI e Infra   │ │ Bugs/ajustes │ │ de novos     │                         │
+│ │ Rede/acesso  │ │ dos módulos  │ │ módulos      │                         │
+│ │ Abrir chamado│ │ Canal no     │ │ Abrir chamado│                         │
+│ │ no Avadesk   │ │ Avadesk      │ │ no Avadesk   │                         │
+│ └──────────────┘ └──────────────┘ └──────────────┘                         │
 └────────────────────────────────────────────────────────────────────────────┘
 ```
+
+Mobile (&lt;1024px): os três cards empilham em uma coluna.
 
 ### Cores e ações
 
 | Ação | Cor | O que faz |
 |------|-----|-----------|
-| Card Abrir Avadesk | card branco + CTA | Abre URL do Avadesk em nova aba |
+| Abrir Portal Avadesk | botão primary | Abre https://suporte.avadesk.com.br/ em nova aba |
+| Cards de canal | card branco | Orientação fixa (sem fila/SLA no HUB) |
 
 ### Como funciona
 
 1. Só admin vê o item no menu Projetos.
-2. Não há CRUD de chamados no HUB — redireciona ao portal Avadesk.
+2. Não há CRUD de chamados no HUB — o CTA e os rodapés dos canais apontam ao portal Avadesk.
+3. O canal do meio chama-se **Equipe de TI** (bugs, ajustes e dúvidas dos módulos).
 
 ---
 
@@ -832,7 +854,6 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 | Diagrama | `/portal/diagrama` |
 | Informativos | `/portal/informativos` |
 | Catálogos | `/portal/catalogos` |
-| Logos | `/portal/logos` |
 | Documentos | `/portal/documentos` |
 | Onboarding | `/portal/onboarding` |
 | Comunicados / Eventos / Agenda | `/portal/comunicados` · `/eventos` · `/agenda` |

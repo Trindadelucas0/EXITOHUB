@@ -107,7 +107,12 @@ async function ensureTables() {
       created_by UUID REFERENCES hub_users(id) ON DELETE SET NULL,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
-
+  `);
+  await query(`
+    ALTER TABLE hub_users
+    ADD COLUMN IF NOT EXISTS photo_file_id UUID REFERENCES portal_files(id) ON DELETE SET NULL
+  `);
+  await query(`
     CREATE TABLE IF NOT EXISTS portal_links (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name TEXT NOT NULL,
@@ -244,6 +249,17 @@ async function ensureTables() {
     END $$
   `);
   await query(`ALTER TABLE onboarding_tracks ADD COLUMN IF NOT EXISTS department TEXT`);
+  await query(`ALTER TABLE onboarding_steps ADD COLUMN IF NOT EXISTS youtube_url TEXT`);
+  await query(`ALTER TABLE onboarding_steps ADD COLUMN IF NOT EXISTS video_download_url TEXT`);
+  await query(`ALTER TABLE onboarding_steps ADD COLUMN IF NOT EXISTS pdf_file_id UUID`);
+  await query(`
+    DO $$ BEGIN
+      ALTER TABLE onboarding_steps
+        ADD CONSTRAINT onboarding_steps_pdf_file_id_fkey
+        FOREIGN KEY (pdf_file_id) REFERENCES portal_files(id) ON DELETE SET NULL;
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$
+  `);
   await query(`
     CREATE INDEX IF NOT EXISTS idx_portal_items_kind_active
       ON portal_items (kind, is_active, sort_order);
@@ -401,6 +417,12 @@ async function bootstrapHubDatabase() {
     await seedDefaultOnboardingTrack();
   } catch (err) {
     console.warn('[hub] seed onboarding falhou:', err.message);
+  }
+  try {
+    const { seedDefaultContents } = require('./portal/seed-contents');
+    await seedDefaultContents();
+  } catch (err) {
+    console.warn('[hub] seed Conteúdos Êxito falhou:', err.message);
   }
   try {
     const { syncModuleUsers } = require('./sync-module-users');

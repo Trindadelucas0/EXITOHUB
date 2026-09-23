@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('partials/hub-head') %>
+</head>
+<body class="hub-body">
+  <%- include('partials/hub-chrome', { current: 'perfil', breadcrumb: 'Meu perfil' }) %>
+
+  <%
+    const displayName = hubUser.displayName || hubUser.username || '';
+    const initials = (function () {
+      const src = String(displayName || '?').trim();
+      const parts = src.split(/\s+/).filter(Boolean);
+      if (parts.length >= 2) return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
+      return src.slice(0, 2).toUpperCase();
+    })();
+  %>
+
+  <main class="hub-shell-main">
+    <div class="hub-portal hub-portal--perfil">
+      <header class="hub-portal-welcome hub-portal-welcome--card">
+        <div>
+          <p class="hub-portal-welcome__meta">Conta</p>
+          <h1>Meu perfil</h1>
+          <p>Atualize sua foto. Login e e-mail só o admin altera.</p>
+        </div>
+      </header>
+
+      <% if (flash) { %><div class="hub-alert hub-alert-ok" role="status"><%= flash %></div><% } %>
+      <% if (error) { %><div class="hub-alert hub-alert-error" role="alert"><%= error %></div><% } %>
+
+      <section class="hub-card hub-profile-card" aria-labelledby="perfil-foto-title">
+        <div class="hub-profile-photo-preview hub-profile-photo-preview--lg" aria-hidden="true">
+          <% if (hubUser.photoUrl) { %>
+            <img src="<%= hubUser.photoUrl %>" alt="" width="96" height="96" />
+          <% } else { %>
+            <span class="hub-topbar__avatar hub-topbar__avatar--lg"><%= initials %></span>
+          <% } %>
+        </div>
+
+        <dl class="hub-profile-meta">
+          <div>
+            <dt>Nome</dt>
+            <dd><%= displayName %></dd>
+          </div>
+          <div>
+            <dt>Usuário</dt>
+            <dd><%= hubUser.username %></dd>
+          </div>
+          <div>
+            <dt>E-mail</dt>
+            <dd><%= hubUser.email %></dd>
+          </div>
+          <% if (hubUser.department) { %>
+            <div>
+              <dt>Departamento</dt>
+              <dd><%= hubUser.department %></dd>
+            </div>
+          <% } %>
+        </dl>
+
+        <form method="post" action="/perfil/foto" enctype="multipart/form-data" class="hub-admin-form">
+          <h2 id="perfil-foto-title" class="hub-section-title" style="font-size: 1rem;">Foto de perfil</h2>
+          <label class="hub-field">
+            <span>Escolher imagem</span>
+            <input name="photo" type="file" accept="image/jpeg,image/png,image/webp" required />
+            <span class="hub-muted" style="font-size: 0.75rem;">JPEG, PNG ou WebP.</span>
+          </label>
+          <button type="submit" class="hub-btn hub-btn-primary">Salvar foto</button>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <%- include('partials/hub-chrome-end') %>
+</body>
+</html>

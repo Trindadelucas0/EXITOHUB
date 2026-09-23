@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('../partials/hub-head') %>
+</head>
+<body class="hub-body">
+  <%- include('../partials/hub-chrome', { current: 'portal-onboarding', breadcrumb: 'Integração' }) %>
+
+  <main class="hub-shell-main">
+    <div class="hub-onboarding-module">
+      <p class="hub-breadcrumb hub-area-page__crumb">
+        <a href="/">Início</a> /
+        <a href="/portal/onboarding">Integração</a> /
+        <%= step.title %>
+      </p>
+
+      <header class="hub-onboarding-module__head">
+        <div>
+          <p class="hub-muted" style="margin: 0 0 0.35rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--exito-green); font-weight: 700;">
+            <%= modLabel %>
+          </p>
+          <h1 style="margin: 0; font-size: 1.5rem; font-weight: 600;"><%= step.title %></h1>
+          <% if (step.description) { %>
+            <p class="hub-muted" style="margin: 0.35rem 0 0;"><%= step.description %></p>
+          <% } %>
+        </div>
+        <a class="hub-btn hub-btn-ghost" href="/portal/onboarding">← Voltar à trilha</a>
+      </header>
+
+      <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
+      <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+
+      <% if (!step.hasMedia) { %>
+        <div class="hub-empty-panel">
+          <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 2.5rem; color: var(--exito-muted);">hourglass_empty</span>
+          <h3>Material em preparação</h3>
+          <p class="hub-muted">Peça ao administrador para cadastrar o vídeo e o PDF deste módulo.</p>
+          <p style="margin-top: 1rem;">
+            <a class="hub-btn hub-btn-primary" href="/portal/onboarding">← Voltar à trilha</a>
+          </p>
+        </div>
+      <% } else { %>
+        <% if (step.hasYoutube) { %>
+          <article class="hub-video-feature">
+            <div class="hub-video-feature__bar">
+              <div class="hub-video-feature__bar-left">
+                <span class="hub-video-feature__mod"><%= modLabel %></span>
+                <span class="hub-video-feature__label">Vídeo do módulo</span>
+              </div>
+            </div>
+            <div class="hub-video-feature__player">
+              <iframe
+                src="<%= step.youtube_embed_url %>"
+                title="<%= step.title %>"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+              ></iframe>
+            </div>
+            <div class="hub-video-feature__meta">
+              <h2 style="margin: 0; font-size: 1.125rem;"><%= step.title %></h2>
+              <% if (step.description) { %>
+                <p class="hub-video-feature__desc"><%= step.description %></p>
+              <% } %>
+            </div>
+          </article>
+        <% } %>
+
+        <% if (step.hasVideoDownload || step.hasPdf) { %>
+          <div class="hub-onboarding-module__actions">
+            <% if (step.hasVideoDownload) { %>
+              <a class="hub-btn hub-btn-primary" href="<%= step.video_download_url %>" target="_blank" rel="noopener noreferrer">
+                <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 1.125rem;">download</span>
+                Baixar vídeo
+              </a>
+            <% } %>
+            <% if (step.hasPdf) { %>
+              <a class="hub-btn hub-btn-ghost" href="<%= step.pdf_url %>" target="_blank" rel="noopener noreferrer" download="<%= step.pdf_name || 'modulo.pdf' %>">
+                <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 1.125rem;">picture_as_pdf</span>
+                Baixar PDF
+              </a>
+            <% } %>
+          </div>
+        <% } %>
+
+        <% if (step.hasPdf) { %>
+          <section class="hub-onboarding-module__pdf" aria-label="Documento do módulo">
+            <h2 class="hub-portal-section__title" style="margin: 1.5rem 0 0.75rem;">Documento</h2>
+            <article class="hub-video-feature">
+              <div class="hub-video-feature__bar">
+                <div class="hub-video-feature__bar-left">
+                  <span class="hub-video-feature__mod">PDF</span>
+                  <span class="hub-video-feature__label"><%= step.pdf_name || 'Documento do módulo' %></span>
+                </div>
+              </div>
+              <div class="hub-video-feature__player hub-pop-feature__viewer">
+                <iframe
+                  src="<%= step.pdf_url %>"
+                  title="<%= step.pdf_name || step.title %>"
+                  loading="lazy"
+                ></iframe>
+              </div>
+            </article>
+          </section>
+        <% } %>
+      <% } %>
+    </div>
+  </main>
+
+  <%- include('../partials/hub-chrome-end') %>
+</body>
+</html>

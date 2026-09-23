@@ -10,6 +10,7 @@ const {
   createUser,
   updateUserWithModules,
   setUserActive,
+  setUserPhotoFileId,
   findUserById,
   postLoginPath,
   MODULES,
@@ -22,6 +23,7 @@ const {
 } = require('./provision-modules');
 const { requireHubAuth, requireHubAdmin, logoutHub } = require('./middleware');
 const { getMenuForUser, findSoonModule, AVADESK_URL } = require('./menu-catalog');
+const { uploadImage, saveUploadedFile } = require('./portal/upload');
 const portalRoutes = require('./portal/routes');
 
 const router = express.Router();
@@ -32,7 +34,28 @@ const FLASH_OK = {
   criado: 'Usuário criado.',
   atualizado: 'Usuário atualizado.',
   status: 'Situação atualizada.',
+  foto: 'Foto atualizada.',
 };
+
+function handleUserUploadError(err, res, fallbackPath) {
+  if (!err) return false;
+  if (err.code === 'LIMIT_FILE_SIZE' || err.status === 413) {
+    res.redirect(`${fallbackPath}${fallbackPath.includes('?') ? '&' : '?'}erro=${encodeURIComponent('Arquivo muito grande.')}`);
+    return true;
+  }
+  if (err.code === 'UNSUPPORTED_MEDIA' || err.status === 415) {
+    res.redirect(`${fallbackPath}${fallbackPath.includes('?') ? '&' : '?'}erro=${encodeURIComponent('Tipo de arquivo não permitido.')}`);
+    return true;
+  }
+  res.redirect(`${fallbackPath}${fallbackPath.includes('?') ? '&' : '?'}erro=${encodeURIComponent(safeErrorMessage(err))}`);
+  return true;
+}
+
+async function saveOptionalPhoto(req) {
+  if (!req.file) return null;
+  const fileRow = await saveUploadedFile(req.file, req.hubUser.id);
+  return fileRow?.id || null;
+}
 
 function isSeedMasterUser(user) {
   if (!user) return false;
@@ -307,62 +330,72 @@ router.get('/admin/usuarios', requireHubAdmin, async (req, res) => {
   });
 });
 
-router.post('/admin/usuarios', requireHubAdmin, async (req, res) => {
-  const filters = pickListFilters(req);
-  try {
-    if (bodyFlag(req.body.is_master)) applyMasterBody(req.body);
-    const modules = parseModules(req.body);
-    const moduleMeta = parseModuleMeta(req.body);
+router.post('/admin/usuarios', requireHubAdmin, (req, res) => {
+  uploadImage.single('photo')(req, res, async (err) => {
+    const filters = pickListFilters(req);
+    if (handleUserUploadError(err, res, usersPath(filters, { novo: true }))) return;
+    try {
+      if (bodyFlag(req.body.is_master)) applyMasterBody(req.body);
+      const modules = parseModules(req.body);
+      const moduleMeta = parseModuleMeta(req.body);
+      const photoFileId = await saveOptionalPhoto(req);
 
-    await createUser({
-      username: req.body.username,
-      email: req.body.email,
-      password: req.body.password,
-      displayName: req.body.displayName,
-      isAdmin: bodyFlag(req.body.is_admin) || bodyFlag(req.body.is_master),
-      modules,
-      moduleMeta,
-    });
-    return res.redirect(usersPath(filters, { ok: 'criado' }));
-  } catch (err) {
-    console.error('[hub] create user', err);
-    return res.redirect(usersPath(filters, { novo: true, erro: safeErrorMessage(err) }));
-  }
+      await createUser({
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        displayName: req.body.displayName,
+        isAdmin: bodyFlag(req.body.is_admin) || bodyFlag(req.body.is_master),
+        modules,
+        moduleMeta,
+        photoFileId,
+      });
+      return res.redirect(usersPath(filters, { ok: 'criado' }));
+    } catch (e) {
+      console.error('[hub] create user', e);
+      return res.redirect(usersPath(filters, { novo: true, erro: safeErrorMessage(e) }));
+    }
+  });
 });
 
-router.post('/admin/usuarios/:id/modulos', requireHubAdmin, async (req, res) => {
-  const filters = pickListFilters(req);
-  const userId = String(req.params.id || '').trim();
-  const isSelf = String(req.hubUser.id) === userId;
-  try {
-    const editing = await findUserById(userId);
-    if (isSeedMasterUser(editing)) applyMasterBody(req.body);
-    else if (bodyFlag(req.body.is_master)) applyMasterBody(req.body);
+router.post('/admin/usuarios/:id/modulos', requireHubAdmin, (req, res) => {
+  uploadImage.single('photo')(req, res, async (err) => {
+    const filters = pickListFilters(req);
+    const userId = String(req.params.id || '').trim();
+    const isSelf = String(req.hubUser.id) === userId;
+    if (handleUserUploadError(err, res, usersPath(filters, { editar: userId }))) return;
+    try {
+      const editing = await findUserById(userId);
+      if (isSeedMasterUser(editing)) applyMasterBody(req.body);
+      else if (bodyFlag(req.body.is_master)) applyMasterBody(req.body);
 
-    const nextAdmin = bodyFlag(req.body.is_admin);
-    if (isSelf && !nextAdmin) {
-      return res.redirect(usersPath(filters, {
-        editar: userId,
-        erro: 'Você não pode remover o próprio acesso de Admin do HUB.',
-      }));
+      const nextAdmin = bodyFlag(req.body.is_admin);
+      if (isSelf && !nextAdmin) {
+        return res.redirect(usersPath(filters, {
+          editar: userId,
+          erro: 'Você não pode remover o próprio acesso de Admin do HUB.',
+        }));
+      }
+
+      const modules = parseModules(req.body);
+      const moduleMeta = parseModuleMeta(req.body);
+      const password = String(req.body.password || '').trim() || undefined;
+      const photoFileId = await saveOptionalPhoto(req);
+
+      await updateUserWithModules(userId, {
+        modules,
+        moduleMeta,
+        password,
+        isAdmin: nextAdmin,
+        active: bodyFlag(req.body.active),
+        displayName: req.body.displayName,
+        photoFileId,
+      });
+      return res.redirect(usersPath(filters, { ok: 'atualizado' }));
+    } catch (e) {
+      return res.redirect(usersPath(filters, { editar: userId, erro: safeErrorMessage(e) }));
     }
-
-    const modules = parseModules(req.body);
-    const moduleMeta = parseModuleMeta(req.body);
-    const password = String(req.body.password || '').trim() || undefined;
-
-    await updateUserWithModules(userId, {
-      modules,
-      moduleMeta,
-      password,
-      isAdmin: nextAdmin,
-      active: bodyFlag(req.body.active),
-      displayName: req.body.displayName,
-    });
-    return res.redirect(usersPath(filters, { ok: 'atualizado' }));
-  } catch (err) {
-    return res.redirect(usersPath(filters, { editar: userId, erro: safeErrorMessage(err) }));
-  }
+  });
 });
 
 router.post('/admin/usuarios/:id/status', requireHubAdmin, async (req, res) => {
@@ -388,6 +421,36 @@ router.post('/admin/usuarios/:id/status', requireHubAdmin, async (req, res) => {
   } catch (err) {
     return res.redirect(usersPath(filters, { editar: userId, erro: safeErrorMessage(err) }));
   }
+});
+
+router.get('/perfil', requireHubAuth, async (req, res) => {
+  const flashKey = String(req.query.ok || '');
+  const error = req.query.erro ? String(req.query.erro).slice(0, 300) : null;
+  return res.render('perfil', {
+    title: 'Meu perfil — EXITO HUB',
+    hubUser: req.hubUser,
+    flash: FLASH_OK[flashKey] || null,
+    error,
+  });
+});
+
+router.post('/perfil/foto', requireHubAuth, (req, res) => {
+  uploadImage.single('photo')(req, res, async (err) => {
+    if (handleUserUploadError(err, res, '/perfil')) return;
+    try {
+      if (!req.file) {
+        return res.redirect(`/perfil?erro=${encodeURIComponent('Selecione uma imagem jpeg, png ou webp.')}`);
+      }
+      const photoFileId = await saveOptionalPhoto(req);
+      if (!photoFileId) {
+        return res.redirect(`/perfil?erro=${encodeURIComponent('Não foi possível salvar a foto.')}`);
+      }
+      await setUserPhotoFileId(req.hubUser.id, photoFileId);
+      return res.redirect('/perfil?ok=foto');
+    } catch (e) {
+      return res.redirect(`/perfil?erro=${encodeURIComponent(safeErrorMessage(e))}`);
+    }
+  });
 });
 
 module.exports = router;

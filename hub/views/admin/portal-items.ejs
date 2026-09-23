@@ -37,9 +37,12 @@
             </label>
             <p class="hub-muted">Cole o link do vídeo (youtube.com ou youtu.be). O funcionário verá o player embutido na página.</p>
           <% } else { %>
-            <label>URL externa (https) <input name="external_url" type="url" maxlength="2000" value="<%= editing.external_url || '' %>" /></label>
+            <label>URL externa (https)
+              <input name="external_url" type="url" maxlength="2000" value="<%= editing.external_url || '' %>" placeholder="https://youtu.be/... ou deixe vazio e anexe o PDF" />
+            </label>
+            <p class="hub-muted">YouTube é exibido no player embutido (igual Vídeos). PDF/imagem: anexe o arquivo abaixo — o funcionário vê dentro do HUB, sem abrir link externo.</p>
             <label>Arquivo
-              <input name="file" type="file" accept="<%= kind === 'logo' || kind === 'diagram' ? 'image/jpeg,image/png,image/webp' : 'application/pdf,image/jpeg,image/png,image/webp' %>" />
+              <input name="file" type="file" accept="<%= kind === 'diagram' ? 'image/jpeg,image/png,image/webp' : 'application/pdf,image/jpeg,image/png,image/webp' %>" />
             </label>
             <% if (editing.file_url) { %><p class="hub-muted">Arquivo atual: <a href="<%= editing.file_url %>" target="_blank" rel="noopener noreferrer">abrir</a></p><% } %>
           <% } %>

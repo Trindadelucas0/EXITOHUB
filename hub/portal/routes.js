@@ -30,6 +30,8 @@ const {
   setItemActive,
   getActiveTrack,
   listSteps,
+  getStep,
+  enrichStepMedia,
   loadOnboardingForUser,
   startOnboarding,
   completeStep,
@@ -140,12 +142,14 @@ router.get('/portal/pops', requireHubAuth, async (req, res) => {
   const kind = 'pop';
   const meta = kindMeta(kind);
   const items = await listItems(kind, { activeOnly: true });
+  const selectedPopId = req.query.p ? String(req.query.p).slice(0, 64) : null;
   return res.render('portal/area', {
     title: `${meta.label} — EXITO HUB`,
     hubUser: req.hubUser,
     current: 'portal-pops',
     meta,
     items,
+    selectedPopId,
     ...pickFlash(req),
   });
 });
@@ -192,19 +196,8 @@ router.get('/portal/catalogos', requireHubAuth, async (req, res) => {
   });
 });
 
-router.get('/portal/logos', requireHubAuth, async (req, res) => {
-  const kind = 'logo';
-  const meta = kindMeta(kind);
-  const items = await listItems(kind, { activeOnly: true });
-  return res.render('portal/area', {
-    title: `${meta.label} — EXITO HUB`,
-    hubUser: req.hubUser,
-    current: 'portal-logos',
-    meta,
-    items,
-    emptyMessage: EMPTY_STATES.items,
-    ...pickFlash(req),
-  });
+router.get('/portal/logos', requireHubAuth, (req, res) => {
+  return res.redirect('/');
 });
 
 router.get('/portal/documentos', requireHubAuth, async (req, res) => {
@@ -267,10 +260,12 @@ router.get('/portal/onboarding', requireHubAuth, async (req, res) => {
       req.hubUser.onboardingStatus = 'IN_PROGRESS';
     }
     const data = await loadOnboardingForUser(req.hubUser);
+    const completionLinks = ['video', 'diagram', 'pop', 'document'].map((key) => ITEM_KINDS[key]);
     return res.render('portal/onboarding', {
       title: 'Integração — EXITO HUB',
       hubUser: req.hubUser,
       current: 'portal-onboarding',
+      completionLinks,
       ...data,
       ...pickFlash(req),
     });
@@ -304,6 +299,28 @@ router.post('/portal/onboarding/complete', requireHubAuth, async (req, res) => {
     return flashRedirect(res, '/', { ok: 'concluido' });
   } catch (err) {
     return flashRedirect(res, '/portal/onboarding', { erro: safeError(err) });
+  }
+});
+
+router.get('/portal/onboarding/etapas/:id', requireHubAuth, async (req, res) => {
+  try {
+    const raw = await getStep(req.params.id);
+    if (!raw || !raw.is_active) {
+      return res.status(404).send('Módulo não encontrado');
+    }
+    const step = enrichStepMedia(raw);
+    const modLabel = 'MOD-' + String(step.position).padStart(2, '0');
+    return res.render('portal/onboarding-step', {
+      title: `${step.title} — Integração — EXITO HUB`,
+      hubUser: req.hubUser,
+      current: 'portal-onboarding',
+      step,
+      modLabel,
+      ...pickFlash(req),
+    });
+  } catch (err) {
+    console.error('[portal] onboarding step', err);
+    return res.status(500).send('Erro ao carregar módulo');
   }
 });
 
@@ -560,7 +577,7 @@ router.post('/admin/portal/conteudos/:id/status', requireHubAdmin, async (req, r
 
 function itemUploader(kind) {
   if (kind === 'video') return uploadImage;
-  if (kind === 'logo' || kind === 'diagram') return uploadImage;
+  if (kind === 'diagram') return uploadImage;
   return uploadDoc;
 }
 
@@ -724,13 +741,22 @@ router.get('/admin/portal/onboarding/etapas/:id/editar', requireHubAdmin, async 
   });
 });
 
-router.post('/admin/portal/onboarding/etapas/:id', requireHubAdmin, async (req, res) => {
-  try {
-    await updateStep(req.params.id, req.body);
-    return flashRedirect(res, '/admin/portal/onboarding', { ok: 'atualizado' });
-  } catch (err) {
-    return flashRedirect(res, `/admin/portal/onboarding/etapas/${req.params.id}/editar`, { erro: safeError(err) });
-  }
+router.post('/admin/portal/onboarding/etapas/:id', requireHubAdmin, (req, res) => {
+  uploadDoc.single('pdf')(req, res, async (err) => {
+    if (handleUploadError(err, res, `/admin/portal/onboarding/etapas/${req.params.id}/editar`)) return;
+    try {
+      if (req.file && String(req.file.mimetype || '').toLowerCase() !== 'application/pdf') {
+        return flashRedirect(res, `/admin/portal/onboarding/etapas/${req.params.id}/editar`, {
+          erro: 'Envie apenas PDF neste campo.',
+        });
+      }
+      const fileRow = req.file ? await saveUploadedFile(req.file, req.hubUser.id) : null;
+      await updateStep(req.params.id, req.body, fileRow?.id || null);
+      return flashRedirect(res, '/admin/portal/onboarding', { ok: 'atualizado' });
+    } catch (e) {
+      return flashRedirect(res, `/admin/portal/onboarding/etapas/${req.params.id}/editar`, { erro: safeError(e) });
+    }
+  });
 });
 
 router.post('/admin/portal/onboarding/etapas/:id/mover', requireHubAdmin, async (req, res) => {

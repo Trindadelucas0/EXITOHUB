@@ -20,6 +20,8 @@
         <p>
           <% if (meta.slug === 'videos') { %>
             Assista o vídeo nesta página — clique em play no player abaixo sem sair do HUB.
+          <% } else if (meta.slug === 'pops') { %>
+            Abra o procedimento nesta página — visualize abaixo sem sair do HUB.
           <% } else { %>
             <%= meta.description %>
           <% } %>
@@ -85,12 +87,6 @@
                     <% if (featured.category) { %><%= (featured.department || featured.version) ? ' · ' : '' %><%= featured.category %><% } %>
                   </p>
                 </div>
-                <% if (featured.href) { %>
-                  <a class="hub-video-feature__yt" href="<%= featured.href %>" target="_blank" rel="noopener noreferrer">
-                    Abrir no YouTube
-                    <span class="material-symbols-outlined" aria-hidden="true">north_east</span>
-                  </a>
-                <% } %>
               </div>
               <% if (featured.description) { %>
                 <p class="hub-video-feature__desc"><%= featured.description %></p>
@@ -136,6 +132,82 @@
           </div>
         </section>
       <% } else if (meta.slug === 'pops') { %>
+        <%
+          const selectedPop = typeof selectedPopId !== 'undefined' ? selectedPopId : null;
+          let featuredPop = items[0];
+          let featuredPopIdx = 0;
+          if (selectedPop) {
+            const foundPopIdx = items.findIndex(function (it) { return String(it.id) === String(selectedPop); });
+            if (foundPopIdx >= 0) {
+              featuredPop = items[foundPopIdx];
+              featuredPopIdx = foundPopIdx;
+            }
+          }
+          const popLabel = 'POP-' + String(featuredPopIdx + 1).padStart(2, '0');
+          const popMime = String(featuredPop.file_mime || '').toLowerCase();
+          const popIsPdf = popMime === 'application/pdf' && featuredPop.file_url;
+          const popIsImage = !!featuredPop.is_image && featuredPop.file_url;
+          const popIsYoutube = !!featuredPop.youtube_embed_url;
+          const popCanWatchInApp = popIsYoutube || popIsPdf || popIsImage;
+        %>
+        <article class="hub-video-feature">
+          <div class="hub-video-feature__bar">
+            <div class="hub-video-feature__bar-left">
+              <span class="hub-video-feature__mod"><%= popLabel %></span>
+              <span class="hub-video-feature__label">
+                <% if (featuredPop.is_onboarding_required) { %>
+                  Procedimento obrigatório
+                <% } else if (featuredPop.department) { %>
+                  <%= featuredPop.department %>
+                <% } else { %>
+                  POP da empresa
+                <% } %>
+              </span>
+            </div>
+          </div>
+          <div class="hub-video-feature__player hub-pop-feature__viewer<%= popIsImage ? ' hub-pop-feature__viewer--image' : '' %><%= !popCanWatchInApp ? ' hub-pop-feature__viewer--empty' : '' %>">
+            <% if (popIsYoutube) { %>
+              <iframe
+                src="<%= featuredPop.youtube_embed_url %>"
+                title="<%= featuredPop.title %>"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+              ></iframe>
+            <% } else if (popIsPdf) { %>
+              <iframe
+                src="<%= featuredPop.file_url %>"
+                title="<%= featuredPop.title %>"
+                loading="lazy"
+              ></iframe>
+            <% } else if (popIsImage) { %>
+              <img src="<%= featuredPop.file_url %>" alt="<%= featuredPop.title %>" loading="lazy" />
+            <% } else { %>
+              <div class="hub-pop-feature__fallback">
+                <span class="material-symbols-outlined" aria-hidden="true">menu_book</span>
+                <p>Este procedimento ainda não pode ser aberto nesta página.</p>
+                <p class="hub-muted" style="margin: 0;">Peça ao administrador para anexar um PDF/imagem ou um link do YouTube.</p>
+              </div>
+            <% } %>
+          </div>
+          <div class="hub-video-feature__meta">
+            <div class="hub-video-feature__meta-row">
+              <div>
+                <h2><%= featuredPop.title %></h2>
+                <p class="hub-video-feature__meta-sub">
+                  <% if (featuredPop.department) { %><%= featuredPop.department %><% } %>
+                  <% if (featuredPop.version) { %><%= featuredPop.department ? ' · ' : '' %>v<%= featuredPop.version %><% } %>
+                  <% if (featuredPop.category) { %><%= (featuredPop.department || featuredPop.version) ? ' · ' : '' %><%= featuredPop.category %><% } %>
+                </p>
+              </div>
+            </div>
+            <% if (featuredPop.description) { %>
+              <p class="hub-video-feature__desc"><%= featuredPop.description %></p>
+            <% } %>
+          </div>
+        </article>
+
         <div class="hub-area-toolbar" data-pop-filter>
           <label class="hub-field-search">
             <span class="visually-hidden">Buscar POPs</span>
@@ -160,78 +232,44 @@
           </label>
         </div>
 
-        <ul class="hub-pop-grid" data-item-list>
-          <% items.forEach(function (item) { %>
-            <li
-              data-title="<%= String(item.title || '').toLowerCase() %>"
-              data-department="<%= item.department || '' %>"
-              data-category="<%= item.category || '' %>"
-              data-description="<%= String(item.description || '').toLowerCase() %>"
-            >
-              <% if (item.href) { %>
-                <a
-                  class="hub-pop-card"
-                  href="<%= item.href %>"
-                  <% if (item.file_url || item.external_url) { %>target="_blank" rel="noopener noreferrer"<% } %>
-                >
-                  <div>
-                    <div class="hub-pop-card__top">
-                      <span class="hub-pop-card__icon" aria-hidden="true">
-                        <% if (item.cover_url) { %>
-                          <img src="<%= item.cover_url %>" alt="" width="40" height="40" loading="lazy" />
-                        <% } else { %>
-                          <span class="material-symbols-outlined">menu_book</span>
-                        <% } %>
-                      </span>
-                      <div class="hub-pop-card__chips">
-                        <% if (item.department) { %>
-                          <span class="hub-pop-card__chip"><%= item.department %></span>
-                        <% } %>
-                        <% if (item.is_onboarding_required) { %>
-                          <span class="hub-pop-card__chip hub-pop-card__chip--req">Obrigatório</span>
-                        <% } %>
-                      </div>
-                    </div>
-                    <% if (item.category || item.version) { %>
-                      <div class="hub-pop-card__code-row">
-                        <% if (item.category) { %><span class="hub-pop-card__code"><%= item.category %></span><% } %>
-                        <% if (item.category && item.version) { %><span aria-hidden="true">·</span><% } %>
-                        <% if (item.version) { %><span>v<%= item.version %></span><% } %>
-                      </div>
-                    <% } %>
-                    <h2 class="hub-pop-card__title"><%= item.title %></h2>
-                    <% if (item.description) { %>
-                      <p class="hub-pop-card__desc"><%= item.description %></p>
-                    <% } %>
-                  </div>
-                  <span class="hub-pop-card__cta">
-                    Visualizar procedimento
-                    <span class="material-symbols-outlined" aria-hidden="true">arrow_outward</span>
-                  </span>
-                </a>
-              <% } else { %>
-                <div class="hub-pop-card hub-pop-card--static">
-                  <div>
-                    <div class="hub-pop-card__top">
-                      <span class="hub-pop-card__icon" aria-hidden="true">
-                        <span class="material-symbols-outlined">menu_book</span>
-                      </span>
-                      <% if (item.department) { %>
-                        <div class="hub-pop-card__chips">
-                          <span class="hub-pop-card__chip"><%= item.department %></span>
-                        </div>
-                      <% } %>
-                    </div>
-                    <h2 class="hub-pop-card__title"><%= item.title %></h2>
-                    <% if (item.description) { %>
-                      <p class="hub-pop-card__desc"><%= item.description %></p>
-                    <% } %>
-                  </div>
-                </div>
-              <% } %>
-            </li>
-          <% }) %>
-        </ul>
+        <section class="hub-video-playlist" aria-label="Lista de POPs">
+          <div class="hub-video-playlist__head">
+            <div>
+              <h3>Trilha completa de POPs da empresa</h3>
+              <p>Selecione um procedimento para visualizar nesta página.</p>
+            </div>
+            <span class="hub-video-playlist__total">
+              Total: <%= items.length %> POP<%= items.length === 1 ? '' : 's' %>
+            </span>
+          </div>
+          <div class="hub-video-playlist__grid" data-item-list>
+            <% items.forEach(function (item, idx) { %>
+              <a
+                class="hub-video-playlist__card<%= featuredPop && String(featuredPop.id) === String(item.id) ? ' is-active' : '' %>"
+                href="/portal/pops?p=<%= item.id %>"
+                data-title="<%= String(item.title || '').toLowerCase() %>"
+                data-department="<%= item.department || '' %>"
+                data-category="<%= item.category || '' %>"
+                data-description="<%= String(item.description || '').toLowerCase() %>"
+              >
+                <span class="hub-video-playlist__num">POP <%= String(idx + 1).padStart(2, '0') %></span>
+                <strong><%= item.title %></strong>
+                <% if (item.description) { %>
+                  <span class="hub-video-playlist__card-desc"><%= item.description %></span>
+                <% } %>
+                <span class="hub-video-playlist__status">
+                  <%= featuredPop && String(featuredPop.id) === String(item.id) ? 'Visualizando' : 'Disponível' %>
+                </span>
+              </a>
+            <% }) %>
+            <a class="hub-video-playlist__card hub-video-playlist__cta-card" href="/portal/videos">
+              <span class="hub-video-playlist__num">Vídeos</span>
+              <strong>Prefere assistir?</strong>
+              <span class="hub-video-playlist__card-desc">Veja a trilha de vídeos de integração com player embutido no HUB.</span>
+              <span class="hub-video-playlist__status">Explorar vídeos →</span>
+            </a>
+          </div>
+        </section>
         <div class="hub-empty-panel" data-filter-empty hidden aria-hidden="true" style="display: none;">
           <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 2rem; color: var(--exito-muted);">manage_search</span>
           <h3>Nenhum procedimento encontrado</h3>
@@ -300,18 +338,17 @@
         var q = (search.value || '').trim().toLowerCase();
         var d = dept ? dept.value : '';
         var visible = 0;
-        list.querySelectorAll('li').forEach(function (li) {
-          var title = li.getAttribute('data-title') || '';
-          var description = li.getAttribute('data-description') || '';
-          var category = (li.getAttribute('data-category') || '').toLowerCase();
-          var department = li.getAttribute('data-department') || '';
+        list.querySelectorAll('[data-title]').forEach(function (card) {
+          var title = card.getAttribute('data-title') || '';
+          var description = card.getAttribute('data-description') || '';
+          var category = (card.getAttribute('data-category') || '').toLowerCase();
+          var department = card.getAttribute('data-department') || '';
           var matchQ = !q || title.indexOf(q) !== -1 || description.indexOf(q) !== -1 || category.indexOf(q) !== -1 || department.toLowerCase().indexOf(q) !== -1;
           var matchD = !d || department === d;
           var show = matchQ && matchD;
-          li.hidden = !show;
+          card.hidden = !show;
           if (show) visible += 1;
         });
-        list.hidden = visible === 0;
         setEmptyVisible(visible === 0);
       }
 

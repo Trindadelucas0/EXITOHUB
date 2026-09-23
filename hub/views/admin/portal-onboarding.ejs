@@ -21,20 +21,36 @@
         <p class="hub-muted"><%= track.name %></p>
 
         <% if (editingStep) { %>
-          <form method="post" action="/admin/portal/onboarding/etapas/<%= editingStep.id %>" class="hub-admin-form">
+          <form method="post" action="/admin/portal/onboarding/etapas/<%= editingStep.id %>" class="hub-admin-form" enctype="multipart/form-data">
             <h2>Editar etapa</h2>
             <label>Título <input name="title" required maxlength="200" value="<%= editingStep.title %>" /></label>
             <label>Descrição <textarea name="description" rows="2" maxlength="1000"><%= editingStep.description || '' %></textarea></label>
-            <label>Tipo de destino
-              <select name="target_kind">
-                <% ['none','route','item','content'].forEach(function (k) { %>
-                  <option value="<%= k %>" <%= editingStep.target_kind === k ? 'selected' : '' %>><%= k %></option>
-                <% }) %>
-              </select>
-            </label>
-            <label>Rota interna <input name="target_route" maxlength="300" value="<%= editingStep.target_route || '' %>" placeholder="/portal/..." /></label>
             <label>Posição <input name="position" type="number" value="<%= editingStep.position %>" /></label>
             <label class="hub-check"><input type="checkbox" name="is_active" value="1" <%= editingStep.is_active ? 'checked' : '' %> /> Ativa</label>
+
+            <h3 style="margin: 1.25rem 0 0.5rem; font-size: 1rem;">Conteúdo do módulo</h3>
+            <p class="hub-muted" style="margin: 0 0 0.75rem; font-size: 0.875rem;">
+              O colaborador assiste o YouTube no HUB e pode baixar o vídeo e o PDF quando cadastrados.
+            </p>
+            <label>Link YouTube (assistir no HUB)
+              <input name="youtube_url" type="url" maxlength="2000" value="<%= editingStep.youtube_url || '' %>" placeholder="https://www.youtube.com/watch?v=..." />
+            </label>
+            <label>Link para baixar o vídeo
+              <input name="video_download_url" type="url" maxlength="2000" value="<%= editingStep.video_download_url || '' %>" placeholder="https://..." />
+            </label>
+            <label>PDF do módulo
+              <input name="pdf" type="file" accept="application/pdf,.pdf" />
+            </label>
+            <% if (editingStep.pdf_file_id) { %>
+              <p class="hub-muted" style="margin: 0 0 0.5rem; font-size: 0.875rem;">
+                Atual: <%= editingStep.pdf_original_name || 'PDF anexado' %>
+                · <a href="/portal/media/<%= editingStep.pdf_file_id %>" target="_blank" rel="noopener noreferrer">Abrir</a>
+              </p>
+              <label class="hub-check">
+                <input type="checkbox" name="remove_pdf" value="1" /> Remover PDF atual
+              </label>
+            <% } %>
+
             <div class="hub-form-actions">
               <a class="hub-btn hub-btn-ghost" href="/admin/portal/onboarding">Cancelar</a>
               <button type="submit" class="hub-btn hub-btn-primary">Salvar</button>
@@ -48,7 +64,15 @@
               <div>
                 <strong><%= String(step.position).padStart(2, '0') %>. <%= step.title %></strong>
                 <% if (step.description) { %><span class="hub-muted"><%= step.description %></span><% } %>
-                <span class="hub-muted"><%= step.target_kind %><% if (step.target_route) { %> → <%= step.target_route %><% } %></span>
+                <span class="hub-muted">
+                  <%
+                    var mediaBits = [];
+                    if (step.youtube_url) mediaBits.push('YouTube');
+                    if (step.video_download_url) mediaBits.push('Download');
+                    if (step.pdf_file_id) mediaBits.push('PDF');
+                  %>
+                  <%= mediaBits.length ? mediaBits.join(' · ') : 'Sem mídia' %>
+                </span>
                 <span class="hub-pill<%= step.is_active ? ' hub-pill-ok' : '' %>"><%= step.is_active ? 'Ativa' : 'Inativa' %></span>
               </div>
               <div class="hub-admin-list__actions">

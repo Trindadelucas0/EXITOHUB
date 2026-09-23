@@ -61,6 +61,7 @@ const ITEM_KINDS = {
     short: 'Vídeos',
     description: 'Conheça a empresa',
     icon: 'play',
+    materialIcon: 'play_circle',
     cover: '/hub-assets/portal-cards/videos.svg',
     route: '/portal/videos',
   },
@@ -70,6 +71,7 @@ const ITEM_KINDS = {
     short: 'POPs',
     description: 'Procedimentos e instruções',
     icon: 'clipboard',
+    materialIcon: 'menu_book',
     cover: '/hub-assets/portal-cards/pops.png',
     route: '/portal/pops',
   },
@@ -79,6 +81,7 @@ const ITEM_KINDS = {
     short: 'Diagrama',
     description: 'Conheça cargos, setores e equipes',
     icon: 'network',
+    materialIcon: 'account_tree',
     cover: '/hub-assets/portal-cards/diagrama.svg',
     route: '/portal/diagrama',
   },
@@ -88,6 +91,7 @@ const ITEM_KINDS = {
     short: 'Informativos',
     description: 'Notícias e comunicados',
     icon: 'megaphone',
+    materialIcon: 'campaign',
     cover: '/hub-assets/portal-cards/informativos.svg',
     route: '/portal/informativos',
   },
@@ -97,17 +101,9 @@ const ITEM_KINDS = {
     short: 'Catálogos',
     description: 'Materiais da empresa',
     icon: 'file-text',
+    materialIcon: 'collections_bookmark',
     cover: '/hub-assets/portal-cards/catalogos.svg',
     route: '/portal/catalogos',
-  },
-  logo: {
-    slug: 'logos',
-    label: 'Logos',
-    short: 'Logos',
-    description: 'Identidade visual oficial',
-    icon: 'image',
-    cover: '/hub-assets/portal-cards/logos.svg',
-    route: '/portal/logos',
   },
   document: {
     slug: 'documentos',
@@ -115,13 +111,14 @@ const ITEM_KINDS = {
     short: 'Documentos',
     description: 'Formulários e arquivos oficiais',
     icon: 'file-text',
+    materialIcon: 'folder_shared',
     cover: '/hub-assets/portal-cards/documentos.svg',
     route: '/portal/documentos',
   },
 };
 
 /** Cards de integração na Home (sem Documentos no grid principal de onboarding). */
-const HOME_INTEGRATION_KINDS = ['video', 'pop', 'diagram', 'informative', 'catalog', 'logo'];
+const HOME_INTEGRATION_KINDS = ['video', 'pop', 'diagram', 'informative', 'catalog'];
 
 const TARGET_TYPES = ['none', 'internal', 'external'];
 

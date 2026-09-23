@@ -136,24 +136,32 @@
           <%- include('partials/hub-portal-quick-bar', { quickCards: quickCards || [] }) %>
         <% } %>
 
-        <section class="hub-portal-section" aria-labelledby="conteudos-titulo">
-          <div class="hub-portal-section-head">
-            <h2 id="conteudos-titulo" class="hub-portal-section__title" style="margin: 0; display: flex; align-items: center; gap: 0.35rem;">
-              <span class="material-symbols-outlined" aria-hidden="true" style="color: var(--exito-green);">auto_stories</span>
-              Conteúdos Êxito
-            </h2>
-          </div>
+        <section class="hub-portal-section hub-portal-section--contents" aria-labelledby="conteudos-titulo">
           <% if (!(contents || []).length) { %>
-            <p class="hub-muted hub-portal-empty"><%= (emptyStates && emptyStates.contents) || 'Em breve, novidades do Êxito.' %></p>
+            <div class="hub-carousel hub-carousel--split hub-carousel--empty">
+              <div class="hub-carousel__toolbar">
+                <h2 id="conteudos-titulo" class="hub-portal-section__title hub-carousel__title">
+                  <span class="material-symbols-outlined" aria-hidden="true">auto_stories</span>
+                  Conteúdos Êxito
+                </h2>
+              </div>
+              <p class="hub-muted hub-portal-empty"><%= (emptyStates && emptyStates.contents) || 'Em breve, novidades do Êxito.' %></p>
+            </div>
           <% } else { %>
             <div class="hub-carousel hub-carousel--split" data-carousel data-autoplay="6000">
-              <div style="display: flex; justify-content: flex-end; gap: 0.35rem; padding: 0.75rem 1rem 0;">
-                <button type="button" class="hub-carousel__nav hub-carousel__nav--prev" data-carousel-prev aria-label="Anterior">
-                  <span class="material-symbols-outlined">chevron_left</span>
-                </button>
-                <button type="button" class="hub-carousel__nav hub-carousel__nav--next" data-carousel-next aria-label="Próximo">
-                  <span class="material-symbols-outlined">chevron_right</span>
-                </button>
+              <div class="hub-carousel__toolbar">
+                <h2 id="conteudos-titulo" class="hub-portal-section__title hub-carousel__title">
+                  <span class="material-symbols-outlined" aria-hidden="true">auto_stories</span>
+                  Conteúdos Êxito
+                </h2>
+                <div class="hub-carousel__toolbar-nav">
+                  <button type="button" class="hub-carousel__nav hub-carousel__nav--prev" data-carousel-prev aria-label="Anterior">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                  </button>
+                  <button type="button" class="hub-carousel__nav hub-carousel__nav--next" data-carousel-next aria-label="Próximo">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                  </button>
+                </div>
               </div>
               <div class="hub-carousel__track" data-carousel-track>
                 <% contents.forEach(function (item, idx) { %>
@@ -171,7 +179,7 @@
                     </div>
                     <div class="hub-carousel__caption">
                       <% if (item.category) { %>
-                        <span class="hub-portal-card__tag" style="background: var(--exito-green-soft); color: var(--exito-green); align-self: flex-start;"><%= item.category %></span>
+                        <span class="hub-portal-card__tag hub-portal-card__tag--accent"><%= item.category %></span>
                       <% } %>
                       <strong><%= item.title %></strong>
                       <% if (item.description) { %><span><%= item.description %></span><% } %>
@@ -186,7 +194,7 @@
                     </div>
                     <div class="hub-carousel__caption">
                       <% if (item.category) { %>
-                        <span class="hub-portal-card__tag" style="background: var(--exito-green-soft); color: var(--exito-green); align-self: flex-start;"><%= item.category %></span>
+                        <span class="hub-portal-card__tag hub-portal-card__tag--accent"><%= item.category %></span>
                       <% } %>
                       <strong><%= item.title %></strong>
                       <% if (item.description) { %><span><%= item.description %></span><% } %>
@@ -195,7 +203,7 @@
                   <% } %>
                 <% }) %>
               </div>
-              <div class="hub-carousel__dots" data-carousel-dots role="tablist" aria-label="Slides" style="padding: 0.75rem;"></div>
+              <div class="hub-carousel__dots" data-carousel-dots role="tablist" aria-label="Slides"></div>
             </div>
           <% } %>
         </section>
