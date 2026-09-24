@@ -4,7 +4,7 @@ Documento visual e funcional das telas do **Êxito HUB** (login, Home/portal, ad
 
 **Fora deste arquivo:** Folha (`/folha`), Conciliação (`/conci`), Auditor Fiscal / NCM (`/ncm`).
 
-Fonte de cores: [`hub/public/hub.css`](../hub/public/hub.css) (tokens do mockup Stitch: primary `#006b2b`, canvas `#f9f9ff`).
+Fonte de cores: [`hub/public/hub.css`](../hub/public/hub.css) (primary `#006b2b`, canvas `#e4ebf5`, cards brancos com borda `#d7e3fd`).
 
 ---
 
@@ -15,8 +15,8 @@ Fonte de cores: [`hub/public/hub.css`](../hub/public/hub.css) (tokens do mockup 
 | Botão primário (Entrar, Salvar, Continuar) | `.hub-btn-primary` / `--exito-green` | Fundo `#006b2b`, texto branco |
 | Botão primário hover | `--exito-green-hover` | `#008738` |
 | Botão ghost (Cancelar, Editar, Sair, Desativar) | `.hub-btn-ghost` | Transparente / borda suave, texto escuro |
-| Fundo da página | `--hub-bg` / `--surface` | `#f9f9ff` |
-| Card / painel | `--exito-card` | `#ffffff` |
+| Fundo da página (canvas) | `--hub-bg` / `--surface` | `#e4ebf5` |
+| Card / painel | `--hub-card` / `--exito-card` | `#ffffff` + borda `--exito-line` (`#d7e3fd`) |
 | Texto principal | `--exito-ink` / `--on-surface` | `#101c2f` |
 | Texto secundário / muted | `--exito-muted` | `#536259` |
 | Banner onboarding | `--exito-green-soft` | `#d6e7db` |
@@ -25,6 +25,8 @@ Fonte de cores: [`hub/public/hub.css`](../hub/public/hub.css) (tokens do mockup 
 | Pílula ativa / ok | `.hub-pill-ok` | Verde |
 | Item do menu (página atual) | `.hub-sidebar__link.is-active` | `#006b2b` + texto branco |
 | Link secundário (Abrir no YouTube) | `.hub-portal-video__open` | Texto muted (hover verde) |
+| Margem do miolo | `--hub-gutter` | `1.5rem` desktop / `1rem` tablet / `0.75rem` celular |
+| Vão entre blocos | `--hub-stack` | `1.25rem` |
 
 Nos wireframes: `[ Entrar #006b2b ]` = botão primário; `[ Cancelar ghost ]` = botão ghost.
 
@@ -502,7 +504,7 @@ No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão 
 2. Destino pode ser nenhum, rota `/portal/...` ou URL `https`.
 3. Empty na Home: “Em breve, novidades do Êxito.”
 4. Imagem recomendada: **1280 × 720 px (16:9)**, JPG/PNG/WebP até 8 MB (texto no formulário).
-5. Boot semeia 4 exemplos ([`hub/portal/seed-contents.js`](../hub/portal/seed-contents.js)) só se `portal_contents` estiver vazio.
+5. Boot remove os 4 slides de exemplo e, se `portal_contents` ficar vazio, grava o slide original (`principal.jpg`) via [`hub/portal/seed-contents.js`](../hub/portal/seed-contents.js).
 ---
 
 ## 11. Admin — Links Úteis

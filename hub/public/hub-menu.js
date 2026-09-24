@@ -3,6 +3,23 @@
   const drawer = document.getElementById('hub-app-menu');
   const overlay = document.getElementById('hub-menu-overlay');
 
+  if (drawer) {
+    drawer.addEventListener('toggle', function (event) {
+      const target = event.target;
+      if (!(target instanceof HTMLDetailsElement)) return;
+      if (!target.hasAttribute('data-hub-menu-level')) return;
+      if (!target.open) return;
+      const root = target.parentElement;
+      if (!root) return;
+      Array.prototype.forEach.call(root.children, function (el) {
+        if (el === target) return;
+        if (el.tagName === 'DETAILS' && el.hasAttribute('data-hub-menu-level')) {
+          el.open = false;
+        }
+      });
+    }, true);
+  }
+
   if (!btn || !drawer) return;
 
   const mq = window.matchMedia('(min-width: 1024px)');

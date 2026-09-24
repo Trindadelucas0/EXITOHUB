@@ -17,6 +17,7 @@ type MenuItem = {
   icon?: string;
   external?: boolean;
   currentKey: string;
+  section?: "main" | "config";
 };
 
 type MenuDepartment = {
@@ -24,6 +25,35 @@ type MenuDepartment = {
   label: string;
   items: MenuItem[];
 };
+
+function splitDeptItems(items: MenuItem[]) {
+  const main: MenuItem[] = [];
+  const config: MenuItem[] = [];
+  for (const item of items) {
+    if (item.section === "config") config.push(item);
+    else main.push(item);
+  }
+  return { main, config };
+}
+
+function ChevronIcon({ group }: { group: string }) {
+  return (
+    <svg
+      className={`size-4 shrink-0 transition-transform group-open/${group}:rotate-90`}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="m9 18 6-6-6-6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 const ICON_INNER: Record<string, string> = {
   home: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
@@ -88,6 +118,53 @@ function itemClass(active: boolean, soon: boolean, indented: boolean) {
   if (active) return `${base} ${pad} bg-brand text-white hover:bg-brand-hover`;
   if (soon) return `${base} ${pad} text-ink-muted hover:bg-paper-sunken hover:text-ink`;
   return `${base} ${pad} text-ink hover:bg-paper-sunken`;
+}
+
+function MenuLink({
+  item,
+  active,
+  indented,
+}: {
+  item: MenuItem;
+  active: string;
+  indented: boolean;
+}) {
+  const isActive = item.currentKey === active;
+  const soon = item.status === "soon";
+  return (
+    <a
+      href={item.href}
+      className={itemClass(isActive, soon, indented)}
+      {...(item.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+    >
+      <MenuIcon name={item.icon || "file-text"} />
+      <span className="min-w-0 flex-1">{item.label}</span>
+      {soon ? (
+        <span className="shrink-0 whitespace-nowrap rounded-full bg-paper-sunken px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-ink-muted">
+          Em breve
+        </span>
+      ) : null}
+      {item.external ? (
+        <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <path
+            d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : null}
+    </a>
+  );
+}
+
+function closeSiblingDetails(target: HTMLDetailsElement) {
+  const nav = target.parentElement;
+  if (!nav) return;
+  Array.from(nav.children).forEach((el) => {
+    if (el !== target && el instanceof HTMLDetailsElement) el.open = false;
+  });
 }
 
 export function HubSystemsMenu({ active = "ncm" }: Props) {
@@ -173,77 +250,49 @@ export function HubSystemsMenu({ active = "ncm" }: Props) {
                 </a>
 
                 {departments.map((dept) => {
+                  const { main, config } = splitDeptItems(dept.items);
                   const deptOpen = dept.items.some((item) => item.currentKey === active);
+                  const configOpen = config.some((item) => item.currentKey === active);
                   return (
                     <details
                       key={dept.id}
-                      className="group grid gap-0.5"
+                      className="group/dept grid gap-0.5"
                       {...(deptOpen ? { open: true } : {})}
                       onToggle={(event) => {
                         const target = event.currentTarget;
                         if (!target.open) return;
-                        const nav = target.closest("nav");
-                        nav?.querySelectorAll("details").forEach((el) => {
-                          if (el !== target) el.open = false;
-                        });
+                        closeSiblingDetails(target);
                       }}
                     >
                       <summary className="flex min-h-11 w-full cursor-pointer list-none items-center gap-2 rounded-md px-3 text-sm font-semibold text-ink-muted hover:bg-paper-sunken hover:text-ink [&::-webkit-details-marker]:hidden [&::marker]:hidden">
-                        <svg
-                          className="size-4 shrink-0 transition-transform group-open:rotate-90"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          aria-hidden
-                        >
-                          <path
-                            d="m9 18 6-6-6-6"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        <ChevronIcon group="dept" />
                         <span>{dept.label}</span>
                       </summary>
                       <div className="grid gap-0.5">
-                        {dept.items.map((item) => {
-                          const isActive = item.currentKey === active;
-                          const soon = item.status === "soon";
-                          return (
-                            <a
-                              key={item.id}
-                              href={item.href}
-                              className={itemClass(isActive, soon, true)}
-                              {...(item.external
-                                ? { target: "_blank", rel: "noopener noreferrer" }
-                                : {})}
-                            >
-                              <MenuIcon name={item.icon || "file-text"} />
-                              <span className="min-w-0 flex-1">{item.label}</span>
-                              {soon ? (
-                                <span className="shrink-0 whitespace-nowrap rounded-full bg-paper-sunken px-1.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-ink-muted">
-                                  Em breve
-                                </span>
-                              ) : null}
-                              {item.external ? (
-                                <svg
-                                  className="size-4 shrink-0"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  aria-hidden
-                                >
-                                  <path
-                                    d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                              ) : null}
-                            </a>
-                          );
-                        })}
+                        {main.map((item) => (
+                          <MenuLink key={item.id} item={item} active={active} indented />
+                        ))}
+                        {config.length > 0 ? (
+                          <details
+                            className="group/config grid gap-0.5"
+                            {...(configOpen ? { open: true } : {})}
+                            onToggle={(event) => {
+                              const target = event.currentTarget;
+                              if (!target.open) return;
+                              closeSiblingDetails(target);
+                            }}
+                          >
+                            <summary className="flex min-h-11 w-full cursor-pointer list-none items-center gap-2 rounded-md px-3 pl-9 text-sm font-semibold text-ink-muted hover:bg-paper-sunken hover:text-ink [&::-webkit-details-marker]:hidden [&::marker]:hidden">
+                              <ChevronIcon group="config" />
+                              <span>Configuração</span>
+                            </summary>
+                            <div className="grid gap-0.5">
+                              {config.map((item) => (
+                                <MenuLink key={item.id} item={item} active={active} indented />
+                              ))}
+                            </div>
+                          </details>
+                        ) : null}
                       </div>
                     </details>
                   );

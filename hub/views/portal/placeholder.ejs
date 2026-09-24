@@ -11,6 +11,8 @@
       : 'inbox';
     const emptyTitle = typeof pageLead !== 'undefined' ? pageLead : 'Nada por aqui ainda.';
     const emptyText = typeof pageHint !== 'undefined' ? pageHint : '';
+    const rows = typeof listItems !== 'undefined' && Array.isArray(listItems) ? listItems : [];
+    const kind = typeof listKind !== 'undefined' ? listKind : '';
   %>
   <%- include('../partials/hub-chrome', {
     current: typeof current !== 'undefined' ? current : '',
@@ -18,20 +20,54 @@
   }) %>
   <main class="hub-shell-main">
     <div class="hub-placeholder-page">
-      <p class="hub-breadcrumb" style="margin: 0 0 0.75rem; font-size: 0.8125rem;">
-        <a href="/">Início</a> / <%= crumb %>
-      </p>
-      <h1 style="margin: 0 0 1rem; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.015em;"><%= crumb %></h1>
+      <header class="hub-page-head">
+        <p class="hub-breadcrumb">
+          <a href="/">Início</a> / <%= crumb %>
+        </p>
+        <h1><%= crumb %></h1>
+      </header>
       <div class="hub-home-feed__panel">
-        <div class="hub-home-feed__empty">
-          <span class="hub-home-feed__empty-icon" aria-hidden="true">
-            <span class="material-symbols-outlined"><%= emptyIcon %></span>
-          </span>
-          <p class="hub-home-feed__empty-title"><%= emptyTitle %></p>
-          <% if (emptyText) { %>
-            <p class="hub-home-feed__empty-text"><%= emptyText %></p>
-          <% } %>
-        </div>
+        <% if (!rows.length) { %>
+          <div class="hub-home-feed__empty">
+            <span class="hub-home-feed__empty-icon" aria-hidden="true">
+              <span class="material-symbols-outlined"><%= emptyIcon %></span>
+            </span>
+            <p class="hub-home-feed__empty-title"><%= emptyTitle %></p>
+            <% if (emptyText) { %>
+              <p class="hub-home-feed__empty-text"><%= emptyText %></p>
+            <% } %>
+          </div>
+        <% } else { %>
+          <ul class="hub-home-feed__list">
+            <% rows.forEach(function (item) { %>
+              <li class="hub-home-feed__row">
+                <strong class="hub-home-feed__row-title"><%= item.title %></strong>
+                <% if (kind === 'announcements' && item.published_at) { %>
+                  <time class="hub-home-feed__row-meta" datetime="<%= new Date(item.published_at).toISOString() %>">
+                    <%= new Intl.DateTimeFormat('pt-BR', {
+                      day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+                      timeZone: 'America/Sao_Paulo'
+                    }).format(new Date(item.published_at)) %>
+                  </time>
+                  <% if (item.body) { %>
+                    <p class="hub-home-feed__row-text"><%= item.body %></p>
+                  <% } %>
+                <% } else if (kind === 'events' && item.starts_at) { %>
+                  <time class="hub-home-feed__row-meta" datetime="<%= new Date(item.starts_at).toISOString() %>">
+                    <%= new Intl.DateTimeFormat('pt-BR', {
+                      weekday: 'short', day: 'numeric', month: 'short',
+                      hour: '2-digit', minute: '2-digit',
+                      timeZone: 'America/Sao_Paulo'
+                    }).format(new Date(item.starts_at)) %>
+                    <% if (item.place) { %> · <%= item.place %><% } %>
+                  </time>
+                <% } else if (item.body) { %>
+                  <p class="hub-home-feed__row-text"><%= item.body %></p>
+                <% } %>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
       </div>
       <p style="margin-top: 1.25rem;">
         <a class="hub-btn hub-btn-primary" href="/">Voltar ao início</a>

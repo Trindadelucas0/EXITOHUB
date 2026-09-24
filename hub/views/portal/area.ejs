@@ -39,6 +39,8 @@
         </div>
       <% } else if (meta.slug === 'videos') { %>
         <%
+          const progressOn = typeof progressEnabled !== 'undefined' ? progressEnabled : false;
+          const completeBase = typeof completePath !== 'undefined' ? completePath : '/portal/videos';
           const selectedId = typeof selectedVideoId !== 'undefined' ? selectedVideoId : null;
           let featured = items[0];
           let featuredIdx = 0;
@@ -50,6 +52,15 @@
             }
           }
           const modLabel = 'MOD-' + String(featuredIdx + 1).padStart(2, '0');
+          function videoStatusLabel(item) {
+            if (!progressOn) {
+              return featured && String(featured.id) === String(item.id) ? 'Assistindo' : 'Disponível';
+            }
+            if (item.progressStatus === 'completed') return 'Concluído';
+            if (item.progressStatus === 'watching') return 'Assistindo';
+            if (item.progressStatus === 'available') return 'Disponível';
+            return 'Bloqueado';
+          }
         %>
         <% if (featured && featured.youtube_embed_url) { %>
           <article class="hub-video-feature">
@@ -87,6 +98,20 @@
                     <% if (featured.category) { %><%= (featured.department || featured.version) ? ' · ' : '' %><%= featured.category %><% } %>
                   </p>
                 </div>
+                <% if (progressOn) { %>
+                  <div class="hub-item-progress-actions">
+                    <% if (featured.completed) { %>
+                      <span class="hub-item-progress-chip hub-item-progress-chip--done">
+                        <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                        Concluído
+                      </span>
+                    <% } else if (featured.unlocked) { %>
+                      <form method="post" action="<%= completeBase %>/<%= featured.id %>/complete">
+                        <button type="submit" class="hub-btn hub-btn-primary">Marcar como concluído</button>
+                      </form>
+                    <% } %>
+                  </div>
+                <% } %>
               </div>
               <% if (featured.description) { %>
                 <p class="hub-video-feature__desc"><%= featured.description %></p>
@@ -101,7 +126,7 @@
           <div class="hub-video-playlist__head">
             <div>
               <h3>Trilha completa de vídeos de integração</h3>
-              <p>Selecione um vídeo para assistir nesta página.</p>
+              <p><%= progressOn ? 'Conclua o módulo atual para liberar o próximo.' : 'Selecione um vídeo para assistir nesta página.' %></p>
             </div>
             <span class="hub-video-playlist__total">
               Total: <%= items.length %> vídeo<%= items.length === 1 ? '' : 's' %>
@@ -109,19 +134,28 @@
           </div>
           <div class="hub-video-playlist__grid">
             <% items.forEach(function (item, idx) { %>
-              <a
-                class="hub-video-playlist__card<%= featured && String(featured.id) === String(item.id) ? ' is-active' : '' %>"
-                href="/portal/videos?v=<%= item.id %>"
-              >
-                <span class="hub-video-playlist__num">MÓDULO <%= String(idx + 1).padStart(2, '0') %></span>
-                <strong><%= item.title %></strong>
-                <% if (item.description) { %>
-                  <span class="hub-video-playlist__card-desc"><%= item.description %></span>
-                <% } %>
-                <span class="hub-video-playlist__status">
-                  <%= featured && String(featured.id) === String(item.id) ? 'Assistindo' : 'Disponível' %>
-                </span>
-              </a>
+              <% if (progressOn && !item.unlocked) { %>
+                <div class="hub-video-playlist__card is-locked" aria-disabled="true">
+                  <span class="hub-video-playlist__num">MÓDULO <%= String(idx + 1).padStart(2, '0') %></span>
+                  <strong><%= item.title %></strong>
+                  <% if (item.description) { %>
+                    <span class="hub-video-playlist__card-desc"><%= item.description %></span>
+                  <% } %>
+                  <span class="hub-video-playlist__status"><%= videoStatusLabel(item) %></span>
+                </div>
+              <% } else { %>
+                <a
+                  class="hub-video-playlist__card<%= featured && String(featured.id) === String(item.id) ? ' is-active' : '' %><%= item.completed ? ' is-completed' : '' %>"
+                  href="/portal/videos?v=<%= item.id %>"
+                >
+                  <span class="hub-video-playlist__num">MÓDULO <%= String(idx + 1).padStart(2, '0') %></span>
+                  <strong><%= item.title %></strong>
+                  <% if (item.description) { %>
+                    <span class="hub-video-playlist__card-desc"><%= item.description %></span>
+                  <% } %>
+                  <span class="hub-video-playlist__status"><%= videoStatusLabel(item) %></span>
+                </a>
+              <% } %>
             <% }) %>
             <a class="hub-video-playlist__card hub-video-playlist__cta-card" href="/portal/pops">
               <span class="hub-video-playlist__num">Documentação</span>
@@ -277,15 +311,33 @@
           <button type="button" class="hub-btn hub-btn-ghost" data-clear-filters>Limpar filtros</button>
         </div>
       <% } else { %>
+        <%
+          const gridProgressOn = typeof progressEnabled !== 'undefined' ? progressEnabled : false;
+          const gridCompleteBase = typeof completePath !== 'undefined' ? completePath : '';
+        %>
+        <% if (gridProgressOn) { %>
+          <p class="hub-muted hub-area-progress-hint">Conclua o item atual para liberar o próximo nesta área.</p>
+        <% } %>
         <ul class="hub-area-item-grid" data-item-list>
           <% items.forEach(function (item) { %>
             <li>
-              <% if (item.href) { %>
-                <a
-                  class="hub-area-item-card"
-                  href="<%= item.href %>"
-                  <% if (item.file_url || item.external_url) { %>target="_blank" rel="noopener noreferrer"<% } %>
-                >
+              <% if (gridProgressOn && !item.unlocked) { %>
+                <div class="hub-area-item-card is-locked" aria-disabled="true">
+                  <span class="hub-area-item-card__media<%= item.is_image ? ' hub-area-item-card__media--photo' : '' %>">
+                    <% if (item.cover_url) { %>
+                      <img src="<%= item.cover_url %>" alt="" width="280" height="180" loading="lazy" />
+                    <% } else { %>
+                      <span class="hub-area-item-card__media-fallback">
+                        <%- include('../partials/hub-menu-icon', { iconName: meta.icon }) %>
+                      </span>
+                    <% } %>
+                  </span>
+                  <strong><%= item.title %></strong>
+                  <% if (item.description) { %><span class="hub-muted" style="font-size: 0.8125rem;"><%= item.description %></span><% } %>
+                  <span class="hub-item-progress-chip">Bloqueado</span>
+                </div>
+              <% } else { %>
+                <div class="hub-area-item-card<%= item.completed ? ' is-completed' : '' %>">
                   <span class="hub-area-item-card__media<%= item.is_image ? ' hub-area-item-card__media--photo' : '' %>">
                     <% if (item.cover_url) { %>
                       <img src="<%= item.cover_url %>" alt="" width="280" height="180" loading="lazy" />
@@ -302,11 +354,27 @@
                     <% if (item.version) { %><span>v<%= item.version %></span><% } %>
                     <% if (item.category) { %><span><%= item.category %></span><% } %>
                   </span>
-                </a>
-              <% } else { %>
-                <div class="hub-area-item-card">
-                  <strong><%= item.title %></strong>
-                  <% if (item.description) { %><span class="hub-muted" style="font-size: 0.8125rem;"><%= item.description %></span><% } %>
+                  <div class="hub-area-item-card__actions">
+                    <% if (item.href) { %>
+                      <a
+                        class="hub-btn hub-btn-ghost"
+                        href="<%= item.href %>"
+                        <% if (item.file_url || item.external_url) { %>target="_blank" rel="noopener noreferrer"<% } %>
+                      >Abrir</a>
+                    <% } %>
+                    <% if (gridProgressOn && gridCompleteBase) { %>
+                      <% if (item.completed) { %>
+                        <span class="hub-item-progress-chip hub-item-progress-chip--done">
+                          <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+                          Concluído
+                        </span>
+                      <% } else { %>
+                        <form method="post" action="<%= gridCompleteBase %>/<%= item.id %>/complete">
+                          <button type="submit" class="hub-btn hub-btn-primary">Marcar como concluído</button>
+                        </form>
+                      <% } %>
+                    <% } %>
+                  </div>
                 </div>
               <% } %>
             </li>

@@ -6,6 +6,8 @@ const { requireHubAuth, requireHubAdmin } = require('../middleware');
 const {
   loadHome,
   greetingForNow,
+  listAnnouncements,
+  listEvents,
   listLinks,
   getLink,
   createLink,
@@ -28,6 +30,10 @@ const {
   createItem,
   updateItem,
   setItemActive,
+  listItemProgress,
+  decorateItemsForUser,
+  firstUnlockedIncompleteId,
+  completeItem,
   getActiveTrack,
   listSteps,
   getStep,
@@ -70,7 +76,9 @@ function flashRedirect(res, path, { ok, erro } = {}) {
   if (ok) params.set('ok', ok);
   if (erro) params.set('erro', String(erro).slice(0, 300));
   const qs = params.toString();
-  return res.redirect(qs ? `${path}?${qs}` : path);
+  if (!qs) return res.redirect(path);
+  const join = path.includes('?') ? '&' : '?';
+  return res.redirect(`${path}${join}${qs}`);
 }
 
 function pickFlash(req) {
@@ -81,6 +89,7 @@ function pickFlash(req) {
     atualizado: 'Atualizado com sucesso.',
     status: 'Situação atualizada.',
     concluido: 'Integração concluída.',
+    marcado: 'Item marcado como concluído.',
   };
   return {
     flash: messages[flashKey] || null,
@@ -122,21 +131,70 @@ router.get('/portal/media/:fileId', requireHubAuth, async (req, res) => {
 
 /* ───────────── Portal pages (auth) ───────────── */
 
-router.get('/portal/videos', requireHubAuth, async (req, res) => {
-  const kind = 'video';
-  const meta = kindMeta(kind);
-  const items = await listItems(kind, { activeOnly: true });
-  const selectedVideoId = req.query.v ? String(req.query.v).slice(0, 64) : null;
-  return res.render('portal/area', {
+const SEQUENTIAL_AREA_BY_SLUG = {
+  videos: { kind: 'video', current: 'portal-videos', queryKey: 'v' },
+  diagrama: { kind: 'diagram', current: 'portal-diagrama', queryKey: null },
+  informativos: { kind: 'informative', current: 'portal-informativos', queryKey: null },
+  catalogos: { kind: 'catalog', current: 'portal-catalogos', queryKey: null },
+  documentos: { kind: 'document', current: 'portal-documentos', queryKey: null },
+};
+
+async function renderSequentialArea(req, res, slug) {
+  const cfg = SEQUENTIAL_AREA_BY_SLUG[slug];
+  if (!cfg) return res.status(404).send('Área não encontrada');
+  const meta = kindMeta(cfg.kind);
+  const rawItems = await listItems(cfg.kind, { activeOnly: true });
+  const progress = await listItemProgress(req.hubUser.id);
+  let selectedId = cfg.queryKey && req.query[cfg.queryKey]
+    ? String(req.query[cfg.queryKey]).slice(0, 64)
+    : null;
+
+  let items = decorateItemsForUser(rawItems, progress, { selectedId });
+
+  if (selectedId) {
+    const selected = items.find((it) => String(it.id) === String(selectedId));
+    if (!selected || !selected.unlocked) {
+      const fallback = firstUnlockedIncompleteId(items);
+      const q = cfg.queryKey && fallback ? `?${cfg.queryKey}=${fallback}` : '';
+      return res.redirect(`/portal/${slug}${q}`);
+    }
+  } else if (cfg.queryKey && items.length) {
+    selectedId = firstUnlockedIncompleteId(items);
+    items = decorateItemsForUser(rawItems, progress, { selectedId });
+  }
+
+  const locals = {
     title: `${meta.label} — EXITO HUB`,
     hubUser: req.hubUser,
-    current: 'portal-videos',
+    current: cfg.current,
     meta,
     items,
-    selectedVideoId,
+    progressEnabled: true,
+    completePath: `/portal/${slug}`,
     ...pickFlash(req),
-  });
-});
+  };
+  if (cfg.kind === 'video') locals.selectedVideoId = selectedId;
+  if (cfg.kind === 'document') locals.emptyMessage = EMPTY_STATES.items;
+  return res.render('portal/area', locals);
+}
+
+async function handleCompleteItem(req, res, slug) {
+  const cfg = SEQUENTIAL_AREA_BY_SLUG[slug];
+  if (!cfg) return res.status(404).send('Área não encontrada');
+  try {
+    const result = await completeItem(req.hubUser.id, req.params.id);
+    const next = result.nextId;
+    let dest = `/portal/${slug}`;
+    if (cfg.queryKey && next) dest += `?${cfg.queryKey}=${next}`;
+    else if (cfg.queryKey) dest += `?${cfg.queryKey}=${req.params.id}`;
+    return flashRedirect(res, dest, { ok: 'marcado' });
+  } catch (err) {
+    return flashRedirect(res, `/portal/${slug}`, { erro: safeError(err) });
+  }
+}
+
+router.get('/portal/videos', requireHubAuth, (req, res) => renderSequentialArea(req, res, 'videos'));
+router.post('/portal/videos/:id/complete', requireHubAuth, (req, res) => handleCompleteItem(req, res, 'videos'));
 
 router.get('/portal/pops', requireHubAuth, async (req, res) => {
   const kind = 'pop';
@@ -150,72 +208,29 @@ router.get('/portal/pops', requireHubAuth, async (req, res) => {
     meta,
     items,
     selectedPopId,
+    progressEnabled: false,
     ...pickFlash(req),
   });
 });
 
-router.get('/portal/diagrama', requireHubAuth, async (req, res) => {
-  const kind = 'diagram';
-  const meta = kindMeta(kind);
-  const items = await listItems(kind, { activeOnly: true });
-  return res.render('portal/area', {
-    title: `${meta.label} — EXITO HUB`,
-    hubUser: req.hubUser,
-    current: 'portal-diagrama',
-    meta,
-    items,
-    ...pickFlash(req),
-  });
-});
+router.get('/portal/diagrama', requireHubAuth, (req, res) => renderSequentialArea(req, res, 'diagrama'));
+router.post('/portal/diagrama/:id/complete', requireHubAuth, (req, res) => handleCompleteItem(req, res, 'diagrama'));
 
-router.get('/portal/informativos', requireHubAuth, async (req, res) => {
-  const kind = 'informative';
-  const meta = kindMeta(kind);
-  const items = await listItems(kind, { activeOnly: true });
-  return res.render('portal/area', {
-    title: `${meta.label} — EXITO HUB`,
-    hubUser: req.hubUser,
-    current: 'portal-informativos',
-    meta,
-    items,
-    ...pickFlash(req),
-  });
-});
+router.get('/portal/informativos', requireHubAuth, (req, res) => renderSequentialArea(req, res, 'informativos'));
+router.post('/portal/informativos/:id/complete', requireHubAuth, (req, res) => handleCompleteItem(req, res, 'informativos'));
 
-router.get('/portal/catalogos', requireHubAuth, async (req, res) => {
-  const kind = 'catalog';
-  const meta = kindMeta(kind);
-  const items = await listItems(kind, { activeOnly: true });
-  return res.render('portal/area', {
-    title: `${meta.label} — EXITO HUB`,
-    hubUser: req.hubUser,
-    current: 'portal-catalogos',
-    meta,
-    items,
-    ...pickFlash(req),
-  });
-});
+router.get('/portal/catalogos', requireHubAuth, (req, res) => renderSequentialArea(req, res, 'catalogos'));
+router.post('/portal/catalogos/:id/complete', requireHubAuth, (req, res) => handleCompleteItem(req, res, 'catalogos'));
 
 router.get('/portal/logos', requireHubAuth, (req, res) => {
   return res.redirect('/');
 });
 
-router.get('/portal/documentos', requireHubAuth, async (req, res) => {
-  const kind = 'document';
-  const meta = kindMeta(kind);
-  const items = await listItems(kind, { activeOnly: true });
-  return res.render('portal/area', {
-    title: `${meta.label} — EXITO HUB`,
-    hubUser: req.hubUser,
-    current: 'portal-documentos',
-    meta,
-    items,
-    emptyMessage: EMPTY_STATES.items,
-    ...pickFlash(req),
-  });
-});
+router.get('/portal/documentos', requireHubAuth, (req, res) => renderSequentialArea(req, res, 'documentos'));
+router.post('/portal/documentos/:id/complete', requireHubAuth, (req, res) => handleCompleteItem(req, res, 'documentos'));
 
-router.get('/portal/comunicados', requireHubAuth, (req, res) => {
+router.get('/portal/comunicados', requireHubAuth, async (req, res) => {
+  const announcements = await listAnnouncements({ activeOnly: true });
   return res.render('portal/placeholder', {
     title: 'Comunicados — EXITO HUB',
     hubUser: req.hubUser,
@@ -224,10 +239,13 @@ router.get('/portal/comunicados', requireHubAuth, (req, res) => {
     pageIcon: 'mark_email_read',
     pageLead: EMPTY_STATES.announcements,
     pageHint: EMPTY_STATES.announcementsSupport,
+    listKind: 'announcements',
+    listItems: announcements,
   });
 });
 
-router.get('/portal/eventos', requireHubAuth, (req, res) => {
+router.get('/portal/eventos', requireHubAuth, async (req, res) => {
+  const events = await listEvents({ activeOnly: true, upcomingOnly: true });
   return res.render('portal/placeholder', {
     title: 'Próximos eventos — EXITO HUB',
     hubUser: req.hubUser,
@@ -236,10 +254,13 @@ router.get('/portal/eventos', requireHubAuth, (req, res) => {
     pageIcon: 'event_busy',
     pageLead: EMPTY_STATES.events,
     pageHint: EMPTY_STATES.eventsSupport,
+    listKind: 'events',
+    listItems: events,
   });
 });
 
-router.get('/portal/agenda', requireHubAuth, (req, res) => {
+router.get('/portal/agenda', requireHubAuth, async (req, res) => {
+  const events = await listEvents({ activeOnly: true, upcomingOnly: true });
   return res.render('portal/placeholder', {
     title: 'Agenda Êxito — EXITO HUB',
     hubUser: req.hubUser,
@@ -248,6 +269,8 @@ router.get('/portal/agenda', requireHubAuth, (req, res) => {
     pageIcon: 'calendar_month',
     pageLead: EMPTY_STATES.agenda,
     pageHint: EMPTY_STATES.agendaSupport,
+    listKind: 'events',
+    listItems: events,
   });
 });
 

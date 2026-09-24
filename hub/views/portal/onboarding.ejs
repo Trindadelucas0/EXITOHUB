@@ -7,28 +7,29 @@
   <%- include('../partials/hub-chrome', { current: 'portal-onboarding', breadcrumb: 'Integração' }) %>
 
   <main class="hub-shell-main">
-    <p class="hub-breadcrumb" style="margin: 0 0 0.75rem; font-size: 0.8125rem;">
-      <a href="/">Início</a> / Integração
-    </p>
-
-    <div class="hub-onboarding-head" style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem;">
-      <div>
-        <h1 style="margin: 0; font-size: 1.5rem; font-weight: 600;">Integração</h1>
-        <p class="hub-muted" style="margin: 0.35rem 0 0;">
-          <% if (track) { %><%= track.name %><% } else { %>Nenhuma trilha ativa.<% } %>
-        </p>
+    <header class="hub-page-head">
+      <p class="hub-breadcrumb">
+        <a href="/">Início</a> / Integração
+      </p>
+      <div class="hub-onboarding-head">
+        <div>
+          <h1>Integração</h1>
+          <p class="hub-muted" style="margin: 0.35rem 0 0;">
+            <% if (track) { %><%= track.name %><% } else { %>Nenhuma trilha ativa.<% } %>
+          </p>
+        </div>
+        <% if (hubUser.onboardingStatus === 'COMPLETED') { %>
+          <span class="hub-onboarding-chip hub-onboarding-chip--done">
+            <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
+            Integração concluída
+          </span>
+        <% } else if (total) { %>
+          <p class="hub-onboarding-progress" aria-label="Progresso" style="font-size: 1.25rem; font-weight: 700; color: var(--exito-green);">
+            <%= doneCount %> / <%= total %>
+          </p>
+        <% } %>
       </div>
-      <% if (hubUser.onboardingStatus === 'COMPLETED') { %>
-        <span class="hub-onboarding-chip hub-onboarding-chip--done">
-          <span class="material-symbols-outlined" aria-hidden="true">check_circle</span>
-          Integração concluída
-        </span>
-      <% } else if (total) { %>
-        <p class="hub-onboarding-progress" aria-label="Progresso" style="font-size: 1.25rem; font-weight: 700; color: var(--exito-green);">
-          <%= doneCount %> / <%= total %>
-        </p>
-      <% } %>
-    </div>
+    </header>
 
     <% if (total && hubUser.onboardingStatus !== 'COMPLETED') { %>
       <div class="hub-onboarding-meter" role="progressbar"

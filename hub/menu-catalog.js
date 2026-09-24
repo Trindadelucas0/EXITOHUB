@@ -253,6 +253,7 @@ function buildCatalog() {
           require: 'admin',
           status: 'live',
           icon: 'settings',
+          section: 'config',
           currentKey: 'admin-portal',
           description: 'Administrar conteúdos do portal.',
         },
@@ -263,6 +264,7 @@ function buildCatalog() {
           require: 'admin',
           status: 'live',
           icon: 'settings',
+          section: 'config',
           currentKey: 'admin',
           description: 'Cadastro de logins e módulos do HUB.',
         },
@@ -273,6 +275,7 @@ function buildCatalog() {
           require: 'admin',
           status: 'live',
           icon: 'clipboard',
+          section: 'config',
           currentKey: 'admin-onboarding-users',
           description: 'Progresso da trilha de integração dos colaboradores.',
         },
@@ -344,6 +347,7 @@ function publicItem(item) {
     external: Boolean(item.external),
     currentKey: item.currentKey,
     description: item.description || '',
+    section: item.section === 'config' ? 'config' : 'main',
   };
 }
 

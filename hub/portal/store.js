@@ -135,12 +135,45 @@ async function countActiveItemsByKind() {
   return map;
 }
 
+async function listAnnouncements({ activeOnly = true, limit = null } = {}) {
+  const clauses = [];
+  if (activeOnly) clauses.push('is_active = true');
+  const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+  const lim = Number.isFinite(limit) && limit > 0 ? Math.min(Math.floor(limit), 100) : null;
+  const result = await query(
+    `SELECT id, title, body, published_at, is_active, created_at, updated_at
+     FROM portal_announcements
+     ${where}
+     ORDER BY published_at DESC, created_at DESC
+     ${lim ? `LIMIT ${lim}` : ''}`,
+  );
+  return result.rows;
+}
+
+async function listEvents({ activeOnly = true, upcomingOnly = false, limit = null } = {}) {
+  const clauses = [];
+  if (activeOnly) clauses.push('is_active = true');
+  if (upcomingOnly) clauses.push('starts_at >= NOW()');
+  const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+  const lim = Number.isFinite(limit) && limit > 0 ? Math.min(Math.floor(limit), 100) : null;
+  const result = await query(
+    `SELECT id, title, place, starts_at, is_active, created_at, updated_at
+     FROM portal_events
+     ${where}
+     ORDER BY starts_at ASC, created_at ASC
+     ${lim ? `LIMIT ${lim}` : ''}`,
+  );
+  return result.rows;
+}
+
 async function loadHome() {
-  const [links, contacts, contents, itemCounts] = await Promise.all([
+  const [links, contacts, contents, itemCounts, announcements, events] = await Promise.all([
     listLinks({ homeOnly: true, activeOnly: true }),
     listContacts({ homeOnly: true, activeOnly: true }),
     listContents({ homeOnly: true, publishedOnly: true }),
     countActiveItemsByKind(),
+    listAnnouncements({ activeOnly: true, limit: 4 }),
+    listEvents({ activeOnly: true, upcomingOnly: true, limit: 4 }),
   ]);
   const integrationCards = HOME_INTEGRATION_KINDS.map((kind) => ({
     kind,
@@ -159,6 +192,9 @@ async function loadHome() {
     contacts,
     contents,
     itemCounts,
+    announcements,
+    events,
+    nextEvent: events[0] || null,
     emptyStates: EMPTY_STATES,
   };
 }
@@ -703,6 +739,93 @@ async function setItemActive(id, active) {
   return getItem(id);
 }
 
+/* ───────────── Item progress (sequential unlock) ───────────── */
+
+const SEQUENTIAL_KINDS = new Set(['video', 'diagram', 'informative', 'catalog', 'document']);
+
+async function listItemProgress(userId) {
+  const result = await query(
+    `SELECT item_id, completed_at FROM portal_item_progress WHERE user_id = $1`,
+    [userId],
+  );
+  const map = new Map();
+  for (const row of result.rows) {
+    map.set(String(row.item_id), row.completed_at);
+  }
+  return map;
+}
+
+/**
+ * Decora itens da área com unlocked / completed / progressStatus.
+ * Ordem = lista já ordenada por sort_order (listItems).
+ */
+function decorateItemsForUser(items, progressMap, { selectedId = null } = {}) {
+  const list = Array.isArray(items) ? items : [];
+  let prevCompleted = true;
+  return list.map((item, index) => {
+    const id = String(item.id);
+    const completed = progressMap.has(id);
+    const unlocked = index === 0 || prevCompleted;
+    prevCompleted = completed;
+
+    let progressStatus = 'locked';
+    if (completed) progressStatus = 'completed';
+    else if (unlocked && selectedId && String(selectedId) === id) progressStatus = 'watching';
+    else if (unlocked) progressStatus = 'available';
+
+    return {
+      ...item,
+      unlocked,
+      completed,
+      progressStatus,
+    };
+  });
+}
+
+function firstUnlockedIncompleteId(decorated) {
+  const open = decorated.find((it) => it.unlocked && !it.completed);
+  if (open) return open.id;
+  const lastUnlocked = [...decorated].reverse().find((it) => it.unlocked);
+  return lastUnlocked ? lastUnlocked.id : null;
+}
+
+async function completeItem(userId, itemId) {
+  const item = await getItem(itemId);
+  if (!item || !item.is_active) {
+    throw Object.assign(new Error('Item não encontrado.'), { status: 404 });
+  }
+  if (!SEQUENTIAL_KINDS.has(item.kind)) {
+    throw Object.assign(new Error('Este tipo de item não usa progresso sequencial.'), { status: 400 });
+  }
+
+  const siblings = await listItems(item.kind, { activeOnly: true });
+  const progress = await listItemProgress(userId);
+  const decorated = decorateItemsForUser(siblings, progress);
+  const current = decorated.find((it) => String(it.id) === String(itemId));
+  if (!current) {
+    throw Object.assign(new Error('Item não encontrado.'), { status: 404 });
+  }
+  if (!current.unlocked) {
+    throw Object.assign(new Error('Conclua o item anterior antes de marcar este.'), { status: 403 });
+  }
+
+  await query(
+    `INSERT INTO portal_item_progress (user_id, item_id)
+     VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+    [userId, itemId],
+  );
+
+  const nextProgress = await listItemProgress(userId);
+  const after = decorateItemsForUser(siblings, nextProgress);
+  const idx = after.findIndex((it) => String(it.id) === String(itemId));
+  const next = idx >= 0 && idx < after.length - 1 ? after[idx + 1] : null;
+  return {
+    item,
+    nextId: next ? next.id : null,
+    decorated: after,
+  };
+}
+
 /* ───────────── Onboarding ───────────── */
 
 async function getActiveTrack() {
@@ -1030,6 +1153,7 @@ async function adminSetOnboardingStatus(userId, status) {
   await setOnboardingStatus(userId, status);
   if (status === 'PENDING') {
     await query('DELETE FROM onboarding_user_progress WHERE user_id = $1', [userId]);
+    await query('DELETE FROM portal_item_progress WHERE user_id = $1', [userId]);
   }
   return true;
 }
@@ -1038,6 +1162,8 @@ module.exports = {
   bodyFlag,
   loadHome,
   greetingForNow,
+  listAnnouncements,
+  listEvents,
   listLinks,
   getLink,
   createLink,
@@ -1060,6 +1186,11 @@ module.exports = {
   createItem,
   updateItem,
   setItemActive,
+  listItemProgress,
+  decorateItemsForUser,
+  firstUnlockedIncompleteId,
+  completeItem,
+  SEQUENTIAL_KINDS,
   getActiveTrack,
   listTracks,
   listSteps,

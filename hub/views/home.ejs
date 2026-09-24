@@ -86,11 +86,11 @@
                 <h1><%= greeting %></h1>
                 <p>Tudo o que você precisa para trabalhar no Êxito.</p>
               </div>
-              <div class="hub-muted" style="display: flex; align-items: center; gap: 0.5rem; background: var(--surface-low); padding: 0.5rem 0.75rem; border-radius: 0.5rem;">
+              <div class="hub-portal-welcome__date hub-muted">
                 <span class="material-symbols-outlined" aria-hidden="true">calendar_today</span>
                 <span>
-                  <span style="display: block; font-size: 0.6875rem; text-transform: uppercase;">Hoje</span>
-                  <strong id="hub-live-date" style="color: var(--on-surface); font-size: 0.8125rem;"></strong>
+                  <span class="hub-portal-welcome__date-kicker">Hoje</span>
+                  <strong id="hub-live-date"></strong>
                 </span>
               </div>
             </div>
@@ -217,13 +217,34 @@
               </h2>
               <a class="hub-home-feed__link" href="/portal/comunicados">Ver todos →</a>
             </div>
-            <div class="hub-home-feed__empty">
-              <span class="hub-home-feed__empty-icon" aria-hidden="true">
-                <span class="material-symbols-outlined">mark_email_read</span>
-              </span>
-              <p class="hub-home-feed__empty-title"><%= (emptyStates && emptyStates.announcements) || 'Nenhum novo comunicado no momento.' %></p>
-              <p class="hub-home-feed__empty-text"><%= (emptyStates && emptyStates.announcementsSupport) || '' %></p>
-            </div>
+            <% if (!(typeof announcements !== 'undefined' && announcements && announcements.length)) { %>
+              <div class="hub-home-feed__empty">
+                <span class="hub-home-feed__empty-icon" aria-hidden="true">
+                  <span class="material-symbols-outlined">mark_email_read</span>
+                </span>
+                <p class="hub-home-feed__empty-title"><%= (emptyStates && emptyStates.announcements) || 'Nenhum novo comunicado no momento.' %></p>
+                <p class="hub-home-feed__empty-text"><%= (emptyStates && emptyStates.announcementsSupport) || '' %></p>
+              </div>
+            <% } else { %>
+              <ul class="hub-home-feed__list">
+                <% announcements.forEach(function (item) { %>
+                  <li class="hub-home-feed__row">
+                    <strong class="hub-home-feed__row-title"><%= item.title %></strong>
+                    <% if (item.published_at) { %>
+                      <time class="hub-home-feed__row-meta" datetime="<%= new Date(item.published_at).toISOString() %>">
+                        <%= new Intl.DateTimeFormat('pt-BR', {
+                          day: 'numeric', month: 'short',
+                          timeZone: 'America/Sao_Paulo'
+                        }).format(new Date(item.published_at)) %>
+                      </time>
+                    <% } %>
+                    <% if (item.body) { %>
+                      <p class="hub-home-feed__row-text"><%= item.body %></p>
+                    <% } %>
+                  </li>
+                <% }) %>
+              </ul>
+            <% } %>
             <div class="hub-home-feed__foot">
               <span>Canal de transmissão interna</span>
             </div>
@@ -236,13 +257,35 @@
               </h2>
               <a class="hub-home-feed__link" href="/portal/eventos">Ver todos →</a>
             </div>
-            <div class="hub-home-feed__empty">
-              <span class="hub-home-feed__empty-icon" aria-hidden="true">
-                <span class="material-symbols-outlined">event_busy</span>
-              </span>
-              <p class="hub-home-feed__empty-title"><%= (emptyStates && emptyStates.events) || 'Nenhum evento próximo agendado.' %></p>
-              <p class="hub-home-feed__empty-text"><%= (emptyStates && emptyStates.eventsSupport) || '' %></p>
-            </div>
+            <% if (!(typeof events !== 'undefined' && events && events.length)) { %>
+              <div class="hub-home-feed__empty">
+                <span class="hub-home-feed__empty-icon" aria-hidden="true">
+                  <span class="material-symbols-outlined">event_busy</span>
+                </span>
+                <p class="hub-home-feed__empty-title"><%= (emptyStates && emptyStates.events) || 'Nenhum evento próximo agendado.' %></p>
+                <p class="hub-home-feed__empty-text"><%= (emptyStates && emptyStates.eventsSupport) || '' %></p>
+              </div>
+            <% } else { %>
+              <ul class="hub-home-feed__list">
+                <% events.forEach(function (item) { %>
+                  <li class="hub-home-feed__row">
+                    <strong class="hub-home-feed__row-title"><%= item.title %></strong>
+                    <% if (item.starts_at) { %>
+                      <time class="hub-home-feed__row-meta" datetime="<%= new Date(item.starts_at).toISOString() %>">
+                        <%= new Intl.DateTimeFormat('pt-BR', {
+                          weekday: 'short', day: 'numeric', month: 'short',
+                          hour: '2-digit', minute: '2-digit',
+                          timeZone: 'America/Sao_Paulo'
+                        }).format(new Date(item.starts_at)) %>
+                        <% if (item.place) { %> · <%= item.place %><% } %>
+                      </time>
+                    <% } else if (item.place) { %>
+                      <span class="hub-home-feed__row-meta"><%= item.place %></span>
+                    <% } %>
+                  </li>
+                <% }) %>
+              </ul>
+            <% } %>
             <div class="hub-home-feed__foot">
               <span>Agenda do portal</span>
             </div>
@@ -259,7 +302,20 @@
                 <h2 class="hub-home-agenda__title">Agenda Êxito</h2>
                 <span class="hub-home-agenda__badge">Semanal</span>
               </div>
-              <p class="hub-home-agenda__desc"><%= (emptyStates && emptyStates.agenda) || 'Reuniões, treinamentos e eventos internos da semana.' %></p>
+              <% if (typeof nextEvent !== 'undefined' && nextEvent) { %>
+                <p class="hub-home-agenda__desc">
+                  Próxima: <%= nextEvent.title %>
+                  <% if (nextEvent.starts_at) { %>
+                    · <%= new Intl.DateTimeFormat('pt-BR', {
+                      weekday: 'short', day: 'numeric', month: 'short',
+                      hour: '2-digit', minute: '2-digit',
+                      timeZone: 'America/Sao_Paulo'
+                    }).format(new Date(nextEvent.starts_at)) %>
+                  <% } %>
+                </p>
+              <% } else { %>
+                <p class="hub-home-agenda__desc"><%= (emptyStates && emptyStates.agenda) || 'Reuniões, treinamentos e eventos internos da semana.' %></p>
+              <% } %>
             </div>
           </div>
           <span class="hub-home-agenda__cta">

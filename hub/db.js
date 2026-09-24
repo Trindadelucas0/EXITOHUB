@@ -213,6 +213,26 @@ async function ensureTables() {
       PRIMARY KEY (user_id, step_id)
     );
 
+    CREATE TABLE IF NOT EXISTS portal_announcements (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      title TEXT NOT NULL,
+      body TEXT,
+      published_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      is_active BOOLEAN NOT NULL DEFAULT true,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
+    CREATE TABLE IF NOT EXISTS portal_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      title TEXT NOT NULL,
+      place TEXT,
+      starts_at TIMESTAMPTZ NOT NULL,
+      is_active BOOLEAN NOT NULL DEFAULT true,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+
     CREATE INDEX IF NOT EXISTS idx_portal_links_home
       ON portal_links (is_active, show_on_home, sort_order);
     CREATE INDEX IF NOT EXISTS idx_portal_contacts_home
@@ -223,6 +243,10 @@ async function ensureTables() {
       ON portal_items (kind, is_active, sort_order);
     CREATE INDEX IF NOT EXISTS idx_onboarding_steps_track
       ON onboarding_steps (track_id, position);
+    CREATE INDEX IF NOT EXISTS idx_portal_announcements_active
+      ON portal_announcements (is_active, published_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_portal_events_active
+      ON portal_events (is_active, starts_at);
   `);
 
   // Portal 1.4.2: documentos + metadados ricos em portal_items
@@ -267,6 +291,19 @@ async function ensureTables() {
       ON portal_contents (is_published, show_on_home, sort_order);
     CREATE INDEX IF NOT EXISTS idx_hub_users_department
       ON hub_users (department);
+  `);
+
+  await query(`
+    CREATE TABLE IF NOT EXISTS portal_item_progress (
+      user_id UUID NOT NULL REFERENCES hub_users(id) ON DELETE CASCADE,
+      item_id UUID NOT NULL REFERENCES portal_items(id) ON DELETE CASCADE,
+      completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      PRIMARY KEY (user_id, item_id)
+    );
+  `);
+  await query(`
+    CREATE INDEX IF NOT EXISTS idx_portal_item_progress_user
+      ON portal_item_progress (user_id, completed_at DESC);
   `);
 
   // Uma vez: quem já existia antes do portal não deve cair na trilha.
@@ -370,10 +407,10 @@ async function ensureMasterUser() {
     }
   }
 
+  // Não força onboarding_status: permite preview de primeiro usuário (PENDING).
   await query(
     `UPDATE hub_users
-     SET is_admin = true, active = true, display_name = $1, landing_path = NULL,
-         onboarding_status = 'COMPLETED'
+     SET is_admin = true, active = true, display_name = $1, landing_path = NULL
      WHERE id = $2`,
     [nextName, row.id],
   );
@@ -423,6 +460,12 @@ async function bootstrapHubDatabase() {
     await seedDefaultContents();
   } catch (err) {
     console.warn('[hub] seed Conteúdos Êxito falhou:', err.message);
+  }
+  try {
+    const { seedDemoPortal } = require('./portal/seed-demo');
+    await seedDemoPortal();
+  } catch (err) {
+    console.warn('[hub] seed demo portal falhou:', err.message);
   }
   try {
     const { syncModuleUsers } = require('./sync-module-users');
