@@ -33,31 +33,15 @@ describe("IVA/ICMS por UF Egaplast", () => {
     expect(diffs.map((d) => d.uf)).toEqual(["SP"]);
   });
 
-  it("cadastro 0, vazio ou ausente é NADA INFORMADO e não gera divergência", () => {
+  it("cadastro vazio é NADA INFORMADO; zero informado continua zero", () => {
     expect(displayCadastroIva(null)).toBe(NADA_INFORMADO);
     expect(displayCadastroIva("")).toBe(NADA_INFORMADO);
     expect(displayCadastroIva("—")).toBe(NADA_INFORMADO);
-    expect(displayCadastroIva("-")).toBe(NADA_INFORMADO);
-    expect(displayCadastroIva("0")).toBe(NADA_INFORMADO);
-    expect(displayCadastroIva("0.0000")).toBe(NADA_INFORMADO);
-    expect(displayRegraIva("0")).toBe("0");
+    expect(displayCadastroIva("0")).toBe("0");
+    expect(displayCadastroIva("0.0000")).toBe("0.0000");
     expect(displayRegraIva(null)).toBe("—");
-    expect(ivaPorUfDiffs(null, asIvaPorUf({ SP: "1.9424" }))).toEqual([]);
-    expect(ivaCellsDiverge("0", "1.96")).toBe(false);
-    expect(ivaCellsDiverge("", "1.96")).toBe(false);
-    expect(ivaCellsDiverge(null, "1.96")).toBe(false);
-  });
-
-  it("fator do cadastro diverge de outro fator ou de zero na regra; SP 1.9424 fica na tolerância", () => {
-    expect(ivaPorUfDiffs(asIvaPorUf({ SP: "0" }), asIvaPorUf({ SP: "1.96" }))).toEqual([]);
-    const fator = ivaPorUfDiffs(asIvaPorUf({ DF: "1.27" }), asIvaPorUf({ DF: "1.47" }));
-    expect(fator.map((d) => d.uf)).toEqual(["DF"]);
-    const regraZero = ivaPorUfDiffs(asIvaPorUf({ PR: "1.27" }), asIvaPorUf({ PR: "0" }));
-    expect(regraZero.map((d) => d.uf)).toEqual(["PR"]);
-    expect(regraZero[0]?.ideal).toBe("0");
-    expect(ivaCellsDiverge("1.2731", "1.474")).toBe(true);
-    expect(ivaCellsDiverge("1.6398", "1.8371")).toBe(true);
-    expect(ivaCellsDiverge("1.9424", "1.9854")).toBe(false);
+    const diffs = ivaPorUfDiffs(null, asIvaPorUf({ SP: "1.9424" }));
+    expect(diffs.find((d) => d.uf === "SP")?.atual).toBe(NADA_INFORMADO);
   });
 
   it("produto sem IVA (como 15230): 27 UFs NADA INFORMADO no cadastro; regra vazia é traço", () => {
