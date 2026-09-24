@@ -107,16 +107,18 @@
         "to"
       ],
       "ajustes": [
-        "fonte oficial do cadastro cliente Egaplast em Planilhas: PLANILHA BASE DA TRIBUTAÇÃO CLIENTE EGAPLAST.xlsx",
-        "layout largo: 1 linha = 1 produto (CÓDIGO/DESCRIÇÃO); UFs no cabeçalho (não em blocos)",
+        "fonte oficial do cadastro cliente Egaplast em Planilhas: cabeçalho largo (CÓDIGO + DESCRIÇÃO + NCM + SIT + pelo menos 10 UFs), qualquer nome de aba",
+        "layout largo: 1 linha = 1 produto; UFs no cabeçalho. Se existir, é a fonte do IVA",
+        "relatório (pares UF ou texto IVA/ICM) só completa IVA/CST vazio; 00,0 depois do IVA é ICM e não entra no mapa",
+        "aba que não é larga, relatório nem SIGNATÁRIO é ignorada (não vira produto nem regra)",
         "linhas parciais (só código/descrição/NCM/origem) entram sem CST e sem ivaPorUf",
-        "CST de SIT. TRIBUTÁRIA (00/10/51); ivaMva = SP se >0, senão 1º UF >0",
-        "4153 produtos; 1127 com CST+IVA das 27 UFs; ouro 10100 NCM 84818019 origem 9-PRODUÇÃO SP 1.9424; 10200 mesmo NCM origem 0-NACIONAL SP 2.1190 (Divergente vs EXITO 1.9854); 10255 sem SIT",
+        "CST de SIT. TRIBUTÁRIA (00/10/51); ivaMva = SP se >0, senão 1º UF >0; célula 0 do cadastro fica gravada, mas a conferência trata como NADA INFORMADO e não diverge (zero na regra contra fator do cliente continua divergência)",
+        "4182 produtos no fixture atual; ouro 10100 NCM 84818019 origem 9-PRODUÇÃO SP 1.9424 e 10200 origem 0-NACIONAL com os mesmos IVA (divergem em DF e PR; MA PI SE TO estão 0 no cadastro e não divergem; SP dentro de 0,05 de 1.9854); 10255 NCM 39229000 SIT 10 divergente em AL DF PR",
         "CST da célula SIT usa o dígito (10 TRIB C/ SUBST); não zera por SUBST conter sit",
-        "não importa na Base fiscal — recusar com aviso para usar Planilhas"
+        "não importa na Base fiscal — recusar se existir aba larga, com ou sem abas extras"
       ],
       "fixture": "tests/fixtures/regra-tributaria-x-produtos-egaplast.xlsx",
-      "aprendidoEm": "2026-09-03"
+      "aprendidoEm": "2026-09-24"
     },
     {
       "tipo": "regras",
@@ -124,8 +126,6 @@
       "aba": "Regra Tributária x Produtos",
       "cabecalhosChave": [
         "ncm",
-        "cst",
-        "segmento",
         "origem",
         "sit. tributária",
         "ac signatário",
@@ -159,7 +159,7 @@
       "ajustes": [
         "fonte oficial CST+IVA da Egaplast em Base fiscal (sem CÓDIGO/DESCRIÇÃO — é a regra do escritório, não o cadastro do cliente)",
         "parser de linhas usa código sintético NCM:dígito (ex. 84818019:9) só para agrupar origem; a regra grava por NCM + situação",
-        "descrição = texto de ORIGEM; CST de SIT. TRIBUTÁRIA; CST e SEGMENTO da planilha vêm vazios",
+        "descrição = texto de ORIGEM; CST de SIT. TRIBUTÁRIA; o xlsx atual não traz colunas CST e SEGMENTO",
         "UFs no cabeçalho com sufixo SIGNATÁRIO (não AC/SP puros)",
         "nacional (0/9) → ivaPorUf; importado (1/2) → ivaPorUfImportado",
         "linhas parciais (só NCM/origem) viram INCOMPLETA se o NCM não tiver CST+IVA",
@@ -354,20 +354,27 @@
         "cstUnico": "10",
         "origem": "9-PRODUÇÃO",
         "sp": "1.9424",
-        "ac": "1.4558"
+        "ac": "1.4558",
+        "divergenteUf": ["DF", "PR"]
       },
-      "10120": { "ncm": "84819010", "cstUnico": null },
+      "10120": { "ncm": "84819010", "cstUnico": "10", "sp": "1.9424" },
       "10200": {
         "ncm": "84818019",
         "origem": "0-NACIONAL",
         "cstUnico": "10",
-        "sp": "2.1190",
-        "ac": "1.5881",
+        "sp": "1.9424",
+        "ac": "1.4558",
+        "divergenteUf": ["DF", "PR"],
         "statusEsperado": "DIVERGENTE"
       },
-      "10255": { "ncm": "39229000", "cstUnico": null },
-      "totalProdutos": 4153,
-      "comIva": 1127
+      "10255": {
+        "ncm": "39229000",
+        "cstUnico": "10",
+        "divergenteUf": ["AL", "DF", "PR"],
+        "statusEsperado": "DIVERGENTE"
+      },
+      "totalProdutos": 4182,
+      "comIva": 4182
     },
     "egaplastRegraFiscalExito": {
       "84818019:9": {

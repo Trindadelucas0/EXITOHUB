@@ -123,8 +123,9 @@ export function UserManual() {
             de destinatários da empresa). Na Egaplast a ficha lista IVA/ICMS em 27 linhas: cadastro do
             cliente e como deve ficar. A coluna verde preenche com o IVA da regra CST+IVA; se a base
             só tiver TRIBUTACAO NCM (sem mapa IVA), usa o IVA SIGNATÁRIO do cadastro — não deixa
-            traço e não usa o MVA % da TRIBUTACAO. Célula vazia no cadastro aparece como NADA
-            INFORMADO; zero informado pelo cliente continua zero. Se o NCM não está em nenhuma base
+            traço e não usa o MVA % da TRIBUTACAO. Célula vazia ou IVA 0 no cadastro aparece como
+            NADA INFORMADO e essa UF não entra na divergência. Zero na regra, com fator no cliente,
+            continua divergência. Se o NCM não está em nenhuma base
             e o cadastro também não trouxe IVA, aí sim fica em traço. Consulta e Divergências mostram
             só SP e pedem para abrir a ficha. O fator IVA do cadastro não é comparado com o
             percentual MVA da planilha. Se o NCM estiver só na Planilha1, CST e IVA corretos vêm
@@ -245,7 +246,8 @@ export function UserManual() {
             A tela mostra NCM do cadastro, NCM da regra, CST da nota de entrada, CST da empresa,
             CFOP, MVA e um checklist. Na Egaplast a tabela IVA/ICMS tem cadastro do cliente e como deve
             ficar (IVA da regra CST+IVA, Nacional ou Importado conforme a origem), com código, origem,
-            CST e NCM no topo. Cadastro sem IVA na UF = NADA INFORMADO. Sem matriz de 8 destinatários
+            CST e NCM no topo. Cadastro sem IVA na UF, ou IVA 0, = NADA INFORMADO (essa UF não
+            diverge). Sem matriz de 8 destinatários
             (layout padrão com matriz). Se o cadastro ainda divergir, o alerta aparece no topo.
           </p>
         </ManualCard>

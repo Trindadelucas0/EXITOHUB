@@ -56,9 +56,15 @@ export function parseIvaFactor(raw: string | null | undefined): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-export function displayCadastroIva(value?: string | null): string {
+/** Cadastro Egaplast: vazio, traço ou fator 0 = UF não informada. Não vale para a regra. */
+function cadastroIvaNaoInformado(value: string | null | undefined): boolean {
   const text = value == null ? "" : String(value).trim();
-  if (!text || text === "—" || text === "–" || text === "-") return NADA_INFORMADO;
+  if (!text || text === "—" || text === "–" || text === "-") return true;
+  return parseIvaFactor(text) === 0;
+}
+
+export function displayCadastroIva(value?: string | null): string {
+  if (cadastroIvaNaoInformado(value)) return NADA_INFORMADO;
   return String(value);
 }
 
@@ -72,6 +78,7 @@ export function ivaCellsDiverge(
   atual: string | null | undefined,
   ideal: string | null | undefined,
 ): boolean {
+  if (cadastroIvaNaoInformado(atual)) return false;
   const a = parseIvaFactor(atual ?? null);
   const b = parseIvaFactor(ideal ?? null);
   if (b == null) return false;
@@ -88,7 +95,7 @@ export function ivaPorUfDiffs(atual: IvaPorUf | null | undefined, ideal: IvaPorU
     if (ivaCellsDiverge(a, b)) {
       diffs.push({
         uf,
-        atual: a == null || String(a).trim() === "" ? NADA_INFORMADO : String(a),
+        atual: displayCadastroIva(a),
         ideal: b ?? "—",
       });
     }

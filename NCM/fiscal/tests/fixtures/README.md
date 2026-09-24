@@ -11,8 +11,8 @@
 | `cadastro-egaplast-ncm-2026-08-27.xls` | Listagem Egaplast (aba `Dados`: CÓDIGO, NOME, ORIGEM, NCM). Com `companyName` Egaplast entra na extração da **base fiscal** |
 | `cadastro-egaplast-relatorio-produtos.xlsx` | Relatório Egaplast em blocos (SIT.TRIBUTÁRIA + IVA/ICM por UF). Com `companyName` Egaplast vira regra CST+IVA |
 | `tributacao-ncm-egaplast-2026-08-31.xlsx` | Tributação NCM Egaplast (NCM, CEST, segmento, MVA/alíquota por UF). Com `companyName` Egaplast vira base `TRIBUTACAO_UF` |
-| `regra-tributaria-x-produtos-egaplast.xlsx` | Cadastro oficial do cliente Egaplast (`PLANILHA BASE DA TRIBUTAÇÃO CLIENTE`): CÓDIGO + DESCRIÇÃO + IVA das 27 UFs. Ouro `10100` SP `1.9424` (Correto), `10200` SP `2.1190` (Divergente vs EXITO), `10255` sem SIT (Análise). Importe em Planilhas. Não vira base fiscal |
-| `ncm-regra-fiscal-exito-egaplast.xlsx` | Base fiscal oficial CST+IVA EXITO Egaplast: NCM + origem + SIT.TRIBUTÁRIA + IVA SIGNATÁRIO (sem CÓDIGO). Importe em Base fiscal. Não vira lote de Planilhas |
+| `regra-tributaria-x-produtos-egaplast.xlsx` | Cadastro do cliente Egaplast. A aba larga (CÓDIGO + DESCRIÇÃO + NCM + SIT + UFs) é o lote, qualquer nome. Relatório `IVA/ICM:` só completa IVA vazio. Aba de divergência é ignorada. Ouro: `10100` e `10200` SP `1.9424` (divergem em DF e PR; MA, PI, SE e TO estão 0 no cadastro e não divergem); `10255` SIT `10` (diverge em AL, DF, PR). ~4182 SKUs. Importe em Planilhas. Não vira base fiscal |
+| `ncm-regra-fiscal-exito-egaplast.xlsx` | Base fiscal CST+IVA EXITO Egaplast: cabeçalho NCM + ORIGEM + SIT + `UF SIGNATÁRIO` (sem CÓDIGO). Ouro `84818019` SP `1.9854` nacional / `2.1659` importado. Importe em Base fiscal. Não vira lote de Planilhas |
 
 Registro: `data/calibracao/layouts.json`.
 

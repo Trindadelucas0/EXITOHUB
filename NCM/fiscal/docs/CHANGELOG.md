@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.6.25 — 24/09/2026
+
+Corrigido:
+
+- Egaplast: IVA `0` do cadastro (vazio, traço ou ausente) é **NADA INFORMADO** e não gera divergência nessa UF. `10100` e `10200` (NCM `84818019`, SP `1.9424`) divergem em DF e PR; MA, PI, SE e TO deixam de divergir porque o cliente está `0`. `10255` continua divergente em AL, DF e PR. Zero na regra contra fator do cliente continua divergência. CST `0`, Unica, BAIFER, Loja, MVA % e tolerância 0,05 não mudam. A ficha aplica ao abrir o produto. Os contadores da Consulta só mudam ao reimportar Planilhas ou recalcular o lote (importar de novo a base fiscal).
+
+## v1.6.24 — 24/09/2026
+
+Corrigido:
+
+- Egaplast: a aba é classificada pelo cabeçalho, não pelo nome. Cadastro largo é o lote e a fonte do IVA. Relatório (pares UF ou texto `IVA/ICM:`) só completa campo vazio; `00,0` é ICM. Aba desconhecida é ignorada. Arquivo com aba larga é recusado na Base fiscal, com ou sem abas extras. SIGNATÁRIO sem cadastro largo continua a regra (`84818019` SP `1.9854` / `2.1659`). Ouro do cliente: `10100` e `10200` SP `1.9424`, divergentes em DF, MA, PI, PR, SE e TO; `10255` SIT `10`, divergente em AL, DF e PR. Célula `0` continua `0`. Lote já gravado não muda até reimportar.
+
 ## v1.6.23 — 14/09/2026
 
 Adicionado:

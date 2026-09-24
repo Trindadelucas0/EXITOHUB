@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   compareProduct,
@@ -6,6 +8,8 @@ import {
   type FiscalRule,
   type ImportedProduct,
 } from "./compare";
+import { parseCadastroBuffer } from "./import-cadastro";
+import { dedupeParsedRules, parseRulesBuffer, type ParsedRule } from "./import-rules";
 
 const dest0: DestinosCst = {
   naoContribuinte: "0",
@@ -765,4 +769,71 @@ describe("conferência Egaplast", () => {
     );
     expect(result.status).toBe("CORRETO");
   });
+
+  it("ouros 10100, 10200 e 10255 contra a regra EXITO do xlsx", { timeout: 20_000 }, () => {
+    const products = parseCadastroBuffer(
+      readFileSync(path.join(process.cwd(), "tests", "fixtures", "regra-tributaria-x-produtos-egaplast.xlsx")),
+      ".xlsx",
+      { companyName: "Egaplast" },
+    );
+    const rules = dedupeParsedRules(
+      parseRulesBuffer(
+        readFileSync(path.join(process.cwd(), "tests", "fixtures", "ncm-regra-fiscal-exito-egaplast.xlsx")),
+        { companyName: "Egaplast" },
+      ),
+    ).map((item, index) => fiscalFromParsed(item, `r${index}`));
+    const ivas = (codigo: string) => {
+      const row = products.find((item) => item.codigo === codigo);
+      if (!row) throw new Error(`SKU ${codigo} ausente`);
+      const result = compareProduct(row, rules.filter((item) => item.ncm === row.ncm), null, {
+        companySlug: "egaplast",
+      });
+      return result.diffs
+        .filter((diff) => diff.campo.startsWith("IVA "))
+        .map((diff) => diff.campo.slice(4))
+        .sort();
+    };
+    const kitProducao = products.find((item) => item.codigo === "10100");
+    const kitNacional = products.find((item) => item.codigo === "10200");
+    const saida = products.find((item) => item.codigo === "10255");
+    const producao = compareProduct(kitProducao!, rules.filter((item) => item.ncm === "84818019"), null, {
+      companySlug: "egaplast",
+    });
+    const nacional = compareProduct(kitNacional!, rules.filter((item) => item.ncm === "84818019"), null, {
+      companySlug: "egaplast",
+    });
+    const ncm3922 = compareProduct(saida!, rules.filter((item) => item.ncm === "39229000"), null, {
+      companySlug: "egaplast",
+    });
+    expect(producao.status).toBe("DIVERGENTE");
+    expect(ivas("10100")).toEqual(["DF", "PR"]);
+    expect(producao.diffs.some((diff) => diff.campo === "IVA SP")).toBe(false);
+    expect(nacional.status).toBe("DIVERGENTE");
+    expect(ivas("10200")).toEqual(["DF", "PR"]);
+    expect(nacional.diffs.some((diff) => diff.campo === "IVA SP")).toBe(false);
+    expect(saida?.cstUnico).toBe("10");
+    expect(ncm3922.status).toBe("DIVERGENTE");
+    expect(ivas("10255")).toEqual(["AL", "DF", "PR"]);
+  });
 });
+
+function fiscalFromParsed(item: ParsedRule, id: string): FiscalRule {
+  return {
+    id,
+    ncm: item.ncm,
+    ncmOriginal: item.ncmOriginal,
+    segmento: item.segmento,
+    cstEntrada: item.cstEntrada,
+    cstSaida: item.cstSaida,
+    cfopSaida: item.cfopSaida,
+    destinosCst: item.destinosCst,
+    situacao: item.situacao,
+    situacaoCodigo: item.situacaoCodigo,
+    mvaPercentual: item.mvaPercentual,
+    mvaTexto: item.mvaTexto,
+    mvaKind: item.mvaKind,
+    cest: item.cest,
+    ivaPorUf: item.ivaPorUf,
+    ivaPorUfImportado: item.ivaPorUfImportado,
+  };
+}

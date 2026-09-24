@@ -446,6 +446,44 @@ function rowHasIvaUfPairs(row: unknown[]): boolean {
   return n >= 3;
 }
 
+function rowHasIvaIcmText(row: unknown[]): boolean {
+  return row.some((cell) => /iva\s*\/\s*icm/i.test(cellStr(cell)));
+}
+
+/** Vírgula decimal do texto `IVA/ICM` vira ponto, no mesmo formato das células do cadastro largo. */
+function ivaTokenFromIvaIcmText(raw: string): string {
+  const text = raw.trim();
+  if (text.includes(",") && text.includes(".")) {
+    return text.replace(/\./g, "").replace(",", ".");
+  }
+  return text.replace(",", ".");
+}
+
+/**
+ * Texto `IVA/ICM: AC 1,4558 00,0 ...`: o primeiro número depois da UF é o IVA.
+ * O número seguinte (`00,0`) é ICM e não entra no mapa.
+ */
+export function parseIvaFromIvaIcmText(raw: string | null | undefined): IvaPorUf | null {
+  const text = String(raw ?? "");
+  if (!/iva\s*\/\s*icm/i.test(text)) return null;
+  const byUf = emptyIvaPorUf();
+  let any = false;
+  const re = /\b([A-Za-z]{2})\s+([0-9]+(?:[.,][0-9]+)?)/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(text))) {
+    const uf = match[1].toUpperCase();
+    if (!UF_HEADER_SET.has(uf)) continue;
+    if (!isBlankIvaCell(byUf[uf])) continue;
+    byUf[uf] = ivaTokenFromIvaIcmText(match[2]);
+    any = true;
+  }
+  return any ? asIvaPorUf(byUf) : null;
+}
+
+function isBlankIvaCell(value: string | null | undefined): boolean {
+  return value == null || String(value).trim() === "";
+}
+
 function collectIvaRowsAfterProduct(
   aoa: unknown[][],
   productIdx: number,
@@ -455,7 +493,7 @@ function collectIvaRowsAfterProduct(
   for (let k = productIdx + 1; k < aoa.length && ivaRows.length < 4; k++) {
     const next = aoa[k] ?? [];
     if (ivaRows.length > 0 && isRelatorioProductRow(next, cols)) break;
-    if (rowHasIvaUfPairs(next)) ivaRows.push(next);
+    if (rowHasIvaUfPairs(next) || rowHasIvaIcmText(next)) ivaRows.push(next);
   }
   return ivaRows;
 }
@@ -492,6 +530,16 @@ function parseIvaBlockFromRows(rows: unknown[][]): {
       if (uf.length !== 2 || !UF_HEADER_SET.has(uf)) continue;
       byUf[uf] = cellStr(row[j + 1]) || null;
       j += 1;
+    }
+    for (const cell of row) {
+      const fromText = parseIvaFromIvaIcmText(cellStr(cell));
+      if (!fromText) continue;
+      for (const uf of EGAPLAST_IVA_UF_KEYS) {
+        if (!isBlankIvaCell(byUf[uf])) continue;
+        const value = fromText[uf];
+        if (isBlankIvaCell(value)) continue;
+        byUf[uf] = value ?? null;
+      }
     }
   }
   return pickIvaSummary(asIvaPorUf(byUf));
@@ -737,6 +785,7 @@ function parseCadastroSheetProducts(
 function parseEgaplastCadastroWorkbook(workbook: XLSX.WorkBook, raw: boolean): ParsedProduct[] | null {
   const names = workbook.SheetNames.filter((n) => !shouldSkipCadastroSheetName(n));
   let dados: ParsedProduct[] | null = null;
+  let dadosFromWide = false;
   let relatorio: ParsedProduct[] | null = null;
   for (const name of names) {
     const sheet = workbook.Sheets[name];
@@ -748,13 +797,14 @@ function parseEgaplastCadastroWorkbook(workbook: XLSX.WorkBook, raw: boolean): P
     }
     if (isEgaplastWideCadastroHeader(header)) {
       dados = parseEgaplastWideCadastroAoa(aoa);
+      dadosFromWide = true;
       continue;
     }
     if (isEgaplastRelatorioHeader(header) && !isCadastroHeader(header)) {
       relatorio = parseEgaplastRelatorioAoa(aoa);
       continue;
     }
-    if (isCadastroHeader(header)) {
+    if (isCadastroHeader(header) && !dadosFromWide) {
       dados = parseCadastroSheetProducts(sheet, aoa, raw);
     }
   }
@@ -853,12 +903,39 @@ export function workbookLooksLikeEgaplastSignatarioCadastro(
   return workbookEveryValidSheetMatches(workbook, raw, isEgaplastSignatarioCadastroHeader);
 }
 
-/** True se todas as abas válidas forem o cadastro largo do cliente (SKU + UFs). */
+function egaplastWorkbookSheetRoles(
+  workbook: XLSX.WorkBook,
+  raw: boolean,
+): { wide: boolean; signatario: boolean } {
+  const names = workbook.SheetNames.filter((n) => !shouldSkipCadastroSheetName(n));
+  let wide = false;
+  let signatario = false;
+  for (const name of names) {
+    const sheet = workbook.Sheets[name];
+    const aoa = XLSX.utils.sheet_to_json<unknown[]>(sheet, { header: 1, defval: "", raw });
+    const idx = findHeaderRowIndex(aoa);
+    const header = aoa[idx] ?? [];
+    if (isEgaplastWideCadastroHeader(header)) wide = true;
+    if (isEgaplastSignatarioCadastroHeader(header)) signatario = true;
+  }
+  return { wide, signatario };
+}
+
+/** True se alguma aba válida é cadastro largo e nenhuma é SIGNATÁRIO. */
 export function workbookLooksLikeEgaplastWideCadastro(
   workbook: XLSX.WorkBook,
   raw = false,
 ): boolean {
-  return workbookEveryValidSheetMatches(workbook, raw, isEgaplastWideCadastroHeader);
+  const roles = egaplastWorkbookSheetRoles(workbook, raw);
+  return roles.wide && !roles.signatario;
+}
+
+/** True se alguma aba válida é o cadastro largo do cliente, com ou sem abas extras. */
+export function workbookHasEgaplastWideCadastroSheet(
+  workbook: XLSX.WorkBook,
+  raw = false,
+): boolean {
+  return egaplastWorkbookSheetRoles(workbook, raw).wide;
 }
 
 export function egaplastSignatarioCadastroErrorMessage(): string {

@@ -3,6 +3,7 @@ import { classifyOrigemIva } from "@/src/lib/origem-iva";
 import {
   EGAPLAST_IVA_UF_KEYS,
   asIvaPorUf,
+  hasFilledIvaPorUf,
   parseIvaFactor,
   type IvaPorUf,
 } from "@/src/lib/iva-por-uf";
@@ -22,6 +23,24 @@ export function situacaoFromEgaplastCst(cst: string | null): {
   return { situacaoCodigo: "INCOMPLETA", situacao: "Incompleta" };
 }
 
+function isBlankText(value: string | null | undefined): boolean {
+  return value == null || String(value).trim() === "";
+}
+
+/** Preenche só UF vazia. Célula `0` já informada no cadastro largo permanece. */
+function mergeIvaPorUfFillEmpty(base: IvaPorUf | null, extra: IvaPorUf | null): IvaPorUf | null {
+  if (!hasFilledIvaPorUf(base)) return hasFilledIvaPorUf(extra) ? extra : base;
+  if (!hasFilledIvaPorUf(extra) || !base) return base;
+  const out: IvaPorUf = { ...base };
+  for (const uf of EGAPLAST_IVA_UF_KEYS) {
+    if (!isBlankText(out[uf])) continue;
+    const fill = extra[uf];
+    if (isBlankText(fill)) continue;
+    out[uf] = fill ?? null;
+  }
+  return asIvaPorUf(out);
+}
+
 export function joinEgaplastCadastro(
   dados: ParsedProduct[],
   relatorio: ParsedProduct[],
@@ -33,15 +52,17 @@ export function joinEgaplastCadastro(
   return dados.map((row) => {
     const extra = byCodigo.get(row.codigo);
     if (!extra) return row;
+    const hadIva =
+      hasFilledIvaPorUf(row.ivaPorUf) || row.ivaMvaNumero != null || !isBlankText(row.ivaMva);
     return {
       ...row,
-      ncm: row.ncm || extra.ncm,
-      ncmOriginal: row.ncmOriginal || extra.ncmOriginal,
-      cstUnico: extra.cstUnico,
-      ivaMva: extra.ivaMva,
-      ivaMvaNumero: extra.ivaMvaNumero,
-      origem: row.origem || extra.origem,
-      ivaPorUf: extra.ivaPorUf ?? row.ivaPorUf,
+      ncm: isBlankText(row.ncm) ? extra.ncm : row.ncm,
+      ncmOriginal: isBlankText(row.ncmOriginal) ? extra.ncmOriginal : row.ncmOriginal,
+      cstUnico: isBlankText(row.cstUnico) ? extra.cstUnico : row.cstUnico,
+      origem: isBlankText(row.origem) ? extra.origem : row.origem,
+      ivaPorUf: mergeIvaPorUfFillEmpty(row.ivaPorUf, extra.ivaPorUf),
+      ivaMva: hadIva ? row.ivaMva : extra.ivaMva,
+      ivaMvaNumero: hadIva ? row.ivaMvaNumero : extra.ivaMvaNumero,
     };
   });
 }

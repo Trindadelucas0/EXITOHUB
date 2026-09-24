@@ -9,8 +9,11 @@ import {
   parseEgaplastRelatorioAoa,
   parseEgaplastWideCadastroAoa,
   parseEgaplastSignatarioCadastroAoa,
+  parseIvaFromIvaIcmText,
   isEgaplastWideCadastroHeader,
   isEgaplastSignatarioCadastroHeader,
+  egaplastWideCadastroRulesErrorMessage,
+  workbookLooksLikeEgaplastWideCadastro,
   isJunkRow,
   parseDescAbrevIcms,
   parseIvaDecimal,
@@ -18,6 +21,7 @@ import {
   cstFromSitCell,
   isSitTributariaHeaderLabel,
 } from "./import-cadastro";
+import { dedupeParsedRules, parseRulesBuffer } from "./import-rules";
 import { normalizeNcm } from "./ncm";
 
 const EGAPLAST_XLS = path.join(
@@ -369,35 +373,37 @@ describe("import cadastro", () => {
     expect(aoaRows[1].ivaPorUf).toBeNull();
 
     const rows = parseCadastroBuffer(readFileSync(EGAPLAST_WIDE), ".xlsx", { companyName: "Egaplast" });
-    expect(rows.length).toBe(4153);
+    expect(rows.length).toBe(4182);
     const gold = rows.find((r) => r.codigo === "10100");
     expect(gold?.ncm).toBe("84818019");
     expect(gold?.descricao).toContain("KIT P/CX ACOP");
     expect(gold?.cstUnico).toBe("10");
     expect(gold?.origem).toMatch(/9-PRODU/i);
-    expect(Number(gold?.ivaPorUf?.SP)).toBeCloseTo(1.9424, 4);
+    expect(gold?.ivaPorUf?.SP).toBe("1.9424");
     expect(Number(gold?.ivaPorUf?.AC)).toBeCloseTo(1.4558, 4);
+    expect(Number(gold?.ivaPorUf?.DF)).toBeCloseTo(1.2731, 4);
+    expect(gold?.ivaMvaNumero).toBeCloseTo(1.9424, 4);
     expect(Object.keys(gold?.ivaPorUf ?? {}).length).toBe(27);
-    const comCst = rows.filter((r) => r.cstUnico != null);
-    expect(comCst.length).toBe(1127);
-    expect(comCst.every((r) => Object.keys(r.ivaPorUf ?? {}).length === 27)).toBe(true);
-    const parcial = rows.find((r) => r.codigo === "10120");
-    expect(parcial?.ncm).toBe("84819010");
-    expect(parcial?.cstUnico).toBeNull();
-    expect(parcial?.ivaPorUf).toBeNull();
     const kitNacional = rows.find((r) => r.codigo === "10200");
     expect(kitNacional?.ncm).toBe("84818019");
     expect(kitNacional?.cstUnico).toBe("10");
     expect(kitNacional?.origem).toMatch(/0-NACIONAL/i);
-    expect(Number(kitNacional?.ivaPorUf?.SP)).toBeCloseTo(2.119, 4);
-    expect(Number(kitNacional?.ivaPorUf?.AC)).toBeCloseTo(1.5881, 4);
-    const semSit = rows.find((r) => r.codigo === "10255");
-    expect(semSit?.ncm).toBe("39229000");
-    expect(semSit?.cstUnico).toBeNull();
-    expect(semSit?.ivaPorUf).toBeNull();
-    const semEmpresa = parseCadastroBuffer(readFileSync(EGAPLAST_WIDE), ".xlsx");
-    expect(semEmpresa.length).toBe(4153);
-    expect(semEmpresa.find((r) => r.codigo === "10100")?.ivaPorUf?.SP).toBeTruthy();
+    expect(kitNacional?.ivaPorUf?.SP).toBe("1.9424");
+    expect(Number(kitNacional?.ivaPorUf?.AC)).toBeCloseTo(1.4558, 4);
+    expect(kitNacional?.ivaMvaNumero).toBeCloseTo(1.9424, 4);
+    expect(Object.keys(kitNacional?.ivaPorUf ?? {}).length).toBe(27);
+    const comSit = rows.find((r) => r.codigo === "10255");
+    expect(comSit?.ncm).toBe("39229000");
+    expect(comSit?.cstUnico).toBe("10");
+    expect(comSit?.ivaMvaNumero).not.toBeNull();
+    expect(Number(comSit?.ivaPorUf?.AL)).toBeCloseTo(1.639, 3);
+    expect(Number(comSit?.ivaPorUf?.DF)).toBeCloseTo(1.3293, 4);
+    expect(Number(comSit?.ivaPorUf?.PR)).toBeCloseTo(1.6398, 4);
+    const valv = rows.find((r) => r.codigo === "10120");
+    expect(valv?.ncm).toBe("84819010");
+    expect(valv?.cstUnico).toBe("10");
+    expect(valv?.ivaPorUf?.SP).toBe("1.9424");
+    expect(rows.some((r) => r.descricao === "DF" || r.codigo === "CAMPO")).toBe(false);
   });
 
   it("CST da célula SIT não zera por causa de SUBST/TRIBUTÁRIA", () => {
@@ -559,6 +565,93 @@ describe("import cadastro", () => {
     expect(rows[0].ivaPorUf?.RR).toBe("1.599");
     expect(rows[0].ivaPorUf?.TO).toBe("1.5561");
     expect(rows[0].ivaPorUf?.AC).toBe("1.5753");
+  });
+
+  it("texto IVA/ICM guarda o primeiro número da UF e ignora o ICM 00,0", () => {
+    const parsed = parseIvaFromIvaIcmText("IVA/ICM: AC 1,4558 00,0 SP 1,9424 00,0");
+    expect(parsed?.AC).toBe("1.4558");
+    expect(parsed?.SP).toBe("1.9424");
+    expect(parseIvaDecimal(parsed?.AC)).toBeCloseTo(1.4558, 4);
+    expect(parseIvaDecimal(parsed?.SP)).toBeCloseTo(1.9424, 4);
+  });
+
+  it("aba larga vence texto IVA/ICM e aba desconhecida; nome da aba não importa", () => {
+    const ufs = ["AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "SP"];
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["CÓDIGO", "ORIGEM", "SIT.TRIBUTÁRIA", "NCM"],
+        ["1", "1-IMPORT.P", "51", "39229000"],
+        ["IVA/ICM: SP 9,99 00,0 GO 1,1111 00,0"],
+      ]),
+      "Relato",
+    );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["CÓDIGO", "DESCRIÇÃO", "NCM", "ORIGEM", "SIT. TRIBUTÁRIA", ...ufs],
+        ["1", "ITEM LARGO", "84818019", "0-NACIONAL", "10", ...ufs.map((uf) => (uf === "SP" ? "1.50" : uf === "GO" ? "" : "1.10"))],
+      ]),
+      "Lote",
+    );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["CÓDIGO", "DESCRIÇÃO", "CAMPO", "VALOR NA BASE", "VALOR NO RELATÓRIO IVA"],
+        ["1", "ITEM LARGO", "SP", "1.50", "9.99"],
+      ]),
+      "Lixo",
+    );
+    const buffer = Buffer.from(XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }));
+    const read = XLSX.read(buffer, { type: "buffer", raw: false });
+    expect(workbookLooksLikeEgaplastWideCadastro(read, false)).toBe(true);
+    const rows = parseCadastroBuffer(buffer, ".xlsx", { companyName: "Egaplast" });
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.descricao).toBe("ITEM LARGO");
+    expect(rows[0]?.ncm).toBe("84818019");
+    expect(rows[0]?.cstUnico).toBe("10");
+    expect(rows[0]?.origem).toBe("0-NACIONAL");
+    expect(Number(rows[0]?.ivaPorUf?.SP)).toBeCloseTo(1.5, 4);
+    expect(parseIvaDecimal(rows[0]?.ivaPorUf?.GO)).toBeCloseTo(1.1111, 4);
+    expect(rows[0]?.ivaMvaNumero).toBeCloseTo(1.5, 4);
+    expect(() => parseRulesBuffer(buffer, { companyName: "Egaplast" })).toThrow(
+      egaplastWideCadastroRulesErrorMessage(),
+    );
+  });
+
+  it("arquivo só com texto IVA/ICM importa o IVA", () => {
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(
+      workbook,
+      XLSX.utils.aoa_to_sheet([
+        ["CÓDIGO", "SIT.TRIBUTÁRIA", "NCM"],
+        ["10", "10", "84818019"],
+        ["IVA/ICM: SP 1,2000 00,0"],
+      ]),
+      "Folha",
+    );
+    const buffer = Buffer.from(XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }));
+    const rows = parseCadastroBuffer(buffer, ".xlsx", { companyName: "Egaplast" });
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.ivaPorUf?.SP).toBe("1.2000");
+    expect(parseIvaDecimal(rows[0]?.ivaPorUf?.SP)).toBeCloseTo(1.2, 4);
+    expect(rows[0]?.ivaMvaNumero).toBeCloseTo(1.2, 4);
+  });
+
+  it("xlsx do cliente na Base fiscal é recusado mesmo com abas extras", () => {
+    const buffer = readFileSync(EGAPLAST_WIDE);
+    expect(() => parseRulesBuffer(buffer, { companyName: "Egaplast" })).toThrow(
+      egaplastWideCadastroRulesErrorMessage(),
+    );
+  });
+
+  it("xlsx EXITO SIGNATÁRIO ainda gera 84818019 SP nacional e importado", { timeout: 20_000 }, () => {
+    const rules = dedupeParsedRules(parseRulesBuffer(readFileSync(EGAPLAST_EXITO), { companyName: "Egaplast" }));
+    const st = rules.find((r) => r.ncm === "84818019" && r.situacaoCodigo === "ST_INTERNO");
+    expect(Number(st?.ivaPorUf?.SP)).toBeCloseTo(1.9854, 4);
+    expect(Number(st?.ivaPorUfImportado?.SP)).toBeCloseTo(2.1659, 4);
+    expect(Number(st?.ivaPorUf?.DF)).toBeCloseTo(1.474, 3);
   });
 });
 

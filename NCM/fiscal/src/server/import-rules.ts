@@ -22,7 +22,7 @@ import { isEgaplastCompany } from "./company-slug";
 import {
   parseEgaplastCadastroSheets,
   workbookLooksLikeEgaplastSignatarioCadastro,
-  workbookLooksLikeEgaplastWideCadastro,
+  workbookHasEgaplastWideCadastroSheet,
   egaplastSignatarioWrongCompanyErrorMessage,
   egaplastWideCadastroRulesErrorMessage,
 } from "./import-cadastro";
@@ -484,6 +484,9 @@ export function pickRulesSheet(
 
 export function parseRulesBuffer(buffer: Buffer, options: ParseRulesOptions = {}): ParsedRule[] {
   const workbook = XLSX.read(buffer, { type: "buffer", raw: false });
+  if (workbookHasEgaplastWideCadastroSheet(workbook, false)) {
+    throw new Error(egaplastWideCadastroRulesErrorMessage());
+  }
   if (workbookLooksLikeEgaplastSignatarioCadastro(workbook, false)) {
     if (!isEgaplastCompany(options.companyName)) {
       throw new Error(egaplastSignatarioWrongCompanyErrorMessage());
@@ -494,9 +497,6 @@ export function parseRulesBuffer(buffer: Buffer, options: ParseRulesOptions = {}
       throw new Error("Nenhuma regra reconhecida na planilha SIGNATÁRIO da Egaplast.");
     }
     return fromCadastro;
-  }
-  if (workbookLooksLikeEgaplastWideCadastro(workbook, false)) {
-    throw new Error(egaplastWideCadastroRulesErrorMessage());
   }
   if (isEgaplastCompany(options.companyName)) {
     const { dados, relatorio } = parseEgaplastCadastroSheets(workbook, false);
