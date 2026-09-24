@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM, Portal Corporativo).
-> Versão: 1.5.24 — Portal: vídeos de integração passam a ser o álbum Máquina do Tempo mesmo se o seed antigo já rodou.
+> Versão: 1.5.26 — Portal: conteúdo de teste sai da Home.
 
 ## 1. Visão geral
 
@@ -55,6 +55,8 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 1.5.26 | 24/09/2026 | Portal: o boot desativa de uma vez (`hub_meta.portal_demo_clear_v1`) comunicados, eventos, contatos, itens e o slide da Home cujo título começa com TESTE. O seed não grava mais esse conteúdo. A versão no rodapé do menu passa a 1.5.25 |
+| 1.5.25 | 24/09/2026 | Portal: o boot desativa os vídeos de teste do álbum Máquina do Tempo (`hub_meta.portal_demo_album_off_v1`). Não grava link novo do YouTube. A tela `/portal/videos` fica sem esses players |
 | 1.5.24 | 24/09/2026 | Portal: o seed do álbum Máquina do Tempo roda uma vez à parte (`hub_meta.portal_demo_album_v1`). Se `portal_demo_seed_v1` já existia, os links antigos de vídeo continuavam ativos; no próximo boot os vídeos ativos são desativados e entram as 7 faixas |
 | 1.5.23 | 24/09/2026 | NCM Egaplast: IVA `0` do cadastro (vazio, traço ou ausente) é **NADA INFORMADO** e não gera divergência na UF. `10100` e `10200` (SP `1.9424`) divergem só em DF e PR. Zero na regra contra fator do cliente continua divergência. CST `0`, Unica, BAIFER, Loja, MVA % e tolerância 0,05 não mudam. A ficha aplica ao abrir; os contadores da Consulta só mudam ao reimportar Planilhas ou recalcular o lote |
 | 1.5.22 | 24/09/2026 | NCM Egaplast: a aba é classificada pelo cabeçalho, não pelo nome. Cadastro largo (CÓDIGO + DESCRIÇÃO + NCM + SIT + UFs) é o lote e a fonte do IVA; relatório (`IVA/ICM:` ou pares UF) só completa campo vazio; outra aba é ignorada. Arquivo com aba larga é recusado na Base fiscal. Ouro do cliente (~4182 SKUs): `10100` e `10200` SP `1.9424`, divergentes em DF, MA, PI, PR, SE e TO; `10255` SIT `10`, divergente em AL, DF e PR. Regra EXITO `84818019` SP `1.9854` / `2.1659` |
@@ -167,7 +169,7 @@ Rotas de módulo sem permissão → 403 via [`requireHubModule`](hub/middleware.
 - Cada etapa da trilha é um **módulo**: **Abrir** vai para `GET /portal/onboarding/etapas/:id` (não para rotas genéricas como `/` ou `/portal/videos`). Colunas em `onboarding_steps`: `youtube_url` (assistir in-app, mesmo player YouTube de Vídeos), `video_download_url` (HTTPS para Baixar vídeo) e `pdf_file_id` (PDF via `/portal/media`). Sem mídia → empty “Material em preparação”. Admin cadastra em `/admin/portal/onboarding/etapas/:id/editar` (multipart). `target_kind` / `target_route` permanecem no banco (seed antigo) mas não controlam o Abrir.
 - Faixa inferior da Home (pendente e concluída): painéis Comunicados/Eventos leem `portal_announcements` e `portal_events` (ativos; eventos futuros). Com linhas, lista título + data + texto/lugar; sem linhas, empty state (ícone + apoio + rodapé “Canal de transmissão interna” / “Agenda do portal”). Agenda Êxito mostra o próximo evento quando existir e CTA para `/portal/agenda`. Links em grade 2 colunas (`portal_links`); Contatos em linhas com avatar/iniciais e E-mail/WhatsApp (`portal_contacts`). Sem sync Google Agenda. Seed de demonstração (títulos com **TESTE**) em [`hub/portal/seed-demo.js`](hub/portal/seed-demo.js), uma vez por ambiente (`hub_meta.portal_demo_seed_v1`).
 - Placeholders `/portal/comunicados`, `/eventos`, `/agenda` reutilizam a mesma lista ou o empty visual + CTA Voltar ao início. Textos de vazio em [`EMPTY_STATES`](hub/portal/constants.js).
-- Vídeos de Integração (`portal_items` kind `video`): link YouTube obrigatório; player in-app em `/portal/videos`. O seed do álbum (`hub_meta.portal_demo_album_v1`, independente de `portal_demo_seed_v1`) grava as 7 faixas de Máquina do Tempo (canal 30PRAUM) e desativa (`is_active = false`) os vídeos ativos anteriores sem apagar.
+- Vídeos de Integração (`portal_items` kind `video`): link YouTube obrigatório; player in-app em `/portal/videos`. O boot (`hub_meta.portal_demo_album_off_v1`) desativa os itens de teste do álbum Máquina do Tempo (`is_active = false`, sem apagar). Não recoloca esses links.
 - **Progresso sequencial** (Vídeos, Diagrama, Informativos, Catálogos, Documentos): tabela `portal_item_progress` (user_id + item_id). Na área, só o 1º item (e os já liberados) ficam disponíveis; **Marcar como concluído** (`POST /portal/{slug}/:id/complete`) libera o próximo por `sort_order`. Item bloqueado não abre (`?v=` redireciona). POPs não usam esse progresso. Seed TESTE nas 4 áreas se estiverem sem itens ativos. Admin em Acompanhamento → `PENDING` apaga progresso de etapas e de itens.
 - Master EXITO (`ensureMasterUser`): **não** sobrescreve `onboarding_status` no UPDATE. Reset único `hub_meta.portal_exito_onboarding_reset_v2` coloca o usuário seed / username `exito` / display EXITO em `PENDING` e limpa progressos (preview de primeiro usuário).
 - `portal_items` aceita kind `document` e metadados: categoria, departamento, versão, thumbnail, obrigatório no onboarding.

@@ -65,43 +65,7 @@ async function removeExampleContents() {
 }
 
 async function seedOriginalContent() {
-  const existing = await query(`SELECT id FROM portal_contents LIMIT 1`);
-  if (existing.rowCount) return false;
-
-  const source = path.join(SEED_DIR, ORIGINAL_CONTENT.file);
-  if (!fs.existsSync(source)) {
-    throw new Error(`Arquivo de conteúdo ausente: ${ORIGINAL_CONTENT.file}`);
-  }
-
-  ensureUploadDir();
-  const storedName = `${randomUUID()}.jpg`;
-  const dest = path.join(UPLOAD_ROOT, storedName);
-  fs.copyFileSync(source, dest);
-  const sizeBytes = fs.statSync(dest).size;
-
-  const fileRow = await query(
-    `INSERT INTO portal_files (stored_path, original_name, mime, size_bytes, created_by)
-     VALUES ($1, $2, 'image/jpeg', $3, NULL)
-     RETURNING id`,
-    [storedName, ORIGINAL_CONTENT.file, sizeBytes],
-  );
-
-  await query(
-    `INSERT INTO portal_contents
-      (title, description, image_file_id, category, target_type, target_url, target_route,
-       is_published, show_on_home, sort_order, published_at)
-     VALUES ($1, $2, $3, $4, 'none', NULL, NULL, true, true, $5, NOW())`,
-    [
-      ORIGINAL_CONTENT.title,
-      ORIGINAL_CONTENT.description,
-      fileRow.rows[0].id,
-      ORIGINAL_CONTENT.category,
-      ORIGINAL_CONTENT.sort_order,
-    ],
-  );
-
-  console.log('[hub] Conteúdo Êxito original restaurado (principal.jpg)');
-  return true;
+  return false;
 }
 
 async function seedDefaultContents() {

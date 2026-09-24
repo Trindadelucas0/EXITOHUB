@@ -3,7 +3,8 @@
 const { query } = require('../db');
 
 const META_KEY = 'portal_demo_seed_v1';
-const ALBUM_META_KEY = 'portal_demo_album_v1';
+const ALBUM_META_KEY = 'portal_demo_album_off_v1';
+const CLEAR_DEMO_META = 'portal_demo_clear_v1';
 const EXITO_RESET_META = 'portal_exito_onboarding_reset_v2';
 
 const PROGRESS_KINDS = ['video', 'diagram', 'informative', 'catalog', 'document'];
@@ -178,28 +179,19 @@ async function seedContactsIfEmpty() {
   return true;
 }
 
-async function seedAlbumVideos() {
+async function deactivateAlbumVideos() {
+  const ids = ALBUM_TRACKS.map((track) => track.videoId);
   await query(
-    `UPDATE portal_items SET is_active = false, updated_at = NOW()
-     WHERE kind = 'video' AND is_active = true`,
+    `UPDATE portal_items
+     SET is_active = false, updated_at = NOW()
+     WHERE kind = 'video'
+       AND is_active = true
+       AND (
+         description LIKE 'TESTE — Máquina do Tempo%'
+         OR external_url ~ $1
+       )`,
+    [ids.join('|')],
   );
-  for (const track of ALBUM_TRACKS) {
-    const watchUrl = `https://www.youtube.com/watch?v=${track.videoId}`;
-    await query(
-      `INSERT INTO portal_items
-        (kind, title, description, body, category, department, version,
-         external_url, is_onboarding_required, is_active, sort_order)
-       VALUES
-        ('video', $1, $2, NULL, 'TESTE', 'Geral', NULL,
-         $3, false, true, $4)`,
-      [
-        track.title,
-        `TESTE — Máquina do Tempo · faixa ${track.sort} de 7`,
-        watchUrl,
-        track.sort,
-      ],
-    );
-  }
 }
 
 async function seedAreaItemsIfEmpty() {
@@ -287,31 +279,60 @@ async function markAlbumApplied() {
   );
 }
 
-/** Troca os vídeos ativos pelo álbum mesmo se o seed v1 já tiver rodado. */
+/** Tira da tela os links de teste do álbum. Não grava vídeo novo. */
 async function seedAlbumOnce() {
   if (await albumAlreadyApplied()) return false;
-  await seedAlbumVideos();
+  await deactivateAlbumVideos();
   await markAlbumApplied();
-  console.log(`[hub] vídeos de integração substituídos pelas ${ALBUM_TRACKS.length} faixas de Máquina do Tempo`);
+  console.log('[hub] links de teste de Máquina do Tempo desativados em Vídeos de Integração');
+  return true;
+}
+
+async function clearDemoContentOnce() {
+  const done = await query(`SELECT 1 FROM hub_meta WHERE key = $1 LIMIT 1`, [CLEAR_DEMO_META]);
+  if (done.rowCount) return false;
+
+  await query(
+    `UPDATE portal_announcements SET is_active = false
+     WHERE is_active = true AND title LIKE 'TESTE%'`,
+  );
+  await query(
+    `UPDATE portal_events SET is_active = false
+     WHERE is_active = true AND title LIKE 'TESTE%'`,
+  );
+  await query(
+    `UPDATE portal_contacts
+     SET is_active = false, show_on_home = false, updated_at = NOW()
+     WHERE is_active = true
+       AND (name LIKE 'Teste %' OR email LIKE '%@exito.local')`,
+  );
+  await query(
+    `UPDATE portal_items
+     SET is_active = false, updated_at = NOW()
+     WHERE is_active = true
+       AND (title LIKE 'TESTE%' OR category = 'TESTE' OR description LIKE 'TESTE —%')`,
+  );
+  await query(
+    `UPDATE portal_contents
+     SET is_published = false, show_on_home = false
+     WHERE title LIKE 'TESTE%'`,
+  );
+  await query(
+    `INSERT INTO hub_meta (key, value) VALUES ($1, '1')
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`,
+    [CLEAR_DEMO_META],
+  );
+  console.log('[hub] conteúdo de teste do portal desativado');
   return true;
 }
 
 async function seedDemoPortal() {
   if (!(await alreadySeeded())) {
-    await seedAnnouncements();
-    await seedEvents();
-    await seedContactsIfEmpty();
     await markSeeded();
-    console.log('[hub] seed demo portal: comunicados, eventos e contatos de teste');
   }
 
   await seedAlbumOnce();
-
-  const areas = await seedAreaItemsIfEmpty();
-  if (areas) {
-    console.log(`[hub] seed demo: itens TESTE em ${areas} área(s) vazias`);
-  }
-
+  await clearDemoContentOnce();
   await resetExitoOnboardingOnce();
   return true;
 }
