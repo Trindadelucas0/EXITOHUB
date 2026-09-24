@@ -30,7 +30,7 @@ function isBlankText(value: string | null | undefined): boolean {
 /** Preenche só UF vazia. Célula `0` já informada no cadastro largo permanece. */
 function mergeIvaPorUfFillEmpty(base: IvaPorUf | null, extra: IvaPorUf | null): IvaPorUf | null {
   if (!hasFilledIvaPorUf(base)) return hasFilledIvaPorUf(extra) ? extra : base;
-  if (!hasFilledIvaPorUf(extra) || !base) return base;
+  if (!extra || !base || !hasFilledIvaPorUf(extra)) return base;
   const out: IvaPorUf = { ...base };
   for (const uf of EGAPLAST_IVA_UF_KEYS) {
     if (!isBlankText(out[uf])) continue;
