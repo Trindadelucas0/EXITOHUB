@@ -2,11 +2,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const { randomUUID } = require('crypto');
 const { query } = require('../db');
-const { UPLOAD_ROOT, ensureUploadDir } = require('./upload');
-
-const SEED_DIR = path.join(__dirname, 'seed-assets', 'contents');
+const { UPLOAD_ROOT } = require('./upload');
 
 const EXAMPLE_TITLES = [
   'Bem-vindo ao Êxito',
@@ -14,14 +11,6 @@ const EXAMPLE_TITLES = [
   'Informações internas',
   'Novidades do Êxito',
 ];
-
-const ORIGINAL_CONTENT = {
-  file: 'principal.jpg',
-  title: 'TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE TESTE',
-  description: 'TESTE TESTE TESTE TESTE TESTE TESTE',
-  category: 'Empresa',
-  sort_order: 2,
-};
 
 async function removeExampleContents() {
   const existing = await query(
