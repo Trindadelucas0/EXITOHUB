@@ -3,6 +3,7 @@
 const { query } = require('../db');
 
 const META_KEY = 'portal_demo_seed_v1';
+const ALBUM_META_KEY = 'portal_demo_album_v1';
 const EXITO_RESET_META = 'portal_exito_onboarding_reset_v2';
 
 const PROGRESS_KINDS = ['video', 'diagram', 'informative', 'catalog', 'document'];
@@ -273,17 +274,38 @@ async function resetExitoOnboardingOnce() {
   return true;
 }
 
+async function albumAlreadyApplied() {
+  const result = await query(`SELECT 1 FROM hub_meta WHERE key = $1 LIMIT 1`, [ALBUM_META_KEY]);
+  return result.rowCount > 0;
+}
+
+async function markAlbumApplied() {
+  await query(
+    `INSERT INTO hub_meta (key, value) VALUES ($1, '1')
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`,
+    [ALBUM_META_KEY],
+  );
+}
+
+/** Troca os vídeos ativos pelo álbum mesmo se o seed v1 já tiver rodado. */
+async function seedAlbumOnce() {
+  if (await albumAlreadyApplied()) return false;
+  await seedAlbumVideos();
+  await markAlbumApplied();
+  console.log(`[hub] vídeos de integração substituídos pelas ${ALBUM_TRACKS.length} faixas de Máquina do Tempo`);
+  return true;
+}
+
 async function seedDemoPortal() {
   if (!(await alreadySeeded())) {
     await seedAnnouncements();
     await seedEvents();
     await seedContactsIfEmpty();
-    await seedAlbumVideos();
     await markSeeded();
-    console.log(
-      `[hub] seed demo portal: ${ALBUM_TRACKS.length} vídeos (Máquina do Tempo), comunicados, eventos e contatos de teste`,
-    );
+    console.log('[hub] seed demo portal: comunicados, eventos e contatos de teste');
   }
+
+  await seedAlbumOnce();
 
   const areas = await seedAreaItemsIfEmpty();
   if (areas) {
@@ -298,6 +320,7 @@ module.exports = {
   seedDemoPortal,
   ALBUM_TRACKS,
   META_KEY,
+  ALBUM_META_KEY,
   EXITO_RESET_META,
   PROGRESS_KINDS,
 };
