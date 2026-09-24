@@ -31,10 +31,12 @@ async function readCompanyId(request: Request): Promise<{ companyId: string; htm
 
 export async function POST(request: Request) {
   let html = false;
+  let isSuperadmin = false;
   try {
     const parsed = await readCompanyId(request);
     html = parsed.html;
     const user = await requireUser();
+    isSuperadmin = user.role === "superadmin";
     if (user.role === "superadmin") {
       requireSuperAdmin(user);
     } else {
@@ -82,7 +84,7 @@ export async function POST(request: Request) {
   } catch (error) {
     if (html) {
       const message = error instanceof HttpError ? error.message : "Não foi possível abrir a empresa.";
-      const fallback = user.role === "superadmin" ? "/escritorio/empresas" : "/dashboard";
+      const fallback = isSuperadmin ? "/escritorio/empresas" : "/dashboard";
       const location = new URL(
         `${withBasePath(fallback)}?erro=${encodeURIComponent(message)}`,
         request.url,
