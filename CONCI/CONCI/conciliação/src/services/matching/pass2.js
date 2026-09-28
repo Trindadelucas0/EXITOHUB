@@ -23,7 +23,7 @@ function stripAccents(s) {
 function isPagamentoGenericoSemFornecedor(pag) {
   const h = stripAccents(pag.historico || '');
   if (!h) return true;
-  return /PIX ENVIAD|SISPAG|APL APLIC|APLIC AUT|SALARIO|TAR\/|CUSTAS|(?:^|[^A-Z0-9])TAR(?:[^A-Z0-9]|$)|TARIFA(?!RIO)/.test(h);
+  return /PIX ENVIAD|PIX EMITIDO|SISPAG|APL APLIC|APLIC AUT|SALARIO|TAR\/|CUSTAS|(?:^|[^A-Z0-9])TAR(?:[^A-Z0-9]|$)|TARIFA(?!RIO)/.test(h);
 }
 
 /**
@@ -89,7 +89,7 @@ function pass2(residual, contas, used) {
     }
 
     // valor_unico so se o historico indica boleto/pagamento a fornecedor
-    // (evita PIX ENVIADO / aplicacao casarem conta aleatoria)
+    // (evita PIX ENVIADO / PIX EMITIDO / aplicacao casarem conta aleatoria)
     if (!match && cands.length === 1 && looksLikeFornecedorPagamento(pag)) {
       match = cands[0];
       motivo = 'valor_unico';

@@ -11,6 +11,7 @@ Amostras reais usadas para calibrar o sistema (abril/2026).
 | `contas-pagar-baifer-04-2026.ods` | contasPagar | BAIFER |
 | `extrato-mercado-pago-lojao-04-2026.xlsx` | extrato | Lojão Mercado Pago |
 | `extrato-bb-lojao-04-2026.xlsx` | extrato | Lojão Banco do Brasil (`Inf.` C/D) |
+| `extrato-sicoob-07-2026.xlsx` | extrato | Sicoob 07/2026 (Documento não é CNPJ) |
 | `contas-pagar-lojao-04-2026.ods` | contasPagar | Lojão |
 
 Registro: `data/calibracao/layouts.json`.

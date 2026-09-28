@@ -287,6 +287,32 @@ describe('matching unitario', () => {
     assert.equal(itens[0].classificacaoCap, '');
   });
 
+  it('PIX EMITIDO OUTRA IF nao casa valor_unico com Contas a Pagar', () => {
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'p1',
+        data: '2026-04-10',
+        historico: 'PIX EMITIDO OUTRA IF',
+        razaoSocial: '',
+        cnpj: '',
+        valor: -1016,
+      }],
+      contas: [{
+        id: 'c1',
+        categoria: 'FORNECEDORES',
+        nome: 'ALGUEM LTDA',
+        cnpj: '11111111000111',
+        nrNota: '415',
+        vencimento: '2026-04-10',
+        pagamento: '2026-04-10',
+        valor: 1016,
+      }],
+    });
+    assert.equal(itens[0].status, 'SEM_MATCH');
+    assert.equal(itens[0].classificacaoCap, '');
+  });
+
   it('PIX ENVIADO sem data em comum fica SEM_MATCH (nao valor_unico)', () => {
     const { itens } = runMatching({
       sessionId: SID,

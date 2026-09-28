@@ -161,7 +161,10 @@ function enrichDetalhamentoIdx(rows, map) {
   }
 
   let cnpjIdx = map.cnpjIdx;
-  if (!(cnpjIdx != null && cnpjIdx >= 0)) {
+  // Sicoob: coluna DOCUMENTO e numero do lancamento, nao CNPJ do favorecido.
+  if (map.layout === 'sicoob') {
+    cnpjIdx = -1;
+  } else if (!(cnpjIdx != null && cnpjIdx >= 0)) {
     cnpjIdx = findColumnIndex(headers, CNPJ_SYNONYMS, used);
     if (cnpjIdx >= 0) used.add(cnpjIdx);
   }
@@ -263,6 +266,52 @@ function tryStoneMap(headers, headerIdx) {
   };
 }
 
+/**
+ * Sicoob conta corrente: Data + Documento + Historico + Informacoes complementares + Valor.
+ * Documento nao e CNPJ. O favorecido vem do complemento, antes de "Transferencia Pix".
+ */
+function trySicoobMap(headers, headerIdx) {
+  const used = new Set();
+  const dataIdx = findColumnIndex(headers, ['data'], used);
+  if (dataIdx < 0) return null;
+  used.add(dataIdx);
+
+  const documentoIdx = findColumnIndex(headers, ['documento'], used);
+  if (documentoIdx < 0) return null;
+  used.add(documentoIdx);
+
+  const histIdx = findColumnIndex(headers, ['historico'], used);
+  if (histIdx < 0) return null;
+  used.add(histIdx);
+
+  const detalhamentoIdx = findColumnIndex(headers, ['informacoes complementares'], used);
+  if (detalhamentoIdx < 0) return null;
+  used.add(detalhamentoIdx);
+
+  const valorIdx = findColumnIndex(headers, ['valor'], used);
+  if (valorIdx < 0) return null;
+
+  return {
+    score: 10,
+    headerIdx,
+    headersFound: headers.filter(Boolean),
+    map: {
+      dataIdx,
+      histIdx,
+      valorIdx,
+      debitoIdx: -1,
+      creditoIdx: -1,
+      tipoIdx: -1,
+      razaoIdx: -1,
+      cnpjIdx: -1,
+      headerIdx,
+      ...emptyExtra(),
+      detalhamentoIdx,
+      layout: 'sicoob',
+    },
+  };
+}
+
 function findHeaderAndMap(rows) {
   let best = null;
 
@@ -281,6 +330,9 @@ function findHeaderAndMap(rows) {
 
     const stone = tryStoneMap(headers, r);
     if (stone && (!best || stone.score > best.score)) best = stone;
+
+    const sicoob = trySicoobMap(headers, r);
+    if (sicoob && (!best || sicoob.score > best.score)) best = sicoob;
 
     const used = new Set();
     const dataIdx = findColumnIndex(headers, DATA_SYNONYMS, used);
@@ -411,6 +463,10 @@ function resolveSignedValor(row, map) {
   // invertendo o sinal que o proprio Mercado Pago ja informou.
   if (map.layout === 'mercado_pago') return v;
 
+  // Sicoob: a coluna VALOR ja vem com sinal. Nao inverter pelo historico
+  // (CRÉD.TED-STR e entrada; o numero nao pode virar saida).
+  if (map.layout === 'sicoob') return v;
+
   if (tipoIdx >= 0) {
     const saida = isSaidaTipo(row[tipoIdx]);
     if (saida === true) return -Math.abs(v);
@@ -434,6 +490,54 @@ function cellStr(row, idx) {
   return String(row[idx] ?? '').trim();
 }
 
+function sicoobLineKey(line) {
+  return stripAccents(String(line || ''))
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** CPF/CNPJ somente quando a linha tem exatamente 11 ou 14 digitos. */
+function sicoobDocDigits(line) {
+  const d = digits(line);
+  if (d.length === 11 || d.length === 14) return d;
+  return '';
+}
+
+/**
+ * Complemento Sicoob, uma linha por quebra de linha.
+ * A partir de "Transferencia Pix" (inclusive) descarta o bloco do titular.
+ * Linha que e so "Pagamento Pix" sai fora.
+ */
+function sicoobKeptLines(raw) {
+  const kept = [];
+  const parts = String(raw || '').split(/\r\n|\n|\r/);
+  for (const part of parts) {
+    const line = part.trim();
+    if (!line) continue;
+    const key = sicoobLineKey(line);
+    if (key === 'transferencia pix') break;
+    if (key === 'pagamento pix') continue;
+    kept.push(line);
+  }
+  return kept;
+}
+
+function sicoobRazaoSocial(lines, historicoBase) {
+  const fav = lines.find((line) => /^FAV\.:/i.test(line));
+  if (fav) return fav.replace(/^FAV\.:\s*/i, '').trim();
+
+  const base = stripAccents(String(historicoBase || '')).toUpperCase();
+  if (!/\bTED\b/.test(base)) return '';
+
+  const name = lines.find((line) => {
+    const key = sicoobLineKey(line);
+    if (!key || key.startsWith('codigo ted')) return false;
+    return /[a-z]/i.test(stripAccents(line));
+  });
+  return name ? name.trim() : '';
+}
+
 function buildHistoricoAndParty(row, map, valor) {
   let historico = cellStr(row, map.histIdx);
   let razaoSocial = map.razaoIdx >= 0 ? cellStr(row, map.razaoIdx) : '';
@@ -453,6 +557,19 @@ function buildHistoricoAndParty(row, map, valor) {
     historico = [...new Set(parts)].join(' — ');
     if (nome) razaoSocial = nome;
     if (doc) cnpj = digits(doc);
+  }
+
+  if (map.layout === 'sicoob') {
+    const baseHist = cellStr(row, map.histIdx);
+    const kept = sicoobKeptLines(cellStr(row, map.detalhamentoIdx));
+    const extra = kept.join(' ');
+    historico = [baseHist, extra].filter(Boolean).join(' ');
+    const razao = sicoobRazaoSocial(kept, baseHist);
+    if (razao) razaoSocial = razao;
+    const docLine = kept.find((line) => sicoobDocDigits(line));
+    cnpj = docLine ? sicoobDocDigits(docLine) : '';
+    historico = appendRazaoToHistorico(historico, razaoSocial);
+    return { historico, razaoSocial, cnpj };
   }
 
   const detalhe = cellStr(row, map.detalhamentoIdx);
@@ -560,7 +677,8 @@ function parseExtratoMatrix(rows) {
 }
 
 /**
- * Gemini (se key) -> validacao regex -> parse; fallback sinonimos.
+ * Layout Sicoob conhecido nao chama Gemini.
+ * Nos demais: Gemini (se key) -> validacao regex -> parse; fallback sinonimos.
  * @param {object} [opts]
  * @param {(patch:{percent?:number,step?:string})=>void} [opts.onProgress]
  */
@@ -569,6 +687,19 @@ async function parseExtratoSmart(bufferOrPath, opts = {}) {
   const workbook = readWorkbook(bufferOrPath);
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows = sheetToMatrix(sheet);
+
+  const detected = findHeaderAndMap(rows);
+  if (detected && detected.map && detected.map.layout === 'sicoob') {
+    onProgress({ percent: 65, step: 'Validando colunas e dados…' });
+    const result = parseExtratoWithMap(rows, detected.map);
+    return {
+      lancamentos: result.lancamentos,
+      pagamentos: result.pagamentos,
+      recebimentos: result.recebimentos,
+      usedGemini: false,
+      aiWarning: null,
+    };
+  }
 
   let usedGemini = false;
   let aiWarning = null;

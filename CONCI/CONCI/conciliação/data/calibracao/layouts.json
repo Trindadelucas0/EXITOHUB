@@ -64,6 +64,24 @@
       ],
       "fixture": "fixtures/calibracao/extrato-bb-lojao-04-2026.xlsx",
       "aprendidoEm": "2026-07-16"
+    },
+    {
+      "tipo": "extrato",
+      "bancoOuOrigem": "Sicoob 07-2026",
+      "cabecalhosChave": [
+        "data",
+        "documento",
+        "historico",
+        "informacoes complementares",
+        "valor"
+      ],
+      "ajustes": [
+        "trySicoobMap: coluna Documento nao e cnpj",
+        "complemento sem o bloco do titular (depois de Transferencia Pix)",
+        "PIX EMITIDO nao casa so por valor e data"
+      ],
+      "fixture": "fixtures/calibracao/extrato-sicoob-07-2026.xlsx",
+      "aprendidoEm": "2026-09-28"
     }
   ],
   "precadastro": {

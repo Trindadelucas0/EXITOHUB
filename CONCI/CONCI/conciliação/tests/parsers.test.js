@@ -218,6 +218,41 @@ describe('parsers', () => {
     assert.ok(result.recebimentos[0].razaoSocial.includes('CLIENTE'));
   });
 
+  it('parse extrato Sicoob 07-2026: documento nao e cnpj e complemento sem titular', () => {
+    const file = fixture((f) => /sicoob/i.test(f) && /07-2026/.test(f) && /\.xlsx$/i.test(f));
+    const result = parseExtrato(file);
+
+    assert.equal(result.lancamentos.length, 34);
+    assert.equal(result.pagamentos.length, 32);
+    assert.equal(result.recebimentos.length, 2);
+    assert.equal(result.lancamentos.some((l) => /^SALDO/i.test(l.historico)), false);
+    assert.equal(result.lancamentos.some((l) => l.cnpj === '369296381'), false);
+    assert.equal(result.lancamentos.some((l) => l.cnpj === '9351273'), false);
+
+    const titulo = result.lancamentos.find((l) => l.data === '2026-07-31' && l.valor === -357.48);
+    assert.ok(titulo);
+    assert.equal(titulo.historico, 'DÉB.TÍTULO COBRANÇA');
+    assert.equal(titulo.cnpj, '');
+
+    const rafael = result.lancamentos.find((l) => l.data === '2026-07-31' && l.valor === -7000);
+    assert.ok(rafael);
+    assert.equal(rafael.historico.includes('RAFAEL CONCEICAO ERNESTO'), true);
+    assert.equal(/BORGES ALMEIDA/.test(rafael.historico), false);
+    assert.equal(rafael.historico.includes('56089863'), false);
+    assert.equal(rafael.razaoSocial, 'RAFAEL CONCEICAO ERNESTO');
+    assert.equal(rafael.cnpj, '');
+
+    const pix = result.lancamentos.find((l) => l.valor === -3240 && /PIX EMITIDO/.test(l.historico));
+    assert.ok(pix);
+    assert.equal(pix.cnpj, '37286030000116');
+
+    const ted = result.lancamentos.find((l) => l.valor === 30516.88);
+    assert.ok(ted);
+    assert.equal(ted.razaoSocial, 'BRASILIA MOTOS LTDA');
+    assert.equal(ted.cnpj, '31007387000131');
+    assert.equal(ted.valor > 0, true);
+  });
+
   it('extrato sem cabecalho util gera erro claro', () => {
     assert.throws(
       () => parseExtratoMatrix([['foo', 'bar'], ['1', '2']]),
