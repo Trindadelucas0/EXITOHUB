@@ -9,21 +9,34 @@
     <section class="hub-card">
       <p class="hub-breadcrumb"><a href="/admin/portal">Portal Corporativo</a> / Conteúdos Êxito</p>
       <div class="hub-admin-head">
-        <h1>Conteúdos Êxito</h1>
-        <a class="hub-btn hub-btn-primary" href="/admin/portal/conteudos/novo">+ Novo conteúdo</a>
+        <div>
+          <h1>Conteúdos Êxito</h1>
+          <p class="hub-muted">Slides do carrossel da Home. Vários podem ficar publicados ao mesmo tempo.</p>
+        </div>
+        <a class="hub-btn hub-btn-primary" href="/admin/portal/conteudos/novo<%= filtersQuery %>">+ Novo conteúdo</a>
       </div>
-      <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
-      <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+      <% if (flash) { %><div class="hub-alert hub-alert-ok" role="status"><%= flash %></div><% } %>
+      <% if (error) { %><div class="hub-alert hub-alert-error" role="alert"><%= error %></div><% } %>
+
+      <%- include('../partials/hub-admin-filters', {
+        action: '/admin/portal/conteudos',
+        filters: filters,
+        hasFilter: hasFilter,
+        placeholder: 'Buscar título',
+        sitActiveLabel: 'Publicados',
+        sitInactiveLabel: 'Rascunhos'
+      }) %>
 
       <% if (editing) { %>
-        <form method="post" action="<%= editing.id ? '/admin/portal/conteudos/' + editing.id : '/admin/portal/conteudos' %>" enctype="multipart/form-data" class="hub-admin-form">
+        <form method="post" action="<%= editing.id ? '/admin/portal/conteudos/' + editing.id : '/admin/portal/conteudos' %>" enctype="multipart/form-data" class="hub-admin-form" data-once>
+          <%- include('../partials/hub-filter-fields', { filters: filters }) %>
           <h2><%= editing.id ? 'Editar conteúdo' : 'Novo conteúdo' %></h2>
           <label>Imagem <%= editing.id ? '' : '(obrigatória)' %>
             <input name="image" type="file" accept="image/jpeg,image/png,image/webp" <%= editing.id ? '' : 'required' %> />
           </label>
-          <p class="hub-muted" style="margin: -0.35rem 0 0.75rem;">Recomendado: 1280 × 720 px (16:9). JPG, PNG ou WebP, até 8 MB. A Home recorta a foto para preencher o card.</p>
+          <p class="hub-muted">Recomendado: 1280 × 720 px (16:9). JPG, PNG ou WebP, até 8 MB.<% if (editing.image_url) { %> Arquivo atual abaixo — envie outro só para substituir.<% } %></p>
           <% if (editing.image_url) { %>
-            <p><img src="<%= editing.image_url %>" alt="" width="240" height="135" style="object-fit:cover;border-radius:8px;" /></p>
+            <p><img src="<%= editing.image_url %>" alt="" width="240" height="135" style="object-fit:cover;" /></p>
           <% } %>
           <label>Título <input name="title" required maxlength="160" value="<%= editing.title || '' %>" /></label>
           <label>Descrição <textarea name="description" rows="3" maxlength="1000"><%= editing.description || '' %></textarea></label>
@@ -46,40 +59,70 @@
           <label>URL externa <input name="target_url" type="url" maxlength="2000" value="<%= editing.target_url || '' %>" placeholder="https://" /></label>
           <label>Página interna <input name="target_route" maxlength="300" value="<%= editing.target_route || '' %>" placeholder="/portal/..." /></label>
           <label>Ordem <input name="sort_order" type="number" value="<%= editing.sort_order != null ? editing.sort_order : 0 %>" /></label>
-          <label class="hub-check"><input type="checkbox" name="is_published" value="1" <%= editing.id ? (editing.is_published ? 'checked' : '') : 'checked' %> /> Publicado</label>
-          <label class="hub-check"><input type="checkbox" name="show_on_home" value="1" <%= editing.id ? (editing.show_on_home ? 'checked' : '') : 'checked' %> /> Exibir na Home</label>
+          <label class="hub-check"><input type="checkbox" name="is_published" value="1" <%= editing.id ? (editing.is_published ? 'checked' : '') : 'checked' %> /> Publicado (aparece na Home)</label>
           <div class="hub-form-actions">
-            <a class="hub-btn hub-btn-ghost" href="/admin/portal/conteudos">Cancelar</a>
-            <button type="submit" class="hub-btn hub-btn-primary">Salvar</button>
+            <a class="hub-btn hub-btn-ghost" href="/admin/portal/conteudos<%= filtersQuery %>">Cancelar</a>
+            <button type="submit" class="hub-btn hub-btn-primary" data-busy="Salvando...">Salvar</button>
           </div>
         </form>
       <% } %>
 
-      <% if (!(contents || []).length) { %>
-        <p class="hub-muted">Nenhum conteúdo cadastrado.</p>
+      <% if (!(contents || []).length && !hasFilter) { %>
+        <div class="hub-admin-empty">
+          <p>Você ainda não possui conteúdos no carrossel.</p>
+          <a class="hub-btn hub-btn-primary" href="/admin/portal/conteudos/novo">+ Novo conteúdo</a>
+        </div>
+      <% } else if (!(contents || []).length) { %>
+        <div class="hub-admin-empty">
+          <p>Nenhum conteúdo neste filtro.</p>
+          <a class="hub-btn hub-btn-ghost" href="/admin/portal/conteudos">Limpar</a>
+        </div>
       <% } else { %>
-        <ul class="hub-admin-list">
-          <% contents.forEach(function (item) { %>
-            <li class="hub-admin-list__item">
-              <div class="hub-admin-content-row">
-                <% if (item.image_url) { %>
-                  <img src="<%= item.image_url %>" alt="" width="96" height="54" loading="lazy" />
-                <% } %>
-                <div>
-                  <strong><%= item.title %></strong>
-                  <span class="hub-muted"><%= item.is_published ? 'Publicado' : 'Rascunho' %><% if (item.published_at) { %> · <%= new Date(item.published_at).toLocaleDateString('pt-BR') %><% } %></span>
-                </div>
-              </div>
-              <div class="hub-admin-list__actions">
-                <a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/conteudos/<%= item.id %>/editar">Editar</a>
-                <form method="post" action="/admin/portal/conteudos/<%= item.id %>/status">
-                  <input type="hidden" name="active" value="<%= item.is_published ? '0' : '1' %>" />
-                  <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm"><%= item.is_published ? 'Desativar' : 'Publicar' %></button>
-                </form>
-              </div>
-            </li>
-          <% }) %>
-        </ul>
+        <div class="hub-admin-table-wrap hub-admin-table-wrap--stack">
+          <table class="hub-admin-table">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Categoria</th>
+                <th>Situação</th>
+                <th>Ordem</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% contents.forEach(function (item) { %>
+                <tr>
+                  <td data-label="Título"><strong><%= item.title %></strong></td>
+                  <td data-label="Categoria"><%= item.category %></td>
+                  <td data-label="Situação"><span class="hub-pill<%= item.is_published ? ' hub-pill-ok' : '' %>"><%= item.is_published ? 'Publicado' : 'Rascunho' %></span></td>
+                  <td data-label="Ordem"><%= item.sort_order %></td>
+                  <td data-label="Ações">
+                    <div class="hub-admin-list__actions">
+                      <a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/conteudos/<%= item.id %>/editar<%= filtersQuery %>">Editar</a>
+                      <form method="post" action="/admin/portal/conteudos/<%= item.id %>/status">
+                        <%- include('../partials/hub-filter-fields', { filters: filters }) %>
+                        <input type="hidden" name="active" value="<%= item.is_published ? '0' : '1' %>" />
+                        <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm"><%= item.is_published ? 'Desativar' : 'Publicar' %></button>
+                      </form>
+                      <button type="button" class="hub-btn hub-btn-ghost hub-btn-sm" data-open-dialog="dlg-content-<%= item.id %>">Excluir</button>
+                    </div>
+                    <%- include('../partials/hub-confirm-dialog', {
+                      dialogId: 'dlg-content-' + item.id,
+                      recordName: item.title,
+                      heading: 'Excluir conteúdo?',
+                      message: 'Esse slide sai do carrossel da Home.',
+                      action: '/admin/portal/conteudos/' + item.id + '/excluir',
+                      filters: filters,
+                      autoOpen: String(confirmar) === String(item.id),
+                      confirmLabel: 'Excluir',
+                      busyLabel: 'Excluindo...'
+                    }) %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
       <% } %>
     </section>
   </main>

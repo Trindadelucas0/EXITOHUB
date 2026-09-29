@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('../partials/hub-head') %>
+</head>
+<body class="hub-body">
+  <%- include('../partials/hub-chrome', { current: 'portal-agenda', breadcrumb: 'Agenda Êxito' }) %>
+
+  <main class="hub-shell-main">
+    <div class="hub-area-page">
+      <p class="hub-breadcrumb hub-area-page__crumb">
+        <a href="/">Início</a> / Agenda Êxito
+      </p>
+
+      <%- include('../partials/hub-agenda-band', { showFullLink: false }) %>
+
+      <p>
+        <a class="hub-btn hub-btn-primary" href="/">Voltar ao início</a>
+      </p>
+    </div>
+  </main>
+  <%- include('../partials/hub-chrome-end') %>
+  <script src="/hub-assets/vendor/fullcalendar/index.global.min.js"></script>
+  <script src="/hub-assets/vendor/fullcalendar/pt-br.global.min.js"></script>
+  <script src="/hub-assets/hub-agenda.js"></script>
+</body>
+</html>

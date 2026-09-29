@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('../partials/hub-head') %>
+</head>
+<body class="hub-body">
+  <%- include('../partials/hub-chrome', { current: 'admin-portal', breadcrumb: 'Portal Corporativo' }) %>
+  <main class="hub-shell-main">
+    <section class="hub-card">
+      <p class="hub-breadcrumb"><a href="/admin/portal">Portal Corporativo</a> / Eventos</p>
+      <div class="hub-admin-head">
+        <div>
+          <h1>Eventos</h1>
+          <p class="hub-muted">O evento ativo aparece na Home e na Agenda Êxito só para quem estiver marcado em Quem vai.</p>
+        </div>
+        <a class="hub-btn hub-btn-primary" href="/admin/portal/eventos/novo<%= filtersQuery %>">+ Novo evento</a>
+      </div>
+      <% if (flash) { %><div class="hub-alert hub-alert-ok" role="status"><%= flash %></div><% } %>
+      <% if (error) { %><div class="hub-alert hub-alert-error" role="alert"><%= error %></div><% } %>
+
+      <%- include('../partials/hub-admin-filters', {
+        action: '/admin/portal/eventos',
+        filters: filters,
+        hasFilter: hasFilter,
+        placeholder: 'Buscar título ou local',
+        sitActiveLabel: 'Ativos',
+        sitInactiveLabel: 'Inativos'
+      }) %>
+
+      <% if (editing) { %>
+        <form method="post" action="<%= editing.id ? '/admin/portal/eventos/' + editing.id : '/admin/portal/eventos' %>" class="hub-admin-form" data-once>
+          <%- include('../partials/hub-filter-fields', { filters: filters }) %>
+          <h2><%= editing.id ? 'Editar evento' : 'Novo evento' %></h2>
+          <label>Título <input name="title" required maxlength="200" value="<%= editing.title || '' %>" /></label>
+          <label>Local <input name="place" maxlength="200" value="<%= editing.place || '' %>" /></label>
+          <label>Começa
+            <input name="starts_at" type="datetime-local" required value="<%= formatDatetimeLocal(editing.starts_at) %>" />
+          </label>
+          <label>Termina <span class="hub-muted">(opcional)</span>
+            <input name="ends_at" type="datetime-local" value="<%= formatDatetimeLocal(editing.ends_at) %>" />
+          </label>
+          <%
+            const markedIds = (editing.attendee_ids || []).map(String);
+          %>
+          <fieldset class="hub-event-attendees">
+            <legend>Quem vai</legend>
+            <p class="hub-muted">Só os marcados veem o evento na Home e na Agenda. Marque ao menos um usuário.</p>
+            <% if (!(users || []).length) { %>
+              <p class="hub-muted">Nenhum usuário ativo.</p>
+            <% } else { %>
+              <div class="hub-event-attendees__list">
+                <% users.forEach(function (u) { %>
+                  <label class="hub-check">
+                    <input type="checkbox" name="user_ids" value="<%= u.id %>" <%= markedIds.includes(String(u.id)) ? 'checked' : '' %> />
+                    <span class="hub-event-attendees__name">
+                      <%= u.displayName %>
+                      <% if (u.username && u.username !== u.displayName) { %><small class="hub-muted"><%= u.username %></small><% } %>
+                    </span>
+                  </label>
+                <% }) %>
+              </div>
+            <% } %>
+          </fieldset>
+          <label class="hub-check"><input type="checkbox" name="is_active" value="1" <%= editing.id ? (editing.is_active ? 'checked' : '') : 'checked' %> /> Ativo</label>
+          <div class="hub-form-actions">
+            <a class="hub-btn hub-btn-ghost" href="/admin/portal/eventos<%= filtersQuery %>">Cancelar</a>
+            <button type="submit" class="hub-btn hub-btn-primary" data-busy="Salvando...">Salvar</button>
+          </div>
+        </form>
+      <% } %>
+
+      <% if (!(events || []).length && !hasFilter) { %>
+        <div class="hub-admin-empty">
+          <p>Você ainda não possui eventos.</p>
+          <a class="hub-btn hub-btn-primary" href="/admin/portal/eventos/novo">+ Novo evento</a>
+        </div>
+      <% } else if (!(events || []).length) { %>
+        <div class="hub-admin-empty">
+          <p>Nenhum evento neste filtro.</p>
+          <a class="hub-btn hub-btn-ghost" href="/admin/portal/eventos">Limpar</a>
+        </div>
+      <% } else { %>
+        <div class="hub-admin-table-wrap hub-admin-table-wrap--stack">
+          <table class="hub-admin-table">
+            <thead>
+              <tr>
+                <th>Título</th>
+                <th>Quando</th>
+                <th>Local</th>
+                <th>Marcados</th>
+                <th>Situação</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% events.forEach(function (item) { %>
+                <tr>
+                  <td data-label="Título"><strong><%= item.title %></strong></td>
+                  <td data-label="Quando">
+                    <%= formatDatetimeLocal(item.starts_at).replace('T', ' ') %>
+                    <% if (item.ends_at) { %> – <%= formatDatetimeLocal(item.ends_at).replace('T', ' ') %><% } %>
+                  </td>
+                  <td data-label="Local"><%= item.place || '—' %></td>
+                  <td data-label="Marcados">
+                    <% if (item.attendee_count) { %>
+                      <%= item.attendee_count %>
+                    <% } else { %>
+                      <span class="hub-pill" title="Sem marcados, o evento não aparece na Home">0 · fora da Home</span>
+                    <% } %>
+                  </td>
+                  <td data-label="Situação"><span class="hub-pill<%= item.is_active ? ' hub-pill-ok' : '' %>"><%= item.is_active ? 'Ativo' : 'Inativo' %></span></td>
+                  <td data-label="Ações">
+                    <div class="hub-admin-list__actions">
+                      <a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/eventos/<%= item.id %>/editar<%= filtersQuery %>">Editar</a>
+                      <form method="post" action="/admin/portal/eventos/<%= item.id %>/status">
+                        <%- include('../partials/hub-filter-fields', { filters: filters }) %>
+                        <input type="hidden" name="active" value="<%= item.is_active ? '0' : '1' %>" />
+                        <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm"><%= item.is_active ? 'Desativar' : 'Ativar' %></button>
+                      </form>
+                      <button type="button" class="hub-btn hub-btn-ghost hub-btn-sm" data-open-dialog="dlg-event-<%= item.id %>">Excluir</button>
+                    </div>
+                    <%- include('../partials/hub-confirm-dialog', {
+                      dialogId: 'dlg-event-' + item.id,
+                      recordName: item.title,
+                      heading: 'Excluir evento?',
+                      message: 'Esse evento sai da Home e da Agenda Êxito de quem estava marcado.',
+                      action: '/admin/portal/eventos/' + item.id + '/excluir',
+                      filters: filters,
+                      autoOpen: String(confirmar) === String(item.id),
+                      confirmLabel: 'Excluir',
+                      busyLabel: 'Excluindo...'
+                    }) %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </section>
+  </main>
+  <%- include('../partials/hub-chrome-end') %>
+</body>
+</html>

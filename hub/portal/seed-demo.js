@@ -6,6 +6,7 @@ const META_KEY = 'portal_demo_seed_v1';
 const ALBUM_META_KEY = 'portal_demo_album_off_v1';
 const CLEAR_DEMO_META = 'portal_demo_clear_v1';
 const EXITO_RESET_META = 'portal_exito_onboarding_reset_v2';
+const ANNOUNCEMENT_KIND_META = 'portal_announcements_kind_v1';
 
 const PROGRESS_KINDS = ['video', 'diagram', 'informative', 'catalog', 'document'];
 
@@ -326,7 +327,27 @@ async function clearDemoContentOnce() {
   return true;
 }
 
+/** Classifica pelo título os comunicados já gravados. Depois disso, só o admin muda o tipo. */
+async function backfillAnnouncementKindOnce() {
+  const done = await query(`SELECT 1 FROM hub_meta WHERE key = $1 LIMIT 1`, [ANNOUNCEMENT_KIND_META]);
+  if (done.rowCount) return false;
+
+  await query(`UPDATE portal_announcements SET kind = 'interno' WHERE title ILIKE '%interno%'`);
+  await query(
+    `UPDATE portal_announcements SET kind = 'hub'
+     WHERE title ILIKE '%hub%' AND title NOT ILIKE '%interno%'`,
+  );
+  await query(
+    `INSERT INTO hub_meta (key, value) VALUES ($1, '1')
+     ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`,
+    [ANNOUNCEMENT_KIND_META],
+  );
+  console.log('[hub] tipo dos comunicados classificado pelo título');
+  return true;
+}
+
 async function seedDemoPortal() {
+  await backfillAnnouncementKindOnce();
   if (!(await alreadySeeded())) {
     await markSeeded();
   }

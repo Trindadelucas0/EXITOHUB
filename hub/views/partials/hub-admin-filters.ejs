@@ -1,0 +1,40 @@
+<form class="hub-users-toolbar" method="get" action="<%= action %>">
+  <label class="hub-field hub-users-search">
+    <span class="visually-hidden">Buscar</span>
+    <input type="search" name="q" value="<%= filters.q || '' %>" placeholder="<%= placeholder %>" maxlength="80" autocomplete="off" />
+  </label>
+  <% if (typeof showCategory !== 'undefined' && showCategory && typeof categories !== 'undefined' && categories) { %>
+    <label class="hub-field">
+      <span>Categoria</span>
+      <select name="cat">
+        <option value="">Todas</option>
+        <% categories.forEach(function (cat) { %>
+          <option value="<%= cat %>" <%= filters.cat === cat ? 'selected' : '' %>><%= cat %></option>
+        <% }) %>
+      </select>
+    </label>
+  <% } %>
+  <% if (typeof showDepartment !== 'undefined' && showDepartment && typeof departments !== 'undefined' && departments) { %>
+    <label class="hub-field">
+      <span>Setor</span>
+      <select name="dep">
+        <option value="">Todos</option>
+        <% departments.forEach(function (dep) { %>
+          <option value="<%= dep %>" <%= filters.dep === dep ? 'selected' : '' %>><%= dep %></option>
+        <% }) %>
+      </select>
+    </label>
+  <% } %>
+  <label class="hub-field">
+    <span>Situação</span>
+    <select name="sit">
+      <option value="">Todas</option>
+      <option value="ativo" <%= filters.sit === 'ativo' ? 'selected' : '' %>><%= sitActiveLabel || 'Ativos' %></option>
+      <option value="inativo" <%= filters.sit === 'inativo' ? 'selected' : '' %>><%= sitInactiveLabel || 'Inativos' %></option>
+    </select>
+  </label>
+  <button type="submit" class="hub-btn hub-btn-ghost">Filtrar</button>
+  <% if (hasFilter) { %>
+    <a class="hub-btn hub-btn-ghost" href="<%= action %>">Limpar</a>
+  <% } %>
+</form>

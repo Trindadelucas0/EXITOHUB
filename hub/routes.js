@@ -218,6 +218,19 @@ router.get('/logout', requireHubAuth, async (req, res) => {
   return res.redirect('/login');
 });
 
+function moduleAccessFor(user) {
+  if (!user) return [];
+  const items = [];
+  if (user.canNcm) items.push({ href: '/ncm/', label: 'Auditor Fiscal', hint: 'Fiscal' });
+  if (user.canConci) items.push({ href: '/conci/', label: 'Conciliação', hint: 'Contábil' });
+  if (user.canFolha) items.push({ href: '/folha/dashboard', label: 'Controle folha mensal', hint: 'Folha' });
+  if (user.isAdmin) {
+    items.push({ href: '/admin/portal', label: 'Portal Corporativo', hint: 'Administrativo' });
+    items.push({ href: '/admin/usuarios', label: 'Gerenciar usuários', hint: 'Administrativo' });
+  }
+  return items;
+}
+
 router.get('/', requireHubAuth, async (req, res) => {
   try {
     const portal = await portalRoutes.loadHomeForRequest(req.hubUser);
@@ -234,10 +247,12 @@ router.get('/', requireHubAuth, async (req, res) => {
       contacts: portal.contacts,
       contents: portal.contents,
       announcements: portal.announcements || [],
-      events: portal.events || [],
-      nextEvent: portal.nextEvent || null,
+      announcementKinds: portal.announcementKinds || [],
+      agendaToday: portal.agendaToday || [],
+      agendaTomorrow: portal.agendaTomorrow || [],
       emptyStates: portal.emptyStates,
       contactDepartments: portal.contactDepartments,
+      moduleAccess: moduleAccessFor(req.hubUser),
       flash: flashKey === 'concluido' ? 'Integração concluída. Bem-vindo ao HUB.' : null,
       error: req.query.erro ? String(req.query.erro).slice(0, 300) : null,
     });

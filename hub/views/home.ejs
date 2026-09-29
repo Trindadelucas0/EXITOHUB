@@ -13,52 +13,62 @@
         <% if (error) { %><div class="hub-alert hub-alert-error" role="alert"><%= error %></div><% } %>
 
         <% if (needsOnboarding) { %>
-          <aside class="hub-onboarding-banner hub-onboarding-banner--rich" aria-label="Integração pendente">
-            <div class="hub-onboarding-banner__copy">
-              <div class="hub-onboarding-banner__eyebrow-row">
-                <span class="hub-onboarding-chip">
-                  <span class="material-symbols-outlined" aria-hidden="true">schedule</span>
-                  Onboarding em Curso
-                </span>
-                <% if (onboardingProgress && onboardingProgress.trackName) { %>
-                  <span class="hub-muted" style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;">
-                    <%= onboardingProgress.trackName %>
+          <details class="hub-onboarding-banner hub-onboarding-banner--rich" aria-label="Integração pendente">
+            <summary class="hub-onboarding-banner__summary">
+              <span class="hub-onboarding-banner__head">
+                <span class="hub-onboarding-banner__eyebrow-row">
+                  <span class="hub-onboarding-chip">
+                    <span class="material-symbols-outlined" aria-hidden="true">schedule</span>
+                    Onboarding em Curso
                   </span>
+                  <% if (onboardingProgress && onboardingProgress.trackName) { %>
+                    <span class="hub-muted" style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;">
+                      <%= onboardingProgress.trackName %>
+                    </span>
+                  <% } %>
+                </span>
+                <h2 class="hub-onboarding-banner__title">BEM-VINDO AO ÊXITO</h2>
+              </span>
+              <% if (onboardingProgress && onboardingProgress.total) { %>
+                <strong class="hub-onboarding-banner__percent"><%= onboardingProgress.percent %>%</strong>
+              <% } %>
+              <span class="material-symbols-outlined hub-onboarding-banner__chevron" aria-hidden="true">expand_more</span>
+            </summary>
+            <div class="hub-onboarding-banner__body">
+              <div class="hub-onboarding-banner__copy">
+                <p class="hub-muted" style="margin: 0;">
+                  Vamos apresentar a nossa empresa, cultura, ferramentas operacionais e processos essenciais para o seu dia a dia.
+                </p>
+                <% if (onboardingProgress && onboardingProgress.total) { %>
+                  <div class="hub-onboarding-meter" role="progressbar"
+                       aria-valuenow="<%= onboardingProgress.percent %>"
+                       aria-valuemin="0" aria-valuemax="100"
+                       aria-label="Progresso da integração"
+                       style="margin-top: 1rem; max-width: 28rem;">
+                    <span class="hub-onboarding-meter__bar" style="width: <%= onboardingProgress.percent %>%"></span>
+                  </div>
+                  <p class="hub-muted" style="margin: 0.35rem 0 0; display: flex; justify-content: space-between; max-width: 28rem; font-size: 0.75rem;">
+                    <span style="color: var(--exito-green); font-weight: 600;">
+                      <%= onboardingProgress.doneCount %> de <%= onboardingProgress.total %> etapas concluídas
+                    </span>
+                    <strong><%= onboardingProgress.percent %>%</strong>
+                  </p>
+                <% } else { %>
+                  <p class="hub-muted" style="margin-top: 0.75rem;">Conheça os conteúdos do portal e conclua a trilha de integração.</p>
                 <% } %>
               </div>
-              <h2 class="hub-onboarding-banner__title">BEM-VINDO AO ÊXITO</h2>
-              <p class="hub-muted" style="margin: 0.35rem 0 0;">
-                Vamos apresentar a nossa empresa, cultura, ferramentas operacionais e processos essenciais para o seu dia a dia.
-              </p>
-              <% if (onboardingProgress && onboardingProgress.total) { %>
-                <div class="hub-onboarding-meter" role="progressbar"
-                     aria-valuenow="<%= onboardingProgress.percent %>"
-                     aria-valuemin="0" aria-valuemax="100"
-                     aria-label="Progresso da integração"
-                     style="margin-top: 1rem; max-width: 28rem;">
-                  <span class="hub-onboarding-meter__bar" style="width: <%= onboardingProgress.percent %>%"></span>
-                </div>
-                <p class="hub-muted" style="margin: 0.35rem 0 0; display: flex; justify-content: space-between; max-width: 28rem; font-size: 0.75rem;">
-                  <span style="color: var(--exito-green); font-weight: 600;">
-                    <%= onboardingProgress.doneCount %> de <%= onboardingProgress.total %> etapas concluídas
-                  </span>
-                  <strong><%= onboardingProgress.percent %>%</strong>
-                </p>
-              <% } else { %>
-                <p class="hub-muted" style="margin-top: 0.75rem;">Conheça os conteúdos do portal e conclua a trilha de integração.</p>
-              <% } %>
+              <div class="hub-onboarding-banner__actions">
+                <a class="hub-btn hub-btn-ghost" href="#areas">
+                  Ver checklist
+                  <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 1rem;">checklist</span>
+                </a>
+                <a class="hub-btn hub-btn-primary" href="/portal/onboarding">
+                  Continuar integração
+                  <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 1rem;">arrow_forward</span>
+                </a>
+              </div>
             </div>
-            <div class="hub-onboarding-banner__actions">
-              <a class="hub-btn hub-btn-ghost" href="#areas">
-                Ver checklist
-                <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 1rem;">checklist</span>
-              </a>
-              <a class="hub-btn hub-btn-primary" href="/portal/onboarding">
-                Continuar integração
-                <span class="material-symbols-outlined" aria-hidden="true" style="font-size: 1rem;">arrow_forward</span>
-              </a>
-            </div>
-          </aside>
+          </details>
         <% } %>
 
         <% if (needsOnboarding) { %>
@@ -107,32 +117,54 @@
               <h3>Módulos de Integração &amp; Conhecimento</h3>
               <span class="hub-muted" style="font-size: 0.875rem;">Selecione para navegar pelos materiais</span>
             </div>
-            <div class="hub-portal-cards hub-portal-cards--icons">
-              <% (cards || []).forEach(function (card) { %>
-                <a class="hub-portal-card hub-portal-card--icon" href="<%= card.route %>">
-                  <div class="hub-portal-card__top">
-                    <span class="hub-portal-card__icon-box" aria-hidden="true">
-                      <%- include('partials/hub-menu-icon', { iconName: card.icon }) %>
-                    </span>
-                    <% if (card.itemCount) { %>
-                      <span class="hub-portal-card__tag"><%= card.itemCount %> item<%= card.itemCount === 1 ? '' : 's' %></span>
-                    <% } else { %>
-                      <span class="hub-portal-card__tag">Área</span>
-                    <% } %>
+            <% var stripCards = cards || []; var stripAnimated = stripCards.length > 3; %>
+            <div class="hub-portal-strip<%= stripAnimated ? ' is-animated' : '' %>" style="--strip-count: <%= stripCards.length %>;">
+              <div class="hub-portal-strip__track">
+                <% (stripAnimated ? [false, true] : [false]).forEach(function (isClone) { %>
+                  <div class="hub-portal-strip__group"<%- isClone ? ' aria-hidden="true"' : '' %>>
+                    <% stripCards.forEach(function (card) { %>
+                      <a class="hub-portal-card hub-portal-card--icon hub-portal-strip__card" href="<%= card.route %>"<%- isClone ? ' tabindex="-1"' : '' %>>
+                        <div class="hub-portal-card__top">
+                          <span class="hub-portal-card__icon-box" aria-hidden="true">
+                            <%- include('partials/hub-menu-icon', { iconName: card.icon }) %>
+                          </span>
+                          <% if (card.itemCount) { %>
+                            <span class="hub-portal-card__tag"><%= card.itemCount %> item<%= card.itemCount === 1 ? '' : 's' %></span>
+                          <% } else { %>
+                            <span class="hub-portal-card__tag">Área</span>
+                          <% } %>
+                        </div>
+                        <div>
+                          <strong><%= card.label %></strong>
+                          <span class="hub-portal-card__desc"><%= card.description %></span>
+                        </div>
+                        <div class="hub-portal-card__foot">
+                          <span><%= card.short || card.label %></span>
+                          <span class="hub-portal-card__cta">Acessar →</span>
+                        </div>
+                      </a>
+                    <% }) %>
                   </div>
-                  <div>
-                    <strong><%= card.label %></strong>
-                    <span class="hub-portal-card__desc"><%= card.description %></span>
-                  </div>
-                  <div class="hub-portal-card__foot">
-                    <span><%= card.short || card.label %></span>
-                    <span class="hub-portal-card__cta">Acessar →</span>
-                  </div>
-                </a>
-              <% }) %>
+                <% }) %>
+              </div>
             </div>
           </section>
         <% } else { %>
+          <% if (moduleAccess && moduleAccess.length) { %>
+            <section class="hub-access" aria-label="Acessos principais">
+              <h2 class="hub-access__title">Acessos principais</h2>
+              <ul class="hub-access__list">
+                <% moduleAccess.forEach(function (item) { %>
+                  <li>
+                    <a class="hub-access__link" href="<%= item.href %>">
+                      <span class="hub-access__hint"><%= item.hint %></span>
+                      <strong><%= item.label %></strong>
+                    </a>
+                  </li>
+                <% }) %>
+              </ul>
+            </section>
+          <% } %>
           <%- include('partials/hub-portal-quick-bar', { quickCards: quickCards || [] }) %>
         <% } %>
 
@@ -148,7 +180,7 @@
               <p class="hub-muted hub-portal-empty"><%= (emptyStates && emptyStates.contents) || 'Em breve, novidades do Êxito.' %></p>
             </div>
           <% } else { %>
-            <div class="hub-carousel hub-carousel--split" data-carousel data-autoplay="6000">
+            <div class="hub-carousel hub-carousel--split" data-carousel data-autoplay="5000">
               <div class="hub-carousel__toolbar">
                 <h2 id="conteudos-titulo" class="hub-portal-section__title hub-carousel__title">
                   <span class="material-symbols-outlined" aria-hidden="true">auto_stories</span>
@@ -183,6 +215,7 @@
                       <% } %>
                       <strong><%= item.title %></strong>
                       <% if (item.description) { %><span><%= item.description %></span><% } %>
+                      <span class="hub-carousel__more">Ver mais →</span>
                     </div>
                   </a>
                   <% } else { %>
@@ -209,13 +242,18 @@
         </section>
 
         <section class="hub-home-feed" aria-label="Acontece no Êxito">
-          <article class="hub-home-feed__panel">
+          <article class="hub-home-feed__panel hub-announce-panel">
             <div class="hub-home-feed__head">
-              <h2 class="hub-home-feed__title">
-                <span class="material-symbols-outlined" aria-hidden="true">notifications_active</span>
-                Comunicados
-              </h2>
-              <a class="hub-home-feed__link" href="/portal/comunicados">Ver todos →</a>
+              <div class="hub-announce-head">
+                <span class="hub-announce-head__icon" aria-hidden="true">
+                  <span class="material-symbols-outlined">campaign</span>
+                </span>
+                <div class="hub-announce-head__text">
+                  <h2 class="hub-announce-head__title">Comunicados</h2>
+                  <p class="hub-announce-head__lead">Fique por dentro das novidades e informações importantes do portal.</p>
+                </div>
+              </div>
+              <a class="hub-announce-head__all" href="/portal/comunicados">Ver todos →</a>
             </div>
             <% if (!(typeof announcements !== 'undefined' && announcements && announcements.length)) { %>
               <div class="hub-home-feed__empty">
@@ -226,103 +264,43 @@
                 <p class="hub-home-feed__empty-text"><%= (emptyStates && emptyStates.announcementsSupport) || '' %></p>
               </div>
             <% } else { %>
-              <ul class="hub-home-feed__list">
+              <ul class="hub-announce-list">
                 <% announcements.forEach(function (item) { %>
-                  <li class="hub-home-feed__row">
-                    <strong class="hub-home-feed__row-title"><%= item.title %></strong>
-                    <% if (item.published_at) { %>
-                      <time class="hub-home-feed__row-meta" datetime="<%= new Date(item.published_at).toISOString() %>">
-                        <%= new Intl.DateTimeFormat('pt-BR', {
-                          day: 'numeric', month: 'short',
-                          timeZone: 'America/Sao_Paulo'
-                        }).format(new Date(item.published_at)) %>
-                      </time>
-                    <% } %>
-                    <% if (item.body) { %>
-                      <p class="hub-home-feed__row-text"><%= item.body %></p>
-                    <% } %>
+                  <%
+                    const kinds = typeof announcementKinds !== 'undefined' && announcementKinds.length
+                      ? announcementKinds
+                      : [{ id: 'operacional', label: 'Operacional', materialIcon: 'campaign' }];
+                    const kindMeta = kinds.find(function (k) { return k.id === item.kind; }) || kinds[0];
+                  %>
+                  <li class="hub-announce hub-announce--<%= kindMeta.id %>">
+                    <span class="hub-announce__icon" aria-hidden="true">
+                      <span class="material-symbols-outlined"><%= kindMeta.materialIcon %></span>
+                    </span>
+                    <div class="hub-announce__body">
+                      <span class="hub-announce__tag"><%= kindMeta.label %></span>
+                      <strong class="hub-announce__title"><%= item.title %></strong>
+                      <% if (item.published_at) { %>
+                        <time class="hub-announce__date" datetime="<%= new Date(item.published_at).toISOString() %>">
+                          <span class="material-symbols-outlined" aria-hidden="true">calendar_today</span>
+                          <%= new Intl.DateTimeFormat('pt-BR', {
+                            day: 'numeric', month: 'short',
+                            timeZone: 'America/Sao_Paulo'
+                          }).format(new Date(item.published_at)) %>
+                        </time>
+                      <% } %>
+                      <% if (item.body) { %>
+                        <p class="hub-announce__text"><%= item.body %></p>
+                      <% } %>
+                    </div>
+                    <span class="material-symbols-outlined hub-announce__chevron" aria-hidden="true">chevron_right</span>
                   </li>
                 <% }) %>
               </ul>
             <% } %>
-            <div class="hub-home-feed__foot">
-              <span>Canal de transmissão interna</span>
-            </div>
-          </article>
-          <article class="hub-home-feed__panel">
-            <div class="hub-home-feed__head">
-              <h2 class="hub-home-feed__title">
-                <span class="material-symbols-outlined" aria-hidden="true">event_available</span>
-                Próximos eventos
-              </h2>
-              <a class="hub-home-feed__link" href="/portal/eventos">Ver todos →</a>
-            </div>
-            <% if (!(typeof events !== 'undefined' && events && events.length)) { %>
-              <div class="hub-home-feed__empty">
-                <span class="hub-home-feed__empty-icon" aria-hidden="true">
-                  <span class="material-symbols-outlined">event_busy</span>
-                </span>
-                <p class="hub-home-feed__empty-title"><%= (emptyStates && emptyStates.events) || 'Nenhum evento próximo agendado.' %></p>
-                <p class="hub-home-feed__empty-text"><%= (emptyStates && emptyStates.eventsSupport) || '' %></p>
-              </div>
-            <% } else { %>
-              <ul class="hub-home-feed__list">
-                <% events.forEach(function (item) { %>
-                  <li class="hub-home-feed__row">
-                    <strong class="hub-home-feed__row-title"><%= item.title %></strong>
-                    <% if (item.starts_at) { %>
-                      <time class="hub-home-feed__row-meta" datetime="<%= new Date(item.starts_at).toISOString() %>">
-                        <%= new Intl.DateTimeFormat('pt-BR', {
-                          weekday: 'short', day: 'numeric', month: 'short',
-                          hour: '2-digit', minute: '2-digit',
-                          timeZone: 'America/Sao_Paulo'
-                        }).format(new Date(item.starts_at)) %>
-                        <% if (item.place) { %> · <%= item.place %><% } %>
-                      </time>
-                    <% } else if (item.place) { %>
-                      <span class="hub-home-feed__row-meta"><%= item.place %></span>
-                    <% } %>
-                  </li>
-                <% }) %>
-              </ul>
-            <% } %>
-            <div class="hub-home-feed__foot">
-              <span>Agenda do portal</span>
-            </div>
           </article>
         </section>
 
-        <a class="hub-home-agenda" href="/portal/agenda">
-          <div class="hub-home-agenda__main">
-            <span class="hub-home-agenda__icon" aria-hidden="true">
-              <span class="material-symbols-outlined">calendar_month</span>
-            </span>
-            <div>
-              <div class="hub-home-agenda__title-row">
-                <h2 class="hub-home-agenda__title">Agenda Êxito</h2>
-                <span class="hub-home-agenda__badge">Semanal</span>
-              </div>
-              <% if (typeof nextEvent !== 'undefined' && nextEvent) { %>
-                <p class="hub-home-agenda__desc">
-                  Próxima: <%= nextEvent.title %>
-                  <% if (nextEvent.starts_at) { %>
-                    · <%= new Intl.DateTimeFormat('pt-BR', {
-                      weekday: 'short', day: 'numeric', month: 'short',
-                      hour: '2-digit', minute: '2-digit',
-                      timeZone: 'America/Sao_Paulo'
-                    }).format(new Date(nextEvent.starts_at)) %>
-                  <% } %>
-                </p>
-              <% } else { %>
-                <p class="hub-home-agenda__desc"><%= (emptyStates && emptyStates.agenda) || 'Reuniões, treinamentos e eventos internos da semana.' %></p>
-              <% } %>
-            </div>
-          </div>
-          <span class="hub-home-agenda__cta">
-            Ver agenda completa
-            <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-          </span>
-        </a>
+        <%- include('partials/hub-agenda-band', { showFullLink: true }) %>
 
         <section class="hub-home-bottom" aria-label="Links e contatos">
           <article class="hub-home-bottom__panel">
@@ -432,6 +410,9 @@
 
   <%- include('partials/hub-chrome-end') %>
   <script src="/hub-assets/hub-carousel.js"></script>
+  <script src="/hub-assets/vendor/fullcalendar/index.global.min.js"></script>
+  <script src="/hub-assets/vendor/fullcalendar/pt-br.global.min.js"></script>
+  <script src="/hub-assets/hub-agenda.js"></script>
   <script>
     (function () {
       var select = document.querySelector('[data-contact-filter]');

@@ -1,6 +1,6 @@
 'use strict';
 
-const { query } = require('../db');
+const { query, getPool } = require('../db');
 const { setOnboardingStatus } = require('../auth');
 const { mediaUrl } = require('./upload');
 const {
@@ -8,6 +8,7 @@ const {
   CONTACT_DEPARTMENTS,
   ITEM_DEPARTMENTS,
   CONTENT_CATEGORIES,
+  ANNOUNCEMENT_KINDS,
   ITEM_KINDS,
   HOME_INTEGRATION_KINDS,
   TARGET_TYPES,
@@ -135,45 +136,426 @@ async function countActiveItemsByKind() {
   return map;
 }
 
-async function listAnnouncements({ activeOnly = true, limit = null } = {}) {
+function pushSearch(clauses, params, columns, q) {
+  const term = trimStr(q, 80);
+  if (!term) return;
+  params.push(`%${term.toLowerCase()}%`);
+  const idx = params.length;
+  const parts = columns.map((col) => `LOWER(COALESCE(${col}, '')) LIKE $${idx}`);
+  clauses.push(`(${parts.join(' OR ')})`);
+}
+
+function pushActiveSit(clauses, column, sit) {
+  if (sit === 'ativo') clauses.push(`${column} = true`);
+  if (sit === 'inativo') clauses.push(`${column} = false`);
+}
+
+async function countTable(table, whereSql = '', params = []) {
+  const allowed = new Set([
+    'portal_links',
+    'portal_contacts',
+    'portal_contents',
+    'portal_announcements',
+    'portal_events',
+  ]);
+  if (!allowed.has(table)) {
+    throw Object.assign(new Error('Contagem inválida.'), { status: 400 });
+  }
+  const result = await query(`SELECT COUNT(*)::int AS n FROM ${table} ${whereSql}`, params);
+  return result.rows[0].n;
+}
+
+function parsePortalDateTime(raw, field) {
+  const value = trimStr(raw, 40);
+  if (!value) throw Object.assign(new Error(`${field} é obrigatória.`), { status: 400 });
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})/);
+  if (!match) throw Object.assign(new Error(`${field} inválida.`), { status: 400 });
+  const iso = `${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:00-03:00`;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    throw Object.assign(new Error(`${field} inválida.`), { status: 400 });
+  }
+  return date.toISOString();
+}
+
+function formatDatetimeLocal(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(date);
+  const pick = (type) => parts.find((part) => part.type === type).value;
+  return `${pick('year')}-${pick('month')}-${pick('day')}T${pick('hour')}:${pick('minute')}`;
+}
+
+async function listAnnouncements({ activeOnly = true, limit = null, q = '', sit = '' } = {}) {
   const clauses = [];
+  const params = [];
   if (activeOnly) clauses.push('is_active = true');
+  pushActiveSit(clauses, 'is_active', sit);
+  pushSearch(clauses, params, ['title', 'body'], q);
   const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
   const lim = Number.isFinite(limit) && limit > 0 ? Math.min(Math.floor(limit), 100) : null;
   const result = await query(
-    `SELECT id, title, body, published_at, is_active, created_at, updated_at
+    `SELECT id, title, body, kind, published_at, is_active, created_at, updated_at
      FROM portal_announcements
      ${where}
      ORDER BY published_at DESC, created_at DESC
      ${lim ? `LIMIT ${lim}` : ''}`,
+    params,
   );
   return result.rows;
 }
 
-async function listEvents({ activeOnly = true, upcomingOnly = false, limit = null } = {}) {
+async function getAnnouncement(id) {
+  const result = await query(
+    `SELECT id, title, body, kind, published_at, is_active, created_at, updated_at
+     FROM portal_announcements WHERE id = $1 LIMIT 1`,
+    [id],
+  );
+  return result.rows[0] || null;
+}
+
+function parseAnnouncementBody(body) {
+  const title = trimStr(body.title, 200);
+  if (!title) throw Object.assign(new Error('Título é obrigatório.'), { status: 400 });
+  const kind = trimStr(body.kind, 20) || 'operacional';
+  if (!ANNOUNCEMENT_KINDS.some((k) => k.id === kind)) {
+    throw Object.assign(new Error('Tipo inválido.'), { status: 400 });
+  }
+  return {
+    title,
+    body: trimStr(body.body, 5000) || null,
+    kind,
+    published_at: parsePortalDateTime(body.published_at, 'Data'),
+    is_active: bodyFlag(body.is_active),
+  };
+}
+
+async function createAnnouncement(body) {
+  const data = parseAnnouncementBody(body);
+  const result = await query(
+    `INSERT INTO portal_announcements (title, body, kind, published_at, is_active)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING id`,
+    [data.title, data.body, data.kind, data.published_at, data.is_active],
+  );
+  return getAnnouncement(result.rows[0].id);
+}
+
+async function updateAnnouncement(id, body) {
+  const existing = await getAnnouncement(id);
+  if (!existing) return null;
+  const data = parseAnnouncementBody({
+    title: body.title ?? existing.title,
+    body: body.body ?? existing.body,
+    kind: body.kind ?? existing.kind,
+    published_at: body.published_at || formatDatetimeLocal(existing.published_at),
+    is_active: body.is_active,
+  });
+  await query(
+    `UPDATE portal_announcements
+     SET title = $1, body = $2, kind = $3, published_at = $4, is_active = $5, updated_at = NOW()
+     WHERE id = $6`,
+    [data.title, data.body, data.kind, data.published_at, data.is_active, id],
+  );
+  return getAnnouncement(id);
+}
+
+async function setAnnouncementActive(id, active) {
+  await query(
+    'UPDATE portal_announcements SET is_active = $1, updated_at = NOW() WHERE id = $2',
+    [Boolean(active), id],
+  );
+  return getAnnouncement(id);
+}
+
+async function deleteAnnouncement(id) {
+  const existing = await getAnnouncement(id);
+  if (!existing) return null;
+  await query('DELETE FROM portal_announcements WHERE id = $1', [id]);
+  return existing;
+}
+
+const EVENT_ATTENDEE_COUNT_SQL = `(SELECT COUNT(*)::int FROM portal_event_attendees a
+  JOIN hub_users u ON u.id = a.user_id AND u.active = true
+  WHERE a.event_id = portal_events.id) AS attendee_count`;
+
+async function listEvents({ activeOnly = true, upcomingOnly = false, limit = null, q = '', sit = '' } = {}) {
   const clauses = [];
+  const params = [];
   if (activeOnly) clauses.push('is_active = true');
   if (upcomingOnly) clauses.push('starts_at >= NOW()');
+  pushActiveSit(clauses, 'is_active', sit);
+  pushSearch(clauses, params, ['title', 'place'], q);
   const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
   const lim = Number.isFinite(limit) && limit > 0 ? Math.min(Math.floor(limit), 100) : null;
   const result = await query(
-    `SELECT id, title, place, starts_at, is_active, created_at, updated_at
+    `SELECT id, title, place, starts_at, ends_at, is_active, created_at, updated_at,
+            ${EVENT_ATTENDEE_COUNT_SQL}
      FROM portal_events
      ${where}
      ORDER BY starts_at ASC, created_at ASC
      ${lim ? `LIMIT ${lim}` : ''}`,
+    params,
   );
   return result.rows;
 }
 
-async function loadHome() {
-  const [links, contacts, contents, itemCounts, announcements, events] = await Promise.all([
-    listLinks({ homeOnly: true, activeOnly: true }),
-    listContacts({ homeOnly: true, activeOnly: true }),
-    listContents({ homeOnly: true, publishedOnly: true }),
+async function getEvent(id) {
+  const result = await query(
+    `SELECT id, title, place, starts_at, ends_at, is_active, created_at, updated_at,
+            ${EVENT_ATTENDEE_COUNT_SQL},
+            (SELECT COALESCE(array_agg(a.user_id::text), '{}')
+             FROM portal_event_attendees a WHERE a.event_id = portal_events.id) AS attendee_ids
+     FROM portal_events WHERE id = $1 LIMIT 1`,
+    [id],
+  );
+  return result.rows[0] || null;
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function parseUserIds(raw) {
+  const list = Array.isArray(raw) ? raw : [raw];
+  const ids = list.map((v) => trimStr(v, 40).toLowerCase()).filter((v) => UUID_RE.test(v));
+  return [...new Set(ids)];
+}
+
+async function resolveActiveUserIds(raw) {
+  const ids = parseUserIds(raw);
+  if (!ids.length) return [];
+  const result = await query(
+    'SELECT id FROM hub_users WHERE id = ANY($1::uuid[]) AND active = true',
+    [ids],
+  );
+  return result.rows.map((row) => row.id);
+}
+
+function parseEventBody(body) {
+  const title = trimStr(body.title, 200);
+  if (!title) throw Object.assign(new Error('Título é obrigatório.'), { status: 400 });
+  const startsAt = parsePortalDateTime(body.starts_at, 'Data');
+  const endsAt = trimStr(body.ends_at, 40) ? parsePortalDateTime(body.ends_at, 'Término') : null;
+  if (endsAt && new Date(endsAt) < new Date(startsAt)) {
+    throw Object.assign(new Error('O término é anterior ao início.'), { status: 400 });
+  }
+  return {
+    title,
+    place: trimStr(body.place, 200) || null,
+    starts_at: startsAt,
+    ends_at: endsAt,
+    is_active: bodyFlag(body.is_active),
+  };
+}
+
+async function requireAttendees(rawUserIds) {
+  const userIds = await resolveActiveUserIds(rawUserIds);
+  if (!userIds.length) {
+    throw Object.assign(new Error('Marque ao menos um usuário.'), { status: 400 });
+  }
+  return userIds;
+}
+
+async function saveEventWithAttendees(id, data, userIds) {
+  const client = await getPool().connect();
+  try {
+    await client.query('BEGIN');
+    let eventId = id;
+    if (eventId) {
+      await client.query(
+        `UPDATE portal_events
+         SET title = $1, place = $2, starts_at = $3, ends_at = $4, is_active = $5, updated_at = NOW()
+         WHERE id = $6`,
+        [data.title, data.place, data.starts_at, data.ends_at, data.is_active, eventId],
+      );
+      await client.query('DELETE FROM portal_event_attendees WHERE event_id = $1', [eventId]);
+    } else {
+      const inserted = await client.query(
+        `INSERT INTO portal_events (title, place, starts_at, ends_at, is_active)
+         VALUES ($1, $2, $3, $4, $5)
+         RETURNING id`,
+        [data.title, data.place, data.starts_at, data.ends_at, data.is_active],
+      );
+      eventId = inserted.rows[0].id;
+    }
+    await client.query(
+      `INSERT INTO portal_event_attendees (event_id, user_id)
+       SELECT $1, unnest($2::uuid[])
+       ON CONFLICT DO NOTHING`,
+      [eventId, userIds],
+    );
+    await client.query('COMMIT');
+    return eventId;
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch (_) { /* ignore */ }
+    throw err;
+  } finally {
+    client.release();
+  }
+}
+
+async function createEvent(body) {
+  const data = parseEventBody(body);
+  const userIds = await requireAttendees(body.user_ids);
+  const eventId = await saveEventWithAttendees(null, data, userIds);
+  return getEvent(eventId);
+}
+
+async function updateEvent(id, body) {
+  const existing = await getEvent(id);
+  if (!existing) return null;
+  const data = parseEventBody({
+    title: body.title ?? existing.title,
+    place: body.place ?? existing.place,
+    starts_at: body.starts_at || formatDatetimeLocal(existing.starts_at),
+    ends_at: body.ends_at ?? formatDatetimeLocal(existing.ends_at),
+    is_active: body.is_active,
+  });
+  const userIds = await requireAttendees(body.user_ids);
+  await saveEventWithAttendees(id, data, userIds);
+  return getEvent(id);
+}
+
+/* ───────────── Agenda por pessoa ───────────── */
+
+const AGENDA_TZ_OFFSET = '-03:00';
+const DAY_MS = 24 * 60 * 60 * 1000;
+const AGENDA_MAX_RANGE_DAYS = 62;
+
+function spDayStart(dateStr) {
+  return new Date(`${dateStr}T00:00:00${AGENDA_TZ_OFFSET}`);
+}
+
+function todayInSaoPaulo() {
+  return formatDatetimeLocal(new Date()).slice(0, 10);
+}
+
+function parseAgendaRange(startRaw, endRaw) {
+  const pick = (raw) => {
+    const match = trimStr(raw, 40).match(/^(\d{4}-\d{2}-\d{2})/);
+    if (!match) return null;
+    const date = spDayStart(match[1]);
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+  const start = pick(startRaw);
+  const end = pick(endRaw);
+  if (!start || !end || end <= start) {
+    throw Object.assign(new Error('Período inválido.'), { status: 400 });
+  }
+  if (end - start > AGENDA_MAX_RANGE_DAYS * DAY_MS) {
+    throw Object.assign(new Error('Período maior que 62 dias.'), { status: 400 });
+  }
+  return { start, end };
+}
+
+async function listEventsForUser(userId, { start, end }) {
+  if (!userId) return [];
+  const result = await query(
+    `SELECT e.id, e.title, e.place, e.starts_at, e.ends_at,
+            COALESCE(
+              json_agg(
+                json_build_object('id', u.id, 'name', COALESCE(NULLIF(u.display_name, ''), u.username))
+                ORDER BY COALESCE(NULLIF(u.display_name, ''), u.username)
+              ) FILTER (WHERE u.id IS NOT NULL),
+              '[]'
+            ) AS attendees
+     FROM portal_events e
+     JOIN portal_event_attendees me ON me.event_id = e.id AND me.user_id = $1
+     LEFT JOIN portal_event_attendees a ON a.event_id = e.id
+     LEFT JOIN hub_users u ON u.id = a.user_id AND u.active = true
+     WHERE e.is_active = true
+       AND e.starts_at < $3
+       AND COALESCE(e.ends_at, e.starts_at) >= $2
+     GROUP BY e.id
+     ORDER BY e.starts_at ASC, e.created_at ASC`,
+    [userId, start.toISOString(), end.toISOString()],
+  );
+  return result.rows;
+}
+
+function eventTouchesDay(event, dayStart) {
+  const dayEnd = new Date(dayStart.getTime() + DAY_MS);
+  const starts = new Date(event.starts_at);
+  const ends = event.ends_at ? new Date(event.ends_at) : starts;
+  return starts < dayEnd && ends >= dayStart;
+}
+
+async function loadAgendaDays(userId) {
+  const todayStart = spDayStart(todayInSaoPaulo());
+  const tomorrowStart = new Date(todayStart.getTime() + DAY_MS);
+  const events = await listEventsForUser(userId, {
+    start: todayStart,
+    end: new Date(todayStart.getTime() + 2 * DAY_MS),
+  });
+  return {
+    agendaToday: events.filter((ev) => eventTouchesDay(ev, todayStart)),
+    agendaTomorrow: events.filter((ev) => eventTouchesDay(ev, tomorrowStart)),
+  };
+}
+
+function toCalendarEvent(event) {
+  return {
+    id: event.id,
+    title: event.title,
+    start: formatDatetimeLocal(event.starts_at),
+    ...(event.ends_at ? { end: formatDatetimeLocal(event.ends_at) } : {}),
+    place: event.place || null,
+    attendees: event.attendees || [],
+  };
+}
+
+async function setEventActive(id, active) {
+  await query(
+    'UPDATE portal_events SET is_active = $1, updated_at = NOW() WHERE id = $2',
+    [Boolean(active), id],
+  );
+  return getEvent(id);
+}
+
+async function deleteEvent(id) {
+  const existing = await getEvent(id);
+  if (!existing) return null;
+  await query('DELETE FROM portal_events WHERE id = $1', [id]);
+  return existing;
+}
+
+async function loadPortalAdminSummary() {
+  const [itemCounts, linksActive, contactsActive, contentsPublished, announcementsActive, eventsActive, featured] = await Promise.all([
+    countActiveItemsByKind(),
+    countTable('portal_links', 'WHERE is_active = true'),
+    countTable('portal_contacts', 'WHERE is_active = true'),
+    countTable('portal_contents', 'WHERE is_published = true'),
+    countTable('portal_announcements', 'WHERE is_active = true'),
+    countTable('portal_events', 'WHERE is_active = true'),
+    query(`SELECT id, title FROM portal_items WHERE kind = 'video' AND is_featured = true LIMIT 1`),
+  ]);
+  return {
+    itemCounts,
+    linksActive,
+    contactsActive,
+    contentsPublished,
+    announcementsActive,
+    eventsActive,
+    featuredVideo: featured.rows[0] || null,
+  };
+}
+
+async function loadHome(userId = null) {
+  const [links, contacts, contents, itemCounts, announcements, agenda] = await Promise.all([
+    listLinks({ activeOnly: true }),
+    listContacts({ activeOnly: true }),
+    listContents({ publishedOnly: true }),
     countActiveItemsByKind(),
     listAnnouncements({ activeOnly: true, limit: 4 }),
-    listEvents({ activeOnly: true, upcomingOnly: true, limit: 4 }),
+    loadAgendaDays(userId),
   ]);
   const integrationCards = HOME_INTEGRATION_KINDS.map((kind) => ({
     kind,
@@ -193,8 +575,9 @@ async function loadHome() {
     contents,
     itemCounts,
     announcements,
-    events,
-    nextEvent: events[0] || null,
+    agendaToday: agenda.agendaToday,
+    agendaTomorrow: agenda.agendaTomorrow,
+    announcementKinds: ANNOUNCEMENT_KINDS,
     emptyStates: EMPTY_STATES,
   };
 }
@@ -215,15 +598,23 @@ function greetingForNow(displayName) {
 
 /* ───────────── Links ───────────── */
 
-async function listLinks({ homeOnly = false, activeOnly = false } = {}) {
+async function listLinks({ homeOnly = false, activeOnly = false, q = '', sit = '', category = '' } = {}) {
   const clauses = [];
+  const params = [];
   if (activeOnly) clauses.push('is_active = true');
   if (homeOnly) clauses.push('show_on_home = true');
+  pushActiveSit(clauses, 'is_active', sit);
+  if (category && LINK_CATEGORIES.includes(category)) {
+    params.push(category);
+    clauses.push(`category = $${params.length}`);
+  }
+  pushSearch(clauses, params, ['name', 'url', 'description'], q);
   const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
   const result = await query(
     `SELECT id, name, description, url, category, icon, is_active, show_on_home, sort_order, created_at, updated_at
      FROM portal_links ${where}
      ORDER BY sort_order ASC, name ASC`,
+    params,
   );
   return result.rows;
 }
@@ -251,7 +642,7 @@ function parseLinkBody(body) {
     category,
     icon: trimStr(body.icon, 40) || null,
     is_active: bodyFlag(body.is_active),
-    show_on_home: bodyFlag(body.show_on_home),
+    show_on_home: true,
     sort_order: parseSortOrder(body.sort_order, 0),
   };
 }
@@ -295,17 +686,26 @@ async function setLinkActive(id, active) {
   return getLink(id);
 }
 
+async function deleteLink(id) {
+  const existing = await getLink(id);
+  if (!existing) return null;
+  await query('DELETE FROM portal_links WHERE id = $1', [id]);
+  return existing;
+}
+
 /* ───────────── Contacts ───────────── */
 
-async function listContacts({ homeOnly = false, activeOnly = false, department = '' } = {}) {
+async function listContacts({ homeOnly = false, activeOnly = false, department = '', q = '', sit = '' } = {}) {
   const clauses = [];
   const params = [];
   if (activeOnly) clauses.push('c.is_active = true');
   if (homeOnly) clauses.push('c.show_on_home = true');
-  if (department) {
+  pushActiveSit(clauses, 'c.is_active', sit);
+  if (department && CONTACT_DEPARTMENTS.includes(department)) {
     params.push(department);
     clauses.push(`c.department = $${params.length}`);
   }
+  pushSearch(clauses, params, ['c.name', 'c.department', 'c.email', 'c.role'], q);
   const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
   const result = await query(
     `SELECT c.id, c.name, c.role, c.department, c.email, c.phone, c.whatsapp, c.description,
@@ -350,7 +750,7 @@ function parseContactBody(body, photoFileId) {
     description: trimStr(body.description, 1000) || null,
     photo_file_id: photoFileId || null,
     is_active: bodyFlag(body.is_active),
-    show_on_home: bodyFlag(body.show_on_home),
+    show_on_home: true,
     sort_order: parseSortOrder(body.sort_order, 0),
   };
 }
@@ -407,18 +807,29 @@ async function setContactActive(id, active) {
   return getContact(id);
 }
 
+async function deleteContact(id) {
+  const existing = await getContact(id);
+  if (!existing) return null;
+  await query('DELETE FROM portal_contacts WHERE id = $1', [id]);
+  return existing;
+}
+
 /* ───────────── Contents (carousel) ───────────── */
 
-async function listContents({ homeOnly = false, publishedOnly = false } = {}) {
+async function listContents({ homeOnly = false, publishedOnly = false, q = '', sit = '' } = {}) {
   const clauses = [];
+  const params = [];
   if (publishedOnly) clauses.push('is_published = true');
   if (homeOnly) clauses.push('show_on_home = true');
+  pushActiveSit(clauses, 'is_published', sit);
+  pushSearch(clauses, params, ['title', 'description', 'category'], q);
   const where = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
   const result = await query(
     `SELECT id, title, description, image_file_id, category, target_type, target_url, target_route,
             is_published, show_on_home, sort_order, published_at, created_at, updated_at
      FROM portal_contents ${where}
      ORDER BY sort_order ASC, published_at DESC NULLS LAST, created_at DESC`,
+    params,
   );
   return result.rows.map((row) => {
     const mapped = mapFileFields(row, 'image_file_id', 'image_url');
@@ -475,7 +886,7 @@ function parseContentBody(body, imageFileId) {
     target_url,
     target_route,
     is_published,
-    show_on_home: bodyFlag(body.show_on_home),
+    show_on_home: true,
     sort_order: parseSortOrder(body.sort_order, 0),
   };
 }
@@ -551,6 +962,13 @@ async function setContentPublished(id, published) {
   return getContent(id);
 }
 
+async function deleteContent(id) {
+  const existing = await getContent(id);
+  if (!existing) return null;
+  await query('DELETE FROM portal_contents WHERE id = $1', [id]);
+  return existing;
+}
+
 /* ───────────── Items (6 kinds) ───────────── */
 
 function kindMeta(kind) {
@@ -608,21 +1026,24 @@ function decorateItem(row) {
   };
 }
 
-async function listItems(kind, { activeOnly = false } = {}) {
+async function listItems(kind, { activeOnly = false, q = '', sit = '' } = {}) {
   if (!ITEM_KINDS[kind]) throw Object.assign(new Error('Tipo inválido.'), { status: 400 });
   const clauses = ['i.kind = $1'];
+  const params = [kind];
   if (activeOnly) clauses.push('i.is_active = true');
+  pushActiveSit(clauses, 'i.is_active', sit);
+  pushSearch(clauses, params, ['i.title', 'i.category', 'i.department', 'i.version'], q);
   const result = await query(
     `SELECT i.id, i.kind, i.title, i.description, i.body, i.category, i.department, i.version,
             i.file_id, i.thumbnail_file_id, i.external_url, i.is_onboarding_required, i.is_active,
-            i.sort_order, i.created_at, i.updated_at,
+            i.is_featured, i.sort_order, i.created_at, i.updated_at,
             f.mime AS file_mime, tf.mime AS thumbnail_mime
      FROM portal_items i
      LEFT JOIN portal_files f ON f.id = i.file_id
      LEFT JOIN portal_files tf ON tf.id = i.thumbnail_file_id
      WHERE ${clauses.join(' AND ')}
      ORDER BY i.sort_order ASC, i.title ASC`,
-    [kind],
+    params,
   );
   return result.rows.map(decorateItem);
 }
@@ -631,7 +1052,7 @@ async function getItem(id) {
   const result = await query(
     `SELECT i.id, i.kind, i.title, i.description, i.body, i.category, i.department, i.version,
             i.file_id, i.thumbnail_file_id, i.external_url, i.is_onboarding_required, i.is_active,
-            i.sort_order, i.created_at, i.updated_at,
+            i.is_featured, i.sort_order, i.created_at, i.updated_at,
             f.mime AS file_mime, tf.mime AS thumbnail_mime
      FROM portal_items i
      LEFT JOIN portal_files f ON f.id = i.file_id
@@ -736,6 +1157,88 @@ async function updateItem(id, body, fileId, thumbnailFileId) {
 
 async function setItemActive(id, active) {
   await query('UPDATE portal_items SET is_active = $1, updated_at = NOW() WHERE id = $2', [Boolean(active), id]);
+  return getItem(id);
+}
+
+async function countItemProgress(itemId) {
+  const result = await query(
+    'SELECT COUNT(*)::int AS n FROM portal_item_progress WHERE item_id = $1',
+    [itemId],
+  );
+  return result.rows[0].n;
+}
+
+async function countItemProgressByKind(kind) {
+  const result = await query(
+    `SELECT p.item_id, COUNT(*)::int AS n
+     FROM portal_item_progress p
+     JOIN portal_items i ON i.id = p.item_id
+     WHERE i.kind = $1
+     GROUP BY p.item_id`,
+    [kind],
+  );
+  const map = {};
+  for (const row of result.rows) map[String(row.item_id)] = row.n;
+  return map;
+}
+
+async function countItems(kind) {
+  if (!ITEM_KINDS[kind]) throw Object.assign(new Error('Tipo inválido.'), { status: 400 });
+  const result = await query(
+    'SELECT COUNT(*)::int AS n FROM portal_items WHERE kind = $1',
+    [kind],
+  );
+  return result.rows[0].n;
+}
+
+async function deleteItem(id) {
+  const existing = await getItem(id);
+  if (!existing) return null;
+  const progressCount = await countItemProgress(id);
+  await query('DELETE FROM portal_items WHERE id = $1', [id]);
+  return { ...existing, progressCount };
+}
+
+async function setVideoFeatured(id, { confirm = false } = {}) {
+  const item = await getItem(id);
+  if (!item || item.kind !== 'video') {
+    throw Object.assign(new Error('Vídeo não encontrado.'), { status: 404 });
+  }
+  if (item.is_featured) return item;
+  const current = await query(
+    `SELECT id, title FROM portal_items
+     WHERE kind = 'video' AND is_featured = true
+     LIMIT 1`,
+  );
+  const other = current.rows[0] || null;
+  if (other && !confirm) {
+    const err = Object.assign(new Error('Já existe um vídeo em destaque.'), { status: 409 });
+    err.code = 'FEATURED_EXISTS';
+    err.featuredId = other.id;
+    err.featuredTitle = other.title;
+    throw err;
+  }
+  const client = await getPool().connect();
+  try {
+    await client.query('BEGIN');
+    await client.query(
+      `UPDATE portal_items
+       SET is_featured = false, updated_at = NOW()
+       WHERE kind = 'video' AND is_featured = true`,
+    );
+    await client.query(
+      `UPDATE portal_items
+       SET is_featured = true, updated_at = NOW()
+       WHERE id = $1 AND kind = 'video'`,
+      [id],
+    );
+    await client.query('COMMIT');
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch (_) { /* ignore */ }
+    throw err;
+  } finally {
+    client.release();
+  }
   return getItem(id);
 }
 
@@ -1032,6 +1535,78 @@ async function updateStep(id, body, pdfFileId) {
   return getStep(id);
 }
 
+async function normalizeStepPositions(trackId) {
+  const refreshed = await listSteps(trackId);
+  for (let i = 0; i < refreshed.length; i += 1) {
+    if (refreshed[i].position !== i + 1) {
+      await query('UPDATE onboarding_steps SET position = $1 WHERE id = $2', [i + 1, refreshed[i].id]);
+    }
+  }
+}
+
+async function countStepProgress(stepId) {
+  const result = await query(
+    'SELECT COUNT(*)::int AS n FROM onboarding_user_progress WHERE step_id = $1',
+    [stepId],
+  );
+  return result.rows[0].n;
+}
+
+async function countStepProgressByTrack(trackId) {
+  const result = await query(
+    `SELECT p.step_id, COUNT(*)::int AS n
+     FROM onboarding_user_progress p
+     JOIN onboarding_steps s ON s.id = p.step_id
+     WHERE s.track_id = $1
+     GROUP BY p.step_id`,
+    [trackId],
+  );
+  const map = {};
+  for (const row of result.rows) map[String(row.step_id)] = row.n;
+  return map;
+}
+
+async function createStep(trackId, body, pdfFileId) {
+  const track = await query(
+    'SELECT id FROM onboarding_tracks WHERE id = $1 AND is_active = true LIMIT 1',
+    [trackId],
+  );
+  if (!track.rows[0]) {
+    throw Object.assign(new Error('Nenhuma trilha ativa.'), { status: 404 });
+  }
+  const title = trimStr(body.title, 200);
+  if (!title) throw Object.assign(new Error('Título é obrigatório.'), { status: 400 });
+  const siblings = await listSteps(trackId);
+  const position = parseSortOrder(body.position, siblings.length + 1);
+  const description = trimStr(body.description, 1000) || null;
+  const rawYoutube = trimStr(body.youtube_url, 2000);
+  const youtube_url = rawYoutube ? parseYoutubeEmbed(rawYoutube).watchUrl : null;
+  const video_download_url = assertOptionalHttpsUrl(body.video_download_url);
+  const is_active = bodyFlag(body.is_active);
+  const result = await query(
+    `INSERT INTO onboarding_steps
+      (track_id, position, title, description, target_kind, target_route, is_active,
+       youtube_url, video_download_url, pdf_file_id)
+     VALUES ($1, $2, $3, $4, 'none', NULL, $5, $6, $7, $8)
+     RETURNING id`,
+    [
+      trackId, position, title, description, is_active,
+      youtube_url, video_download_url, pdfFileId || null,
+    ],
+  );
+  await normalizeStepPositions(trackId);
+  return getStep(result.rows[0].id);
+}
+
+async function deleteStep(id) {
+  const existing = await getStep(id);
+  if (!existing) return null;
+  const progressCount = await countStepProgress(id);
+  await query('DELETE FROM onboarding_steps WHERE id = $1', [id]);
+  await normalizeStepPositions(existing.track_id);
+  return { ...existing, progressCount };
+}
+
 async function moveStep(id, direction) {
   const step = await getStep(id);
   if (!step) return null;
@@ -1163,22 +1738,42 @@ module.exports = {
   loadHome,
   greetingForNow,
   listAnnouncements,
+  getAnnouncement,
+  createAnnouncement,
+  updateAnnouncement,
+  setAnnouncementActive,
+  deleteAnnouncement,
   listEvents,
+  getEvent,
+  createEvent,
+  updateEvent,
+  setEventActive,
+  deleteEvent,
+  listEventsForUser,
+  loadAgendaDays,
+  parseAgendaRange,
+  toCalendarEvent,
+  loadPortalAdminSummary,
+  formatDatetimeLocal,
+  countTable,
   listLinks,
   getLink,
   createLink,
   updateLink,
   setLinkActive,
+  deleteLink,
   listContacts,
   getContact,
   createContact,
   updateContact,
   setContactActive,
+  deleteContact,
   listContents,
   getContent,
   createContent,
   updateContent,
   setContentPublished,
+  deleteContent,
   kindMeta,
   kindFromSlug,
   listItems,
@@ -1186,6 +1781,11 @@ module.exports = {
   createItem,
   updateItem,
   setItemActive,
+  countItemProgress,
+  countItemProgressByKind,
+  countItems,
+  deleteItem,
+  setVideoFeatured,
   listItemProgress,
   decorateItemsForUser,
   firstUnlockedIncompleteId,
@@ -1201,6 +1801,10 @@ module.exports = {
   completeStep,
   completeOnboarding,
   updateStep,
+  createStep,
+  deleteStep,
+  countStepProgress,
+  countStepProgressByTrack,
   moveStep,
   listOnboardingUsers,
   getUserOnboardingDetail,
@@ -1209,6 +1813,7 @@ module.exports = {
   CONTACT_DEPARTMENTS,
   ITEM_DEPARTMENTS,
   CONTENT_CATEGORIES,
+  ANNOUNCEMENT_KINDS,
   ITEM_KINDS,
   HOME_INTEGRATION_KINDS,
   TARGET_TYPES,

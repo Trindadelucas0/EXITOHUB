@@ -309,7 +309,7 @@ function buildCatalog() {
           status: 'live',
           icon: 'calendar',
           currentKey: 'portal-agenda',
-          description: 'Reuniões, treinamentos e eventos internos.',
+          description: 'Calendário com os eventos em que você está marcado.',
         },
         {
           id: 'google-agenda-ext',

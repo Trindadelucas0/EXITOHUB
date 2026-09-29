@@ -9,8 +9,16 @@
     <section class="hub-card">
       <p class="hub-breadcrumb"><a href="/admin/portal">Portal Corporativo</a> / Onboarding</p>
       <div class="hub-admin-head">
-        <h1>Trilha de integração</h1>
-        <a class="hub-btn hub-btn-ghost" href="/admin/portal/onboarding/acompanhamento">Acompanhamento</a>
+        <div>
+          <h1>Trilha de integração</h1>
+          <p class="hub-muted">Uma trilha ativa. Criar etapa não abre outra trilha.</p>
+        </div>
+        <div class="hub-admin-list__actions">
+          <% if (track) { %>
+            <a class="hub-btn hub-btn-primary" href="/admin/portal/onboarding/etapas/nova">Nova etapa</a>
+          <% } %>
+          <a class="hub-btn hub-btn-ghost" href="/admin/portal/onboarding/acompanhamento">Acompanhamento</a>
+        </div>
       </div>
       <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
       <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
@@ -21,12 +29,12 @@
         <p class="hub-muted"><%= track.name %></p>
 
         <% if (editingStep) { %>
-          <form method="post" action="/admin/portal/onboarding/etapas/<%= editingStep.id %>" class="hub-admin-form" enctype="multipart/form-data">
-            <h2>Editar etapa</h2>
+          <form method="post" action="<%= editingStep.id ? '/admin/portal/onboarding/etapas/' + editingStep.id : '/admin/portal/onboarding/etapas/nova' %>" class="hub-admin-form" enctype="multipart/form-data" data-once>
+            <h2><%= editingStep.id ? 'Editar etapa' : 'Nova etapa' %></h2>
             <label>Título <input name="title" required maxlength="200" value="<%= editingStep.title %>" /></label>
             <label>Descrição <textarea name="description" rows="2" maxlength="1000"><%= editingStep.description || '' %></textarea></label>
             <label>Posição <input name="position" type="number" value="<%= editingStep.position %>" /></label>
-            <label class="hub-check"><input type="checkbox" name="is_active" value="1" <%= editingStep.is_active ? 'checked' : '' %> /> Ativa</label>
+            <label class="hub-check"><input type="checkbox" name="is_active" value="1" <%= editingStep.id ? (editingStep.is_active ? 'checked' : '') : 'checked' %> /> Ativa</label>
 
             <h3 style="margin: 1.25rem 0 0.5rem; font-size: 1rem;">Conteúdo do módulo</h3>
             <p class="hub-muted" style="margin: 0 0 0.75rem; font-size: 0.875rem;">
@@ -53,7 +61,7 @@
 
             <div class="hub-form-actions">
               <a class="hub-btn hub-btn-ghost" href="/admin/portal/onboarding">Cancelar</a>
-              <button type="submit" class="hub-btn hub-btn-primary">Salvar</button>
+              <button type="submit" class="hub-btn hub-btn-primary" data-busy="Salvando...">Salvar</button>
             </div>
           </form>
         <% } %>
@@ -85,7 +93,22 @@
                   <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm" <%= idx === steps.length - 1 ? 'disabled' : '' %>>↓</button>
                 </form>
                 <a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/onboarding/etapas/<%= step.id %>/editar">Editar</a>
+                <button type="button" class="hub-btn hub-btn-ghost hub-btn-sm" data-open-dialog="dlg-step-<%= step.id %>">Excluir</button>
               </div>
+              <% var stepCount = (stepProgress && stepProgress[String(step.id)]) || 0; %>
+              <%- include('../partials/hub-confirm-dialog', {
+                dialogId: 'dlg-step-' + step.id,
+                recordName: step.title,
+                heading: 'Excluir etapa?',
+                message: stepCount
+                  ? (stepCount + (stepCount === 1 ? ' colaborador já concluiu' : ' colaboradores já concluíram') + ' esta etapa. O progresso desta etapa será apagado.')
+                  : 'A etapa sai da trilha do colaborador.',
+                action: '/admin/portal/onboarding/etapas/' + step.id + '/excluir',
+                filters: { q: '', sit: '', cat: '', dep: '' },
+                autoOpen: String(confirmar) === String(step.id),
+                confirmLabel: 'Excluir',
+                busyLabel: 'Excluindo...'
+              }) %>
             </li>
           <% }) %>
         </ol>

@@ -7,55 +7,123 @@
   <%- include('../partials/hub-chrome', { current: 'admin-portal', breadcrumb: 'Portal Corporativo' }) %>
 
   <main class="hub-shell-main">
-    <header style="margin-bottom: 0.5rem;">
-      <h1 style="margin: 0; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.015em;">Portal Corporativo — Painel de Gestão</h1>
-      <p class="hub-muted" style="margin: 0.35rem 0 0;">Administre os conteúdos exibidos na Home e nas áreas do portal.</p>
+    <header class="hub-admin-head">
+      <div>
+        <h1>Portal Corporativo</h1>
+        <p class="hub-muted">Gerencie os conteúdos exibidos na Home e nas áreas do portal.</p>
+      </div>
     </header>
 
-    <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
-    <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+    <% if (flash) { %><div class="hub-alert hub-alert-ok" role="status"><%= flash %></div><% } %>
+    <% if (error) { %><div class="hub-alert hub-alert-error" role="alert"><%= error %></div><% } %>
 
-    <nav class="hub-admin-portal-grid" aria-label="Seções do portal">
-      <a class="hub-admin-portal-card" href="/admin/portal/conteudos">
-        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">auto_stories</span></span>
-        <h2>Conteúdos Êxito</h2>
-        <p>Carrossel e destaques da Home.</p>
-      </a>
-      <a class="hub-admin-portal-card" href="/admin/portal/links">
-        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">link</span></span>
-        <h2>Links Úteis</h2>
-        <p>Atalhos exibidos no portal.</p>
-      </a>
-      <a class="hub-admin-portal-card" href="/admin/portal/contatos">
-        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">contacts</span></span>
-        <h2>Contatos Úteis</h2>
-        <p>Equipes e canais de apoio.</p>
-      </a>
-      <% Object.keys(itemKinds).forEach(function (kind) { %>
-        <a class="hub-admin-portal-card" href="/admin/portal/itens/<%= kind %>">
-          <span class="hub-admin-portal-card__icon" aria-hidden="true">
-            <%- include('../partials/hub-menu-icon', { iconName: itemKinds[kind].icon }) %>
-          </span>
-          <h2><%= itemKinds[kind].label %></h2>
-          <p><%= itemKinds[kind].description %></p>
-        </a>
-      <% }) %>
-      <a class="hub-admin-portal-card" href="/admin/portal/onboarding">
-        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">route</span></span>
-        <h2>Trilha de Onboarding</h2>
-        <p>Etapas da integração do colaborador.</p>
-      </a>
-      <a class="hub-admin-portal-card" href="/admin/portal/onboarding/acompanhamento">
-        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">monitoring</span></span>
-        <h2>Acompanhamento do Onboarding</h2>
-        <p>Progresso por colaborador.</p>
-      </a>
-      <a class="hub-admin-portal-card" href="/admin/portal/configuracoes">
-        <span class="hub-admin-portal-card__icon" aria-hidden="true"><span class="material-symbols-outlined">tune</span></span>
-        <h2>Configurações</h2>
-        <p>Parâmetros gerais do portal.</p>
-      </a>
-    </nav>
+    <section class="hub-admin-summary" aria-label="Visão do portal">
+      <h2>Visão</h2>
+      <ul class="hub-admin-summary__list">
+        <li><span>Conteúdos publicados</span><strong><%= summary.contentsPublished %></strong></li>
+        <li><span>Links ativos</span><strong><%= summary.linksActive %></strong></li>
+        <li><span>Contatos ativos</span><strong><%= summary.contactsActive %></strong></li>
+        <li><span>Vídeos ativos</span><strong><%= summary.itemCounts.video || 0 %></strong></li>
+        <li><span>POPs ativos</span><strong><%= summary.itemCounts.pop || 0 %></strong></li>
+        <li><span>Documentos ativos</span><strong><%= summary.itemCounts.document || 0 %></strong></li>
+        <li><span>Comunicados ativos</span><strong><%= summary.announcementsActive %></strong></li>
+        <li><span>Eventos ativos</span><strong><%= summary.eventsActive %></strong></li>
+      </ul>
+    </section>
+
+    <section class="hub-admin-block" aria-labelledby="destaques-titulo">
+      <h2 id="destaques-titulo">Destaques</h2>
+      <div class="hub-admin-table-wrap hub-admin-table-wrap--stack">
+        <table class="hub-admin-table">
+          <thead>
+            <tr><th>Área</th><th>Agora</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="Área">Conteúdos Êxito</td>
+              <td data-label="Agora">Carrossel · <%= summary.contentsPublished %> publicado<%= summary.contentsPublished === 1 ? '' : 's' %></td>
+              <td data-label=""><a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/conteudos">Abrir</a></td>
+            </tr>
+            <tr>
+              <td data-label="Área">Vídeo em destaque</td>
+              <td data-label="Agora"><%= summary.featuredVideo ? summary.featuredVideo.title : 'Nenhum' %></td>
+              <td data-label=""><a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/itens/video">Abrir</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="hub-admin-block" aria-labelledby="biblioteca-titulo">
+      <h2 id="biblioteca-titulo">Biblioteca</h2>
+      <div class="hub-admin-table-wrap hub-admin-table-wrap--stack">
+        <table class="hub-admin-table">
+          <thead>
+            <tr><th>Área</th><th>Ativos</th><th></th></tr>
+          </thead>
+          <tbody>
+            <% Object.keys(itemKinds).forEach(function (kind) { %>
+              <tr>
+                <td data-label="Área"><%= itemKinds[kind].label %></td>
+                <td data-label="Ativos"><%= summary.itemCounts[kind] || 0 %></td>
+                <td data-label=""><a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/itens/<%= kind %>">Gerenciar</a></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="hub-admin-block" aria-labelledby="avisos-titulo">
+      <h2 id="avisos-titulo">Pessoas e avisos</h2>
+      <div class="hub-admin-table-wrap hub-admin-table-wrap--stack">
+        <table class="hub-admin-table">
+          <thead>
+            <tr><th>Área</th><th>Ativos</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-label="Área">Links úteis</td>
+              <td data-label="Ativos"><%= summary.linksActive %></td>
+              <td data-label=""><a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/links">Gerenciar</a></td>
+            </tr>
+            <tr>
+              <td data-label="Área">Contatos úteis</td>
+              <td data-label="Ativos"><%= summary.contactsActive %></td>
+              <td data-label=""><a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/contatos">Gerenciar</a></td>
+            </tr>
+            <tr>
+              <td data-label="Área">Comunicados</td>
+              <td data-label="Ativos"><%= summary.announcementsActive %></td>
+              <td data-label=""><a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/comunicados">Gerenciar</a></td>
+            </tr>
+            <tr>
+              <td data-label="Área">Eventos</td>
+              <td data-label="Ativos"><%= summary.eventsActive %></td>
+              <td data-label=""><a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/eventos">Gerenciar</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="hub-admin-block" aria-labelledby="integracao-titulo">
+      <h2 id="integracao-titulo">Integração</h2>
+      <div class="hub-admin-table-wrap hub-admin-table-wrap--stack">
+        <table class="hub-admin-table">
+          <tbody>
+            <tr>
+              <td data-label="Área">Trilha de onboarding</td>
+              <td data-label=""><a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/onboarding">Abrir</a></td>
+            </tr>
+            <tr>
+              <td data-label="Área">Acompanhamento</td>
+              <td data-label=""><a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/onboarding/acompanhamento">Abrir</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
   </main>
 
   <%- include('../partials/hub-chrome-end') %>

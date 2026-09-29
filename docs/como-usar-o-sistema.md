@@ -16,25 +16,24 @@ A Home muda conforme o status de integração. O miolo do shell fica sobre um ca
 
 **Se ainda não concluiu** (`PENDING` / `IN_PROGRESS`):
 
-- Banner verde **Bem-vindo ao Êxito** com barra de progresso (% e etapas), **Ver checklist** e **Continuar integração**.
-- **Cinco cards** com ícone — Vídeos, POPs, Diagrama, Informativos e Catálogos (com contagem real de itens quando houver).
+- Banner verde **Bem-vindo ao Êxito** começa fechado, só com o título e o percentual. Clique nele para ver a barra de progresso (etapas), **Ver checklist** e **Continuar integração**; clique de novo para fechar.
+- **Cinco cards** com ícone — Vídeos, POPs, Diagrama, Informativos e Catálogos (com contagem real de itens quando houver) — passam sozinhos numa faixa contínua, três por vez no computador. Pare o ponteiro em cima da faixa para ela segurar e clique em **Acessar**.
   - Em **Vídeos** (`/portal/videos`), o player YouTube fica em coluna central (~1040px); conclua o módulo com **Marcar como concluído** para liberar o próximo (`?v=`).
   - Em **Diagrama**, **Informativos**, **Catálogos** e **Documentos**, o próximo item só libera depois de marcar o atual como concluído. POPs continuam livremente navegáveis.
 
 **Se já concluiu** (`COMPLETED`):
 
-- Card de saudação + **atalhos rápidos** em pills (inclui Documentos Corporativos; sem Logos).
+- Card de saudação + **Acessos principais** (só os módulos que o seu login abre: Auditor Fiscal, Conciliação, Controle folha mensal; admin vê também Portal Corporativo e Gerenciar usuários) + **atalhos rápidos** em pills (inclui Documentos Corporativos; sem Logos).
 - Foco em Conteúdos Êxito, comunicados/eventos, agenda, links e contatos.
 
 Em ambos os casos:
 
-- **Conteúdos Êxito** — carrossel imagem + texto. O boot não deixa as fotos de exemplo (escritório). Se não houver conteúdo cadastrado, entra de novo a imagem original do carrossel. Sem nenhum item, a Home mostra “Em breve, novidades do Êxito.”
-- **Comunicados e Próximos eventos** — listam registros ativos do banco (títulos de teste começam com **TESTE** após o seed). Sem registros, empty state. **Ver todos →** abre `/portal/comunicados` ou `/portal/eventos` com a mesma lista.
+- **Conteúdos Êxito** — carrossel imagem + texto, só o que está **Publicado**. Com 2 ou mais publicados, troca sozinho a cada 5 s deslizando; pare o mouse em cima para segurar. Quando o conteúdo tem link, **Ver mais →** aparece no hover e o clique abre o link. O boot não deixa as fotos de exemplo (escritório). Se não houver conteúdo cadastrado, entra de novo a imagem original do carrossel. Sem nenhum item, a Home mostra “Em breve, novidades do Êxito.”
+- **Comunicados** — até 4 comunicados ativos em cartões coloridos pelo tipo: **Operacional** (azul), **HUB** (verde) e **Interno** (âmbar), com selo, título, data e texto. Sem registros, empty state. **Ver todos →** abre `/portal/comunicados` (lista simples).
 - **Agenda Êxito** — mostra o próximo evento quando houver; **Ver agenda completa** → `/portal/agenda` (mesma lista da semana; sem sync com Google Agenda).
-- **Links úteis** — grade 2 colunas com os atalhos ativos do admin (vazio: empty state).
-- **Contatos úteis** — linhas com foto ou iniciais; filtro por departamento; botões E-mail / WhatsApp quando cadastrados. O seed de teste preenche contatos só se a tabela estiver vazia.
-- **Vídeos de Integração** — trilha com faixas de teste (Máquina do Tempo); use **Marcar como concluído** para avançar. Itens bloqueados aparecem como Bloqueado.
-- **Diagrama / Informativos / Catálogos / Documentos** — mesma regra sequencial; seed grava itens TESTE se a área estiver vazia.
+- **Links úteis** — grade 2 colunas com os atalhos **ativos** do admin (vazio: empty state).
+- **Contatos úteis** — linhas com foto ou iniciais, só os **ativos**; filtro por departamento; botões E-mail / WhatsApp quando cadastrados. O seed de teste preenche contatos só se a tabela estiver vazia.
+- **Vídeos, POPs, Diagrama, Informativos, Catálogos e Documentos** — não aparecem como item na Home. Abra a área (`/portal/videos`, `/portal/pops` e as demais). Em Vídeos, Diagrama, Informativos, Catálogos e Documentos, o próximo item só libera depois de **Marcar como concluído**; itens bloqueados aparecem como Bloqueado. POPs continuam livremente navegáveis.
 
 ## Integração (onboarding)
 
@@ -43,7 +42,7 @@ Em ambos os casos:
 3. Ao terminar todas, clique **Concluir integração**.
 4. A Home passa a mostrar a barra rápida (não os 5 cards grandes).
 5. Se voltar em **Integração** depois de concluir: vê o painel de fechamento (selo, barra completa, **Ir para a Home**), atalhos para Vídeos, Diagrama, POPs e Documentos, e a lista das etapas em leitura (revisar com **Abrir**).
-6. Admin: **Portal Corporativo → Onboarding → Editar** na etapa — preenche link YouTube, link para baixar o vídeo e anexa o PDF.
+6. Admin: **Portal Corporativo → Onboarding → Editar** na etapa — preenche link YouTube, link para baixar o vídeo e anexa o PDF. **Nova etapa** adiciona ao fim da trilha. Desmarque **Ativa** para tirar a etapa da trilha sem apagar; **Excluir** apaga a etapa e o progresso de quem já a concluiu (o diálogo mostra quantos).
 
 ## Menu lateral
 
@@ -61,8 +60,13 @@ Quem só tem NCM (consulta de cliente) vê **Fiscal → Auditor Fiscal** e as á
 ## Admin — Portal Corporativo
 
 1. Login admin.
-2. Sidebar **Administrativo → Configuração → Portal Corporativo** (`/admin/portal`) — grade de cards.
-3. Cadastre **Conteúdos Êxito**, **Links**, **Contatos**, itens por área. Em **Conteúdos Êxito**, use imagem **1280 × 720 px (16:9)** — o formulário mostra essa medida. Em **Vídeos**, cole só o **link do YouTube**. Edite a **trilha** e acompanhe em **Acompanhamento**.
+2. Sidebar **Administrativo → Configuração → Portal Corporativo** (`/admin/portal`). O topo resume quantos itens estão ativos em cada área; abaixo, blocos **Destaques**, **Biblioteca**, **Pessoas e avisos** e **Integração** levam a cada lista.
+3. Cadastre **Conteúdos Êxito**, **Links**, **Contatos**, **Comunicados**, **Eventos** e itens por área. **Publicado** (conteúdo) e **Ativo** (link ou contato) é o que entra na Home — não há mais a opção “Exibir na Home”. Em **Conteúdos Êxito**, use imagem **1280 × 720 px (16:9)** — o formulário mostra essa medida. Em **Links**, a caixa **Como aparecerá** mostra o nome e a URL enquanto você digita. Em **Vídeos**, cole só o **link do YouTube**. A tela de cada área avisa a rota (`/portal/videos` e as demais): o item não entra na Home. Edite a **trilha** e acompanhe em **Acompanhamento**.
+   - **Filtrar:** em cada lista, busque pelo texto e escolha a situação (Ativos/Inativos; em Conteúdos, Publicados/Rascunhos). Links filtram também por categoria e Contatos por setor. Depois de salvar ou excluir, a lista volta com o mesmo filtro. **Limpar** tira o filtro.
+   - **Excluir:** botão **Excluir** na linha → diálogo **Excluir “nome”?** → confirmar. É definitivo. Nas áreas com trilha (Vídeos, Diagrama, Informativos, Catálogos, Documentos) e nas etapas do onboarding, se alguém já concluiu, o diálogo diz quantos colaboradores — esse progresso é apagado junto. Para só esconder, use **Desativar**.
+   - **Comunicados:** título, texto, data de publicação, **Tipo** e Ativo. O Tipo (Operacional, HUB ou Interno; o novo já vem Operacional) escolhe a cor e o selo do cartão na Home. Aparecem na Home e em `/portal/comunicados` enquanto ativos.
+   - **Eventos:** título, local, data/hora e Ativo. Aparecem na Home, em `/portal/eventos` e na Agenda enquanto ativos e com data futura.
+   - **Vídeo em destaque:** em **Vídeos**, **Definir como destaque** marca um único vídeo (pílula **Destaque** em `/portal/videos`). Se já houver outro, a tela pergunta se deve substituir. A ordem da trilha de vídeos não muda.
 4. Links externos e YouTube devem ser `https://`. Arquivos só abrem para quem está logado.
 5. Em **Gerenciar usuários**, no sheet criar/editar, campo **Foto de perfil** (opcional). A lista mostra a foto; o colaborador também troca em **Meu perfil**.
 

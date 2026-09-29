@@ -37,6 +37,12 @@ const CONTENT_CATEGORIES = [
   'Outros',
 ];
 
+const ANNOUNCEMENT_KINDS = [
+  { id: 'operacional', label: 'Operacional', materialIcon: 'campaign' },
+  { id: 'hub', label: 'HUB', materialIcon: 'home' },
+  { id: 'interno', label: 'Interno', materialIcon: 'warning' },
+];
+
 const EMPTY_STATES = {
   contents: 'Em breve, novidades do Êxito.',
   links: 'Nenhum link útil disponível.',
@@ -46,11 +52,9 @@ const EMPTY_STATES = {
   announcements: 'Nenhum novo comunicado no momento.',
   announcementsSupport:
     'Você está com todas as leituras operacionais e comunicados internos em dia.',
-  events: 'Nenhum evento próximo agendado.',
-  eventsSupport:
-    'Não há reuniões gerais, bancas corporativas ou seminários marcados nas próximas horas.',
-  agenda: 'Reuniões, treinamentos e eventos internos da semana.',
-  agendaSupport: 'A agenda corporativa será integrada em uma próxima etapa.',
+  agenda: 'Reuniões, treinamentos e eventos em que você está marcado.',
+  agendaToday: 'Nada marcado para hoje.',
+  agendaTomorrow: 'Nada marcado para amanhã.',
   items: 'Nenhum item disponível no momento.',
 };
 
@@ -149,6 +153,7 @@ module.exports = {
   CONTACT_DEPARTMENTS,
   ITEM_DEPARTMENTS,
   CONTENT_CATEGORIES,
+  ANNOUNCEMENT_KINDS,
   EMPTY_STATES,
   ITEM_KINDS,
   HOME_INTEGRATION_KINDS,

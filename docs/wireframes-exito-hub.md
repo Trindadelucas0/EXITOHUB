@@ -184,9 +184,9 @@ Shell padrão (todas as telas autenticadas):
 
 1. Sem banner de integração; foco no dia a dia corporativo.
 2. Barra compacta dá acesso a áreas (inclui Documentos).
-3. Carrossel usa conteúdos publicados com `show_on_home`.
+3. Carrossel usa conteúdos publicados.
 4. Comunicados / Eventos / Agenda são placeholders visuais Stitch (sem dados inventados; sem “sync Google”).
-5. Links e contatos vêm do admin (`show_on_home` + ativos); contatos filtráveis por departamento.
+5. Links e contatos vêm do admin (ativos); contatos filtráveis por departamento.
 6. A mesma faixa inferior aparece na Home pendente (abaixo dos 5 cards e do carrossel).
 
 ---

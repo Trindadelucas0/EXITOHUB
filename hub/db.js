@@ -284,6 +284,12 @@ async function ensureTables() {
     EXCEPTION WHEN duplicate_object THEN NULL;
     END $$
   `);
+  await query(`ALTER TABLE portal_items ADD COLUMN IF NOT EXISTS is_featured BOOLEAN NOT NULL DEFAULT false`);
+  await query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS portal_items_video_featured_uniq
+      ON portal_items (kind)
+      WHERE kind = 'video' AND is_featured = true
+  `);
   await query(`
     CREATE INDEX IF NOT EXISTS idx_portal_items_kind_active
       ON portal_items (kind, is_active, sort_order);
@@ -304,6 +310,31 @@ async function ensureTables() {
   await query(`
     CREATE INDEX IF NOT EXISTS idx_portal_item_progress_user
       ON portal_item_progress (user_id, completed_at DESC);
+  `);
+
+  // Portal 1.5.29: agenda por pessoa. Eventos antigos ficam sem marcados (fora da Home).
+  await query(`ALTER TABLE portal_events ADD COLUMN IF NOT EXISTS ends_at TIMESTAMPTZ`);
+  await query(`
+    CREATE TABLE IF NOT EXISTS portal_event_attendees (
+      event_id UUID NOT NULL REFERENCES portal_events(id) ON DELETE CASCADE,
+      user_id UUID NOT NULL REFERENCES hub_users(id) ON DELETE CASCADE,
+      PRIMARY KEY (event_id, user_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_portal_event_attendees_user
+      ON portal_event_attendees (user_id, event_id);
+  `);
+
+  // Portal 1.5.32: tipo do comunicado (cor/selo do cartão na Home).
+  await query(
+    `ALTER TABLE portal_announcements ADD COLUMN IF NOT EXISTS kind TEXT NOT NULL DEFAULT 'operacional'`,
+  );
+  await query(`
+    DO $$ BEGIN
+      ALTER TABLE portal_announcements
+        ADD CONSTRAINT portal_announcements_kind_check
+        CHECK (kind IN ('operacional', 'hub', 'interno'));
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$
   `);
 
   // Uma vez: quem já existia antes do portal não deve cair na trilha.

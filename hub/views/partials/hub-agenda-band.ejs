@@ -1,0 +1,86 @@
+<%
+  const bandToday = typeof agendaToday !== 'undefined' && Array.isArray(agendaToday) ? agendaToday : [];
+  const bandTomorrow = typeof agendaTomorrow !== 'undefined' && Array.isArray(agendaTomorrow) ? agendaTomorrow : [];
+  const bandEmpty = typeof emptyStates !== 'undefined' && emptyStates ? emptyStates : {};
+  const bandShowFull = typeof showFullLink !== 'undefined' ? showFullLink : true;
+  const bandTz = 'America/Sao_Paulo';
+  const dayKey = function (value) {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: bandTz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value));
+  };
+  const hourLabel = function (value) {
+    return new Intl.DateTimeFormat('pt-BR', { timeZone: bandTz, hour: '2-digit', minute: '2-digit' }).format(new Date(value));
+  };
+  const dayLabel = function (value) {
+    return new Intl.DateTimeFormat('pt-BR', { timeZone: bandTz, day: 'numeric', month: 'short' }).format(new Date(value));
+  };
+  const whenLabel = function (ev) {
+    if (!ev.ends_at) return hourLabel(ev.starts_at);
+    if (dayKey(ev.starts_at) === dayKey(ev.ends_at)) return hourLabel(ev.starts_at) + '–' + hourLabel(ev.ends_at);
+    return dayLabel(ev.starts_at) + ' ' + hourLabel(ev.starts_at) + ' – ' + dayLabel(ev.ends_at) + ' ' + hourLabel(ev.ends_at);
+  };
+  const namesLabel = function (ev) {
+    return (ev.attendees || []).map(function (a) { return a.name; }).join(', ');
+  };
+  const now = new Date();
+  const todayCaption = dayLabel(now);
+  const tomorrowCaption = dayLabel(new Date(now.getTime() + 24 * 60 * 60 * 1000));
+  const days = [
+    { key: 'today', label: 'Hoje', caption: todayCaption, items: bandToday, empty: bandEmpty.agendaToday || 'Nada marcado para hoje.' },
+    { key: 'tomorrow', label: 'Amanhã', caption: tomorrowCaption, items: bandTomorrow, empty: bandEmpty.agendaTomorrow || 'Nada marcado para amanhã.' },
+  ];
+%>
+<section class="hub-home-agenda-band" aria-labelledby="agenda-titulo">
+  <header class="hub-home-agenda-band__head">
+    <div>
+      <h2 id="agenda-titulo" class="hub-home-feed__title">
+        <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        Agenda Êxito
+      </h2>
+      <p class="hub-home-agenda-band__lead"><%= bandEmpty.agenda || 'Reuniões, treinamentos e eventos em que você está marcado.' %></p>
+    </div>
+    <% if (bandShowFull) { %>
+      <a class="hub-home-feed__link" href="/portal/agenda">Ver agenda completa →</a>
+    <% } %>
+  </header>
+
+  <div class="hub-home-agenda-band__body">
+    <div class="hub-home-agenda-band__cal">
+      <div id="hub-agenda" class="hub-agenda" data-agenda-feed="/portal/agenda/eventos"></div>
+      <div class="hub-agenda-detail" data-agenda-detail aria-live="polite">
+        <p class="hub-agenda-detail__status" data-agenda-status>Carregando agenda...</p>
+        <div data-agenda-detail-body hidden>
+          <div class="hub-agenda-detail__head">
+            <span data-agenda-detail-heading></span>
+            <button type="button" class="hub-agenda-detail__close" data-agenda-detail-close aria-label="Fechar detalhe">×</button>
+          </div>
+          <div data-agenda-detail-items></div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="hub-home-agenda-band__days" aria-label="Hoje e amanhã">
+      <% days.forEach(function (day) { %>
+        <div class="hub-agenda-day">
+          <p class="hub-agenda-day__label"><%= day.label %> <span>· <%= day.caption %></span></p>
+          <% if (!day.items.length) { %>
+            <p class="hub-agenda-day__empty"><%= day.empty %></p>
+          <% } else { %>
+            <ul class="hub-agenda-day__list">
+              <% day.items.forEach(function (ev) { %>
+                <li class="hub-agenda-card<%= day.key === 'today' ? ' hub-agenda-card--today' : '' %>">
+                  <strong class="hub-agenda-card__title"><%= ev.title %></strong>
+                  <span class="hub-agenda-card__meta">
+                    <%= whenLabel(ev) %><% if (ev.place) { %> · <%= ev.place %><% } %>
+                  </span>
+                  <% if (namesLabel(ev)) { %>
+                    <p class="hub-agenda-card__who"><strong>Quem vai:</strong> <%= namesLabel(ev) %></p>
+                  <% } %>
+                </li>
+              <% }) %>
+            </ul>
+          <% } %>
+        </div>
+      <% }) %>
+    </aside>
+  </div>
+</section>

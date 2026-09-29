@@ -1,0 +1,20 @@
+<dialog class="hub-dialog" id="<%= dialogId %>"<% if (autoOpen) { %> data-auto-open<% } %>>
+  <form method="post" action="<%= action %>" data-once>
+    <h2><% if (typeof recordName !== 'undefined' && recordName) { %>Excluir “<%= recordName %>”?<% } else { %><%= heading %><% } %></h2>
+    <p><%= message %></p>
+    <input type="hidden" name="confirm" value="1" />
+    <%- include('hub-filter-fields', { filters: filters }) %>
+    <div class="hub-form-actions">
+      <button type="button" class="hub-btn hub-btn-ghost" data-close-dialog>Cancelar</button>
+      <button type="submit" class="hub-btn hub-btn-primary" data-busy="<%= busyLabel || 'Excluindo...' %>"><%= confirmLabel || 'Excluir' %></button>
+    </div>
+  </form>
+</dialog>
+<noscript>
+  <form method="post" action="<%= action %>" class="hub-noscript-confirm">
+    <p><%= message %></p>
+    <input type="hidden" name="confirm" value="1" />
+    <%- include('hub-filter-fields', { filters: filters }) %>
+    <button type="submit" class="hub-btn hub-btn-primary"><%= confirmLabel || 'Excluir' %></button>
+  </form>
+</noscript>

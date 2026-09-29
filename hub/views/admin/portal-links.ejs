@@ -9,23 +9,38 @@
     <section class="hub-card">
       <p class="hub-breadcrumb"><a href="/admin/portal">Portal Corporativo</a> / Links Úteis</p>
       <div class="hub-admin-head">
-        <h1>Links Úteis</h1>
-        <a class="hub-btn hub-btn-primary" href="/admin/portal/links/novo">+ Adicionar link</a>
+        <div>
+          <h1>Links Úteis</h1>
+          <p class="hub-muted">Gerencie os atalhos exibidos na Home.</p>
+        </div>
+        <a class="hub-btn hub-btn-primary" href="/admin/portal/links/novo<%= filtersQuery %>">+ Adicionar link</a>
       </div>
-      <% if (flash) { %><div class="hub-alert hub-alert-ok"><%= flash %></div><% } %>
-      <% if (error) { %><div class="hub-alert hub-alert-error"><%= error %></div><% } %>
+      <% if (flash) { %><div class="hub-alert hub-alert-ok" role="status"><%= flash %></div><% } %>
+      <% if (error) { %><div class="hub-alert hub-alert-error" role="alert"><%= error %></div><% } %>
+
+      <%- include('../partials/hub-admin-filters', {
+        action: '/admin/portal/links',
+        filters: filters,
+        hasFilter: hasFilter,
+        categories: categories,
+        showCategory: true,
+        placeholder: 'Buscar nome ou URL',
+        sitActiveLabel: 'Ativos',
+        sitInactiveLabel: 'Inativos'
+      }) %>
 
       <% if (editing) { %>
-        <form method="post" action="<%= editing.id ? '/admin/portal/links/' + editing.id : '/admin/portal/links' %>" class="hub-admin-form">
+        <form method="post" action="<%= editing.id ? '/admin/portal/links/' + editing.id : '/admin/portal/links' %>" class="hub-admin-form" data-once>
+          <%- include('../partials/hub-filter-fields', { filters: filters }) %>
           <h2><%= editing.id ? 'Editar link' : 'Adicionar link' %></h2>
           <label>Nome do link
-            <input name="name" required maxlength="120" value="<%= editing.name || '' %>" />
+            <input name="name" required maxlength="120" value="<%= editing.name || '' %>" data-preview-source="name" />
           </label>
           <label>Descrição
             <input name="description" maxlength="500" value="<%= editing.description || '' %>" />
           </label>
           <label>URL (https)
-            <input name="url" type="url" required maxlength="2000" value="<%= editing.url || '' %>" placeholder="https://" />
+            <input name="url" type="url" required maxlength="2000" value="<%= editing.url || '' %>" placeholder="https://" data-preview-source="url" />
           </label>
           <label>Categoria
             <select name="category">
@@ -40,37 +55,77 @@
           <label>Ordem
             <input name="sort_order" type="number" value="<%= editing.sort_order != null ? editing.sort_order : 0 %>" />
           </label>
-          <label class="hub-check"><input type="checkbox" name="is_active" value="1" <%= editing.id ? (editing.is_active ? 'checked' : '') : 'checked' %> /> Ativo</label>
-          <label class="hub-check"><input type="checkbox" name="show_on_home" value="1" <%= editing.id ? (editing.show_on_home ? 'checked' : '') : 'checked' %> /> Exibir na Home</label>
+          <label class="hub-check"><input type="checkbox" name="is_active" value="1" <%= editing.id ? (editing.is_active ? 'checked' : '') : 'checked' %> /> Ativo (aparece na Home)</label>
+          <div class="hub-link-preview" aria-label="Como aparecerá">
+            <span class="hub-muted">Como aparecerá</span>
+            <strong data-preview-name><%= editing.name || 'Nome do link' %></strong>
+            <span data-preview-url><%= editing.url || 'https://' %></span>
+          </div>
           <div class="hub-form-actions">
-            <a class="hub-btn hub-btn-ghost" href="/admin/portal/links">Cancelar</a>
-            <button type="submit" class="hub-btn hub-btn-primary">Salvar</button>
+            <a class="hub-btn hub-btn-ghost" href="/admin/portal/links<%= filtersQuery %>">Cancelar</a>
+            <button type="submit" class="hub-btn hub-btn-primary" data-busy="Salvando...">Salvar</button>
           </div>
         </form>
       <% } %>
 
-      <% if (!(links || []).length) { %>
-        <p class="hub-muted">Nenhum link cadastrado.</p>
+      <% if (!(links || []).length && !hasFilter) { %>
+        <div class="hub-admin-empty">
+          <p>Você ainda não possui links cadastrados.</p>
+          <a class="hub-btn hub-btn-primary" href="/admin/portal/links/novo">+ Adicionar link</a>
+        </div>
+      <% } else if (!(links || []).length) { %>
+        <div class="hub-admin-empty">
+          <p>Nenhum link neste filtro.</p>
+          <a class="hub-btn hub-btn-ghost" href="/admin/portal/links">Limpar</a>
+        </div>
       <% } else { %>
-        <ul class="hub-admin-list">
-          <% links.forEach(function (link) { %>
-            <li class="hub-admin-list__item">
-              <div>
-                <strong><%= link.name %></strong>
-                <span class="hub-muted"><%= link.description || '' %></span>
-                <span class="hub-muted"><%= link.url %></span>
-                <span class="hub-pill<%= link.is_active ? ' hub-pill-ok' : '' %>"><%= link.is_active ? 'Ativo' : 'Inativo' %></span>
-              </div>
-              <div class="hub-admin-list__actions">
-                <a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/links/<%= link.id %>/editar">Editar</a>
-                <form method="post" action="/admin/portal/links/<%= link.id %>/status">
-                  <input type="hidden" name="active" value="<%= link.is_active ? '0' : '1' %>" />
-                  <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm"><%= link.is_active ? 'Desativar' : 'Ativar' %></button>
-                </form>
-              </div>
-            </li>
-          <% }) %>
-        </ul>
+        <div class="hub-admin-table-wrap hub-admin-table-wrap--stack">
+          <table class="hub-admin-table">
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>URL</th>
+                <th>Categoria</th>
+                <th>Situação</th>
+                <th>Ordem</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% links.forEach(function (link) { %>
+                <tr>
+                  <td data-label="Nome"><strong><%= link.name %></strong></td>
+                  <td data-label="URL"><span class="hub-muted"><%= link.url %></span></td>
+                  <td data-label="Categoria"><%= link.category %></td>
+                  <td data-label="Situação"><span class="hub-pill<%= link.is_active ? ' hub-pill-ok' : '' %>"><%= link.is_active ? 'Ativo' : 'Inativo' %></span></td>
+                  <td data-label="Ordem"><%= link.sort_order %></td>
+                  <td data-label="Ações">
+                    <div class="hub-admin-list__actions">
+                      <a class="hub-btn hub-btn-ghost hub-btn-sm" href="/admin/portal/links/<%= link.id %>/editar<%= filtersQuery %>">Editar</a>
+                      <form method="post" action="/admin/portal/links/<%= link.id %>/status">
+                        <%- include('../partials/hub-filter-fields', { filters: filters }) %>
+                        <input type="hidden" name="active" value="<%= link.is_active ? '0' : '1' %>" />
+                        <button type="submit" class="hub-btn hub-btn-ghost hub-btn-sm"><%= link.is_active ? 'Desativar' : 'Ativar' %></button>
+                      </form>
+                      <button type="button" class="hub-btn hub-btn-ghost hub-btn-sm" data-open-dialog="dlg-link-<%= link.id %>">Excluir</button>
+                    </div>
+                    <%- include('../partials/hub-confirm-dialog', {
+                      dialogId: 'dlg-link-' + link.id,
+                      recordName: link.name,
+                      heading: 'Excluir link?',
+                      message: 'Esse atalho sai da Home e do portal.',
+                      action: '/admin/portal/links/' + link.id + '/excluir',
+                      filters: filters,
+                      autoOpen: String(confirmar) === String(link.id),
+                      confirmLabel: 'Excluir',
+                      busyLabel: 'Excluindo...'
+                    }) %>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
       <% } %>
     </section>
   </main>

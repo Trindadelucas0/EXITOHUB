@@ -7,22 +7,42 @@ const {
   loadHome,
   greetingForNow,
   listAnnouncements,
+  getAnnouncement,
+  createAnnouncement,
+  updateAnnouncement,
+  setAnnouncementActive,
+  deleteAnnouncement,
   listEvents,
+  getEvent,
+  createEvent,
+  updateEvent,
+  setEventActive,
+  deleteEvent,
+  listEventsForUser,
+  loadAgendaDays,
+  parseAgendaRange,
+  toCalendarEvent,
+  loadPortalAdminSummary,
+  formatDatetimeLocal,
+  countTable,
   listLinks,
   getLink,
   createLink,
   updateLink,
   setLinkActive,
+  deleteLink,
   listContacts,
   getContact,
   createContact,
   updateContact,
   setContactActive,
+  deleteContact,
   listContents,
   getContent,
   createContent,
   updateContent,
   setContentPublished,
+  deleteContent,
   kindMeta,
   kindFromSlug,
   listItems,
@@ -30,6 +50,10 @@ const {
   createItem,
   updateItem,
   setItemActive,
+  countItemProgressByKind,
+  countItems,
+  deleteItem,
+  setVideoFeatured,
   listItemProgress,
   decorateItemsForUser,
   firstUnlockedIncompleteId,
@@ -43,6 +67,9 @@ const {
   completeStep,
   completeOnboarding,
   updateStep,
+  createStep,
+  deleteStep,
+  countStepProgressByTrack,
   moveStep,
   listOnboardingUsers,
   getUserOnboardingDetail,
@@ -52,6 +79,7 @@ const {
   CONTACT_DEPARTMENTS,
   ITEM_DEPARTMENTS,
   CONTENT_CATEGORIES,
+  ANNOUNCEMENT_KINDS,
   ITEM_KINDS,
   TARGET_TYPES,
   EMPTY_STATES,
@@ -64,6 +92,7 @@ const {
   absolutePathForStored,
 } = require('./upload');
 const { IMAGE_MIMES } = require('./constants');
+const { listUsers } = require('../auth');
 
 const router = express.Router();
 
@@ -90,11 +119,57 @@ function pickFlash(req) {
     status: 'Situação atualizada.',
     concluido: 'Integração concluída.',
     marcado: 'Item marcado como concluído.',
+    excluido: 'Excluído.',
+    destaque: 'Destaque atualizado.',
   };
   return {
     flash: messages[flashKey] || null,
     error: req.query.erro ? String(req.query.erro).slice(0, 300) : null,
   };
+}
+
+function readSit(value) {
+  const sit = String(value || '').trim().toLowerCase();
+  return sit === 'ativo' || sit === 'inativo' ? sit : '';
+}
+
+function readFilters(req) {
+  const src = Object.assign({}, req.query || {}, req.body || {});
+  return {
+    q: String(src.q || '').trim().slice(0, 80),
+    sit: readSit(src.sit),
+    cat: String(src.cat || '').trim().slice(0, 60),
+    dep: String(src.dep || '').trim().slice(0, 60),
+  };
+}
+
+function hasAdminFilter(filters) {
+  return Boolean(filters.q || filters.sit || filters.cat || filters.dep);
+}
+
+function querySuffix(path, filters, extra) {
+  const full = listReturn(path, filters, extra);
+  const q = full.indexOf('?');
+  return q === -1 ? '' : full.slice(q);
+}
+
+function listReturn(path, filters, extra) {
+  const params = new URLSearchParams();
+  if (filters.q) params.set('q', filters.q);
+  if (filters.sit) params.set('sit', filters.sit);
+  if (filters.cat) params.set('cat', filters.cat);
+  if (filters.dep) params.set('dep', filters.dep);
+  if (extra) {
+    Object.keys(extra).forEach((key) => {
+      if (extra[key]) params.set(key, String(extra[key]));
+    });
+  }
+  const qs = params.toString();
+  return qs ? `${path}?${qs}` : path;
+}
+
+function isConfirmed(body) {
+  return String(body && body.confirm) === '1';
 }
 
 function handleUploadError(err, res, fallbackPath) {
@@ -244,34 +319,41 @@ router.get('/portal/comunicados', requireHubAuth, async (req, res) => {
   });
 });
 
-router.get('/portal/eventos', requireHubAuth, async (req, res) => {
-  const events = await listEvents({ activeOnly: true, upcomingOnly: true });
-  return res.render('portal/placeholder', {
-    title: 'Próximos eventos — EXITO HUB',
-    hubUser: req.hubUser,
-    current: 'portal-eventos',
-    pageTitle: 'Próximos eventos',
-    pageIcon: 'event_busy',
-    pageLead: EMPTY_STATES.events,
-    pageHint: EMPTY_STATES.eventsSupport,
-    listKind: 'events',
-    listItems: events,
-  });
+router.get('/portal/eventos', requireHubAuth, (_req, res) => {
+  return res.redirect('/portal/agenda');
 });
 
 router.get('/portal/agenda', requireHubAuth, async (req, res) => {
-  const events = await listEvents({ activeOnly: true, upcomingOnly: true });
-  return res.render('portal/placeholder', {
-    title: 'Agenda Êxito — EXITO HUB',
-    hubUser: req.hubUser,
-    current: 'portal-agenda',
-    pageTitle: 'Agenda Êxito',
-    pageIcon: 'calendar_month',
-    pageLead: EMPTY_STATES.agenda,
-    pageHint: EMPTY_STATES.agendaSupport,
-    listKind: 'events',
-    listItems: events,
-  });
+  try {
+    const agenda = await loadAgendaDays(req.hubUser.id);
+    return res.render('portal/agenda', {
+      title: 'Agenda Êxito — EXITO HUB',
+      hubUser: req.hubUser,
+      current: 'portal-agenda',
+      agendaToday: agenda.agendaToday,
+      agendaTomorrow: agenda.agendaTomorrow,
+      emptyStates: EMPTY_STATES,
+    });
+  } catch (err) {
+    console.error('[hub] agenda', err);
+    return res.status(500).send('Não foi possível carregar a agenda.');
+  }
+});
+
+router.get('/portal/agenda/eventos', requireHubAuth, async (req, res) => {
+  let range;
+  try {
+    range = parseAgendaRange(req.query.start, req.query.end);
+  } catch (err) {
+    return res.status(400).json({ error: safeError(err) });
+  }
+  try {
+    const events = await listEventsForUser(req.hubUser.id, range);
+    return res.json(events.map(toCalendarEvent));
+  } catch (err) {
+    console.error('[hub] agenda eventos', err);
+    return res.status(500).json({ error: 'Não foi possível carregar a agenda.' });
+  }
 });
 
 /* ───────────── Onboarding (auth) ───────────── */
@@ -349,251 +431,298 @@ router.get('/portal/onboarding/etapas/:id', requireHubAuth, async (req, res) => 
 
 /* ───────────── Admin index ───────────── */
 
-router.get('/admin/portal', requireHubAdmin, (req, res) => {
-  return res.render('admin/portal-index', {
-    title: 'Portal Corporativo — EXITO HUB',
-    hubUser: req.hubUser,
-    current: 'admin-portal',
-    itemKinds: ITEM_KINDS,
-    ...pickFlash(req),
-  });
+router.get('/admin/portal', requireHubAdmin, async (req, res) => {
+  try {
+    const summary = await loadPortalAdminSummary();
+    return res.render('admin/portal-index', {
+      title: 'Portal Corporativo — EXITO HUB',
+      hubUser: req.hubUser,
+      current: 'admin-portal',
+      itemKinds: ITEM_KINDS,
+      summary,
+      ...pickFlash(req),
+    });
+  } catch (err) {
+    console.error('[hub] admin portal', err);
+    return res.status(500).send('Erro ao carregar o portal');
+  }
 });
 
 router.get('/admin/portal/configuracoes', requireHubAdmin, (req, res) => {
-  return res.render('admin/portal-settings', {
-    title: 'Configurações do Portal — EXITO HUB',
-    hubUser: req.hubUser,
-    current: 'admin-portal',
-  });
+  return res.redirect('/admin/portal');
 });
 
 /* ───────────── Admin Links ───────────── */
 
-router.get('/admin/portal/links', requireHubAdmin, async (req, res) => {
-  const links = await listLinks();
+async function renderLinksAdmin(req, res, editing, title) {
+  const filters = readFilters(req);
+  const back = listReturn('/admin/portal/links', filters);
+  if (editing && editing.id && !editing.name && editing.missing) return res.redirect(back);
+  const [links, totalCount] = await Promise.all([
+    listLinks({ q: filters.q, sit: filters.sit, category: filters.cat }),
+    countTable('portal_links'),
+  ]);
   return res.render('admin/portal-links', {
-    title: 'Links Úteis — Portal',
-    hubUser: req.hubUser,
-    current: 'admin-portal',
-    links,
-    editing: null,
-    categories: LINK_CATEGORIES,
-    ...pickFlash(req),
-  });
-});
-
-router.get('/admin/portal/links/novo', requireHubAdmin, async (req, res) => {
-  const links = await listLinks();
-  return res.render('admin/portal-links', {
-    title: 'Novo link — Portal',
-    hubUser: req.hubUser,
-    current: 'admin-portal',
-    links,
-    editing: { id: null },
-    categories: LINK_CATEGORIES,
-    ...pickFlash(req),
-  });
-});
-
-router.get('/admin/portal/links/:id/editar', requireHubAdmin, async (req, res) => {
-  const editing = await getLink(req.params.id);
-  if (!editing) return res.redirect('/admin/portal/links');
-  const links = await listLinks();
-  return res.render('admin/portal-links', {
-    title: 'Editar link — Portal',
+    title,
     hubUser: req.hubUser,
     current: 'admin-portal',
     links,
     editing,
     categories: LINK_CATEGORIES,
+    filters,
+    filtersQuery: querySuffix('/admin/portal/links', filters),
+    hasFilter: hasAdminFilter(filters),
+    totalCount,
+    confirmar: String(req.query.confirmar || ''),
     ...pickFlash(req),
   });
+}
+
+router.get('/admin/portal/links', requireHubAdmin, (req, res) => {
+  return renderLinksAdmin(req, res, null, 'Links Úteis — Portal');
+});
+
+router.get('/admin/portal/links/novo', requireHubAdmin, (req, res) => {
+  return renderLinksAdmin(req, res, { id: null }, 'Novo link — Portal');
+});
+
+router.get('/admin/portal/links/:id/editar', requireHubAdmin, async (req, res) => {
+  const editing = await getLink(req.params.id);
+  if (!editing) return res.redirect(listReturn('/admin/portal/links', readFilters(req)));
+  return renderLinksAdmin(req, res, editing, 'Editar link — Portal');
 });
 
 router.post('/admin/portal/links', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
   try {
     await createLink(req.body);
-    return flashRedirect(res, '/admin/portal/links', { ok: 'criado' });
+    return flashRedirect(res, listReturn('/admin/portal/links', filters), { ok: 'criado' });
   } catch (err) {
-    return flashRedirect(res, '/admin/portal/links/novo', { erro: safeError(err) });
-  }
-});
-
-router.post('/admin/portal/links/:id', requireHubAdmin, async (req, res) => {
-  try {
-    await updateLink(req.params.id, req.body);
-    return flashRedirect(res, '/admin/portal/links', { ok: 'atualizado' });
-  } catch (err) {
-    return flashRedirect(res, `/admin/portal/links/${req.params.id}/editar`, { erro: safeError(err) });
+    return flashRedirect(res, listReturn('/admin/portal/links/novo', filters), { erro: safeError(err) });
   }
 });
 
 router.post('/admin/portal/links/:id/status', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
   try {
     await setLinkActive(req.params.id, bodyFlag(req.body.active));
-    return flashRedirect(res, '/admin/portal/links', { ok: 'status' });
+    return flashRedirect(res, listReturn('/admin/portal/links', filters), { ok: 'status' });
   } catch (err) {
-    return flashRedirect(res, '/admin/portal/links', { erro: safeError(err) });
+    return flashRedirect(res, listReturn('/admin/portal/links', filters), { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/links/:id/excluir', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  const back = listReturn('/admin/portal/links', filters);
+  try {
+    const existing = await getLink(req.params.id);
+    if (!existing) return flashRedirect(res, back, { erro: 'Link não encontrado.' });
+    if (!isConfirmed(req.body)) {
+      return res.redirect(listReturn('/admin/portal/links', filters, { confirmar: req.params.id }));
+    }
+    await deleteLink(req.params.id);
+    return flashRedirect(res, back, { ok: 'excluido' });
+  } catch (err) {
+    return flashRedirect(res, back, { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/links/:id', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  try {
+    await updateLink(req.params.id, req.body);
+    return flashRedirect(res, listReturn('/admin/portal/links', filters), { ok: 'atualizado' });
+  } catch (err) {
+    return flashRedirect(res, listReturn(`/admin/portal/links/${req.params.id}/editar`, filters), { erro: safeError(err) });
   }
 });
 
 /* ───────────── Admin Contacts ───────────── */
 
-router.get('/admin/portal/contatos', requireHubAdmin, async (req, res) => {
-  const contacts = await listContacts();
+async function renderContactsAdmin(req, res, editing, title) {
+  const filters = readFilters(req);
+  const [contacts, totalCount] = await Promise.all([
+    listContacts({ q: filters.q, sit: filters.sit, department: filters.dep }),
+    countTable('portal_contacts'),
+  ]);
   return res.render('admin/portal-contacts', {
-    title: 'Contatos Úteis — Portal',
-    hubUser: req.hubUser,
-    current: 'admin-portal',
-    contacts,
-    editing: null,
-    departments: CONTACT_DEPARTMENTS,
-    ...pickFlash(req),
-  });
-});
-
-router.get('/admin/portal/contatos/novo', requireHubAdmin, async (req, res) => {
-  const contacts = await listContacts();
-  return res.render('admin/portal-contacts', {
-    title: 'Novo contato — Portal',
-    hubUser: req.hubUser,
-    current: 'admin-portal',
-    contacts,
-    editing: { id: null },
-    departments: CONTACT_DEPARTMENTS,
-    ...pickFlash(req),
-  });
-});
-
-router.get('/admin/portal/contatos/:id/editar', requireHubAdmin, async (req, res) => {
-  const editing = await getContact(req.params.id);
-  if (!editing) return res.redirect('/admin/portal/contatos');
-  const contacts = await listContacts();
-  return res.render('admin/portal-contacts', {
-    title: 'Editar contato — Portal',
+    title,
     hubUser: req.hubUser,
     current: 'admin-portal',
     contacts,
     editing,
     departments: CONTACT_DEPARTMENTS,
+    filters,
+    filtersQuery: querySuffix('/admin/portal/contatos', filters),
+    hasFilter: hasAdminFilter(filters),
+    totalCount,
+    confirmar: String(req.query.confirmar || ''),
     ...pickFlash(req),
   });
+}
+
+router.get('/admin/portal/contatos', requireHubAdmin, (req, res) => {
+  return renderContactsAdmin(req, res, null, 'Contatos Úteis — Portal');
+});
+
+router.get('/admin/portal/contatos/novo', requireHubAdmin, (req, res) => {
+  return renderContactsAdmin(req, res, { id: null }, 'Novo contato — Portal');
+});
+
+router.get('/admin/portal/contatos/:id/editar', requireHubAdmin, async (req, res) => {
+  const editing = await getContact(req.params.id);
+  if (!editing) return res.redirect(listReturn('/admin/portal/contatos', readFilters(req)));
+  return renderContactsAdmin(req, res, editing, 'Editar contato — Portal');
 });
 
 router.post('/admin/portal/contatos', requireHubAdmin, (req, res) => {
+  const filters = readFilters(req);
   uploadImage.single('photo')(req, res, async (err) => {
-    if (handleUploadError(err, res, '/admin/portal/contatos/novo')) return;
+    if (handleUploadError(err, res, listReturn('/admin/portal/contatos/novo', filters))) return;
     try {
       const fileRow = req.file ? await saveUploadedFile(req.file, req.hubUser.id) : null;
       await createContact(req.body, fileRow?.id || null);
-      return flashRedirect(res, '/admin/portal/contatos', { ok: 'criado' });
+      return flashRedirect(res, listReturn('/admin/portal/contatos', filters), { ok: 'criado' });
     } catch (e) {
-      return flashRedirect(res, '/admin/portal/contatos/novo', { erro: safeError(e) });
-    }
-  });
-});
-
-router.post('/admin/portal/contatos/:id', requireHubAdmin, (req, res) => {
-  uploadImage.single('photo')(req, res, async (err) => {
-    if (handleUploadError(err, res, `/admin/portal/contatos/${req.params.id}/editar`)) return;
-    try {
-      const fileRow = req.file ? await saveUploadedFile(req.file, req.hubUser.id) : null;
-      await updateContact(req.params.id, req.body, fileRow?.id || null);
-      return flashRedirect(res, '/admin/portal/contatos', { ok: 'atualizado' });
-    } catch (e) {
-      return flashRedirect(res, `/admin/portal/contatos/${req.params.id}/editar`, { erro: safeError(e) });
+      return flashRedirect(res, listReturn('/admin/portal/contatos/novo', filters), { erro: safeError(e) });
     }
   });
 });
 
 router.post('/admin/portal/contatos/:id/status', requireHubAdmin, async (req, res) => {
+  const back = listReturn('/admin/portal/contatos', readFilters(req));
   try {
     await setContactActive(req.params.id, bodyFlag(req.body.active));
-    return flashRedirect(res, '/admin/portal/contatos', { ok: 'status' });
+    return flashRedirect(res, back, { ok: 'status' });
   } catch (err) {
-    return flashRedirect(res, '/admin/portal/contatos', { erro: safeError(err) });
+    return flashRedirect(res, back, { erro: safeError(err) });
   }
+});
+
+router.post('/admin/portal/contatos/:id/excluir', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  const back = listReturn('/admin/portal/contatos', filters);
+  try {
+    const existing = await getContact(req.params.id);
+    if (!existing) return flashRedirect(res, back, { erro: 'Contato não encontrado.' });
+    if (!isConfirmed(req.body)) {
+      return res.redirect(listReturn('/admin/portal/contatos', filters, { confirmar: req.params.id }));
+    }
+    await deleteContact(req.params.id);
+    return flashRedirect(res, back, { ok: 'excluido' });
+  } catch (err) {
+    return flashRedirect(res, back, { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/contatos/:id', requireHubAdmin, (req, res) => {
+  const filters = readFilters(req);
+  uploadImage.single('photo')(req, res, async (err) => {
+    const editPath = listReturn(`/admin/portal/contatos/${req.params.id}/editar`, filters);
+    if (handleUploadError(err, res, editPath)) return;
+    try {
+      const fileRow = req.file ? await saveUploadedFile(req.file, req.hubUser.id) : null;
+      await updateContact(req.params.id, req.body, fileRow?.id || null);
+      return flashRedirect(res, listReturn('/admin/portal/contatos', filters), { ok: 'atualizado' });
+    } catch (e) {
+      return flashRedirect(res, editPath, { erro: safeError(e) });
+    }
+  });
 });
 
 /* ───────────── Admin Contents ───────────── */
 
-router.get('/admin/portal/conteudos', requireHubAdmin, async (req, res) => {
-  const contents = await listContents();
+async function renderContentsAdmin(req, res, editing, title) {
+  const filters = readFilters(req);
+  const [contents, totalCount] = await Promise.all([
+    listContents({ q: filters.q, sit: filters.sit }),
+    countTable('portal_contents'),
+  ]);
   return res.render('admin/portal-contents', {
-    title: 'Conteúdos Êxito — Portal',
-    hubUser: req.hubUser,
-    current: 'admin-portal',
-    contents,
-    editing: null,
-    categories: CONTENT_CATEGORIES,
-    targetTypes: TARGET_TYPES,
-    ...pickFlash(req),
-  });
-});
-
-router.get('/admin/portal/conteudos/novo', requireHubAdmin, async (req, res) => {
-  const contents = await listContents();
-  return res.render('admin/portal-contents', {
-    title: 'Novo conteúdo — Portal',
-    hubUser: req.hubUser,
-    current: 'admin-portal',
-    contents,
-    editing: { id: null },
-    categories: CONTENT_CATEGORIES,
-    targetTypes: TARGET_TYPES,
-    ...pickFlash(req),
-  });
-});
-
-router.get('/admin/portal/conteudos/:id/editar', requireHubAdmin, async (req, res) => {
-  const editing = await getContent(req.params.id);
-  if (!editing) return res.redirect('/admin/portal/conteudos');
-  const contents = await listContents();
-  return res.render('admin/portal-contents', {
-    title: 'Editar conteúdo — Portal',
+    title,
     hubUser: req.hubUser,
     current: 'admin-portal',
     contents,
     editing,
     categories: CONTENT_CATEGORIES,
     targetTypes: TARGET_TYPES,
+    filters,
+    filtersQuery: querySuffix('/admin/portal/conteudos', filters),
+    hasFilter: hasAdminFilter(filters),
+    totalCount,
+    confirmar: String(req.query.confirmar || ''),
     ...pickFlash(req),
   });
+}
+
+router.get('/admin/portal/conteudos', requireHubAdmin, (req, res) => {
+  return renderContentsAdmin(req, res, null, 'Conteúdos Êxito — Portal');
+});
+
+router.get('/admin/portal/conteudos/novo', requireHubAdmin, (req, res) => {
+  return renderContentsAdmin(req, res, { id: null }, 'Novo conteúdo — Portal');
+});
+
+router.get('/admin/portal/conteudos/:id/editar', requireHubAdmin, async (req, res) => {
+  const editing = await getContent(req.params.id);
+  if (!editing) return res.redirect(listReturn('/admin/portal/conteudos', readFilters(req)));
+  return renderContentsAdmin(req, res, editing, 'Editar conteúdo — Portal');
 });
 
 router.post('/admin/portal/conteudos', requireHubAdmin, (req, res) => {
+  const filters = readFilters(req);
   uploadImage.single('image')(req, res, async (err) => {
-    if (handleUploadError(err, res, '/admin/portal/conteudos/novo')) return;
+    if (handleUploadError(err, res, listReturn('/admin/portal/conteudos/novo', filters))) return;
     try {
       const fileRow = req.file ? await saveUploadedFile(req.file, req.hubUser.id) : null;
       await createContent(req.body, fileRow?.id || null);
-      return flashRedirect(res, '/admin/portal/conteudos', { ok: 'criado' });
+      return flashRedirect(res, listReturn('/admin/portal/conteudos', filters), { ok: 'criado' });
     } catch (e) {
-      return flashRedirect(res, '/admin/portal/conteudos/novo', { erro: safeError(e) });
-    }
-  });
-});
-
-router.post('/admin/portal/conteudos/:id', requireHubAdmin, (req, res) => {
-  uploadImage.single('image')(req, res, async (err) => {
-    if (handleUploadError(err, res, `/admin/portal/conteudos/${req.params.id}/editar`)) return;
-    try {
-      const fileRow = req.file ? await saveUploadedFile(req.file, req.hubUser.id) : null;
-      await updateContent(req.params.id, req.body, fileRow?.id || null);
-      return flashRedirect(res, '/admin/portal/conteudos', { ok: 'atualizado' });
-    } catch (e) {
-      return flashRedirect(res, `/admin/portal/conteudos/${req.params.id}/editar`, { erro: safeError(e) });
+      return flashRedirect(res, listReturn('/admin/portal/conteudos/novo', filters), { erro: safeError(e) });
     }
   });
 });
 
 router.post('/admin/portal/conteudos/:id/status', requireHubAdmin, async (req, res) => {
+  const back = listReturn('/admin/portal/conteudos', readFilters(req));
   try {
     await setContentPublished(req.params.id, bodyFlag(req.body.active));
-    return flashRedirect(res, '/admin/portal/conteudos', { ok: 'status' });
+    return flashRedirect(res, back, { ok: 'status' });
   } catch (err) {
-    return flashRedirect(res, '/admin/portal/conteudos', { erro: safeError(err) });
+    return flashRedirect(res, back, { erro: safeError(err) });
   }
+});
+
+router.post('/admin/portal/conteudos/:id/excluir', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  const back = listReturn('/admin/portal/conteudos', filters);
+  try {
+    const existing = await getContent(req.params.id);
+    if (!existing) return flashRedirect(res, back, { erro: 'Conteúdo não encontrado.' });
+    if (!isConfirmed(req.body)) {
+      return res.redirect(listReturn('/admin/portal/conteudos', filters, { confirmar: req.params.id }));
+    }
+    await deleteContent(req.params.id);
+    return flashRedirect(res, back, { ok: 'excluido' });
+  } catch (err) {
+    return flashRedirect(res, back, { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/conteudos/:id', requireHubAdmin, (req, res) => {
+  const filters = readFilters(req);
+  uploadImage.single('image')(req, res, async (err) => {
+    const editPath = listReturn(`/admin/portal/conteudos/${req.params.id}/editar`, filters);
+    if (handleUploadError(err, res, editPath)) return;
+    try {
+      const fileRow = req.file ? await saveUploadedFile(req.file, req.hubUser.id) : null;
+      await updateContent(req.params.id, req.body, fileRow?.id || null);
+      return flashRedirect(res, listReturn('/admin/portal/conteudos', filters), { ok: 'atualizado' });
+    } catch (e) {
+      return flashRedirect(res, editPath, { erro: safeError(e) });
+    }
+  });
 });
 
 /* ───────────── Admin Items by kind ───────────── */
@@ -628,124 +757,356 @@ async function saveItemUploads(req) {
   return { fileId: fileRow?.id || null, thumbnailId: thumbRow?.id || null };
 }
 
-function renderItemsAdmin(res, { kind, meta, items, editing, flash, error, hubUser }) {
+async function renderItemsAdmin(req, res, kind, editing) {
+  const meta = kindMeta(kind);
+  if (!meta) return res.status(404).send('Tipo não encontrado');
+  const filters = readFilters(req);
+  const base = `/admin/portal/itens/${kind}`;
+  const [items, totalCount, progressMap] = await Promise.all([
+    listItems(kind, { q: filters.q, sit: filters.sit }),
+    countItems(kind),
+    countItemProgressByKind(kind),
+  ]);
+  const flash = pickFlash(req);
   return res.render('admin/portal-items', {
     title: editing && editing.id ? `Editar — ${meta.label}` : (editing ? `Novo — ${meta.label}` : `${meta.label} — Portal`),
-    hubUser,
+    hubUser: req.hubUser,
     current: 'admin-portal',
     kind,
     meta,
     items,
     editing,
     departments: ITEM_DEPARTMENTS,
-    flash: flash || null,
-    error: error || null,
+    filters,
+    filtersQuery: querySuffix(base, filters),
+    hasFilter: hasAdminFilter(filters),
+    totalCount,
+    progressMap,
+    confirmar: String(req.query.confirmar || ''),
+    confirmarDestaque: kind === 'video' ? String(req.query.confirmarDestaque || '') : '',
+    flash: flash.flash,
+    error: flash.error,
   });
 }
 
-router.get('/admin/portal/itens/:kind', requireHubAdmin, async (req, res) => {
-  const kind = req.params.kind;
-  const meta = kindMeta(kind);
-  if (!meta) return res.status(404).send('Tipo não encontrado');
-  const items = await listItems(kind);
-  return renderItemsAdmin(res, {
-    kind,
-    meta,
-    items,
-    editing: null,
-    hubUser: req.hubUser,
-    ...pickFlash(req),
-  });
+router.get('/admin/portal/itens/:kind', requireHubAdmin, (req, res) => {
+  return renderItemsAdmin(req, res, req.params.kind, null);
 });
 
-router.get('/admin/portal/itens/:kind/novo', requireHubAdmin, async (req, res) => {
-  const kind = req.params.kind;
-  const meta = kindMeta(kind);
-  if (!meta) return res.status(404).send('Tipo não encontrado');
-  const items = await listItems(kind);
-  return renderItemsAdmin(res, {
-    kind,
-    meta,
-    items,
-    editing: { id: null },
-    hubUser: req.hubUser,
-    ...pickFlash(req),
-  });
+router.get('/admin/portal/itens/:kind/novo', requireHubAdmin, (req, res) => {
+  return renderItemsAdmin(req, res, req.params.kind, { id: null });
 });
 
 router.get('/admin/portal/itens/:kind/:id/editar', requireHubAdmin, async (req, res) => {
   const kind = req.params.kind;
-  const meta = kindMeta(kind);
-  if (!meta) return res.status(404).send('Tipo não encontrado');
+  if (!kindMeta(kind)) return res.status(404).send('Tipo não encontrado');
   const editing = await getItem(req.params.id);
-  if (!editing || editing.kind !== kind) return res.redirect(`/admin/portal/itens/${kind}`);
-  const items = await listItems(kind);
-  return renderItemsAdmin(res, {
-    kind,
-    meta,
-    items,
-    editing,
-    hubUser: req.hubUser,
-    ...pickFlash(req),
-  });
+  if (!editing || editing.kind !== kind) {
+    return res.redirect(listReturn(`/admin/portal/itens/${kind}`, readFilters(req)));
+  }
+  return renderItemsAdmin(req, res, kind, editing);
 });
 
 router.post('/admin/portal/itens/:kind', requireHubAdmin, (req, res) => {
   const kind = req.params.kind;
-  const meta = kindMeta(kind);
-  if (!meta) return res.status(404).send('Tipo não encontrado');
+  if (!kindMeta(kind)) return res.status(404).send('Tipo não encontrado');
+  const filters = readFilters(req);
+  const base = `/admin/portal/itens/${kind}`;
   itemUploadFields(kind)(req, res, async (err) => {
-    if (handleUploadError(err, res, `/admin/portal/itens/${kind}/novo`)) return;
+    if (handleUploadError(err, res, listReturn(`${base}/novo`, filters))) return;
     try {
       const { fileId, thumbnailId } = await saveItemUploads(req);
       await createItem(kind, req.body, fileId, thumbnailId);
-      return flashRedirect(res, `/admin/portal/itens/${kind}`, { ok: 'criado' });
+      return flashRedirect(res, listReturn(base, filters), { ok: 'criado' });
     } catch (e) {
-      return flashRedirect(res, `/admin/portal/itens/${kind}/novo`, { erro: safeError(e) });
-    }
-  });
-});
-
-router.post('/admin/portal/itens/:kind/:id', requireHubAdmin, (req, res) => {
-  const kind = req.params.kind;
-  const meta = kindMeta(kind);
-  if (!meta) return res.status(404).send('Tipo não encontrado');
-  itemUploadFields(kind)(req, res, async (err) => {
-    if (handleUploadError(err, res, `/admin/portal/itens/${kind}/${req.params.id}/editar`)) return;
-    try {
-      const { fileId, thumbnailId } = await saveItemUploads(req);
-      await updateItem(req.params.id, req.body, fileId, thumbnailId);
-      return flashRedirect(res, `/admin/portal/itens/${kind}`, { ok: 'atualizado' });
-    } catch (e) {
-      return flashRedirect(res, `/admin/portal/itens/${kind}/${req.params.id}/editar`, { erro: safeError(e) });
+      return flashRedirect(res, listReturn(`${base}/novo`, filters), { erro: safeError(e) });
     }
   });
 });
 
 router.post('/admin/portal/itens/:kind/:id/status', requireHubAdmin, async (req, res) => {
   const kind = req.params.kind;
+  const back = listReturn(`/admin/portal/itens/${kind}`, readFilters(req));
   try {
     await setItemActive(req.params.id, bodyFlag(req.body.active));
-    return flashRedirect(res, `/admin/portal/itens/${kind}`, { ok: 'status' });
+    return flashRedirect(res, back, { ok: 'status' });
   } catch (err) {
-    return flashRedirect(res, `/admin/portal/itens/${kind}`, { erro: safeError(err) });
+    return flashRedirect(res, back, { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/itens/:kind/:id/excluir', requireHubAdmin, async (req, res) => {
+  const kind = req.params.kind;
+  const filters = readFilters(req);
+  const back = listReturn(`/admin/portal/itens/${kind}`, filters);
+  try {
+    const existing = await getItem(req.params.id);
+    if (!existing || existing.kind !== kind) {
+      return flashRedirect(res, back, { erro: 'Item não encontrado.' });
+    }
+    if (!isConfirmed(req.body)) {
+      return res.redirect(listReturn(`/admin/portal/itens/${kind}`, filters, { confirmar: req.params.id }));
+    }
+    await deleteItem(req.params.id);
+    return flashRedirect(res, back, { ok: 'excluido' });
+  } catch (err) {
+    return flashRedirect(res, back, { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/itens/video/:id/destaque', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  const back = listReturn('/admin/portal/itens/video', filters);
+  try {
+    await setVideoFeatured(req.params.id, { confirm: isConfirmed(req.body) });
+    return flashRedirect(res, back, { ok: 'destaque' });
+  } catch (err) {
+    if (err && err.code === 'FEATURED_EXISTS') {
+      return res.redirect(listReturn('/admin/portal/itens/video', filters, { confirmarDestaque: req.params.id }));
+    }
+    return flashRedirect(res, back, { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/itens/:kind/:id', requireHubAdmin, (req, res) => {
+  const kind = req.params.kind;
+  if (!kindMeta(kind)) return res.status(404).send('Tipo não encontrado');
+  const filters = readFilters(req);
+  const base = `/admin/portal/itens/${kind}`;
+  itemUploadFields(kind)(req, res, async (err) => {
+    const editPath = listReturn(`${base}/${req.params.id}/editar`, filters);
+    if (handleUploadError(err, res, editPath)) return;
+    try {
+      const { fileId, thumbnailId } = await saveItemUploads(req);
+      const updated = await updateItem(req.params.id, req.body, fileId, thumbnailId);
+      if (!updated || updated.kind !== kind) {
+        return flashRedirect(res, listReturn(base, filters), { erro: 'Item não encontrado.' });
+      }
+      return flashRedirect(res, listReturn(base, filters), { ok: 'atualizado' });
+    } catch (e) {
+      return flashRedirect(res, editPath, { erro: safeError(e) });
+    }
+  });
+});
+
+/* ───────────── Admin announcements and events ───────────── */
+
+async function renderAnnouncementsAdmin(req, res, editing, title) {
+  const filters = readFilters(req);
+  const [announcements, totalCount] = await Promise.all([
+    listAnnouncements({ activeOnly: false, q: filters.q, sit: filters.sit }),
+    countTable('portal_announcements'),
+  ]);
+  return res.render('admin/portal-announcements', {
+    title,
+    hubUser: req.hubUser,
+    current: 'admin-portal',
+    announcements,
+    announcementKinds: ANNOUNCEMENT_KINDS,
+    editing,
+    filters,
+    filtersQuery: querySuffix('/admin/portal/comunicados', filters),
+    hasFilter: hasAdminFilter(filters),
+    totalCount,
+    confirmar: String(req.query.confirmar || ''),
+    formatDatetimeLocal,
+    ...pickFlash(req),
+  });
+}
+
+router.get('/admin/portal/comunicados', requireHubAdmin, (req, res) => {
+  return renderAnnouncementsAdmin(req, res, null, 'Comunicados — Portal');
+});
+
+router.get('/admin/portal/comunicados/novo', requireHubAdmin, (req, res) => {
+  return renderAnnouncementsAdmin(req, res, {
+    id: null,
+    kind: 'operacional',
+    published_at: new Date().toISOString(),
+    is_active: true,
+  }, 'Novo comunicado — Portal');
+});
+
+router.get('/admin/portal/comunicados/:id/editar', requireHubAdmin, async (req, res) => {
+  const editing = await getAnnouncement(req.params.id);
+  if (!editing) return res.redirect(listReturn('/admin/portal/comunicados', readFilters(req)));
+  return renderAnnouncementsAdmin(req, res, editing, 'Editar comunicado — Portal');
+});
+
+router.post('/admin/portal/comunicados', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  try {
+    await createAnnouncement(req.body);
+    return flashRedirect(res, listReturn('/admin/portal/comunicados', filters), { ok: 'criado' });
+  } catch (err) {
+    return flashRedirect(res, listReturn('/admin/portal/comunicados/novo', filters), { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/comunicados/:id/status', requireHubAdmin, async (req, res) => {
+  const back = listReturn('/admin/portal/comunicados', readFilters(req));
+  try {
+    await setAnnouncementActive(req.params.id, bodyFlag(req.body.active));
+    return flashRedirect(res, back, { ok: 'status' });
+  } catch (err) {
+    return flashRedirect(res, back, { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/comunicados/:id/excluir', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  const back = listReturn('/admin/portal/comunicados', filters);
+  try {
+    const existing = await getAnnouncement(req.params.id);
+    if (!existing) return flashRedirect(res, back, { erro: 'Comunicado não encontrado.' });
+    if (!isConfirmed(req.body)) {
+      return res.redirect(listReturn('/admin/portal/comunicados', filters, { confirmar: req.params.id }));
+    }
+    await deleteAnnouncement(req.params.id);
+    return flashRedirect(res, back, { ok: 'excluido' });
+  } catch (err) {
+    return flashRedirect(res, back, { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/comunicados/:id', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  try {
+    const updated = await updateAnnouncement(req.params.id, req.body);
+    if (!updated) {
+      return flashRedirect(res, listReturn('/admin/portal/comunicados', filters), { erro: 'Comunicado não encontrado.' });
+    }
+    return flashRedirect(res, listReturn('/admin/portal/comunicados', filters), { ok: 'atualizado' });
+  } catch (err) {
+    return flashRedirect(res, listReturn(`/admin/portal/comunicados/${req.params.id}/editar`, filters), { erro: safeError(err) });
+  }
+});
+
+async function renderEventsAdmin(req, res, editing, title) {
+  const filters = readFilters(req);
+  const [events, totalCount, allUsers] = await Promise.all([
+    listEvents({ activeOnly: false, q: filters.q, sit: filters.sit }),
+    countTable('portal_events'),
+    editing ? listUsers() : Promise.resolve([]),
+  ]);
+  const users = allUsers
+    .filter((u) => u.active)
+    .sort((a, b) => String(a.displayName).localeCompare(String(b.displayName), 'pt-BR'));
+  return res.render('admin/portal-events', {
+    title,
+    hubUser: req.hubUser,
+    current: 'admin-portal',
+    events,
+    editing,
+    users,
+    filters,
+    filtersQuery: querySuffix('/admin/portal/eventos', filters),
+    hasFilter: hasAdminFilter(filters),
+    totalCount,
+    confirmar: String(req.query.confirmar || ''),
+    formatDatetimeLocal,
+    ...pickFlash(req),
+  });
+}
+
+router.get('/admin/portal/eventos', requireHubAdmin, (req, res) => {
+  return renderEventsAdmin(req, res, null, 'Eventos — Portal');
+});
+
+router.get('/admin/portal/eventos/novo', requireHubAdmin, (req, res) => {
+  return renderEventsAdmin(req, res, {
+    id: null,
+    starts_at: new Date().toISOString(),
+    is_active: true,
+  }, 'Novo evento — Portal');
+});
+
+router.get('/admin/portal/eventos/:id/editar', requireHubAdmin, async (req, res) => {
+  const editing = await getEvent(req.params.id);
+  if (!editing) return res.redirect(listReturn('/admin/portal/eventos', readFilters(req)));
+  return renderEventsAdmin(req, res, editing, 'Editar evento — Portal');
+});
+
+router.post('/admin/portal/eventos', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  try {
+    await createEvent(req.body);
+    return flashRedirect(res, listReturn('/admin/portal/eventos', filters), { ok: 'criado' });
+  } catch (err) {
+    return flashRedirect(res, listReturn('/admin/portal/eventos/novo', filters), { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/eventos/:id/status', requireHubAdmin, async (req, res) => {
+  const back = listReturn('/admin/portal/eventos', readFilters(req));
+  try {
+    await setEventActive(req.params.id, bodyFlag(req.body.active));
+    return flashRedirect(res, back, { ok: 'status' });
+  } catch (err) {
+    return flashRedirect(res, back, { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/eventos/:id/excluir', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  const back = listReturn('/admin/portal/eventos', filters);
+  try {
+    const existing = await getEvent(req.params.id);
+    if (!existing) return flashRedirect(res, back, { erro: 'Evento não encontrado.' });
+    if (!isConfirmed(req.body)) {
+      return res.redirect(listReturn('/admin/portal/eventos', filters, { confirmar: req.params.id }));
+    }
+    await deleteEvent(req.params.id);
+    return flashRedirect(res, back, { ok: 'excluido' });
+  } catch (err) {
+    return flashRedirect(res, back, { erro: safeError(err) });
+  }
+});
+
+router.post('/admin/portal/eventos/:id', requireHubAdmin, async (req, res) => {
+  const filters = readFilters(req);
+  try {
+    const updated = await updateEvent(req.params.id, req.body);
+    if (!updated) {
+      return flashRedirect(res, listReturn('/admin/portal/eventos', filters), { erro: 'Evento não encontrado.' });
+    }
+    return flashRedirect(res, listReturn('/admin/portal/eventos', filters), { ok: 'atualizado' });
+  } catch (err) {
+    return flashRedirect(res, listReturn(`/admin/portal/eventos/${req.params.id}/editar`, filters), { erro: safeError(err) });
   }
 });
 
 /* ───────────── Admin Onboarding ───────────── */
 
-router.get('/admin/portal/onboarding', requireHubAdmin, async (req, res) => {
+async function renderOnboardingAdmin(req, res, editingStep, title) {
   const track = await getActiveTrack();
   const steps = track ? await listSteps(track.id) : [];
+  const stepProgress = track ? await countStepProgressByTrack(track.id) : {};
   return res.render('admin/portal-onboarding', {
-    title: 'Onboarding — Portal',
+    title,
     hubUser: req.hubUser,
     current: 'admin-portal',
     track,
     steps,
-    editingStep: null,
+    editingStep,
+    stepProgress,
+    confirmar: String(req.query.confirmar || ''),
     ...pickFlash(req),
   });
+}
+
+router.get('/admin/portal/onboarding', requireHubAdmin, (req, res) => {
+  return renderOnboardingAdmin(req, res, null, 'Onboarding — Portal');
+});
+
+router.get('/admin/portal/onboarding/etapas/nova', requireHubAdmin, async (req, res) => {
+  const track = await getActiveTrack();
+  const steps = track ? await listSteps(track.id) : [];
+  return renderOnboardingAdmin(req, res, {
+    id: null,
+    position: steps.length + 1,
+    is_active: true,
+  }, 'Nova etapa — Portal');
 });
 
 router.get('/admin/portal/onboarding/etapas/:id/editar', requireHubAdmin, async (req, res) => {
@@ -753,15 +1114,47 @@ router.get('/admin/portal/onboarding/etapas/:id/editar', requireHubAdmin, async 
   const steps = track ? await listSteps(track.id) : [];
   const editingStep = steps.find((s) => String(s.id) === String(req.params.id)) || null;
   if (!editingStep) return res.redirect('/admin/portal/onboarding');
-  return res.render('admin/portal-onboarding', {
-    title: 'Editar etapa — Portal',
-    hubUser: req.hubUser,
-    current: 'admin-portal',
-    track,
-    steps,
-    editingStep,
-    ...pickFlash(req),
+  return renderOnboardingAdmin(req, res, editingStep, 'Editar etapa — Portal');
+});
+
+function rejectNonPdf(file, res, fallbackPath) {
+  if (file && String(file.mimetype || '').toLowerCase() !== 'application/pdf') {
+    flashRedirect(res, fallbackPath, { erro: 'Envie apenas PDF neste campo.' });
+    return true;
+  }
+  return false;
+}
+
+router.post('/admin/portal/onboarding/etapas/nova', requireHubAdmin, (req, res) => {
+  uploadDoc.single('pdf')(req, res, async (err) => {
+    if (handleUploadError(err, res, '/admin/portal/onboarding/etapas/nova')) return;
+    if (rejectNonPdf(req.file, res, '/admin/portal/onboarding/etapas/nova')) return;
+    try {
+      const track = await getActiveTrack();
+      if (!track) {
+        return flashRedirect(res, '/admin/portal/onboarding', { erro: 'Nenhuma trilha ativa.' });
+      }
+      const fileRow = req.file ? await saveUploadedFile(req.file, req.hubUser.id) : null;
+      await createStep(track.id, req.body, fileRow?.id || null);
+      return flashRedirect(res, '/admin/portal/onboarding', { ok: 'criado' });
+    } catch (e) {
+      return flashRedirect(res, '/admin/portal/onboarding/etapas/nova', { erro: safeError(e) });
+    }
   });
+});
+
+router.post('/admin/portal/onboarding/etapas/:id/excluir', requireHubAdmin, async (req, res) => {
+  try {
+    const existing = await getStep(req.params.id);
+    if (!existing) return flashRedirect(res, '/admin/portal/onboarding', { erro: 'Etapa não encontrada.' });
+    if (!isConfirmed(req.body)) {
+      return res.redirect(`/admin/portal/onboarding?confirmar=${encodeURIComponent(req.params.id)}`);
+    }
+    await deleteStep(req.params.id);
+    return flashRedirect(res, '/admin/portal/onboarding', { ok: 'excluido' });
+  } catch (err) {
+    return flashRedirect(res, '/admin/portal/onboarding', { erro: safeError(err) });
+  }
 });
 
 router.post('/admin/portal/onboarding/etapas/:id', requireHubAdmin, (req, res) => {
@@ -852,7 +1245,7 @@ router.get('/hub/modulo/documentos', requireHubAuth, (_req, res) => {
 module.exports = {
   router,
   loadHomeForRequest: async (hubUser) => {
-    const home = await loadHome();
+    const home = await loadHome(hubUser.id);
     const needsOnboarding = hubUser.onboardingStatus !== 'COMPLETED';
     let onboardingProgress = null;
     if (needsOnboarding) {
