@@ -30,8 +30,10 @@ function fixture(matcher) {
 }
 
 async function loadFixtureData() {
-  const extratoPath = fixture((f) => /itau/i.test(f) && /\.xlsx$/i.test(f));
-  const contasPath = fixture((f) => /contas-pagar-baifer/i.test(f) && f.toLowerCase().endsWith('.ods'));
+  const extratoPath = fixture((f) => /itau/i.test(f) && /04-2026/.test(f) && /\.xlsx$/i.test(f));
+  const contasPath = fixture(
+    (f) => /contas-pagar-baifer/i.test(f) && /04-2026/.test(f) && f.toLowerCase().endsWith('.ods'),
+  );
 
   const extrato = parseExtrato(extratoPath);
   const contas = await parseContasPagar(contasPath, path.basename(contasPath));

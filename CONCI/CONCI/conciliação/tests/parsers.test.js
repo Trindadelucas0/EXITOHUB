@@ -25,7 +25,7 @@ function fixture(matcher) {
 
 describe('parsers', () => {
   it('parse extrato Itau com !ref curto', () => {
-    const file = fixture((f) => /itau/i.test(f) && /\.xlsx$/i.test(f));
+    const file = fixture((f) => /itau/i.test(f) && /04-2026/.test(f) && /\.xlsx$/i.test(f));
     const result = parseExtrato(file);
     assert.ok(result.pagamentos.length >= 300);
     assert.ok(result.recebimentos.length >= 100);
@@ -325,7 +325,9 @@ describe('parsers', () => {
   });
 
   it('parse contas a pagar ODS', async () => {
-    const file = fixture((f) => /contas-pagar-baifer/i.test(f) && f.toLowerCase().endsWith('.ods'));
+    const file = fixture(
+      (f) => /contas-pagar-baifer/i.test(f) && /04-2026/.test(f) && f.toLowerCase().endsWith('.ods'),
+    );
     const contas = await parseContasPagar(file, path.basename(file));
     assert.ok(contas.length >= 300);
     assert.ok(contas.some((c) => c.categoria === 'FORNECEDORES'));

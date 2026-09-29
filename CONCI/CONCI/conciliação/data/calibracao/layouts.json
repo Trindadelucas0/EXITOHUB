@@ -19,6 +19,23 @@
     },
     {
       "tipo": "contasPagar",
+      "bancoOuOrigem": "BAIFER Santri 08-2026",
+      "cabecalhosChave": [
+        "nome do cliente/fornecedor",
+        "cpf/cnpj",
+        "vlr liquido",
+        "data pagto",
+        "categoria / plano de contas (linha de grupo)"
+      ],
+      "ajustes": [
+        "layout identico ao Santri 04-2026; sem regra nova",
+        "294 contas (273 FORNECEDORES); cruzado com Itau BAIFER 08-2026 na barra de 80% da Rodada A (91%)"
+      ],
+      "fixture": "fixtures/calibracao/contas-pagar-baifer-08-2026.ods",
+      "aprendidoEm": "2026-09-29"
+    },
+    {
+      "tipo": "contasPagar",
       "bancoOuOrigem": "Lojao das Maquinas Santri 04-2026",
       "cabecalhosChave": [
         "nome do cliente/fornecedor",
@@ -37,6 +54,18 @@
       "ajustes": ["historico = Lancamento + Razao Social (separador ' - '; vazio = so Lancamento); TAR* via mapaContas.json"],
       "fixture": "fixtures/calibracao/extrato-itau-baifer-04-2026.xlsx",
       "aprendidoEm": "2026-07-16"
+    },
+    {
+      "tipo": "extrato",
+      "bancoOuOrigem": "Itau BAIFER 08-2026",
+      "cabecalhosChave": ["data", "lancamento", "valor", "razao social", "cpf/cnpj"],
+      "ajustes": [
+        "layout identico ao Itau 04-2026; sem regra nova",
+        "barra de 80% da Rodada A passou: 258 casados + 11 sugeridos + 22 regra de 319 pagamentos (91%)",
+        "sem match restante: SISPAG SALARIOS, PIX ENVIADO, PAGAMENTOS SEFAZ/NEOENERGIA e boletos sem conta de mesmo valor na relacao"
+      ],
+      "fixture": "fixtures/calibracao/extrato-itau-baifer-08-2026.xlsx",
+      "aprendidoEm": "2026-09-29"
     },
     {
       "tipo": "extrato",
