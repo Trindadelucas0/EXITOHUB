@@ -179,6 +179,12 @@ async function bootstrapDatabase() {
   await ensureAdmin();
   const { enablePrecadastroDb } = require('../services/preCadastroStore');
   await enablePrecadastroDb();
+  const { reloadSnapshots } = require('../services/conciliacaoStore');
+  try {
+    await reloadSnapshots();
+  } catch (err) {
+    console.error('[conciliacoes] reposição das cópias em disco falhou:', err.message);
+  }
 }
 
 module.exports = {
