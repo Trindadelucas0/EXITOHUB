@@ -69,7 +69,12 @@ describe('pipeline3x — tres rodadas de confirmacao', () => {
       { descricao: 'FORNECEDORES', debito: 1004, credito: 9 },
       { descricao: 'FRETES SOBRE COMPRAS', debito: 1004, credito: 9 },
       { descricao: 'ENERGIA', debito: 1005, credito: 9 },
-      { descricao: 'TARIFAS BANCARIAS', debito: 1025, credito: 9 },
+      {
+        descricao: 'TARIFAS BANCARIAS',
+        debito: 1025,
+        credito: 9,
+        historicos: ['TAR/CUSTAS', 'TARIFA'],
+      },
       { descricao: 'RECEBIMENTO DE CLIENTES', debito: 9, credito: 101 },
     ];
     for (const item of explicitos) {
@@ -139,7 +144,8 @@ describe('pipeline3x — tres rodadas de confirmacao', () => {
 
     const tarifa = result.itens.find((i) => i.historico.startsWith('TAR/CUSTAS'));
     assert.ok(tarifa);
-    assert.equal(tarifa.status, 'REGRA');
+    assert.equal(tarifa.status, 'SUGERIDO');
+    assert.equal(tarifa.motivo, 'historico+precadastro');
     assert.equal(tarifa.debito, 1025);
     assert.equal(tarifa.numeroNota, '');
     assert.equal(tarifa.classificacaoCap, 'TARIFAS BANCARIAS');

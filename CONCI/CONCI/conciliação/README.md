@@ -95,11 +95,11 @@ Débito/Crédito vêm **só do pré-cadastro** da empresa logada.
 
 Em http://localhost:3000/pre-cadastro:
 
-- Pagamentos: descrição = Classificação Êxito (ex.: `ENERGIA`, `APL APLIC`)
-- Tarifas: `TARIFAS BANCARIAS`
+- Descrição = Classificação Êxito (ex.: `ENERGIA`, `ALUGUEL`, `TARIFAS BANCARIAS`)
+- Históricos do banco (campo `historicos`, um por linha, opcional): textos que o banco escreve no extrato (ex.: `PIX IMOBILIARIA`, `TAR/CUSTAS`). Mínimo 4 caracteres; o mesmo texto não pode estar em duas linhas do banco. Linha antiga sem o campo vale `[]`
 - Recebimentos: padrão CAP = `RECEBIMENTO` (códigos via `RECEBIMENTO DE CLIENTES`); CAP editável na revisão busca Débito/Crédito pela descrição digitada
 
-No upload e em **Atualizar pré-cadastro**, lançamento **sem** Classificação Êxito (qualquer residual, não só tarifa) é classificado se a descrição do pré-cadastro aparecer no **histórico** do extrato (texto ou trecho, como palavra; `ENERGIA` não classifica `NEOENERGIA`). Quem já veio da Contas a Pagar (nome/CNPJ) não muda. Tarifa (`TAR/CUSTAS`, `TARIFA`, não `TARIFARIO`) não casa CAP só por valor+data: vira `TARIFAS BANCARIAS`; códigos dessa linha do pré-cadastro. Recebimentos não entram nessa regra. No extrato Itaú, o histórico junta a coluna Lançamento e a Razão Social com ` - ` (sem razão social, só o lançamento). No Sicoob, Documento não é CNPJ; o histórico leva o complemento sem o bloco do titular (depois de Transferência Pix); PIX EMITIDO não casa só por valor e data.
+No upload e em **Atualizar pré-cadastro**, pagamento **sem** Classificação Êxito é classificado se a Descrição ou um Histórico do banco aparecer no **histórico** do extrato (texto ou trecho, como palavra; `ENERGIA` não classifica `NEOENERGIA`; o texto mais longo vence). A Classificação Êxito vira a Descrição da linha, motivo `historico+precadastro`, e já nasce aprovado se houver código. Quem já veio da Contas a Pagar (nome/CNPJ) não muda. Recebimento procura **só** os Históricos do banco (nunca a Descrição); se bater, vale a Descrição da linha e aprova com código; se não, continua `RECEBIMENTO`. Tarifa (`TAR/CUSTAS`, `TARIFA`) não tem mais regra fixa: só vira `TARIFAS BANCARIAS` se esses textos estiverem nos Históricos do banco dessa linha; continua sem casar CAP só por valor+data. Conciliação já gravada não muda até reenviar o extrato ou clicar **Atualizar pré-cadastro**. No extrato Itaú, o histórico junta a coluna Lançamento e a Razão Social com ` - ` (sem razão social, só o lançamento). No Sicoob, Documento não é CNPJ; o histórico leva o complemento sem o bloco do titular (depois de Transferência Pix); PIX EMITIDO não casa só por valor e data.
 
 ## Filtros na revisão
 

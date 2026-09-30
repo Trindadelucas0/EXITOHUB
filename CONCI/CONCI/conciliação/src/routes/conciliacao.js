@@ -39,7 +39,7 @@ const {
   applyPreCadastro,
   list: listPreCadastro,
 } = require('../services/preCadastroStore');
-const { listBancos, getBancoById } = require('../services/bancoService');
+const { listBancos, getBancoDaEmpresa } = require('../services/bancoService');
 const { createJob, updateJob, getJob, publicJob } = require('../services/jobStore');
 const { isGeminiEnabled } = require('../services/geminiExtratoMap');
 const {
@@ -74,8 +74,11 @@ function redirectRevisao(res, sessionId, body, extra = {}) {
 
 router.use(requireEmpresa);
 
-async function loadUploadLocals(error = null) {
-  const bancos = await listBancos({ onlyAtivos: true }).catch(() => []);
+async function loadUploadLocals(req, error = null) {
+  const bancos = await listBancos({
+    onlyAtivos: true,
+    empresaId: req.user.empresaId,
+  }).catch(() => []);
   return {
     error,
     geminiEnabled: isGeminiEnabled(),
@@ -226,7 +229,7 @@ function formatDateTimeBr(isoOrDate) {
 
 router.get('/', async (req, res) => {
   setNoCacheHeaders(res);
-  res.render('upload', await loadUploadLocals(null));
+  res.render('upload', await loadUploadLocals(req, null));
 });
 
 router.get('/historico', async (req, res) => {
@@ -391,26 +394,26 @@ router.post(
     if (!bancoId) {
       const msg = 'Selecione o banco do extrato que esta sendo importado.';
       if (wantsJson) return res.status(400).json({ error: msg });
-      return res.status(400).render('upload', await loadUploadLocals(msg));
+      return res.status(400).render('upload', await loadUploadLocals(req, msg));
     }
 
     if (!competencia) {
       const msg = 'Informe a competencia no formato MM/AAAA (ou use o seletor de mes).';
       if (wantsJson) return res.status(400).json({ error: msg });
-      return res.status(400).render('upload', await loadUploadLocals(msg));
+      return res.status(400).render('upload', await loadUploadLocals(req, msg));
     }
 
-    const banco = await getBancoById(bancoId);
-    if (!banco || !banco.ativo) {
-      const msg = 'Banco invalido ou inativo. Selecione um banco ativo.';
+    const banco = await getBancoDaEmpresa(bancoId, req.user.empresaId);
+    if (!banco) {
+      const msg = 'Banco invalido, inativo ou de outra empresa. Selecione um banco da lista.';
       if (wantsJson) return res.status(400).json({ error: msg });
-      return res.status(400).render('upload', await loadUploadLocals(msg));
+      return res.status(400).render('upload', await loadUploadLocals(req, msg));
     }
 
     if (!extratoFile || !contasFile) {
       const msg = 'Envie Extrato e Contas a Pagar.';
       if (wantsJson) return res.status(400).json({ error: msg });
-      return res.status(400).render('upload', await loadUploadLocals(msg));
+      return res.status(400).render('upload', await loadUploadLocals(req, msg));
     }
 
     const job = createJob();
@@ -502,13 +505,13 @@ router.post(
       const j = getJob(job.id);
       if (j?.done) {
         if (j.error) {
-          return res.status(500).render('upload', await loadUploadLocals(`Erro ao processar: ${j.error}`));
+          return res.status(500).render('upload', await loadUploadLocals(req, `Erro ao processar: ${j.error}`));
         }
         return res.redirect(j.revisaoUrl);
       }
       await new Promise((r) => setTimeout(r, 400));
     }
-    return res.status(504).render('upload', await loadUploadLocals('Tempo esgotado ao processar. Tente novamente.'));
+    return res.status(504).render('upload', await loadUploadLocals(req, 'Tempo esgotado ao processar. Tente novamente.'));
   },
 );
 
@@ -529,6 +532,7 @@ router.get('/revisao/:id', async (req, res) => {
   const session = await resolveSession(req.params.id, req.user.empresaId);
   if (!session) {
     return res.status(404).render('upload', await loadUploadLocals(
+      req,
       'Sessao nao encontrada. Envie os arquivos novamente ou abra pelo Historico.',
     ));
   }
@@ -570,7 +574,7 @@ router.get('/revisao/:id', async (req, res) => {
 router.post('/revisao/:id/item/:rowId', express.urlencoded({ extended: true }), async (req, res) => {
   const session = await resolveSession(req.params.id, req.user.empresaId);
   if (!session) {
-    return res.status(404).render('upload', await loadUploadLocals('Sessao nao encontrada.'));
+    return res.status(404).render('upload', await loadUploadLocals(req, 'Sessao nao encontrada.'));
   }
 
   if (!garantirEditavel(req, res, session)) return;
@@ -701,7 +705,7 @@ router.post('/revisao/:id/item/:rowId', express.urlencoded({ extended: true }), 
 router.post('/revisao/:id/excluir-selecionados', express.urlencoded({ extended: true }), async (req, res) => {
   const session = await resolveSession(req.params.id, req.user.empresaId);
   if (!session) {
-    return res.status(404).render('upload', await loadUploadLocals('Sessao nao encontrada.'));
+    return res.status(404).render('upload', await loadUploadLocals(req, 'Sessao nao encontrada.'));
   }
   if (!garantirEditavel(req, res, session)) return;
   const { itens, removed } = excludeItems(session.itens || [], req.body.rowIds);
@@ -715,7 +719,7 @@ router.post('/revisao/:id/excluir-selecionados', express.urlencoded({ extended: 
 router.post('/revisao/:id/reaplicar-precadastro', express.urlencoded({ extended: true }), async (req, res) => {
   const session = await resolveSession(req.params.id, req.user.empresaId);
   if (!session) {
-    return res.status(404).render('upload', await loadUploadLocals('Sessao nao encontrada.'));
+    return res.status(404).render('upload', await loadUploadLocals(req, 'Sessao nao encontrada.'));
   }
   if (!garantirEditavel(req, res, session)) return;
   const preKey = sessionPreKey(session);
@@ -728,7 +732,7 @@ router.post('/revisao/:id/reaplicar-precadastro', express.urlencoded({ extended:
 router.post('/revisao/:id/aplicar-cap-lote', express.urlencoded({ extended: true }), async (req, res) => {
   const session = await resolveSession(req.params.id, req.user.empresaId);
   if (!session) {
-    return res.status(404).render('upload', await loadUploadLocals('Sessao nao encontrada.'));
+    return res.status(404).render('upload', await loadUploadLocals(req, 'Sessao nao encontrada.'));
   }
   if (!garantirEditavel(req, res, session)) return;
   const preKey = sessionPreKey(session);
@@ -768,7 +772,7 @@ router.post('/revisao/:id/aplicar-cap-lote', express.urlencoded({ extended: true
 router.post('/revisao/:id/aprovar-altos', async (req, res) => {
   const session = await resolveSession(req.params.id, req.user.empresaId);
   if (!session) {
-    return res.status(404).render('upload', await loadUploadLocals('Sessao nao encontrada.'));
+    return res.status(404).render('upload', await loadUploadLocals(req, 'Sessao nao encontrada.'));
   }
   if (!garantirEditavel(req, res, session)) return;
   const itens = session.itens.map((item) => {
@@ -786,7 +790,7 @@ router.post('/revisao/:id/aprovar-altos', async (req, res) => {
 router.get('/resultado/:id', async (req, res) => {
   const session = await resolveSession(req.params.id, req.user.empresaId);
   if (!session) {
-    return res.status(404).render('upload', await loadUploadLocals('Sessao nao encontrada.'));
+    return res.status(404).render('upload', await loadUploadLocals(req, 'Sessao nao encontrada.'));
   }
   const itensExport = session.itens || [];
   const resumo = buildResumo(session.itens);

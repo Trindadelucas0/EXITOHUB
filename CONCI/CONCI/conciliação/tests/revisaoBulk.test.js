@@ -173,6 +173,90 @@ describe('revisaoBulk', () => {
     assert.equal(itens[1].debito, null);
   });
 
+  it('reaplicar: pagamento sem CAP classifica pelos historicos do pre-cadastro', () => {
+    writeSession(SID, [{
+      id: 'alug',
+      descricao: 'ALUGUEL',
+      debito: 2101,
+      credito: 9,
+      historicos: ['PIX IMOBILIARIA'],
+    }]);
+    const origem = baseItens();
+    origem[1].historico = 'PIX IMOBILIARIA SILVA';
+    const { itens } = reapplyPreCadastroItems(origem, SID, ['b2']);
+    assert.equal(itens[1].classificacaoCap, 'ALUGUEL');
+    assert.equal(itens[1].status, 'SUGERIDO');
+    assert.equal(itens[1].debito, 2101);
+    assert.equal(itens[1].aprovado, true);
+  });
+
+  it('reaplicar: recebimento RECEBIMENTO passa a ALUGUEL se o historico bater', () => {
+    writeSession(SID, [
+      { id: 'rec', descricao: 'RECEBIMENTO DE CLIENTES', debito: 9, credito: 101 },
+      {
+        id: 'alug',
+        descricao: 'ALUGUEL',
+        debito: 9,
+        credito: 3101,
+        historicos: ['PIX RECEBIDO'],
+      },
+    ]);
+    const { itens } = reapplyPreCadastroItems(baseItens(), SID, ['c3']);
+    assert.equal(itens[2].classificacaoCap, 'ALUGUEL');
+    assert.equal(itens[2].status, 'SUGERIDO');
+    assert.equal(itens[2].motivo, 'historico+precadastro');
+    assert.equal(itens[2].credito, 3101);
+    assert.equal(itens[2].aprovado, true);
+  });
+
+  it('reaplicar: recebimento sem historico batendo continua RECEBIMENTO', () => {
+    writeSession(SID, [
+      { id: 'rec', descricao: 'RECEBIMENTO DE CLIENTES', debito: 9, credito: 101 },
+      { id: 'alug', descricao: 'PIX RECEBIDO', debito: 9, credito: 3101 },
+    ]);
+    const { itens } = reapplyPreCadastroItems(baseItens(), SID, ['c3']);
+    assert.equal(itens[2].classificacaoCap, 'RECEBIMENTO');
+    assert.equal(itens[2].status, 'RECEBIMENTO');
+    assert.equal(itens[2].credito, 101);
+  });
+
+  it('reaplicar: recebimento com classificacao editada nao e trocado', () => {
+    writeSession(SID, [
+      { id: 'frete', descricao: 'FRETES SOBRE COMPRAS', debito: 1004, credito: 9 },
+      {
+        id: 'alug',
+        descricao: 'ALUGUEL',
+        debito: 9,
+        credito: 3101,
+        historicos: ['PIX RECEBIDO'],
+      },
+    ]);
+    const origem = baseItens();
+    origem[2].classificacaoCap = 'FRETES SOBRE COMPRAS';
+    origem[2].categoria = 'FRETES SOBRE COMPRAS';
+    const { itens } = reapplyPreCadastroItems(origem, SID, ['c3']);
+    assert.equal(itens[2].classificacaoCap, 'FRETES SOBRE COMPRAS');
+    assert.equal(itens[2].debito, 1004);
+    assert.equal(itens[2].status, 'RECEBIMENTO');
+  });
+
+  it('reaplicar: CAP FORNECEDORES nao muda mesmo com historico cadastrado', () => {
+    writeSession(SID, [
+      { id: 'forn', descricao: 'FORNECEDORES', debito: 1004, credito: 9 },
+      {
+        id: 'alug',
+        descricao: 'ALUGUEL',
+        debito: 2101,
+        credito: 9,
+        historicos: ['BOLETO A'],
+      },
+    ]);
+    const { itens } = reapplyPreCadastroItems(baseItens(), SID, ['a1']);
+    assert.equal(itens[0].classificacaoCap, 'FORNECEDORES');
+    assert.equal(itens[0].debito, 1004);
+    assert.notEqual(itens[0].motivo, 'historico+precadastro');
+  });
+
   it('aplicar CAP em lote altera N itens e aplica codigos', () => {
     writeSession(SID, [
       { id: 'p-f', descricao: 'FRETES SOBRE COMPRAS', debito: 2101, credito: 9 },

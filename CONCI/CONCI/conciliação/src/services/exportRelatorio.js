@@ -10,13 +10,15 @@ const { formatCompetencia } = require('./conciliacaoStore');
 const LOGO_PATH = path.join(__dirname, '..', '..', 'assets', 'logo.png');
 const BRAND_GREEN = '39B54A';
 const BRAND_GREEN_HEX = '#39B54A';
+const AMBER_ARGB = 'FFF8E8C8';
+const AMBER_HEX = '#F8E8C8';
 
 /**
- * Relatório detalhado de conciliação (Excel/PDF) — mesmas colunas da tela de
- * Revisão (Data, Débito, Crédito, Valor, Histórico, Nº Nota, Classificação Êxito),
- * com Banco e Competência sempre visíveis no cabeçalho do arquivo, mais duas
- * colunas em branco para o cliente preencher: Verificação do cliente (OK/PENDENTE)
- * e Observação (última coluna).
+ * Relatório detalhado de conciliação (Excel/PDF) — colunas da tela de Revisão
+ * (Data, Débito, Crédito, Valor, Histórico, Nº Nota, Classificação Êxito), mais
+ * Situação, com Banco e Competência sempre visíveis no cabeçalho do arquivo, e
+ * duas colunas em branco para o cliente preencher: Verificação do cliente
+ * (OK/PENDENTE) e Observação (última coluna).
  */
 
 const COLUMNS = [
@@ -27,9 +29,22 @@ const COLUMNS = [
   { key: 'historico', label: 'Histórico' },
   { key: 'numeroNota', label: 'Nº Nota' },
   { key: 'classificacaoCap', label: 'Classificação Êxito' },
+  { key: 'situacao', label: 'Situação' },
   { key: 'verificacaoCliente', label: 'Verificação do cliente' },
   { key: 'observacao', label: 'Observação' },
 ];
+
+const COL_VALOR = 4;
+const COL_HISTORICO = 5;
+const COL_VERIFICACAO = 9;
+const COL_OBSERVACAO = 10;
+
+const SITUACAO = {
+  APROVADO: 'Aprovado',
+  SEM_CLASSIFICACAO: 'Sem classificação',
+  SEM_CODIGO: 'Sem débito/crédito',
+  CLASSIFICADO: 'Classificado',
+};
 
 function formatMoneyBr(v) {
   if (v === null || v === undefined || v === '' || Number.isNaN(Number(v))) return '';
@@ -46,10 +61,36 @@ function nowLabelBr() {
   });
 }
 
-function historicoComMotivo(item) {
-  const hist = String(item.historico || '').trim();
-  const motivo = String(item.motivo || '').trim();
-  return motivo ? `${hist}\n${motivo}` : hist;
+function isBlankCode(v) {
+  return v === null || v === undefined || String(v).trim() === '';
+}
+
+function classificacaoExito(item) {
+  return String(item.classificacaoCap || item.categoria || '').trim();
+}
+
+function semCodigos(item) {
+  return isBlankCode(item.debito) && isBlankCode(item.credito);
+}
+
+function situacaoItem(item) {
+  if (item.aprovado) return SITUACAO.APROVADO;
+  if (!classificacaoExito(item)) return SITUACAO.SEM_CLASSIFICACAO;
+  if (semCodigos(item)) return SITUACAO.SEM_CODIGO;
+  return SITUACAO.CLASSIFICADO;
+}
+
+function precisaAtencao(item) {
+  const situacao = situacaoItem(item);
+  return situacao === SITUACAO.SEM_CLASSIFICACAO || situacao === SITUACAO.SEM_CODIGO;
+}
+
+function resumoLabel(itens) {
+  const semClassificacao = itens.filter((item) => !classificacaoExito(item)).length;
+  const semDebitoCredito = itens.filter(semCodigos).length;
+  return `Gerado em: ${nowLabelBr()} · Lançamentos: ${itens.length}`
+    + ` · Sem classificação: ${semClassificacao}`
+    + ` · Sem débito e sem crédito: ${semDebitoCredito}`;
 }
 
 function cellValue(item, key) {
@@ -63,11 +104,13 @@ function cellValue(item, key) {
     case 'valor':
       return formatMoneyBr(item.valor);
     case 'historico':
-      return historicoComMotivo(item);
+      return String(item.historico || '').trim();
     case 'numeroNota':
       return item.numeroNota || '';
     case 'classificacaoCap':
-      return String(item.classificacaoCap || item.categoria || '').trim();
+      return classificacaoExito(item);
+    case 'situacao':
+      return situacaoItem(item);
     case 'verificacaoCliente':
     case 'observacao':
       return '';
@@ -104,6 +147,7 @@ async function exportRelatorioExcel(session, itens) {
     { width: 48 },
     { width: 14 },
     { width: 28 },
+    { width: 20 },
     { width: 18 },
     { width: 30 },
   ];
@@ -132,7 +176,7 @@ async function exportRelatorioExcel(session, itens) {
   sheet.getCell(3, 2).font = { bold: true, size: 11 };
 
   sheet.mergeCells(4, 2, 4, colCount);
-  sheet.getCell(4, 2).value = `Gerado em: ${nowLabelBr()} · Lançamentos: ${itens.length}`;
+  sheet.getCell(4, 2).value = resumoLabel(itens);
   sheet.getCell(4, 2).font = { italic: true, size: 9, color: { argb: 'FF64748B' } };
 
   const headerRow = sheet.getRow(5);
@@ -142,21 +186,27 @@ async function exportRelatorioExcel(session, itens) {
     cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: `FF${BRAND_GREEN}` } };
     cell.border = { bottom: { style: 'thin', color: { argb: 'FF2E9A3C' } } };
   });
+  sheet.views = [{ state: 'frozen', ySplit: 5 }];
+  sheet.autoFilter = { from: { row: 5, column: 1 }, to: { row: 5, column: colCount } };
 
   itens.forEach((item) => {
     const row = sheet.addRow(COLUMNS.map((c) => cellValue(item, c.key)));
     row.alignment = { vertical: 'top' };
-    row.getCell(4).font = {
+    if (precisaAtencao(item)) {
+      for (let col = 1; col <= colCount; col += 1) {
+        row.getCell(col).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: AMBER_ARGB } };
+      }
+    }
+    row.getCell(COL_VALOR).font = {
       color: { argb: Number(item.valor) < 0 ? 'FFB91C1C' : 'FF047857' },
     };
-    row.getCell(5).alignment = { vertical: 'top', wrapText: true };
-    row.getCell(7).value = cellValue(item, 'classificacaoCap');
-    row.getCell(8).dataValidation = {
+    row.getCell(COL_HISTORICO).alignment = { vertical: 'top', wrapText: true };
+    row.getCell(COL_VERIFICACAO).dataValidation = {
       type: 'list',
       allowBlank: true,
       formulae: ['"OK,PENDENTE"'],
     };
-    row.getCell(9).alignment = { vertical: 'top', wrapText: true };
+    row.getCell(COL_OBSERVACAO).alignment = { vertical: 'top', wrapText: true };
   });
 
   const buffer = await workbook.xlsx.writeBuffer();
@@ -165,33 +215,40 @@ async function exportRelatorioExcel(session, itens) {
 
 /**
  * Gera buffer PDF do relatório detalhado (Banco/Competência + todos os lançamentos),
- * paisagem A4, com quebra de página repetindo o cabeçalho da tabela.
+ * paisagem A4. Cada página nova repete Banco · Competência e o cabeçalho da
+ * tabela; todas as páginas levam "Página N de M" no rodapé.
  * @param {object} session
  * @param {Array} itens
  * @returns {Promise<Buffer>}
  */
 function exportRelatorioPdf(session, itens) {
   return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: 'A4', layout: 'landscape', margin: 30 });
+    const doc = new PDFDocument({
+      size: 'A4', layout: 'landscape', margin: 30, bufferPages: true,
+    });
     const chunks = [];
     doc.on('data', (c) => chunks.push(c));
     doc.on('end', () => resolve(Buffer.concat(chunks)));
     doc.on('error', reject);
 
+    // Soma das larguras (778) precisa caber na área útil do A4 paisagem (841,89 - 60).
     const pdfColumns = [
-      { key: 'data', label: 'Data', width: 50 },
-      { key: 'debito', label: 'Débito', width: 40 },
-      { key: 'credito', label: 'Crédito', width: 40 },
-      { key: 'valor', label: 'Valor', width: 60 },
-      { key: 'historico', label: 'Histórico', width: 235 },
-      { key: 'numeroNota', label: 'Nº Nota', width: 50 },
-      { key: 'classificacaoCap', label: 'Classificação Êxito', width: 115 },
-      { key: 'verificacaoCliente', label: 'Verificação do cliente', width: 70 },
-      { key: 'observacao', label: 'Observação', width: 90 },
+      { key: 'data', label: 'Data', width: 54 },
+      { key: 'debito', label: 'Débito', width: 38 },
+      { key: 'credito', label: 'Crédito', width: 38 },
+      { key: 'valor', label: 'Valor', width: 62 },
+      { key: 'historico', label: 'Histórico', width: 201 },
+      { key: 'numeroNota', label: 'Nº Nota', width: 48 },
+      { key: 'classificacaoCap', label: 'Classificação Êxito', width: 110 },
+      { key: 'situacao', label: 'Situação', width: 80 },
+      { key: 'verificacaoCliente', label: 'Verificação do cliente', width: 62 },
+      { key: 'observacao', label: 'Observação', width: 85 },
     ];
     const tableLeft = doc.page.margins.left;
     const tableWidth = pdfColumns.reduce((s, c) => s + c.width, 0);
-    const bottomLimit = doc.page.height - doc.page.margins.bottom;
+    const footerHeight = 14;
+    const bottomLimit = doc.page.height - doc.page.margins.bottom - footerHeight;
+    const pageBanner = `Banco: ${bancoLabel(session)} · Competência: ${competenciaLabel(session)}`;
 
     function drawDocHeader() {
       const startY = doc.y;
@@ -210,10 +267,35 @@ function exportRelatorioPdf(session, itens) {
       doc.font('Helvetica-Bold').fontSize(10)
         .text(`Competência: ${competenciaLabel(session)}`, textX);
       doc.font('Helvetica').fontSize(8).fillColor('#64748b')
-        .text(`Gerado em: ${nowLabelBr()} · Lançamentos: ${itens.length}`, textX);
+        .text(resumoLabel(itens), textX);
       doc.fillColor('#000000');
 
       doc.y = Math.max(doc.y, startY + logoHeight) + 10;
+    }
+
+    function drawPageBanner() {
+      doc.font('Helvetica-Bold').fontSize(9).fillColor('#0a0a0a')
+        .text(pageBanner, tableLeft, doc.y, { width: tableWidth });
+      doc.fillColor('#000000');
+      doc.y += 6;
+    }
+
+    function drawPageNumbers() {
+      const range = doc.bufferedPageRange();
+      for (let i = 0; i < range.count; i += 1) {
+        doc.switchToPage(range.start + i);
+        // Sem zerar a margem inferior, escrever no rodapé faria o pdfkit abrir outra página.
+        const originalBottom = doc.page.margins.bottom;
+        doc.page.margins.bottom = 0;
+        doc.font('Helvetica').fontSize(8).fillColor('#64748b')
+          .text(`Página ${i + 1} de ${range.count}`, tableLeft, doc.page.height - originalBottom - 10, {
+            width: tableWidth,
+            align: 'right',
+            lineBreak: false,
+          });
+        doc.page.margins.bottom = originalBottom;
+      }
+      doc.fillColor('#000000');
     }
 
     function drawTableHeader() {
@@ -235,23 +317,27 @@ function exportRelatorioPdf(session, itens) {
       if (doc.y + rowHeight > bottomLimit) {
         doc.addPage();
         doc.y = doc.page.margins.top;
+        drawPageBanner();
         drawTableHeader();
       }
     }
 
     drawDocHeader();
     drawTableHeader();
-    doc.font('Helvetica').fontSize(8);
 
     itens.forEach((item, idx) => {
+      doc.font('Helvetica').fontSize(8);
       const texts = pdfColumns.map((col) => String(cellValue(item, col.key) ?? ''));
       const heights = pdfColumns.map((col, i) => doc.heightOfString(texts[i] || ' ', { width: col.width - 8 }));
       const rowHeight = Math.max(...heights) + 8;
 
       ensureSpace(rowHeight);
+      doc.font('Helvetica').fontSize(8);
 
       const y = doc.y;
-      if (idx % 2 === 1) {
+      if (precisaAtencao(item)) {
+        doc.rect(tableLeft, y, tableWidth, rowHeight).fill(AMBER_HEX);
+      } else if (idx % 2 === 1) {
         doc.rect(tableLeft, y, tableWidth, rowHeight).fill('#f8fafc');
       }
 
@@ -275,6 +361,7 @@ function exportRelatorioPdf(session, itens) {
       doc.y = y + rowHeight;
     });
 
+    drawPageNumbers();
     doc.end();
   });
 }

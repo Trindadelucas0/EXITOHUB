@@ -7,9 +7,11 @@
   mainClass: 'app-main'
 }) %>
 
+<% var listaEmpresas = (typeof empresas !== 'undefined' && empresas) ? empresas : []; %>
+
 <div class="page-header">
   <h2>Bancos</h2>
-  <p>Cadastre os bancos fixos do sistema (nome + código de crédito). A empresa só escolhe o banco no upload e no pré-cadastro.</p>
+  <p>Cadastre os bancos de cada empresa (nome, código de crédito e empresa). A empresa só vê os bancos ativos dela no upload e no pré-cadastro. Banco "Sem empresa" não aparece para ninguém até você escolher a empresa e salvar.</p>
 </div>
 
 <%- include('partials/flash') %>
@@ -26,9 +28,23 @@
       <input id="codigoCredito" name="codigoCredito" type="number" required placeholder="Ex.: 9" class="field-input" />
     </div>
     <div>
+      <label class="field-label" for="empresaId">Empresa</label>
+      <select id="empresaId" name="empresaId" required class="field-select">
+        <option value="">Selecione a empresa…</option>
+        <% listaEmpresas.forEach(function(e) { %>
+          <option value="<%= e.id %>"><%= e.nome %><%= e.ativo === false ? ' (inativa)' : '' %></option>
+        <% }) %>
+      </select>
+    </div>
+    <div>
       <button type="submit" class="btn btn-primary">Criar banco</button>
     </div>
   </div>
+  <% if (!listaEmpresas.length) { %>
+    <p class="field-hint" style="color: var(--warning); margin-top: 0.5rem;">
+      Nenhuma empresa cadastrada. Crie a empresa em Empresas antes do banco.
+    </p>
+  <% } %>
 </form>
 
 <div class="card">
@@ -49,9 +65,23 @@
           <label class="field-label">Código crédito</label>
           <input name="codigoCredito" type="number" value="<%= b.codigoCredito %>" required class="field-input" />
         </div>
+        <div>
+          <label class="field-label">Empresa</label>
+          <select name="empresaId" required class="field-select">
+            <% if (!b.empresaId) { %>
+              <option value="" selected>Sem empresa — escolha</option>
+            <% } %>
+            <% listaEmpresas.forEach(function(e) { %>
+              <option value="<%= e.id %>" <%= e.id === b.empresaId ? 'selected' : '' %>><%= e.nome %><%= e.ativo === false ? ' (inativa)' : '' %></option>
+            <% }) %>
+          </select>
+        </div>
         <div class="admin-row-actions">
           <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
           <span class="badge <%= b.ativo ? 'badge-enviado' : 'badge-pendente' %>"><%= b.ativo ? 'Ativo' : 'Inativo' %></span>
+          <% if (!b.empresaId) { %>
+            <span class="badge badge-pendente">Sem empresa</span>
+          <% } %>
         </div>
       </form>
       <form method="post" action="<%= u('/admin/bancos/' + b.id) %>" style="grid-column: 1 / -1;">

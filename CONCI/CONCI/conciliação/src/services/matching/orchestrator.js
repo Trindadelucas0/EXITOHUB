@@ -10,8 +10,12 @@ const {
   CLASSIFICACAO_RECEBIMENTO,
 } = require('../preCadastroStore');
 
+/**
+ * Valor positivo: RECEBIMENTO, salvo quando um historico do pre-cadastro
+ * aparece no extrato (ai vale a descricao dessa linha).
+ */
 function asRecebimento(lancamento, idx, sessionId) {
-  return applyPreCadastro({
+  const padrao = {
     ...lancamento,
     tipo: 'recebimento',
     status: 'RECEBIMENTO',
@@ -26,7 +30,12 @@ function asRecebimento(lancamento, idx, sessionId) {
     contaPagarId: null,
     aprovado: false,
     rowId: lancamento.id || `rec-${idx}`,
-  }, sessionId);
+  };
+  const withPre = applyPreCadastro(enrichCapFromHistorico(padrao, sessionId), sessionId);
+  if (shouldAutoAprovar(withPre)) {
+    withPre.aprovado = true;
+  }
+  return withPre;
 }
 
 /**

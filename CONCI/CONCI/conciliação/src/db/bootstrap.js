@@ -83,6 +83,11 @@ async function ensureTables() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
 
+    -- Banco pertence a uma empresa. Linha antiga fica NULL e só aparece no admin até vincular.
+    ALTER TABLE bancos
+      ADD COLUMN IF NOT EXISTS empresa_id UUID NULL REFERENCES empresas(id);
+    CREATE INDEX IF NOT EXISTS idx_bancos_empresa ON bancos(empresa_id);
+
     CREATE TABLE IF NOT EXISTS conciliacoes (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       empresa_id UUID NOT NULL REFERENCES empresas(id) ON DELETE CASCADE,

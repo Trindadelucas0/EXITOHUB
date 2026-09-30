@@ -3,6 +3,7 @@
 const {
   applyPreCadastro,
   enrichCapFromHistorico,
+  isRecebimentoPadrao,
   shouldAutoAprovar,
 } = require('./preCadastroStore');
 
@@ -48,12 +49,15 @@ function applyCapAndPre(item, cap, preKey) {
 
 /**
  * Reaplica pré-cadastro. CAP preenchida só atualiza Débito/Crédito.
- * CAP vazia tenta classificar pela descrição do pré-cadastro no histórico.
+ * Pagamento com CAP vazia tenta descrição e históricos do pré-cadastro;
+ * recebimento ainda em RECEBIMENTO tenta só os históricos.
  */
 function reapplyPreOnItem(item, preKey) {
-  const hadCap = String(item.classificacaoCap || item.categoria || '').trim();
+  const podeClassificar = item.tipo === 'recebimento'
+    ? isRecebimentoPadrao(item)
+    : !String(item.classificacaoCap || item.categoria || '').trim();
   const enriched = enrichCapFromHistorico(item, preKey);
-  const classifiedFromHistorico = !hadCap
+  const classifiedFromHistorico = podeClassificar
     && String(enriched.motivo || '') === 'historico+precadastro';
   const withPre = applyPreCadastro(enriched, preKey);
   const next = {

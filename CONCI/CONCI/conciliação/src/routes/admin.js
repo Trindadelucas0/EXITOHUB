@@ -89,11 +89,39 @@ router.post('/admin/sair-empresa', requireAdmin, async (req, res) => {
   }
 });
 
+/** listEmpresas repete a empresa por usuário (LEFT JOIN users); o select precisa de uma linha por empresa. */
+async function listEmpresasParaSelect() {
+  const rows = await listEmpresas();
+  const byId = new Map();
+  rows.forEach((row) => {
+    if (!byId.has(row.id)) byId.set(row.id, { id: row.id, nome: row.nome, ativo: row.ativo });
+  });
+  return [...byId.values()].sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+}
+
+async function renderAdminBancos(res, { error = null, success = null, status = 200 } = {}) {
+  const [bancos, empresas] = await Promise.all([
+    listBancos().catch(() => []),
+    listEmpresasParaSelect().catch(() => []),
+  ]);
+  return res.status(status).render('adminBancos', {
+    bancos,
+    empresas,
+    error,
+    success,
+    currentNav: 'bancos',
+  });
+}
+
 router.get('/admin/bancos', requireAdmin, async (req, res) => {
   try {
-    const bancos = await listBancos();
+    const [bancos, empresas] = await Promise.all([
+      listBancos(),
+      listEmpresasParaSelect(),
+    ]);
     res.render('adminBancos', {
       bancos,
+      empresas,
       error: null,
       success: req.query.ok || null,
       currentNav: 'bancos',
@@ -101,6 +129,7 @@ router.get('/admin/bancos', requireAdmin, async (req, res) => {
   } catch (err) {
     res.status(500).render('adminBancos', {
       bancos: [],
+      empresas: [],
       error: err.message,
       success: null,
       currentNav: 'bancos',
@@ -113,16 +142,11 @@ router.post('/admin/bancos', requireAdmin, async (req, res) => {
     await createBanco({
       nome: req.body.nome,
       codigoCredito: req.body.codigoCredito,
+      empresaId: req.body.empresaId,
     });
     return res.redirect('/admin/bancos?ok=criado');
   } catch (err) {
-    const bancos = await listBancos().catch(() => []);
-    return res.status(400).render('adminBancos', {
-      bancos,
-      error: err.message,
-      success: null,
-      currentNav: 'bancos',
-    });
+    return renderAdminBancos(res, { error: err.message, status: 400 });
   }
 });
 
@@ -137,16 +161,11 @@ router.post('/admin/bancos/:id', requireAdmin, async (req, res) => {
     await updateBanco(req.params.id, {
       nome: req.body.nome,
       codigoCredito: req.body.codigoCredito,
+      empresaId: req.body.empresaId,
     });
     return res.redirect('/admin/bancos?ok=atualizado');
   } catch (err) {
-    const bancos = await listBancos().catch(() => []);
-    return res.status(400).render('adminBancos', {
-      bancos,
-      error: err.message,
-      success: null,
-      currentNav: 'bancos',
-    });
+    return renderAdminBancos(res, { error: err.message, status: 400 });
   }
 });
 

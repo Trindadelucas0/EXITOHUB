@@ -10,25 +10,22 @@
 
 <div class="page-header">
   <h2>Pré-cadastro</h2>
-  <p>Cadastre descrições (Classificação Êxito) e códigos Débito/Crédito por banco. Sem cadastro, Débito/Crédito ficam em branco na revisão.</p>
+  <p><strong>Sem uma linha aqui, a revisão fica sem débito e crédito.</strong></p>
 </div>
 
 <%- include('partials/flash') %>
 
-<details class="help-details" style="margin-bottom: 1rem;">
-  <summary>Como cadastrar</summary>
-  <div class="help-body">
-    <p><strong>Pagamentos:</strong> descrição = Classificação Êxito (ex.: <code>ENERGIA</code>, <code>APL APLIC</code>).</p>
-    <p><strong>Tarifas:</strong> <code>TARIFAS BANCARIAS</code>.</p>
-    <p><strong>Recebimentos:</strong> valor positivo começa com Classificação Êxito = <code>RECEBIMENTO</code>.
-      Cadastre <code>RECEBIMENTO DE CLIENTES</code> ou <code>RECEBIMENTO</code> para preencher Débito/Crédito no upload.</p>
-    <p>Se o lançamento <strong>não</strong> veio classificado da Contas a Pagar, o sistema procura essa descrição no <strong>histórico do extrato</strong> (texto inteiro ou trecho, como palavra: <code>ENERGIA</code> não classifica <code>NEOENERGIA</code>). Cadastre o texto (ou parte) que aparece no extrato. Recebimentos não usam essa regra.</p>
-    <p><code>TAR/CUSTAS COBRANCA</code> (mesmo com prefixo de banco) e <code>TARIFA</code> / <code>TARIFAS</code> viram Classificação Êxito <code>TARIFAS BANCARIAS</code>. Não classificam pela planilha de Contas a Pagar só porque coincidiu valor e data. Os códigos vêm da linha <code>TARIFAS BANCARIAS</code> deste cadastro. <code>TARIFARIO</code> não entra nessa regra.</p>
-    <p>Na revisão dá para editar a Classificação Êxito manualmente e o Débito/Crédito vêm do pré-cadastro com a mesma descrição. <strong>Atualizar pré-cadastro</strong> só preenche Classificação Êxito que ainda está vazia (não sobrescreve o que veio da Contas a Pagar).</p>
-  </div>
-</details>
-
 <% if (banco) { %>
+  <%
+    var itemEditando = editId ? itens.find(function(i) { return i.id === editId; }) : null;
+    var editando = Boolean(itemEditando);
+    var formAction = editando ? u('/pre-cadastro/' + itemEditando.id) : u('/pre-cadastro');
+    var formDescricao = editando ? itemEditando.descricao : '';
+    var formHistoricos = editando && Array.isArray(itemEditando.historicos) ? itemEditando.historicos.join('\n') : '';
+    var formDebito = editando ? (itemEditando.debito ?? '') : '';
+    var formCredito = editando ? (itemEditando.credito ?? '') : defaultCredito;
+  %>
+
   <form method="get" action="<%= u('/pre-cadastro') %>" class="toolbar" style="margin-bottom: 1rem;">
     <div style="flex: 1; min-width: 220px;">
       <label class="field-label" for="banco-select">Banco</label>
@@ -45,86 +42,115 @@
     </p>
   </form>
 
-  <form method="post" action="<%= u('/pre-cadastro') %>" class="card card-pad" style="margin-bottom: 1rem;">
+  <form method="post" action="<%= formAction %>" class="card card-pad precadastro-form" style="margin-bottom: 1rem;">
     <input type="hidden" name="bancoId" value="<%= banco.id %>" />
-    <h3 class="card-title">Novo item</h3>
-    <div style="display: grid; gap: 0.75rem; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); align-items: end;">
-      <div style="grid-column: span 2;">
+    <h3 class="card-title"><%= editando ? ('Editar ' + itemEditando.descricao) : 'Nova classificação' %></h3>
+
+    <div class="precadastro-grid">
+      <fieldset>
+        <legend>Classificação</legend>
         <label class="field-label" for="descricao">Descrição</label>
-        <input id="descricao" name="descricao" required placeholder="FORNECEDORES / TARIFAS BANCARIAS / RECEBIMENTO DE CLIENTES" class="field-input" />
-      </div>
-      <div>
-        <label class="field-label" for="debito">Débito (opcional)</label>
-        <input id="debito" name="debito" type="number" placeholder="vazio = em branco" class="field-input" />
-      </div>
-      <div>
-        <label class="field-label" for="credito">Crédito (opcional)</label>
-        <input id="credito" name="credito" type="number" value="<%= defaultCredito %>" placeholder="vazio = crédito do banco" class="field-input" />
-      </div>
-      <div>
-        <button type="submit" class="btn btn-primary">Cadastrar</button>
-      </div>
+        <input id="descricao" name="descricao" required value="<%= formDescricao %>" placeholder="ALUGUEL / TARIFAS BANCARIAS / RECEBIMENTO DE CLIENTES" class="field-input" />
+        <p class="field-hint">Classificação Êxito</p>
+
+        <div class="precadastro-grid">
+          <div>
+            <label class="field-label" for="debito">Débito</label>
+            <input id="debito" name="debito" type="number" value="<%= formDebito %>" class="field-input" />
+            <p class="field-hint">Em branco fica sem débito.</p>
+          </div>
+          <div>
+            <label class="field-label" for="credito">Crédito</label>
+            <input id="credito" name="credito" type="number" value="<%= formCredito %>" class="field-input" />
+            <p class="field-hint"><%= editando ? 'Em branco fica sem crédito na revisão.' : 'Em branco usa o crédito do banco.' %></p>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>O que o banco escreve</legend>
+        <label class="field-label" for="historicos">Históricos do banco</label>
+        <textarea id="historicos" name="historicos" rows="5" placeholder="PIX IMOBILIARIA&#10;TED ALUGUEL" class="field-textarea"><%= formHistoricos %></textarea>
+        <p class="field-hint">Um texto por linha.</p>
+      </fieldset>
     </div>
+
+    <% if (editando) { %>
+      <div class="row-actions precadastro-submit">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="<%= u('/pre-cadastro?banco=' + banco.id) %>" class="btn btn-ghost">Cancelar</a>
+      </div>
+    <% } else { %>
+      <div class="row-actions precadastro-submit">
+        <button type="submit" class="btn btn-primary">Cadastrar esta classificação</button>
+      </div>
+    <% } %>
   </form>
 
-  <div class="table-wrap">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Descrição</th>
-          <th>Débito</th>
-          <th>Crédito</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% itens.forEach(function(item) { %>
-          <tr>
-            <% if (editId === item.id) { %>
-              <td colspan="4">
-                <form method="post" action="<%= u('/pre-cadastro/' + item.id) %>" style="display: grid; gap: 0.65rem; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); align-items: end;">
-                  <input type="hidden" name="bancoId" value="<%= banco.id %>" />
-                  <div style="grid-column: span 2;">
-                    <label class="field-label">Descrição</label>
-                    <input name="descricao" value="<%= item.descricao %>" required class="field-input" />
-                  </div>
-                  <div>
-                    <label class="field-label">Débito</label>
-                    <input name="debito" type="number" value="<%= item.debito ?? '' %>" class="field-input" />
-                  </div>
-                  <div>
-                    <label class="field-label">Crédito</label>
-                    <input name="credito" type="number" value="<%= item.credito ?? '' %>" class="field-input" />
-                  </div>
-                  <div class="row-actions">
-                    <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
-                    <a href="<%= u('/pre-cadastro?banco=' + banco.id) %>" class="btn btn-ghost btn-sm">Cancelar</a>
-                  </div>
-                </form>
-              </td>
-            <% } else { %>
-              <td class="font-semibold"><%= item.descricao %></td>
-              <td><%= item.debito ?? '' %></td>
-              <td><%= item.credito ?? '' %></td>
-              <td>
-                <div class="row-actions">
-                  <a href="<%= u('/pre-cadastro?banco=' + banco.id + '&edit=' + item.id) %>" class="btn btn-ghost btn-sm">Editar</a>
-                  <form method="post" action="<%= u('/pre-cadastro/' + item.id) %>" onsubmit="return confirm('Excluir este cadastro?')" class="inline">
-                    <input type="hidden" name="bancoId" value="<%= banco.id %>" />
-                    <input type="hidden" name="_method" value="DELETE" />
-                    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
-                  </form>
-                </div>
-              </td>
-            <% } %>
-          </tr>
-        <% }) %>
-        <% if (!itens.length) { %>
-          <tr><td colspan="4" class="empty-state">Nenhum pré-cadastro neste banco ainda.</td></tr>
+  <% if (!itens.length) { %>
+    <div class="card empty-state">
+      Nenhuma classificação neste banco.<br />
+      A revisão deste banco fica sem débito e crédito até você cadastrar.
+    </div>
+  <% } %>
+
+  <% itens.forEach(function(item) { %>
+    <%
+      var historicos = Array.isArray(item.historicos) ? item.historicos : [];
+      var semDebito = item.debito == null;
+      var semCredito = item.credito == null;
+      var aviso = '';
+      if (semDebito && semCredito) aviso = 'Não preenche débito nem crédito na revisão';
+      else if (semDebito) aviso = 'Não preenche débito na revisão';
+      else if (semCredito) aviso = 'Não preenche crédito na revisão';
+      var estaEditando = editando && itemEditando.id === item.id;
+    %>
+    <div class="card precadastro-item<%= estaEditando ? ' is-editing' : '' %>">
+      <div class="precadastro-item-head">
+        <strong><%= item.descricao %></strong>
+        <span class="muted">
+          Débito <strong><%= semDebito ? '—' : item.debito %></strong>
+          &nbsp; Crédito <strong><%= semCredito ? '—' : item.credito %></strong>
+        </span>
+      </div>
+
+      <% if (aviso) { %>
+        <p class="precadastro-warn"><%= aviso %></p>
+      <% } %>
+
+      <% if (historicos.length) { %>
+        <div class="precadastro-tags">
+          <% historicos.forEach(function(h) { %>
+            <span class="precadastro-tag"><%= h %></span>
+          <% }) %>
+        </div>
+      <% } %>
+
+      <div class="row-actions">
+        <% if (estaEditando) { %>
+          <span class="muted" style="font-size: 0.8rem;">Editando no formulário acima</span>
+        <% } else { %>
+          <a href="<%= u('/pre-cadastro?banco=' + banco.id + '&edit=' + item.id) %>" class="btn btn-ghost btn-sm">Editar</a>
         <% } %>
-      </tbody>
-    </table>
-  </div>
+        <form method="post" action="<%= u('/pre-cadastro/' + item.id) %>" onsubmit="return confirm('Excluir este cadastro?')" class="inline">
+          <input type="hidden" name="bancoId" value="<%= banco.id %>" />
+          <input type="hidden" name="_method" value="DELETE" />
+          <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+        </form>
+      </div>
+    </div>
+  <% }) %>
 <% } %>
+
+<details class="help-details" style="margin-top: 1rem;">
+  <summary>Como cadastrar</summary>
+  <div class="help-body">
+    <p><strong>Descrição</strong> = Classificação Êxito (ex.: <code>ENERGIA</code>, <code>ALUGUEL</code>, <code>TARIFAS BANCARIAS</code>). <strong>Históricos do banco</strong> = textos que aparecem no extrato (um por linha, mínimo 4 caracteres, ex.: <code>PIX IMOBILIARIA</code>, <code>TAR/CUSTAS</code>). O mesmo histórico não pode estar em duas linhas deste banco.</p>
+    <p><strong>Pagamentos:</strong> o que veio classificado da Contas a Pagar não muda. Sem Contas a Pagar, o sistema procura a Descrição e os Históricos do banco no <strong>histórico do extrato</strong> (texto inteiro ou trecho, como palavra: <code>ENERGIA</code> não classifica <code>NEOENERGIA</code>). Se achar, a Classificação Êxito vira a Descrição da linha, com Débito/Crédito, e já nasce aprovado.</p>
+    <p><strong>Recebimentos:</strong> valor positivo começa com Classificação Êxito = <code>RECEBIMENTO</code>, com os códigos da linha <code>RECEBIMENTO DE CLIENTES</code> (ou <code>RECEBIMENTO</code>). Só os Históricos do banco (não a Descrição) tiram o recebimento desse padrão: se um deles aparecer no extrato, vale a Descrição da linha. Históricos na linha <code>RECEBIMENTO DE CLIENTES</code> / <code>RECEBIMENTO</code> não são usados.</p>
+    <p><strong>Tarifas:</strong> <code>TAR/CUSTAS</code> e <code>TARIFA</code> não viram <code>TARIFAS BANCARIAS</code> sozinhas. Cadastre esses textos nos Históricos do banco da linha <code>TARIFAS BANCARIAS</code>. Tarifa não casa com a Contas a Pagar só porque coincidiu valor e data.</p>
+    <p>Na revisão dá para editar a Classificação Êxito manualmente e o Débito/Crédito vêm do pré-cadastro com a mesma descrição. <strong>Atualizar pré-cadastro</strong> preenche pagamento com Classificação Êxito vazia e recebimento que ainda está <code>RECEBIMENTO</code> (não sobrescreve o que veio da Contas a Pagar nem o que foi editado).</p>
+  </div>
+</details>
 
 <%- include('partials/app-shell-end') %>

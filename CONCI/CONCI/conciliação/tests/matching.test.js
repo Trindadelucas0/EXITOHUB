@@ -11,7 +11,6 @@ process.env.PRE_CADASTRO_DIR = tmpDir;
 fs.mkdirSync(tmpDir, { recursive: true });
 
 const { runMatching } = require('../src/services/matching/orchestrator');
-const { applyRegrasHistorico } = require('../src/services/matching/pass3');
 const store = require('../src/services/preCadastroStore');
 
 const SID = 'sess-match';
@@ -34,60 +33,53 @@ describe('matching unitario', () => {
     delete process.env.PRE_CADASTRO_DIR;
   });
 
-  it('regra TAR marca REGRA sem codigo (codigo so via pre-cadastro)', () => {
-    const item = applyRegrasHistorico({
-      id: 'x',
-      data: '2026-04-01',
-      historico: 'TAR/CUSTAS COBRANCA',
-      razaoSocial: '',
-      cnpj: '',
-      valor: -1.89,
+  it('TAR/CUSTAS sem historico no pre-cadastro fica SEM_MATCH (sem regra fixa)', () => {
+    writeSession([{
+      id: 't1',
+      descricao: store.DESCRICAO_TARIFAS_BANCARIAS,
+      debito: 1025,
+      credito: 9,
+    }]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'p1',
+        data: '2026-04-01',
+        historico: 'BB TAR/CUSTAS COBRANCA',
+        razaoSocial: '',
+        cnpj: '',
+        valor: -1.89,
+      }],
+      contas: [],
     });
-    assert.ok(item);
-    assert.equal(item.status, 'REGRA');
-    assert.equal(item.debito, null);
-    assert.equal(item.credito, null);
-    assert.equal(item.classificacaoCap, 'TARIFAS BANCARIAS');
+    assert.equal(itens[0].status, 'SEM_MATCH');
+    assert.equal(itens[0].classificacaoCap, '');
+    assert.equal(itens[0].debito, null);
+    assert.equal(itens[0].aprovado, false);
   });
 
-  it('regra TAR casa no meio do historico com prefixo BB', () => {
-    const item = applyRegrasHistorico({
-      id: 'x',
-      data: '2026-04-01',
-      historico: 'BB TAR/CUSTAS COBRANCA',
-      razaoSocial: '',
-      cnpj: '',
-      valor: -1.89,
+  it('TARIFARIO nao casa historico TARIFA do pre-cadastro', () => {
+    writeSession([{
+      id: 't1',
+      descricao: store.DESCRICAO_TARIFAS_BANCARIAS,
+      debito: 1025,
+      credito: 9,
+      historicos: ['TARIFA'],
+    }]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'p1',
+        data: '2026-04-01',
+        historico: 'BOLETO PAGO TARIFARIO MUNICIPAL',
+        razaoSocial: '',
+        cnpj: '',
+        valor: -10,
+      }],
+      contas: [],
     });
-    assert.ok(item);
-    assert.equal(item.status, 'REGRA');
-    assert.equal(item.classificacaoCap, 'TARIFAS BANCARIAS');
-  });
-
-  it('TARIFARIO nao dispara regra TAR', () => {
-    const item = applyRegrasHistorico({
-      id: 'x',
-      data: '2026-04-01',
-      historico: 'BOLETO PAGO TARIFARIO MUNICIPAL',
-      razaoSocial: '',
-      cnpj: '',
-      valor: -10,
-    });
-    assert.equal(item, null);
-  });
-
-  it('TARIFA PACOTE dispara regra TARIFAS BANCARIAS', () => {
-    const item = applyRegrasHistorico({
-      id: 'x',
-      data: '2026-04-01',
-      historico: 'TARIFA PACOTE SERVICOS',
-      razaoSocial: '',
-      cnpj: '',
-      valor: -1.89,
-    });
-    assert.ok(item);
-    assert.equal(item.status, 'REGRA');
-    assert.equal(item.classificacaoCap, 'TARIFAS BANCARIAS');
+    assert.equal(itens[0].status, 'SEM_MATCH');
+    assert.equal(itens[0].classificacaoCap, '');
   });
 
   it('match por valor+nome no historico preenche classificacao', () => {
@@ -370,16 +362,17 @@ describe('matching unitario', () => {
     assert.equal(itens[1].status, 'RECEBIMENTO');
     assert.equal(itens[1].classificacaoCap, 'RECEBIMENTO');
     assert.equal(itens[1].debito, null);
-    assert.equal(itens[0].status, 'REGRA');
+    assert.equal(itens[0].status, 'SEM_MATCH');
     assert.equal(itens[0].debito, null);
   });
 
-  it('TAR com pre-cadastro TARIFAS BANCARIAS aplica codigos', () => {
+  it('TAR com historico TAR/CUSTAS na linha TARIFAS BANCARIAS aplica codigos', () => {
     writeSession([{
       id: 't1',
       descricao: store.DESCRICAO_TARIFAS_BANCARIAS,
       debito: 1025,
       credito: 9,
+      historicos: ['TAR/CUSTAS', 'TARIFA'],
     }]);
     const { itens } = runMatching({
       sessionId: SID,
@@ -393,18 +386,20 @@ describe('matching unitario', () => {
       }],
       contas: [],
     });
-    assert.equal(itens[0].status, 'REGRA');
+    assert.equal(itens[0].status, 'SUGERIDO');
+    assert.equal(itens[0].motivo, 'historico+precadastro');
     assert.equal(itens[0].debito, 1025);
     assert.equal(itens[0].credito, 9);
     assert.equal(itens[0].classificacaoCap, 'TARIFAS BANCARIAS');
   });
 
-  it('TAR com prefixo BB aplica codigos do pre-cadastro e auto-aprova', () => {
+  it('BB TAR/CUSTAS com historico cadastrado aplica codigos e auto-aprova', () => {
     writeSession([{
       id: 't1',
       descricao: store.DESCRICAO_TARIFAS_BANCARIAS,
       debito: 1025,
       credito: 9,
+      historicos: ['TAR/CUSTAS'],
     }]);
     const { itens } = runMatching({
       sessionId: SID,
@@ -418,7 +413,7 @@ describe('matching unitario', () => {
       }],
       contas: [],
     });
-    assert.equal(itens[0].status, 'REGRA');
+    assert.equal(itens[0].status, 'SUGERIDO');
     assert.equal(itens[0].classificacaoCap, 'TARIFAS BANCARIAS');
     assert.equal(itens[0].debito, 1025);
     assert.equal(itens[0].credito, 9);
@@ -426,6 +421,43 @@ describe('matching unitario', () => {
   });
 
   it('TAR mesmo valor e data que CAP nao casa fornecedor; usa TARIFAS BANCARIAS', () => {
+    writeSession([{
+      id: 't1',
+      descricao: store.DESCRICAO_TARIFAS_BANCARIAS,
+      debito: 1025,
+      credito: 9,
+      historicos: ['TAR/CUSTAS'],
+    }]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'p1',
+        data: '2026-04-01',
+        historico: 'TAR/CUSTAS COBRANCA',
+        razaoSocial: '',
+        cnpj: '',
+        valor: -1.89,
+      }],
+      contas: [{
+        id: 'c1',
+        categoria: 'FORNECEDORES',
+        nome: 'MENEGOTTI INDUSTRIAS',
+        cnpj: '84431154000128',
+        nrNota: '1',
+        vencimento: '2026-04-01',
+        pagamento: '2026-04-01',
+        valor: 1.89,
+      }],
+    });
+    assert.equal(itens[0].status, 'SUGERIDO');
+    assert.equal(itens[0].classificacaoCap, 'TARIFAS BANCARIAS');
+    assert.equal(itens[0].contaPagarId, null);
+    assert.equal(itens[0].debito, 1025);
+    assert.equal(itens[0].credito, 9);
+    assert.equal(itens[0].aprovado, true);
+  });
+
+  it('TAR mesmo valor e data que CAP sem historico cadastrado fica SEM_MATCH', () => {
     writeSession([{
       id: 't1',
       descricao: store.DESCRICAO_TARIFAS_BANCARIAS,
@@ -453,19 +485,18 @@ describe('matching unitario', () => {
         valor: 1.89,
       }],
     });
-    assert.equal(itens[0].status, 'REGRA');
-    assert.equal(itens[0].classificacaoCap, 'TARIFAS BANCARIAS');
-    assert.equal(itens[0].debito, 1025);
-    assert.equal(itens[0].credito, 9);
-    assert.equal(itens[0].aprovado, true);
+    assert.equal(itens[0].status, 'SEM_MATCH');
+    assert.equal(itens[0].classificacaoCap, '');
+    assert.equal(itens[0].contaPagarId, null);
   });
 
-  it('TARIFA PACOTE com pre-cadastro aplica codigos', () => {
+  it('TARIFA PACOTE com historico TARIFA no pre-cadastro aplica codigos', () => {
     writeSession([{
       id: 't1',
       descricao: store.DESCRICAO_TARIFAS_BANCARIAS,
       debito: 1025,
       credito: 9,
+      historicos: ['TARIFA'],
     }]);
     const { itens } = runMatching({
       sessionId: SID,
@@ -479,7 +510,7 @@ describe('matching unitario', () => {
       }],
       contas: [],
     });
-    assert.equal(itens[0].status, 'REGRA');
+    assert.equal(itens[0].status, 'SUGERIDO');
     assert.equal(itens[0].classificacaoCap, 'TARIFAS BANCARIAS');
     assert.equal(itens[0].debito, 1025);
     assert.equal(itens[0].aprovado, true);

@@ -54,7 +54,12 @@ describe('calibracao Baifer Itau 08-2026', () => {
       { descricao: 'FORNECEDORES', debito: 1004, credito: 9 },
       { descricao: 'FRETES SOBRE COMPRAS', debito: 1004, credito: 9 },
       { descricao: 'ENERGIA', debito: 1005, credito: 9 },
-      { descricao: 'TARIFAS BANCARIAS', debito: 1025, credito: 9 },
+      {
+        descricao: 'TARIFAS BANCARIAS',
+        debito: 1025,
+        credito: 9,
+        historicos: ['TAR/CUSTAS', 'TARIFA'],
+      },
       { descricao: 'RECEBIMENTO DE CLIENTES', debito: 9, credito: 101 },
     ];
     for (const item of explicitos) {
@@ -93,9 +98,9 @@ describe('calibracao Baifer Itau 08-2026', () => {
     assert.equal(resumo.pagamentos, 319);
     assert.equal(resumo.recebimentos, 183);
     assert.equal(resumo.matched, 258);
-    assert.equal(resumo.sugerido, 11);
-    assert.equal(resumo.regra, 22);
-    assert.equal(resumo.semMatch, 28);
+    assert.equal(resumo.sugerido, 31);
+    assert.equal(resumo.regra, 0);
+    assert.equal(resumo.semMatch, 30);
     assert.equal(
       resumo.matched + resumo.sugerido + resumo.regra + resumo.semMatch + resumo.recebimentos,
       resumo.total,
@@ -116,14 +121,25 @@ describe('calibracao Baifer Itau 08-2026', () => {
     assert.equal(makita.numeroNota, '75911');
   });
 
-  it('TAR/CUSTAS vira REGRA TARIFAS BANCARIAS com debito 1025', () => {
+  it('TAR/CUSTAS vira TARIFAS BANCARIAS pelo historico do pre-cadastro, debito 1025', () => {
     const tarifas = result.itens.filter((i) => i.historico.startsWith('TAR/CUSTAS'));
     assert.ok(tarifas.length > 0);
     for (const tarifa of tarifas) {
-      assert.equal(tarifa.status, 'REGRA');
+      assert.equal(tarifa.status, 'SUGERIDO');
+      assert.equal(tarifa.motivo, 'historico+precadastro');
       assert.equal(tarifa.debito, 1025);
       assert.equal(tarifa.numeroNota, '');
       assert.equal(tarifa.classificacaoCap, 'TARIFAS BANCARIAS');
+      assert.equal(tarifa.aprovado, true);
+    }
+  });
+
+  it('TAR PIX sem esse texto nos historicos fica sem classificacao', () => {
+    const tarPix = result.itens.filter((i) => i.historico.startsWith('TAR PIX'));
+    assert.equal(tarPix.length, 2);
+    for (const item of tarPix) {
+      assert.equal(item.status, 'SEM_MATCH');
+      assert.equal(item.classificacaoCap, '');
     }
   });
 

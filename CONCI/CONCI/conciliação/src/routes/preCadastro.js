@@ -11,7 +11,6 @@ const {
 } = require('../services/preCadastroStore');
 const {
   listBancos,
-  getBancoById,
   getFirstActiveBanco,
 } = require('../services/bancoService');
 const { requireEmpresa } = require('../middleware/session');
@@ -32,20 +31,21 @@ function redirectPreCadastro(bancoId, extra = {}) {
 }
 
 async function resolveBanco(req) {
-  const bancos = await listBancos({ onlyAtivos: true });
+  const empresaId = req.user.empresaId;
+  const bancos = await listBancos({ onlyAtivos: true, empresaId });
   if (!bancos.length) {
-    return { bancos: [], banco: null, error: 'Nenhum banco ativo cadastrado. Contate o administrador.' };
+    return {
+      bancos: [],
+      banco: null,
+      error: 'Nenhum banco desta empresa. Peça ao admin para vincular em Bancos.',
+    };
   }
 
   const requestedId = req.query.banco || req.body.bancoId || req.body.banco;
-  let banco = requestedId ? bancos.find((b) => b.id === requestedId) : null;
-  if (!banco && requestedId) {
-    const byId = await getBancoById(requestedId);
-    if (byId && byId.ativo) banco = byId;
-  }
-  if (!banco) {
-    banco = await getFirstActiveBanco() || bancos[0];
-  }
+  const pedido = requestedId ? bancos.find((b) => b.id === requestedId) : null;
+  if (pedido) return { bancos, banco: pedido, error: null };
+
+  const banco = await getFirstActiveBanco({ empresaId }) || bancos[0];
   return { bancos, banco, error: null };
 }
 
@@ -142,6 +142,7 @@ router.post('/pre-cadastro', requireEmpresa, async (req, res) => {
       descricao: req.body.descricao,
       debito: req.body.debito,
       credito,
+      historicos: req.body.historicos,
     });
     return res.redirect(redirectPreCadastro(banco.id, { ok: 'criado' }));
   } catch (err) {
@@ -182,6 +183,7 @@ router.post('/pre-cadastro/:id', requireEmpresa, async (req, res) => {
       descricao: req.body.descricao,
       debito: req.body.debito,
       credito: req.body.credito,
+      historicos: req.body.historicos,
     });
     return res.redirect(redirectPreCadastro(banco.id, { ok: 'atualizado' }));
   } catch (err) {

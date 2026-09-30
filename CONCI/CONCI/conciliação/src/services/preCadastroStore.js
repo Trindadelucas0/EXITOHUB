@@ -14,8 +14,10 @@ const DESCRICAO_RECEBIMENTO_CLIENTES = 'RECEBIMENTO DE CLIENTES';
 /** Classificacao CAP exibida para todo valor positivo do extrato. */
 const CLASSIFICACAO_RECEBIMENTO = 'RECEBIMENTO';
 
-/** Descricao fixa no pre-cadastro para tarifas TAR* (CAP fica em branco). */
+/** Descricao do pre-cadastro usada por conciliacoes antigas com status REGRA. */
 const DESCRICAO_TARIFAS_BANCARIAS = 'TARIFAS BANCARIAS';
+
+const MOTIVO_HISTORICO_PRECADASTRO = 'historico+precadastro';
 
 function getDataDir() {
   return process.env.PRE_CADASTRO_DIR || DEFAULT_DATA_DIR;
@@ -283,11 +285,55 @@ function containsAsWords(haystack, needle) {
   return re.test(haystack);
 }
 
+const HISTORICO_MIN_CHARS = 4;
+
+/** Itens gravados antes do campo historicos valem []. */
+function historicosOf(item) {
+  return Array.isArray(item?.historicos) ? item.historicos : [];
+}
+
 /**
- * Para residual sem CAP: casa historico do extrato com descricao do pre-cadastro.
- * Prioridade: igualdade exata; senao substring com limite de palavra; mais longa vence.
+ * Textarea (uma linha por texto) ou array → lista sem vazio e sem repetido.
+ * Recusa texto com menos de 4 caracteres (mesma regra da busca).
  */
-function findBestPreByHistorico(storeKey, historico) {
+function normalizeHistoricos(raw) {
+  const partes = Array.isArray(raw) ? raw : String(raw ?? '').split(/\r?\n/);
+  const out = [];
+  const vistos = new Set();
+  for (const parte of partes) {
+    const texto = String(parte ?? '').trim();
+    if (!texto) continue;
+    const chave = normalizeMatchText(texto);
+    if (chave.length < HISTORICO_MIN_CHARS) {
+      throw new Error(`Historico "${texto}" precisa de pelo menos ${HISTORICO_MIN_CHARS} caracteres`);
+    }
+    if (vistos.has(chave)) continue;
+    vistos.add(chave);
+    out.push(texto);
+  }
+  return out;
+}
+
+/** O mesmo historico em duas linhas do banco deixaria a classificacao ambigua. */
+function assertHistoricosUnicos(itens, idAtual, historicos) {
+  for (const texto of historicos) {
+    const chave = normalizeMatchText(texto);
+    const outro = itens.find(
+      (i) => i.id !== idAtual
+        && historicosOf(i).some((h) => normalizeMatchText(h) === chave),
+    );
+    if (outro) {
+      throw new Error(`Historico "${texto}" ja esta na descricao "${outro.descricao}" deste banco`);
+    }
+  }
+}
+
+/**
+ * Casa historico do extrato com a descricao e com os historicos do pre-cadastro.
+ * Prioridade: igualdade exata; senao substring com limite de palavra; mais longa vence.
+ * somenteHistoricos: recebimento ignora a descricao.
+ */
+function findBestPreByHistorico(storeKey, historico, { somenteHistoricos = false } = {}) {
   if (!storeKey) return null;
   const histRaw = stripAccentsUpper(historico);
   const hist = normalizeMatchText(historico);
@@ -298,24 +344,31 @@ function findBestPreByHistorico(storeKey, historico) {
   let bestExact = false;
 
   for (const item of list(storeKey)) {
-    const descRaw = stripAccentsUpper(item.descricao);
-    const desc = normalizeMatchText(item.descricao);
-    if (desc.length < 4) continue;
     if (RECEBIMENTO_LOOKUP_KEYS.has(normalizeDescricao(item.descricao))) continue;
 
-    const exact = histRaw === descRaw || hist === desc;
-    const contained = !exact && containsAsWords(hist, desc);
-    if (!exact && !contained) continue;
+    const textos = somenteHistoricos
+      ? historicosOf(item)
+      : [item.descricao, ...historicosOf(item)];
 
-    const len = desc.length;
-    if (
-      !best
-      || (exact && !bestExact)
-      || (exact === bestExact && len > bestLen)
-    ) {
-      best = item;
-      bestLen = len;
-      bestExact = exact;
+    for (const texto of textos) {
+      const alvoRaw = stripAccentsUpper(texto);
+      const alvo = normalizeMatchText(texto);
+      if (alvo.length < HISTORICO_MIN_CHARS) continue;
+
+      const exact = histRaw === alvoRaw || hist === alvo;
+      const contained = !exact && containsAsWords(hist, alvo);
+      if (!exact && !contained) continue;
+
+      const len = alvo.length;
+      if (
+        !best
+        || (exact && !bestExact)
+        || (exact === bestExact && len > bestLen)
+      ) {
+        best = item;
+        bestLen = len;
+        bestExact = exact;
+      }
     }
   }
 
@@ -342,25 +395,33 @@ function findRecebimentoPadrao(storeKey) {
   return { pre: null, lookupKey: preferred };
 }
 
-function create(storeKey, { descricao, debito, credito }) {
+function create(storeKey, {
+  descricao, debito, credito, historicos,
+}) {
   const desc = String(descricao ?? '').trim();
   if (!desc) throw new Error('Descricao e obrigatoria');
   if (findByDescricao(storeKey, desc)) {
     throw new Error(`Ja existe pre-cadastro com descricao exatamente "${desc}"`);
   }
+  const listaHistoricos = normalizeHistoricos(historicos);
   const doc = readSession(storeKey);
+  assertHistoricosUnicos(doc.itens, null, listaHistoricos);
   const item = {
     id: randomUUID(),
     descricao: desc,
     debito: toOptionalNumber(debito),
     credito: toOptionalNumber(credito),
+    historicos: listaHistoricos,
   };
   doc.itens.push(item);
   writeSession(storeKey, doc);
   return item;
 }
 
-function update(storeKey, id, { descricao, debito, credito }) {
+/** historicos undefined mantem os ja gravados na linha. */
+function update(storeKey, id, {
+  descricao, debito, credito, historicos,
+}) {
   const doc = readSession(storeKey);
   const idx = doc.itens.findIndex((i) => i.id === id);
   if (idx < 0) throw new Error('Registro nao encontrado');
@@ -375,11 +436,17 @@ function update(storeKey, id, { descricao, debito, credito }) {
     throw new Error(`Ja existe pre-cadastro com descricao exatamente "${desc}"`);
   }
 
+  const listaHistoricos = historicos === undefined
+    ? historicosOf(doc.itens[idx])
+    : normalizeHistoricos(historicos);
+  assertHistoricosUnicos(doc.itens, id, listaHistoricos);
+
   doc.itens[idx] = {
     id,
     descricao: desc,
     debito: toOptionalNumber(debito),
     credito: toOptionalNumber(credito),
+    historicos: listaHistoricos,
   };
   writeSession(storeKey, doc);
   return doc.itens[idx];
@@ -493,6 +560,7 @@ function applyPreCadastro(item, storeKey) {
     const classificacaoCap = isDefaultRecebimento
       ? CLASSIFICACAO_RECEBIMENTO
       : capRaw;
+    const veioDoHistorico = item.motivo === MOTIVO_HISTORICO_PRECADASTRO;
     return {
       ...item,
       classificacaoCap,
@@ -500,7 +568,7 @@ function applyPreCadastro(item, storeKey) {
       debito: codes.debito,
       credito: codes.credito,
       preCadastroId: codes.preCadastroId,
-      motivo: pre ? lookupKey : item.motivo || '',
+      motivo: pre && !veioDoHistorico ? lookupKey : item.motivo || '',
     };
   }
 
@@ -540,15 +608,29 @@ function applyPreCadastro(item, storeKey) {
   };
 }
 
+/** Recebimento ainda no padrao do upload (nao veio de edicao nem do historico). */
+function isRecebimentoPadrao(item) {
+  const cap = String(item.classificacaoCap || item.categoria || '').trim();
+  const capPadrao = !cap
+    || normalizeDescricao(cap) === normalizeDescricao(CLASSIFICACAO_RECEBIMENTO);
+  return item.status === 'RECEBIMENTO' && capPadrao;
+}
+
 /**
- * Residual sem CAP: casa historico do extrato com descricao do pre-cadastro.
- * Recebimento nao entra (CAP padrao RECEBIMENTO). CAP preenchida nao muda.
+ * Pagamento sem CAP: procura descricao e historicos do pre-cadastro no extrato.
+ * Recebimento padrao: procura so os historicos. CAP preenchida nao muda.
  */
 function enrichCapFromHistorico(item, storeKey) {
-  if (!item || item.tipo === 'recebimento') return item;
-  const cap = String(item.classificacaoCap || item.categoria || '').trim();
-  if (cap) return item;
-  const pre = findBestPreByHistorico(storeKey, item.historico);
+  if (!item) return item;
+  let pre;
+  if (item.tipo === 'recebimento') {
+    if (!isRecebimentoPadrao(item)) return item;
+    pre = findBestPreByHistorico(storeKey, item.historico, { somenteHistoricos: true });
+  } else {
+    const cap = String(item.classificacaoCap || item.categoria || '').trim();
+    if (cap) return item;
+    pre = findBestPreByHistorico(storeKey, item.historico);
+  }
   if (!pre) return item;
   return {
     ...item,
@@ -556,7 +638,7 @@ function enrichCapFromHistorico(item, storeKey) {
     categoria: pre.descricao,
     status: 'SUGERIDO',
     passagem: 3,
-    motivo: 'historico+precadastro',
+    motivo: MOTIVO_HISTORICO_PRECADASTRO,
   };
 }
 
@@ -564,7 +646,7 @@ function shouldAutoAprovar(item) {
   if (!item || !item.preCadastroId) return false;
   if (item.debito == null && item.credito == null) return false;
   if (item.status === 'MATCHED' || item.status === 'REGRA') return true;
-  return item.status === 'SUGERIDO' && item.motivo === 'historico+precadastro';
+  return item.status === 'SUGERIDO' && item.motivo === MOTIVO_HISTORICO_PRECADASTRO;
 }
 
 module.exports = {
@@ -585,6 +667,7 @@ module.exports = {
   findByDescricao,
   findBestPreByHistorico,
   enrichCapFromHistorico,
+  isRecebimentoPadrao,
   shouldAutoAprovar,
   create,
   update,

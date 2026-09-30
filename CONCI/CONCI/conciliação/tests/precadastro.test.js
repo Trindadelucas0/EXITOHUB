@@ -100,6 +100,236 @@ describe('pre-cadastro por sessao', () => {
     assert.notEqual(out.motivo, 'historico+precadastro');
   });
 
+  it('create: historicos da textarea com trim, sem vazio e sem repetido', () => {
+    const item = store.create(SID, {
+      descricao: 'ALUGUEL',
+      debito: 2101,
+      credito: 9,
+      historicos: '  PIX IMOBILIARIA \r\n\r\nTED ALUGUEL\npix imobiliaria\n',
+    });
+    assert.deepEqual(item.historicos, ['PIX IMOBILIARIA', 'TED ALUGUEL']);
+    assert.deepEqual(store.list(SID)[0].historicos, ['PIX IMOBILIARIA', 'TED ALUGUEL']);
+  });
+
+  it('create: historico com menos de 4 caracteres recusa e nao grava', () => {
+    assert.throws(
+      () => store.create(SID, { descricao: 'ALUGUEL', debito: 2101, historicos: 'PIX' }),
+      /pelo menos 4 caracteres/,
+    );
+    assert.equal(store.list(SID).length, 0);
+  });
+
+  it('create/update: mesmo historico em outra linha do banco recusa', () => {
+    const aluguel = store.create(SID, {
+      descricao: 'ALUGUEL',
+      debito: 2101,
+      historicos: ['PIX IMOBILIARIA'],
+    });
+    assert.throws(
+      () => store.create(SID, { descricao: 'CONDOMINIO', debito: 2102, historicos: 'pix imobiliária' }),
+      /ja esta na descricao "ALUGUEL"/,
+    );
+    const condominio = store.create(SID, { descricao: 'CONDOMINIO', debito: 2102 });
+    assert.throws(
+      () => store.update(SID, condominio.id, {
+        descricao: 'CONDOMINIO',
+        debito: 2102,
+        historicos: 'PIX IMOBILIARIA',
+      }),
+      /ja esta na descricao "ALUGUEL"/,
+    );
+    const mesmo = store.update(SID, aluguel.id, {
+      descricao: 'ALUGUEL',
+      debito: 2101,
+      historicos: 'PIX IMOBILIARIA\nTED ALUGUEL',
+    });
+    assert.deepEqual(mesmo.historicos, ['PIX IMOBILIARIA', 'TED ALUGUEL']);
+  });
+
+  it('create: descricao duplicada continua recusada', () => {
+    store.create(SID, { descricao: 'ALUGUEL', debito: 2101 });
+    assert.throws(
+      () => store.create(SID, { descricao: 'aluguel', debito: 1, historicos: 'TED ALUGUEL' }),
+      /Ja existe pre-cadastro/,
+    );
+  });
+
+  it('update sem historicos mantem os gravados; item antigo sem campo vale []', () => {
+    writeSession(SID, [{ id: 'old1', descricao: 'ALUGUEL', debito: 2101, credito: 9 }]);
+    assert.equal(store.findBestPreByHistorico(SID, 'PIX IMOBILIARIA SILVA'), null);
+    const salvo = store.update(SID, 'old1', {
+      descricao: 'ALUGUEL',
+      debito: 2101,
+      credito: 9,
+      historicos: 'PIX IMOBILIARIA',
+    });
+    assert.deepEqual(salvo.historicos, ['PIX IMOBILIARIA']);
+    const semCampo = store.update(SID, 'old1', { descricao: 'ALUGUEL', debito: 2101, credito: 9 });
+    assert.deepEqual(semCampo.historicos, ['PIX IMOBILIARIA']);
+  });
+
+  it('findBestPreByHistorico: historico mais longo vence e devolve a linha', () => {
+    writeSession(SID, [
+      { id: 'a', descricao: 'ALUGUEL', debito: 2101, credito: 9, historicos: ['PIX IMOB'] },
+      { id: 'b', descricao: 'CONDOMINIO', debito: 2102, credito: 9, historicos: ['PIX IMOB SILVA'] },
+    ]);
+    assert.equal(store.findBestPreByHistorico(SID, 'PIX IMOB SILVA 10H').descricao, 'CONDOMINIO');
+  });
+
+  it('findBestPreByHistorico: historico ENERGIA nao casa NEOENERGIA', () => {
+    writeSession(SID, [{ id: 't1', descricao: 'LUZ', debito: 2101, credito: 9, historicos: ['ENERGIA'] }]);
+    assert.equal(store.findBestPreByHistorico(SID, 'BOLETO PAGO NEOENERGIA'), null);
+  });
+
+  it('aceite 1: ALUGUEL + historicos classifica pagamento sem CAP e aprova', () => {
+    writeSession(SID, [{
+      id: 'alug',
+      descricao: 'ALUGUEL',
+      debito: 2101,
+      credito: 9,
+      historicos: ['PIX IMOBILIARIA', 'TED ALUGUEL'],
+    }]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'p1',
+        data: '2026-04-05',
+        historico: 'PIX IMOBILIARIA SILVA',
+        razaoSocial: '',
+        cnpj: '',
+        valor: -3000,
+      }],
+      contas: [],
+    });
+    assert.equal(itens[0].classificacaoCap, 'ALUGUEL');
+    assert.equal(itens[0].status, 'SUGERIDO');
+    assert.equal(itens[0].motivo, 'historico+precadastro');
+    assert.equal(itens[0].debito, 2101);
+    assert.equal(itens[0].credito, 9);
+    assert.equal(itens[0].aprovado, true);
+  });
+
+  it('aceite 2: CAP FORNECEDORES nao e trocada pelo historico cadastrado', () => {
+    writeSession(SID, [
+      { id: 'forn', descricao: 'FORNECEDORES', debito: 1004, credito: 9 },
+      {
+        id: 'alug',
+        descricao: 'ALUGUEL',
+        debito: 2101,
+        credito: 9,
+        historicos: ['PIX IMOBILIARIA'],
+      },
+    ]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'p1',
+        data: '2026-04-05',
+        historico: 'PIX IMOBILIARIA SILVA',
+        razaoSocial: 'IMOBILIARIA SILVA',
+        cnpj: '11111111000111',
+        valor: -3000,
+      }],
+      contas: [{
+        id: 'c1',
+        categoria: 'FORNECEDORES',
+        nome: 'IMOBILIARIA SILVA',
+        cnpj: '11111111000111',
+        nrNota: '',
+        vencimento: '2026-04-05',
+        pagamento: '2026-04-05',
+        valor: 3000,
+      }],
+    });
+    assert.equal(itens[0].classificacaoCap, 'FORNECEDORES');
+    assert.notEqual(itens[0].motivo, 'historico+precadastro');
+    assert.equal(itens[0].debito, 1004);
+  });
+
+  it('aceite 3: recebimento com historico cadastrado sai de RECEBIMENTO e aprova', () => {
+    writeSession(SID, [
+      { id: 'rec', descricao: store.DESCRICAO_RECEBIMENTO_CLIENTES, debito: 9, credito: 3001 },
+      {
+        id: 'apl',
+        descricao: 'RESGATE APLICACAO',
+        debito: 9,
+        credito: 1101,
+        historicos: ['APLIC AUT'],
+      },
+    ]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'r1',
+        data: '2026-04-01',
+        historico: 'RES APLIC AUT MAIS',
+        razaoSocial: '',
+        cnpj: '',
+        valor: 555,
+      }],
+      contas: [],
+    });
+    assert.equal(itens[0].tipo, 'recebimento');
+    assert.equal(itens[0].classificacaoCap, 'RESGATE APLICACAO');
+    assert.equal(itens[0].status, 'SUGERIDO');
+    assert.equal(itens[0].motivo, 'historico+precadastro');
+    assert.equal(itens[0].debito, 9);
+    assert.equal(itens[0].credito, 1101);
+    assert.equal(itens[0].aprovado, true);
+  });
+
+  it('aceite 3b: recebimento nao usa a Descricao do pre-cadastro', () => {
+    writeSession(SID, [
+      { id: 'rec', descricao: store.DESCRICAO_RECEBIMENTO_CLIENTES, debito: 9, credito: 3001 },
+      { id: 'apl', descricao: 'APLIC AUT', debito: 9, credito: 1101 },
+    ]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'r1',
+        data: '2026-04-01',
+        historico: 'RES APLIC AUT MAIS',
+        razaoSocial: '',
+        cnpj: '',
+        valor: 555,
+      }],
+      contas: [],
+    });
+    assert.equal(itens[0].status, 'RECEBIMENTO');
+    assert.equal(itens[0].classificacaoCap, 'RECEBIMENTO');
+    assert.equal(itens[0].credito, 3001);
+  });
+
+  it('aceite 4: recebimento sem texto cadastrado continua RECEBIMENTO', () => {
+    writeSession(SID, [
+      { id: 'rec', descricao: store.DESCRICAO_RECEBIMENTO_CLIENTES, debito: 9, credito: 3001 },
+      {
+        id: 'apl',
+        descricao: 'RESGATE APLICACAO',
+        debito: 9,
+        credito: 1101,
+        historicos: ['APLIC AUT'],
+      },
+    ]);
+    const { itens } = runMatching({
+      sessionId: SID,
+      lancamentos: [{
+        id: 'r1',
+        data: '2026-04-01',
+        historico: 'PIX QR CODE RECEBIDO',
+        razaoSocial: '',
+        cnpj: '',
+        valor: 150,
+      }],
+      contas: [],
+    });
+    assert.equal(itens[0].status, 'RECEBIMENTO');
+    assert.equal(itens[0].classificacaoCap, 'RECEBIMENTO');
+    assert.equal(itens[0].debito, 9);
+    assert.equal(itens[0].credito, 3001);
+    assert.equal(itens[0].motivo, store.DESCRICAO_RECEBIMENTO_CLIENTES);
+  });
+
   it('findByDescricao: trim e case-insensitive, sem match parcial', () => {
     writeSession(SID, [{ id: 't1', descricao: 'ENERGIA', debito: 2101, credito: 9 }]);
 
