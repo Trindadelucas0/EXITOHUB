@@ -7,6 +7,7 @@
     "dev:sempre": "node scripts/keep-next.mjs 3000",
     "dev:once": "node --max-old-space-size=4096 ./node_modules/next/dist/bin/next dev",
     "build": "next build",
+    "build:hub": "HUB_MODE=1 NEXT_PUBLIC_BASE_PATH=/ncm next build",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",

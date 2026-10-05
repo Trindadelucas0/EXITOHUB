@@ -18,10 +18,16 @@ App PM2 `exito-hub`, pasta `/home/exito/projetos/EXITOHUB`, HTTP na porta **3010
 cd /home/exito/projetos/EXITOHUB
 git pull origin main
 npm ci
+npm run migrate-conci
 # Prisma usa DATABASE_URL; no .env do HUB o valor está em NCM_DATABASE_URL
-cd NCM/fiscal && npx prisma generate && npm run db:migrate && cd ../..
+cd NCM/fiscal && npx prisma generate && npm run db:migrate
+# Obrigatório no HUB: basePath /ncm entra no build (HUB_MODE=1). Sem isso o NCM quebra no navegador.
+NODE_OPTIONS=--max-old-space-size=4096 npm run build:hub
+cd ../..
 pm2 restart exito-hub
 ```
+
+Na VPS `179.199.149.12` (`/root/PROJETOS/exito/EXITOHUB`), o bloco completo está em [`SUBIR-VPS.txt`](../../../SUBIR-VPS.txt) na raiz do monorepo.
 
 O boot cria `CONCI.user_empresas` e roda `ensureMasterUser` (login `exito`). Não copie `.env` de outra máquina.
 
