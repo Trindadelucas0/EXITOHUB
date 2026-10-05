@@ -346,6 +346,39 @@ async function ensureTables() {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
+  await query(`
+    CREATE TABLE IF NOT EXISTS carteira_empresas (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      codigo TEXT NOT NULL,
+      razao TEXT NOT NULL,
+      uf TEXT,
+      documento TEXT,
+      regime TEXT,
+      estabelecimento TEXT,
+      situacao TEXT,
+      cnae TEXT,
+      cnae_secundario TEXT,
+      servico BOOLEAN NOT NULL DEFAULT false,
+      comercio BOOLEAN NOT NULL DEFAULT false,
+      industria BOOLEAN NOT NULL DEFAULT false,
+      contato TEXT,
+      email TEXT,
+      socio_1 TEXT,
+      socio_2 TEXT,
+      socio_3 TEXT,
+      socio_4 TEXT,
+      socio_5 TEXT,
+      socio_6 TEXT,
+      socio_7 TEXT,
+      observacoes TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS carteira_empresas_codigo_uniq
+    ON carteira_empresas (codigo)
+  `);
   const backfill = await query(
     `SELECT 1 FROM hub_meta WHERE key = 'portal_onboarding_backfill_v1' LIMIT 1`,
   );
@@ -509,6 +542,12 @@ async function bootstrapHubDatabase() {
     await seedBaiferConsulta();
   } catch (err) {
     console.warn('[hub] seed consulta BAIFER falhou:', err.message);
+  }
+  try {
+    const { seedCarteiraOnce } = require('./carteira-store');
+    await seedCarteiraOnce();
+  } catch (err) {
+    console.warn('[hub] seed carteira falhou:', err.message);
   }
 }
 

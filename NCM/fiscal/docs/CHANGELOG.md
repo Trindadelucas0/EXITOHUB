@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.6.26 — 02/10/2026
+
+Corrigido:
+
+- Egaplast: qualquer fator de IVA diferente na mesma UF é divergência. A célula **Cadastro do cliente** fica vermelha ao abrir a ficha. `10100` e `10200` (SP `1.9424`) também divergem em SP da regra nacional `1.9854`. A tolerância 0,05 permanece só no MVA %. Os contadores do lote só mudam ao reimportar Planilhas ou a Base fiscal.
+
 ## v1.6.25 — 24/09/2026
 
 Corrigido:

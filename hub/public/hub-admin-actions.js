@@ -76,4 +76,35 @@
   document.querySelectorAll('[data-preview-source]').forEach(function (input) {
     input.addEventListener('input', function () { syncPreview(input); });
   });
+
+  const filterForm = document.querySelector('[data-users-filter]');
+  if (filterForm && filterForm.dataset.filterBound !== '1') {
+    filterForm.dataset.filterBound = '1';
+    let timer = null;
+    function applyListFilter() {
+      window.clearTimeout(timer);
+      filterForm.submit();
+    }
+    filterForm.querySelectorAll('select').forEach(function (select) {
+      select.addEventListener('change', applyListFilter);
+    });
+    const search = filterForm.querySelector('input[name="q"]');
+    if (search) {
+      search.addEventListener('input', function () {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(applyListFilter, 280);
+      });
+      search.addEventListener('keydown', function (event) {
+        if (event.key !== 'Enter') return;
+        event.preventDefault();
+        applyListFilter();
+      });
+    }
+    filterForm.querySelectorAll('button[type="submit"]').forEach(function (btn) {
+      btn.addEventListener('click', function (event) {
+        event.preventDefault();
+        applyListFilter();
+      });
+    });
+  }
 })();

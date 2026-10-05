@@ -22,7 +22,9 @@ describe("IVA/ICMS por UF Egaplast", () => {
   it("1.9424 vs 27.31 é outra unidade — não usa este helper para %", () => {
     expect(parseIvaFactor("1.9424")).toBeCloseTo(1.9424, 4);
     expect(ivaCellsDiverge("1.9", "1.955")).toBe(true);
-    expect(ivaCellsDiverge("1.955", "1.9551")).toBe(false);
+    expect(ivaCellsDiverge("1.955", "1.9551")).toBe(true);
+    expect(ivaCellsDiverge("2.0820", "2.0498")).toBe(true);
+    expect(ivaCellsDiverge("1.9424", "1.9854")).toBe(true);
     expect(ivaCellsDiverge("1.9424", "1.9424")).toBe(false);
   });
 

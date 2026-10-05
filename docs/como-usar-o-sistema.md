@@ -48,7 +48,7 @@ Em ambos os casos:
 
 Clique no nome do departamento (Geral, Fiscal, Contábil, Folha, Administrativo, Operações & Gestão) para abrir ou fechar os links. O departamento da página atual já vem aberto. Abrir um fecha o outro do mesmo bloco. Item da página atual fica verde. Módulo ainda não pronto aparece com a pílula **Em breve**. Itens só de admin mostram badge **Admin**.
 
-- **Geral** — carteira, certificados (SIEG) e login do cliente (admin; a maioria ainda “Em breve”).
+- **Geral** — **Controle da Carteira de Clientes** (`/carteira`, admin: criar, editar e excluir a relação de empresas), certificados (SIEG) e login do cliente (admin; os dois últimos ainda “Em breve”).
 - **Fiscal** — Auditor Fiscal (`/ncm/`), Controle DAUTO (`/folha/fiscal`) e itens fiscais futuros (admin).
 - **Contábil** — Conciliação (`/conci/`).
 - **Folha de pagamento** — folha mensal, DAUTO Tintas e CCT/calculadora (admin, em breve).
@@ -56,6 +56,17 @@ Clique no nome do departamento (Geral, Fiscal, Contábil, Folha, Administrativo,
 - **Operações & Gestão** — Projetos (Avadesk) e Agenda (placeholder do portal + Google Agenda para admin).
 
 Quem só tem NCM (consulta de cliente) vê **Fiscal → Auditor Fiscal** e as áreas do portal em **Administrativo** (sem Configuração).
+
+## Carteira de clientes
+
+Só admin. Sidebar **Geral → Controle da Carteira de Clientes** (`/carteira`).
+
+1. A grade mostra a relação (código, razão, UF, CNPJ, regime, matriz/filial, situação, CNAE, tipo, contato, e-mail, sócio, observações), **25 empresas por página**. Use **Anterior** e **Próxima**. As colunas cabem na tela; texto longo quebra na célula. No celular, cada empresa vira um cartão com os mesmos campos.
+2. Filtre por busca (código, razão ou CNPJ), situação, regime ou tipo. **Limpar** tira o filtro.
+3. **+ Nova empresa** abre o painel. Código e razão social são obrigatórios. Tipo da atividade: marque **Serviço**, **Comércio** e/ou **Indústria** juntos — uma lanchonete pode ser Comércio além de Serviço.
+4. **Editar** na linha abre o mesmo painel. **Salvar** grava; **Cancelar** fecha sem alterar.
+5. **Excluir** pede confirmação. Não desfaz. Código repetido não grava; o mesmo CNPJ pode existir em dois códigos.
+6. Isso não cadastra a empresa na Conciliação nem no Auditor Fiscal.
 
 ## Admin — Portal Corporativo
 

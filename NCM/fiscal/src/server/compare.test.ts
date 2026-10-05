@@ -622,7 +622,7 @@ describe("conferência Egaplast", () => {
     expect(misturado.diffs.some((d) => d.campo === "IVA SP" && d.ideal === "1.9424")).toBe(true);
   });
 
-  it("10200 origem 0 com SP 2.1190 diverge da regra nacional 1.9854; 10100 permanece correto", () => {
+  it("10200 origem 0 com SP 2.1190 e 10100 origem 9 com SP 1.9424 divergem da regra nacional 1.9854", () => {
     const fiscal = egaplastRule({
       id: "exito",
       ncm: "84818019",
@@ -659,7 +659,10 @@ describe("conferência Egaplast", () => {
       null,
       { companySlug: "egaplast" },
     );
-    expect(kitProducao.status).toBe("CORRETO");
+    expect(kitProducao.status).toBe("DIVERGENTE");
+    expect(kitProducao.diffs.some((d) => d.campo === "IVA SP" && d.atual === "1.9424" && d.ideal === "1.9854")).toBe(
+      true,
+    );
   });
 
   it("linha sem SIT e sem IVA → Análise; com IVA e sem CST → Divergente", () => {

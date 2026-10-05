@@ -180,7 +180,8 @@
     });
   }
 
-  if (filterForm) {
+  if (filterForm && filterForm.dataset.filterBound !== '1') {
+    filterForm.dataset.filterBound = '1';
     const search = filterForm.querySelector("input[name='q']");
     let timer = null;
     filterForm.querySelectorAll("select").forEach(function (select) {

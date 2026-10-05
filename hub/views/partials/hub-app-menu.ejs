@@ -27,7 +27,7 @@
 
   function isAdminHref(href) {
     const h = String(href || '');
-    return h.indexOf('/admin/') === 0 || h === '/projetos';
+    return h.indexOf('/admin/') === 0 || h === '/projetos' || h === '/carteira';
   }
 
   function splitItems(items) {

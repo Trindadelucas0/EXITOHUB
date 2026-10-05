@@ -25,6 +25,20 @@ const { requireHubAuth, requireHubAdmin, logoutHub } = require('./middleware');
 const { getMenuForUser, findSoonModule, AVADESK_URL } = require('./menu-catalog');
 const { uploadImage, saveUploadedFile } = require('./portal/upload');
 const portalRoutes = require('./portal/routes');
+const {
+  REGIMES,
+  ESTABELECIMENTOS,
+  SITUACOES,
+  TIPOS,
+  isUuid,
+  parseDraft,
+  listCarteira,
+  countCarteira,
+  getCarteira,
+  createCarteira,
+  updateCarteira,
+  deleteCarteira,
+} = require('./carteira-store');
 
 const router = express.Router();
 
@@ -129,6 +143,109 @@ function usersPath(filters, extra = {}) {
   if (extra.confirmar) params.set('confirmar', String(extra.confirmar));
   const qs = params.toString();
   return qs ? `/admin/usuarios?${qs}` : '/admin/usuarios';
+}
+
+const CARTEIRA_FLASH = {
+  criado: 'Empresa cadastrada.',
+  atualizado: 'Empresa atualizada.',
+  excluido: 'Empresa excluída.',
+};
+
+function queryValue(src, key) {
+  let value = src && src[key];
+  if (Array.isArray(value)) value = value[value.length - 1];
+  return String(value == null ? '' : value).trim();
+}
+
+const CARTEIRA_PAGE_SIZE = 25;
+
+function pickCarteiraPage(req) {
+  const src = req.method === 'POST' ? { ...req.query, ...req.body } : req.query;
+  const raw = Number.parseInt(queryValue(src, 'p'), 10);
+  return Number.isFinite(raw) && raw >= 1 ? raw : 1;
+}
+
+function pickCarteiraFilters(req) {
+  const src = req.method === 'POST' ? { ...req.query, ...req.body } : req.query;
+  const q = queryValue(src, 'q').slice(0, 120);
+  const sitRaw = queryValue(src, 'sit');
+  const regimeRaw = queryValue(src, 'regime');
+  const tipoRaw = queryValue(src, 'tipo');
+  const sit = SITUACOES.includes(sitRaw) ? sitRaw : '';
+  const regime = REGIMES.includes(regimeRaw) ? regimeRaw : '';
+  const tipo = TIPOS.includes(tipoRaw) ? tipoRaw : '';
+  return { q, sit, regime, tipo, p: pickCarteiraPage(req) };
+}
+
+function carteiraPath(filters, extra = {}) {
+  const params = new URLSearchParams();
+  if (filters.q) params.set('q', filters.q);
+  if (filters.sit) params.set('sit', filters.sit);
+  if (filters.regime) params.set('regime', filters.regime);
+  if (filters.tipo) params.set('tipo', filters.tipo);
+  if (Number(filters.p) > 1) params.set('p', String(filters.p));
+  if (extra.ok) params.set('ok', extra.ok);
+  if (extra.erro) params.set('erro', String(extra.erro).slice(0, 300));
+  if (extra.novo) params.set('novo', '1');
+  if (extra.editar) params.set('editar', String(extra.editar));
+  if (extra.confirmar) params.set('confirmar', String(extra.confirmar));
+  const qs = params.toString();
+  return qs ? `/carteira?${qs}` : '/carteira';
+}
+
+async function renderCarteira(req, res, extras = {}) {
+  const filters = extras.filters || pickCarteiraFilters(req);
+  const hasFilter = Boolean(filters.q || filters.sit || filters.regime || filters.tipo);
+  const [totalCount, filteredCountRaw] = await Promise.all([
+    countCarteira(),
+    hasFilter ? countCarteira(filters) : Promise.resolve(null),
+  ]);
+  const filteredCount = hasFilter ? filteredCountRaw : totalCount;
+  const pageCount = Math.max(1, Math.ceil(filteredCount / CARTEIRA_PAGE_SIZE));
+  let page = Number.parseInt(filters.p, 10);
+  if (!Number.isFinite(page) || page < 1) page = 1;
+  if (page > pageCount) page = pageCount;
+  filters.p = page;
+  const offset = (page - 1) * CARTEIRA_PAGE_SIZE;
+  const empresas = await listCarteira(filters, { limit: CARTEIRA_PAGE_SIZE, offset });
+  const from = filteredCount === 0 ? 0 : offset + 1;
+  const to = offset + empresas.length;
+  let editing = extras.editing || null;
+  let sheetMode = extras.sheetMode || null;
+  if (!sheetMode && !editing) {
+    const editId = String(req.query.editar || '').trim();
+    if (editId) {
+      editing = await getCarteira(editId);
+      sheetMode = editing ? 'edit' : null;
+    } else if (req.query.novo === '1') {
+      sheetMode = 'create';
+    }
+  }
+  const status = extras.status || 200;
+  return res.status(status).render('carteira', {
+    title: 'Controle da Carteira de Clientes — EXITO HUB',
+    hubUser: req.hubUser,
+    empresas,
+    totalCount,
+    filteredCount,
+    page,
+    pageCount,
+    pageSize: CARTEIRA_PAGE_SIZE,
+    from,
+    to,
+    filters,
+    hasFilter,
+    sheetMode,
+    editing,
+    sheetValues: extras.sheetValues || editing || {},
+    fieldError: extras.fieldError || '',
+    confirmar: String(extras.confirmar != null ? extras.confirmar : req.query.confirmar || ''),
+    flash: extras.flash != null ? extras.flash : (CARTEIRA_FLASH[String(req.query.ok || '')] || null),
+    error: extras.error != null ? extras.error : (req.query.erro ? String(req.query.erro).slice(0, 300) : null),
+    regimes: REGIMES,
+    estabelecimentos: ESTABELECIMENTOS,
+    situacoes: SITUACOES,
+  });
 }
 
 function safeErrorMessage(err) {
@@ -277,7 +394,94 @@ router.get('/projetos', requireHubAdmin, (req, res) => {
   });
 });
 
+router.get('/carteira', requireHubAdmin, async (req, res) => {
+  try {
+    return await renderCarteira(req, res);
+  } catch (err) {
+    console.error('[hub] carteira list', err);
+    return res.status(500).send('Erro ao carregar a carteira');
+  }
+});
+
+router.post('/carteira', requireHubAdmin, async (req, res) => {
+  const filters = pickCarteiraFilters(req);
+  try {
+    await createCarteira(req.body);
+    return res.redirect(carteiraPath(filters, { ok: 'criado' }));
+  } catch (err) {
+    if (err.status === 400 || err.status === 409) {
+      return renderCarteira(req, res, {
+        filters,
+        sheetMode: 'create',
+        sheetValues: parseDraft(req.body),
+        fieldError: err.field || '',
+        error: err.message,
+        status: err.status,
+      });
+    }
+    console.error('[hub] carteira create', err);
+    return renderCarteira(req, res, {
+      filters,
+      sheetMode: 'create',
+      sheetValues: parseDraft(req.body),
+      error: 'Não foi possível salvar.',
+      status: 500,
+    });
+  }
+});
+
+router.post('/carteira/:id/excluir', requireHubAdmin, async (req, res) => {
+  const filters = pickCarteiraFilters(req);
+  try {
+    if (!isUuid(req.params.id)) return res.status(404).send('Empresa não encontrada');
+    const existing = await getCarteira(req.params.id);
+    if (!existing) return res.status(404).send('Empresa não encontrada');
+    if (String(req.body && req.body.confirm) !== '1') {
+      return res.redirect(carteiraPath(filters, { confirmar: req.params.id }));
+    }
+    await deleteCarteira(req.params.id);
+    return res.redirect(carteiraPath(filters, { ok: 'excluido' }));
+  } catch (err) {
+    console.error('[hub] carteira delete', err);
+    return res.redirect(carteiraPath(filters, { erro: 'Não foi possível excluir.' }));
+  }
+});
+
+router.post('/carteira/:id', requireHubAdmin, async (req, res) => {
+  const filters = pickCarteiraFilters(req);
+  try {
+    if (!isUuid(req.params.id)) return res.status(404).send('Empresa não encontrada');
+    const updated = await updateCarteira(req.params.id, req.body);
+    if (!updated) return res.status(404).send('Empresa não encontrada');
+    return res.redirect(carteiraPath(filters, { ok: 'atualizado' }));
+  } catch (err) {
+    if (err.status === 400 || err.status === 409) {
+      return renderCarteira(req, res, {
+        filters,
+        sheetMode: 'edit',
+        editing: { id: req.params.id, ...parseDraft(req.body) },
+        sheetValues: { id: req.params.id, ...parseDraft(req.body) },
+        fieldError: err.field || '',
+        error: err.message,
+        status: err.status,
+      });
+    }
+    console.error('[hub] carteira update', err);
+    return renderCarteira(req, res, {
+      filters,
+      sheetMode: 'edit',
+      editing: { id: req.params.id, ...parseDraft(req.body) },
+      sheetValues: { id: req.params.id, ...parseDraft(req.body) },
+      error: 'Não foi possível salvar.',
+      status: 500,
+    });
+  }
+});
+
 router.get('/hub/modulo/:slug', requireHubAdmin, (req, res) => {
+  if (req.params.slug === 'carteira') {
+    return res.redirect('/carteira');
+  }
   const item = findSoonModule(req.params.slug);
   if (!item) {
     return res.status(404).render('modulo-em-breve', {

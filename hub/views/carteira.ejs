@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('partials/hub-head') %>
+</head>
+<body class="hub-body">
+  <%- include('partials/hub-chrome', { current: 'carteira', breadcrumb: 'Controle da Carteira de Clientes' }) %>
+
+  <%
+    const isEdit = sheetMode === 'edit' && editing;
+    const isCreate = sheetMode === 'create';
+    const sheetOpen = Boolean(isEdit || isCreate);
+    const formAction = isEdit ? '/carteira/' + editing.id : '/carteira';
+    const values = sheetValues || {};
+    const fieldErr = String(fieldError || '');
+
+    function listHref(extra) {
+      const params = new URLSearchParams();
+      if (filters.q) params.set('q', filters.q);
+      if (filters.sit) params.set('sit', filters.sit);
+      if (filters.regime) params.set('regime', filters.regime);
+      if (filters.tipo) params.set('tipo', filters.tipo);
+      if (Number(page) > 1) params.set('p', String(page));
+      if (extra) {
+        Object.keys(extra).forEach(function (key) {
+          const value = extra[key];
+          if (value == null || value === false || value === '' || (key === 'p' && Number(value) <= 1)) params.delete(key);
+          else params.set(key, String(value));
+        });
+      }
+      const qs = params.toString();
+      return qs ? '/carteira?' + qs : '/carteira';
+    }
+
+    function sitClass(sit) {
+      if (sit === 'Ativa') return ' hub-pill-ok';
+      if (sit === 'Inativa') return '';
+      return '';
+    }
+  %>
+
+  <main class="hub-shell-main hub-users-page carteira-page">
+    <header class="hub-users-hero">
+      <div>
+        <h1>Controle da Carteira de Clientes</h1>
+        <p class="hub-muted">Relação de empresas do escritório.</p>
+      </div>
+      <a class="hub-btn hub-btn-primary" href="<%= listHref({ novo: '1', editar: '', confirmar: '' }) %>">+ Nova empresa</a>
+    </header>
+
+    <% if (flash) { %>
+      <div class="hub-alert hub-alert-ok" role="status"><%= flash %></div>
+    <% } %>
+    <% if (error && !sheetOpen) { %>
+      <div class="hub-alert hub-alert-error" role="alert"><%= error %></div>
+    <% } %>
+
+    <form
+      id="carteira-filter"
+      class="hub-users-toolbar carteira-toolbar"
+      method="get"
+      action="/carteira"
+      data-users-filter
+      novalidate
+    >
+      <label class="hub-field hub-users-search">
+        <span>Busca</span>
+        <input type="search" name="q" value="<%= filters.q %>" placeholder="Código, razão ou CNPJ" maxlength="120" autocomplete="off" form="carteira-filter" />
+      </label>
+      <label class="hub-field">
+        <span>Situação</span>
+        <select name="sit" form="carteira-filter">
+          <option value="">Todas</option>
+          <% situacoes.forEach(function (sit) { %>
+            <option value="<%= sit %>" <%= filters.sit === sit ? 'selected' : '' %>><%= sit %></option>
+          <% }) %>
+        </select>
+      </label>
+      <label class="hub-field">
+        <span>Regime</span>
+        <select name="regime" form="carteira-filter">
+          <option value="">Todos</option>
+          <% regimes.forEach(function (reg) { %>
+            <option value="<%= reg %>" <%= filters.regime === reg ? 'selected' : '' %>><%= reg === 'Não optante pelo Simples (Lucro Presumido ou Real – não informado publicamente)' ? 'Não optante pelo Simples' : reg %></option>
+          <% }) %>
+        </select>
+      </label>
+      <label class="hub-field">
+        <span>Tipo</span>
+        <select name="tipo" form="carteira-filter">
+          <option value="">Todos</option>
+          <option value="comercio" <%= filters.tipo === 'comercio' ? 'selected' : '' %>>Comércio</option>
+          <option value="servico" <%= filters.tipo === 'servico' ? 'selected' : '' %>>Serviço</option>
+          <option value="industria" <%= filters.tipo === 'industria' ? 'selected' : '' %>>Indústria</option>
+        </select>
+      </label>
+      <div class="carteira-toolbar-actions">
+        <button type="submit" class="hub-btn hub-btn-ghost" form="carteira-filter" formnovalidate>Filtrar</button>
+        <% if (hasFilter) { %>
+          <a class="hub-btn hub-btn-ghost" href="/carteira">Limpar</a>
+        <% } %>
+      </div>
+    </form>
+
+    <p class="hub-users-count">
+      <% if (!filteredCount) { %>
+        <% if (hasFilter) { %>
+          0 empresas neste filtro
+          · <a href="/carteira">Limpar</a>
+        <% } else { %>
+          0 empresas
+        <% } %>
+      <% } else if (hasFilter) { %>
+        Mostrando <%= from %>–<%= to %> de <%= filteredCount %> <%= filteredCount === 1 ? 'empresa' : 'empresas' %> neste filtro
+        · <a href="/carteira">Limpar</a>
+      <% } else { %>
+        Mostrando <%= from %>–<%= to %> de <%= filteredCount %> <%= filteredCount === 1 ? 'empresa' : 'empresas' %>
+      <% } %>
+    </p>
+
+    <% if (empresas.length) { %>
+      <nav class="carteira-pager" aria-label="Paginação da carteira">
+        <% if (page > 1) { %>
+          <a class="hub-btn hub-btn-ghost" href="<%= listHref({ p: page - 1 }) %>">Anterior</a>
+        <% } else { %>
+          <span class="hub-btn hub-btn-ghost carteira-pager-disabled" aria-disabled="true">Anterior</span>
+        <% } %>
+        <span>Página <%= page %> de <%= pageCount %></span>
+        <% if (page < pageCount) { %>
+          <a class="hub-btn hub-btn-ghost" href="<%= listHref({ p: page + 1 }) %>">Próxima</a>
+        <% } else { %>
+          <span class="hub-btn hub-btn-ghost carteira-pager-disabled" aria-disabled="true">Próxima</span>
+        <% } %>
+      </nav>
+    <% } %>
+
+    <section class="hub-card carteira-list-card">
+      <% if (!totalCount) { %>
+        <div class="hub-admin-empty">
+          <p>Nenhuma empresa na carteira.</p>
+          <a class="hub-btn hub-btn-primary" href="<%= listHref({ novo: '1' }) %>">+ Nova empresa</a>
+        </div>
+      <% } else if (!empresas.length) { %>
+        <div class="hub-admin-empty">
+          <p>Nenhuma empresa com esse filtro.</p>
+          <a class="hub-btn hub-btn-ghost" href="/carteira">Limpar</a>
+        </div>
+      <% } else { %>
+        <ul class="carteira-list" aria-label="Empresas da carteira">
+          <% empresas.forEach(function (row) { %>
+            <%
+              const socios = [row.socio_1, row.socio_2, row.socio_3, row.socio_4, row.socio_5, row.socio_6, row.socio_7].filter(Boolean);
+              const documento = row.documentoFmt || row.documento || '—';
+            %>
+            <li class="carteira-item">
+              <details class="carteira-row">
+                <summary class="carteira-row-summary">
+                  <span class="carteira-row-primary">
+                    <span class="carteira-code"><%= row.codigo %></span>
+                    <strong class="carteira-name"><%= row.razao %></strong>
+                    <span class="carteira-identity">
+                      <span><%= row.uf || '—' %></span>
+                      <span class="carteira-doc"><%= documento %></span>
+                      <span><%= row.estabelecimento || '—' %></span>
+                    </span>
+                    <span class="hub-pill<%= sitClass(row.situacao) %>"><%= row.situacao || '—' %></span>
+                  </span>
+                  <span class="carteira-row-secondary">
+                    <span class="carteira-inline-value" title="<%= row.regime %>"><%= row.regimeCurto || '—' %></span>
+                    <span class="carteira-inline-value"><%= row.tipo || '—' %></span>
+                    <span class="carteira-inline-value carteira-inline-cnae" title="<%= row.cnae %>"><%= row.cnae || '—' %></span>
+                    <% if (row.contato) { %><span class="carteira-inline-value" title="<%= row.contato %>"><%= row.contato %></span><% } %>
+                    <% if (row.email) { %><span class="carteira-inline-value" title="<%= row.email %>"><%= row.email %></span><% } %>
+                  </span>
+                </summary>
+
+                <div class="carteira-extra">
+                  <div>
+                    <span class="carteira-extra-label">CNAE secundário</span>
+                    <p><%= row.cnae_secundario || '—' %></p>
+                  </div>
+                  <div>
+                    <span class="carteira-extra-label">Quadro societário</span>
+                    <% if (socios.length) { %>
+                      <ul class="carteira-partners">
+                        <% socios.forEach(function (socio) { %><li><%= socio %></li><% }) %>
+                      </ul>
+                    <% } else { %>
+                      <p>—</p>
+                    <% } %>
+                  </div>
+                  <div>
+                    <span class="carteira-extra-label">Observações</span>
+                    <p><%= row.observacoes || '—' %></p>
+                  </div>
+                </div>
+              </details>
+
+              <div class="carteira-mobile" aria-label="<%= row.razao %>">
+                <div data-label="Código"><%= row.codigo %></div>
+                <div data-label="Razão social"><strong><%= row.razao %></strong></div>
+                <div data-label="UF"><%= row.uf || '—' %></div>
+                <div class="carteira-doc" data-label="CNPJ/CPF/CEI"><%= documento %></div>
+                <div data-label="Regime Tributário"><%= row.regimeCurto || '—' %></div>
+                <div data-label="Matriz/Filial"><%= row.estabelecimento || '—' %></div>
+                <div data-label="Situação"><span class="hub-pill<%= sitClass(row.situacao) %>"><%= row.situacao || '—' %></span></div>
+                <div data-label="Atividade CNAE"><%= row.cnae || '—' %></div>
+                <div data-label="CNAE secundário"><%= row.cnae_secundario || '—' %></div>
+                <div data-label="Tipo da atividade"><%= row.tipo || '—' %></div>
+                <div data-label="Contato Messenger"><%= row.contato || '—' %></div>
+                <div data-label="E-mail"><%= row.email || '—' %></div>
+                <div data-label="Quadro societário"><%= row.socio_1 || '—' %></div>
+                <div data-label="Observações"><%= row.observacoes || '—' %></div>
+              </div>
+
+              <div class="hub-admin-list__actions carteira-row-actions" aria-label="Ações de <%= row.razao %>">
+                <a class="hub-btn hub-btn-ghost hub-btn-sm" href="<%= listHref({ editar: row.id, novo: '', confirmar: '' }) %>">Editar</a>
+                <button type="button" class="hub-btn hub-btn-ghost hub-btn-sm" data-open-dialog="dlg-carteira-<%= row.id %>">Excluir</button>
+              </div>
+
+              <%- include('partials/hub-confirm-dialog', {
+                dialogId: 'dlg-carteira-' + row.id,
+                recordName: row.razao,
+                heading: 'Excluir empresa?',
+                message: 'A empresa sai da carteira. Isso não desfaz.',
+                action: '/carteira/' + row.id + '/excluir',
+                filters: filters,
+                autoOpen: String(confirmar) === String(row.id),
+                confirmLabel: 'Excluir',
+                busyLabel: 'Excluindo...'
+              }) %>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </section>
+  </main>
+
+  <dialog
+    class="hub-user-sheet"
+    id="hub-carteira-sheet"
+    aria-labelledby="hub-carteira-sheet-title"
+    <% if (sheetOpen) { %>open<% } %>
+  >
+    <form method="post" action="<%= formAction %>" class="hub-sheet-form" id="carteira-sheet-form" autocomplete="off" data-once>
+      <header class="hub-sheet-head">
+        <div>
+          <p class="hub-sheet-kicker">Êxito Hub</p>
+          <h2 id="hub-carteira-sheet-title"><%= isEdit ? 'Editar ' + (values.razao || 'empresa') : 'Nova empresa' %></h2>
+          <p class="hub-muted hub-sheet-sub">Os mesmos campos da relação de empresas.</p>
+        </div>
+        <a class="hub-menu-close" href="<%= listHref({ novo: '', editar: '', confirmar: '' }) %>" aria-label="Fechar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </a>
+      </header>
+
+      <div class="hub-sheet-body carteira-sheet-body">
+        <% if (error && sheetOpen && !fieldErr) { %>
+          <div class="hub-alert hub-alert-error" role="alert"><%= error %></div>
+        <% } %>
+
+        <input type="hidden" name="q" value="<%= filters.q || '' %>" form="carteira-sheet-form" />
+        <input type="hidden" name="sit" value="<%= filters.sit || '' %>" form="carteira-sheet-form" />
+        <input type="hidden" name="regime" value="<%= filters.regime || '' %>" form="carteira-sheet-form" />
+        <input type="hidden" name="tipo" value="<%= filters.tipo || '' %>" form="carteira-sheet-form" />
+        <% if (Number(page) > 1) { %>
+          <input type="hidden" name="p" value="<%= page %>" form="carteira-sheet-form" />
+        <% } %>
+
+        <label class="hub-field">
+          <span>Código</span>
+          <input
+            name="codigo"
+            maxlength="40"
+            aria-required="true"
+            value="<%= values.codigo || '' %>"
+            aria-invalid="<%= fieldErr === 'codigo' ? 'true' : 'false' %>"
+            aria-describedby="<%= fieldErr === 'codigo' ? 'err-codigo' : '' %>"
+          />
+          <% if (fieldErr === 'codigo') { %>
+            <span id="err-codigo" class="hub-field-error"><%= error %></span>
+          <% } %>
+        </label>
+        <label class="hub-field">
+          <span>Razão social</span>
+          <input
+            name="razao"
+            maxlength="200"
+            aria-required="true"
+            value="<%= values.razao || '' %>"
+            aria-invalid="<%= fieldErr === 'razao' ? 'true' : 'false' %>"
+            aria-describedby="<%= fieldErr === 'razao' ? 'err-razao' : '' %>"
+          />
+          <% if (fieldErr === 'razao') { %>
+            <span id="err-razao" class="hub-field-error"><%= error %></span>
+          <% } %>
+        </label>
+        <label class="hub-field">
+          <span>UF</span>
+          <input
+            name="uf"
+            maxlength="2"
+            value="<%= values.uf || '' %>"
+            aria-invalid="<%= fieldErr === 'uf' ? 'true' : 'false' %>"
+          />
+          <% if (fieldErr === 'uf') { %><span class="hub-field-error"><%= error %></span><% } %>
+        </label>
+        <label class="hub-field">
+          <span>CNPJ/CPF/CEI</span>
+          <input name="documento" maxlength="20" value="<%= values.documento || '' %>" inputmode="numeric" />
+        </label>
+        <label class="hub-field">
+          <span>Regime tributário</span>
+          <select name="regime" aria-invalid="<%= fieldErr === 'regime' ? 'true' : 'false' %>">
+            <option value=""></option>
+            <% regimes.forEach(function (reg) { %>
+              <option value="<%= reg %>" <%= values.regime === reg ? 'selected' : '' %>><%= reg %></option>
+            <% }) %>
+          </select>
+          <% if (fieldErr === 'regime') { %><span class="hub-field-error"><%= error %></span><% } %>
+        </label>
+        <label class="hub-field">
+          <span>Matriz/Filial</span>
+          <select name="estabelecimento" aria-invalid="<%= fieldErr === 'estabelecimento' ? 'true' : 'false' %>">
+            <option value=""></option>
+            <% estabelecimentos.forEach(function (est) { %>
+              <option value="<%= est %>" <%= values.estabelecimento === est ? 'selected' : '' %>><%= est %></option>
+            <% }) %>
+          </select>
+          <% if (fieldErr === 'estabelecimento') { %><span class="hub-field-error"><%= error %></span><% } %>
+        </label>
+        <label class="hub-field">
+          <span>Situação</span>
+          <select name="situacao" aria-invalid="<%= fieldErr === 'situacao' ? 'true' : 'false' %>">
+            <option value=""></option>
+            <% situacoes.forEach(function (sit) { %>
+              <option value="<%= sit %>" <%= values.situacao === sit ? 'selected' : '' %>><%= sit %></option>
+            <% }) %>
+          </select>
+          <% if (fieldErr === 'situacao') { %><span class="hub-field-error"><%= error %></span><% } %>
+        </label>
+        <label class="hub-field carteira-field-wide">
+          <span>Atividade CNAE</span>
+          <textarea name="cnae" rows="2" maxlength="2000"><%= values.cnae || '' %></textarea>
+        </label>
+        <label class="hub-field carteira-field-wide">
+          <span>Atividade CNAE secundário</span>
+          <textarea name="cnae_secundario" rows="3" maxlength="8000"><%= values.cnae_secundario || '' %></textarea>
+        </label>
+        <fieldset class="carteira-tipo">
+          <legend>Tipo da atividade</legend>
+          <p class="hub-muted hub-module-hint">Marque as que se aplicam. Lanchonete, restaurante e fornecimento de alimentos podem ser Comércio além de Serviço.</p>
+          <label class="hub-check">
+            <input type="checkbox" name="servico" value="1" <%= values.servico ? 'checked' : '' %> />
+            <span>Serviço</span>
+          </label>
+          <label class="hub-check">
+            <input type="checkbox" name="comercio" value="1" <%= values.comercio ? 'checked' : '' %> />
+            <span>Comércio</span>
+          </label>
+          <label class="hub-check">
+            <input type="checkbox" name="industria" value="1" <%= values.industria ? 'checked' : '' %> />
+            <span>Indústria</span>
+          </label>
+        </fieldset>
+        <label class="hub-field">
+          <span>Contato Messenger</span>
+          <input name="contato" maxlength="200" value="<%= values.contato || '' %>" />
+        </label>
+        <label class="hub-field">
+          <span>E-mail</span>
+          <input
+            name="email"
+            type="email"
+            maxlength="200"
+            value="<%= values.email || '' %>"
+            aria-invalid="<%= fieldErr === 'email' ? 'true' : 'false' %>"
+          />
+          <% if (fieldErr === 'email') { %><span class="hub-field-error"><%= error %></span><% } %>
+        </label>
+        <label class="hub-field">
+          <span>Quadro societário</span>
+          <input name="socio_1" maxlength="200" value="<%= values.socio_1 || '' %>" />
+        </label>
+        <% [2, 3, 4, 5, 6, 7].forEach(function (n) { %>
+          <label class="hub-field">
+            <span>Sócio <%= n %></span>
+            <input name="socio_<%= n %>" maxlength="200" value="<%= values['socio_' + n] || '' %>" />
+          </label>
+        <% }) %>
+        <label class="hub-field carteira-field-wide">
+          <span>Observações</span>
+          <textarea name="observacoes" rows="3" maxlength="4000"><%= values.observacoes || '' %></textarea>
+        </label>
+      </div>
+
+      <footer class="hub-sheet-foot">
+        <div class="hub-sheet-foot-row">
+          <span></span>
+          <div class="hub-sheet-foot-actions">
+            <a class="hub-btn hub-btn-ghost" href="<%= listHref({ novo: '', editar: '', confirmar: '' }) %>">Cancelar</a>
+            <button type="submit" class="hub-btn hub-btn-primary" data-busy="Salvando...">Salvar</button>
+          </div>
+        </div>
+      </footer>
+    </form>
+  </dialog>
+
+  <%- include('partials/hub-chrome-end') %>
+</body>
+</html>

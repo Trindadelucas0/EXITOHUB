@@ -83,7 +83,7 @@ export function ivaCellsDiverge(
   const b = parseIvaFactor(ideal ?? null);
   if (b == null) return false;
   if (a == null) return true;
-  return Math.abs(a - b) > 0.05;
+  return a !== b;
 }
 
 export function ivaPorUfDiffs(atual: IvaPorUf | null | undefined, ideal: IvaPorUf | null | undefined) {

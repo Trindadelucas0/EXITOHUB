@@ -81,8 +81,9 @@ export function UserManual() {
             </li>
             <li>
               <strong>Necessita análise</strong> — NCM com duas regras (vincular hipótese) ou, na Egaplast,
-              linha da planilha do cliente **sem** SIT.TRIBUTÁRIA (ex. código `10255`). O mesmo NCM pode
-              ter outro SKU em Divergências (`10200`) ou Correto (`10100`): busque pelo código.
+              linha da planilha do cliente **sem** SIT.TRIBUTÁRIA (ex. código `10255`). `10100` e
+              `10200` vão para Divergências porque o SP do cadastro não bate com a EXITO. Outro SKU
+              do mesmo NCM pode continuar Correto: busque pelo código.
             </li>
           </ul>
           <ScreenLink href="/dashboard">Abrir o Panorama</ScreenLink>

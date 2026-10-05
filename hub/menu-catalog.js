@@ -34,11 +34,10 @@ function buildCatalog() {
         {
           id: 'carteira',
           label: 'Controle da Carteira de Clientes',
-          href: '/hub/modulo/carteira',
+          href: '/carteira',
           require: 'admin',
-          status: 'soon',
           icon: 'briefcase',
-          currentKey: 'modulo-carteira',
+          currentKey: 'carteira',
           description: 'Cadastro e visão da carteira de clientes do escritório.',
         },
         {
