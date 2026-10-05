@@ -195,6 +195,9 @@
                           <% }) %>
                         </span>
                       <% } %>
+                      <% if (row.tipo) { %>
+                        <span class="hub-pill carteira-tipo"><%= row.tipo %></span>
+                      <% } %>
                     </span>
                     <span class="carteira-identity">
                       <span><%= row.uf || '—' %></span>
@@ -204,7 +207,6 @@
                     <span class="hub-pill<%= sitClass(row.situacao) %>"><%= row.situacao || '—' %></span>
                   </span>
                   <span class="carteira-row-secondary">
-                    <span class="carteira-inline-value"><%= row.tipo || '—' %></span>
                     <span class="carteira-inline-value carteira-inline-cnae" title="<%= row.cnae %>"><%= row.cnae || '—' %></span>
                     <% if (row.contato) { %><span class="carteira-inline-value" title="<%= row.contato %>"><%= row.contato %></span><% } %>
                     <% if (row.email) { %><span class="carteira-inline-value" title="<%= row.email %>"><%= row.email %></span><% } %>
@@ -251,7 +253,13 @@
                 <div data-label="Situação"><span class="hub-pill<%= sitClass(row.situacao) %>"><%= row.situacao || '—' %></span></div>
                 <div data-label="Atividade CNAE"><%= row.cnae || '—' %></div>
                 <div data-label="CNAE secundário"><%= row.cnae_secundario || '—' %></div>
-                <div data-label="Tipo da atividade"><%= row.tipo || '—' %></div>
+                <div data-label="Tipo da atividade">
+                  <% if (row.tipo) { %>
+                    <span class="hub-pill carteira-tipo"><%= row.tipo %></span>
+                  <% } else { %>
+                    —
+                  <% } %>
+                </div>
                 <div data-label="Contato Messenger"><%= row.contato || '—' %></div>
                 <div data-label="E-mail"><%= row.email || '—' %></div>
                 <div data-label="Quadro societário"><%= row.socio_1 || '—' %></div>

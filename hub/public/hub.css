@@ -6521,6 +6521,15 @@ body.hub-body .carteira-page .carteira-list-card {
   gap: 0.3rem;
 }
 
+.carteira-tipo {
+  flex-shrink: 0;
+  max-width: none;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.25;
+}
+
 .carteira-name {
   min-width: 0;
   color: var(--hub-ink);
