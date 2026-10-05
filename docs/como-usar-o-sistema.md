@@ -61,7 +61,7 @@ Quem só tem NCM (consulta de cliente) vê **Fiscal → Auditor Fiscal** e as á
 
 Só admin. Sidebar **Geral → Controle da Carteira de Clientes** (`/carteira`).
 
-1. A grade mostra a relação (código, razão, UF, CNPJ, regime, matriz/filial, situação, CNAE, tipo, contato, e-mail, sócio, observações), **25 empresas por página**. Use **Anterior** e **Próxima**. As colunas cabem na tela; texto longo quebra na célula. No celular, cada empresa vira um cartão com os mesmos campos.
+1. A relação mostra **25 empresas por página**. Use **Anterior** e **Próxima**. No computador, cada empresa tem dois andares: o primeiro prioriza código, razão, UF, CNPJ, matriz/filial, situação, **Editar** e **Excluir**; o segundo mostra regime, tipo, CNAE, contato e e-mail em uma linha. Clique na empresa para abrir CNAE secundário, todos os sócios preenchidos e observações. No celular, cada empresa vira um cartão com os 15 campos; campo vazio aparece como `—`.
 2. Filtre por busca (código, razão ou CNPJ), situação, regime ou tipo. **Limpar** tira o filtro.
 3. **+ Nova empresa** abre o painel. Código e razão social são obrigatórios. Tipo da atividade: marque **Serviço**, **Comércio** e/ou **Indústria** juntos — uma lanchonete pode ser Comércio além de Serviço.
 4. **Editar** na linha abre o mesmo painel. **Salvar** grava; **Cancelar** fecha sem alterar.

@@ -6186,7 +6186,7 @@ button[disabled][data-busy] {
   pointer-events: none;
 }
 
-.carteira-page .hub-card {
+body.hub-body .carteira-page .carteira-list-card {
   padding: 0;
 }
 
@@ -6439,7 +6439,7 @@ button[disabled][data-busy] {
 }
 
 @media (max-width: 640px) {
-  .carteira-page .hub-card {
+  body.hub-body .carteira-page .carteira-list-card {
     padding: 0;
     border: 0;
     background: transparent;
