@@ -27,18 +27,25 @@ const { uploadImage, saveUploadedFile } = require('./portal/upload');
 const portalRoutes = require('./portal/routes');
 const {
   REGIMES,
+  REGIMES_FILTRO,
+  REGIME_NAO_OPTANTE,
+  ANO_PADRAO,
   ESTABELECIMENTOS,
   SITUACOES,
   TIPOS,
   isUuid,
   parseDraft,
+  normalizeAno,
   listCarteira,
   countCarteira,
+  listRegimeAnos,
   getCarteira,
+  empresaTemRegimeLegado,
   createCarteira,
   updateCarteira,
   deleteCarteira,
 } = require('./carteira-store');
+const { buildCarteiraExcelBuffer } = require('./carteira-excel');
 
 const router = express.Router();
 
@@ -172,15 +179,20 @@ function pickCarteiraFilters(req) {
   const regimeRaw = queryValue(src, 'regime');
   const tipoRaw = queryValue(src, 'tipo');
   const sit = SITUACOES.includes(sitRaw) ? sitRaw : '';
-  const regime = REGIMES.includes(regimeRaw) ? regimeRaw : '';
+  const regime = REGIMES_FILTRO.includes(regimeRaw) ? regimeRaw : '';
   const tipo = TIPOS.includes(tipoRaw) ? tipoRaw : '';
-  return { q, sit, regime, tipo, p: pickCarteiraPage(req) };
+  const anoRaw = req.method === 'POST'
+    ? (queryValue(req.body, 'ano_lista') || queryValue(req.query, 'ano'))
+    : queryValue(req.query, 'ano');
+  const ano = normalizeAno(anoRaw);
+  return { q, sit, regime, tipo, ano, p: pickCarteiraPage(req) };
 }
 
 function carteiraPath(filters, extra = {}) {
   const params = new URLSearchParams();
   if (filters.q) params.set('q', filters.q);
   if (filters.sit) params.set('sit', filters.sit);
+  if (filters.ano && Number(filters.ano) !== ANO_PADRAO) params.set('ano', String(filters.ano));
   if (filters.regime) params.set('regime', filters.regime);
   if (filters.tipo) params.set('tipo', filters.tipo);
   if (Number(filters.p) > 1) params.set('p', String(filters.p));
@@ -195,10 +207,14 @@ function carteiraPath(filters, extra = {}) {
 
 async function renderCarteira(req, res, extras = {}) {
   const filters = extras.filters || pickCarteiraFilters(req);
-  const hasFilter = Boolean(filters.q || filters.sit || filters.regime || filters.tipo);
-  const [totalCount, filteredCountRaw] = await Promise.all([
+  const hasFilter = Boolean(
+    filters.q || filters.sit || filters.regime || filters.tipo
+    || (Number(filters.ano) && Number(filters.ano) !== ANO_PADRAO),
+  );
+  const [totalCount, filteredCountRaw, anos] = await Promise.all([
     countCarteira(),
     hasFilter ? countCarteira(filters) : Promise.resolve(null),
+    listRegimeAnos(),
   ]);
   const filteredCount = hasFilter ? filteredCountRaw : totalCount;
   const pageCount = Math.max(1, Math.ceil(filteredCount / CARTEIRA_PAGE_SIZE));
@@ -212,6 +228,7 @@ async function renderCarteira(req, res, extras = {}) {
   const to = offset + empresas.length;
   let editing = extras.editing || null;
   let sheetMode = extras.sheetMode || null;
+  let regimeLegadoDisponivel = false;
   if (!sheetMode && !editing) {
     const editId = String(req.query.editar || '').trim();
     if (editId) {
@@ -220,6 +237,9 @@ async function renderCarteira(req, res, extras = {}) {
     } else if (req.query.novo === '1') {
       sheetMode = 'create';
     }
+  }
+  if (editing && editing.id) {
+    regimeLegadoDisponivel = await empresaTemRegimeLegado(editing.id);
   }
   const status = extras.status || 200;
   return res.status(status).render('carteira', {
@@ -243,6 +263,10 @@ async function renderCarteira(req, res, extras = {}) {
     flash: extras.flash != null ? extras.flash : (CARTEIRA_FLASH[String(req.query.ok || '')] || null),
     error: extras.error != null ? extras.error : (req.query.erro ? String(req.query.erro).slice(0, 300) : null),
     regimes: REGIMES,
+    regimesFiltro: REGIMES_FILTRO,
+    regimeNaoOptante: REGIME_NAO_OPTANTE,
+    regimeLegadoDisponivel,
+    anos,
     estabelecimentos: ESTABELECIMENTOS,
     situacoes: SITUACOES,
   });
@@ -392,6 +416,26 @@ router.get('/projetos', requireHubAdmin, (req, res) => {
     hubUser: req.hubUser,
     avadeskUrl: AVADESK_URL,
   });
+});
+
+router.get('/carteira/excel', requireHubAdmin, async (req, res) => {
+  try {
+    const filters = pickCarteiraFilters(req);
+    const [rows, anos] = await Promise.all([
+      listCarteira(filters),
+      listRegimeAnos(),
+    ]);
+    const buffer = await buildCarteiraExcelBuffer(rows, anos);
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader('Content-Disposition', 'attachment; filename="carteira-empresas.xlsx"');
+    return res.send(Buffer.from(buffer));
+  } catch (err) {
+    console.error('[hub] carteira excel', err);
+    return res.status(500).send('Não foi possível gerar o Excel.');
+  }
 });
 
 router.get('/carteira', requireHubAdmin, async (req, res) => {

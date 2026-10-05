@@ -18,6 +18,7 @@
       const params = new URLSearchParams();
       if (filters.q) params.set('q', filters.q);
       if (filters.sit) params.set('sit', filters.sit);
+      if (filters.ano && Number(filters.ano) !== 2026) params.set('ano', String(filters.ano));
       if (filters.regime) params.set('regime', filters.regime);
       if (filters.tipo) params.set('tipo', filters.tipo);
       if (Number(page) > 1) params.set('p', String(page));
@@ -36,6 +37,17 @@
       if (sit === 'Ativa') return ' hub-pill-ok';
       if (sit === 'Inativa') return '';
       return '';
+    }
+
+    function excelHref() {
+      const params = new URLSearchParams();
+      if (filters.q) params.set('q', filters.q);
+      if (filters.sit) params.set('sit', filters.sit);
+      if (filters.ano && Number(filters.ano) !== 2026) params.set('ano', String(filters.ano));
+      if (filters.regime) params.set('regime', filters.regime);
+      if (filters.tipo) params.set('tipo', filters.tipo);
+      const qs = params.toString();
+      return qs ? '/carteira/excel?' + qs : '/carteira/excel';
     }
   %>
 
@@ -77,11 +89,19 @@
         </select>
       </label>
       <label class="hub-field">
+        <span>Ano</span>
+        <select name="ano" form="carteira-filter">
+          <% (anos || [2026, 2027]).forEach(function (ano) { %>
+            <option value="<%= ano %>" <%= Number(filters.ano) === Number(ano) ? 'selected' : '' %>><%= ano %></option>
+          <% }) %>
+        </select>
+      </label>
+      <label class="hub-field">
         <span>Regime</span>
         <select name="regime" form="carteira-filter">
           <option value="">Todos</option>
-          <% regimes.forEach(function (reg) { %>
-            <option value="<%= reg %>" <%= filters.regime === reg ? 'selected' : '' %>><%= reg === 'Não optante pelo Simples (Lucro Presumido ou Real – não informado publicamente)' ? 'Não optante pelo Simples' : reg %></option>
+          <% (regimesFiltro || regimes).forEach(function (reg) { %>
+            <option value="<%= reg %>" <%= filters.regime === reg ? 'selected' : '' %>><%= reg === regimeNaoOptante ? 'Não optante pelo Simples' : reg %></option>
           <% }) %>
         </select>
       </label>
@@ -99,6 +119,7 @@
         <% if (hasFilter) { %>
           <a class="hub-btn hub-btn-ghost" href="/carteira">Limpar</a>
         <% } %>
+        <a class="hub-btn hub-btn-ghost" href="<%= excelHref() %>">Exportar Excel</a>
       </div>
     </form>
 
@@ -157,7 +178,16 @@
                 <summary class="carteira-row-summary">
                   <span class="carteira-row-primary">
                     <span class="carteira-code"><%= row.codigo %></span>
-                    <strong class="carteira-name"><%= row.razao %></strong>
+                    <span class="carteira-name-wrap">
+                      <strong class="carteira-name"><%= row.razao %></strong>
+                      <% if (row.regimes && row.regimes.length) { %>
+                        <span class="carteira-year-pills">
+                          <% row.regimes.forEach(function (item) { %>
+                            <span class="hub-pill carteira-regime carteira-regime-<%= item.regimeCss %>" title="<%= item.regime %>"><%= item.ano %> <%= item.regimeCurto %></span>
+                          <% }) %>
+                        </span>
+                      <% } %>
+                    </span>
                     <span class="carteira-identity">
                       <span><%= row.uf || '—' %></span>
                       <span class="carteira-doc"><%= documento %></span>
@@ -166,7 +196,6 @@
                     <span class="hub-pill<%= sitClass(row.situacao) %>"><%= row.situacao || '—' %></span>
                   </span>
                   <span class="carteira-row-secondary">
-                    <span class="carteira-inline-value" title="<%= row.regime %>"><%= row.regimeCurto || '—' %></span>
                     <span class="carteira-inline-value"><%= row.tipo || '—' %></span>
                     <span class="carteira-inline-value carteira-inline-cnae" title="<%= row.cnae %>"><%= row.cnae || '—' %></span>
                     <% if (row.contato) { %><span class="carteira-inline-value" title="<%= row.contato %>"><%= row.contato %></span><% } %>
@@ -201,7 +230,15 @@
                 <div data-label="Razão social"><strong><%= row.razao %></strong></div>
                 <div data-label="UF"><%= row.uf || '—' %></div>
                 <div class="carteira-doc" data-label="CNPJ/CPF/CEI"><%= documento %></div>
-                <div data-label="Regime Tributário"><%= row.regimeCurto || '—' %></div>
+                <div data-label="Regime Tributário">
+                  <% if (row.regimes && row.regimes.length) { %>
+                    <% row.regimes.forEach(function (item) { %>
+                      <span class="carteira-regime-mobile-line"><span class="hub-pill carteira-regime carteira-regime-<%= item.regimeCss %>" title="<%= item.regime %>"><%= item.ano %> <%= item.regimeCurto %></span></span>
+                    <% }) %>
+                  <% } else { %>
+                    —
+                  <% } %>
+                </div>
                 <div data-label="Matriz/Filial"><%= row.estabelecimento || '—' %></div>
                 <div data-label="Situação"><span class="hub-pill<%= sitClass(row.situacao) %>"><%= row.situacao || '—' %></span></div>
                 <div data-label="Atividade CNAE"><%= row.cnae || '—' %></div>
@@ -264,6 +301,9 @@
         <input type="hidden" name="q" value="<%= filters.q || '' %>" form="carteira-sheet-form" />
         <input type="hidden" name="sit" value="<%= filters.sit || '' %>" form="carteira-sheet-form" />
         <input type="hidden" name="regime" value="<%= filters.regime || '' %>" form="carteira-sheet-form" />
+        <% if (filters.ano && Number(filters.ano) !== 2026) { %>
+          <input type="hidden" name="ano_lista" value="<%= filters.ano %>" form="carteira-sheet-form" />
+        <% } %>
         <input type="hidden" name="tipo" value="<%= filters.tipo || '' %>" form="carteira-sheet-form" />
         <% if (Number(page) > 1) { %>
           <input type="hidden" name="p" value="<%= page %>" form="carteira-sheet-form" />
@@ -311,16 +351,60 @@
           <span>CNPJ/CPF/CEI</span>
           <input name="documento" maxlength="20" value="<%= values.documento || '' %>" inputmode="numeric" />
         </label>
-        <label class="hub-field">
-          <span>Regime tributário</span>
-          <select name="regime" aria-invalid="<%= fieldErr === 'regime' ? 'true' : 'false' %>">
-            <option value=""></option>
-            <% regimes.forEach(function (reg) { %>
-              <option value="<%= reg %>" <%= values.regime === reg ? 'selected' : '' %>><%= reg %></option>
+        <fieldset class="carteira-regimes carteira-field-wide">
+          <legend>Regime tributário</legend>
+          <div id="carteira-regime-rows">
+            <%
+              const regimeRows = Array.isArray(values.regimes) ? values.regimes : [];
+            %>
+            <% regimeRows.forEach(function (item) { %>
+              <div class="carteira-regime-row">
+                <label class="hub-field">
+                  <span>Ano</span>
+                  <input name="ano" inputmode="numeric" maxlength="4" value="<%= item.ano %>" aria-invalid="<%= fieldErr === 'ano' ? 'true' : 'false' %>" />
+                </label>
+                <label class="hub-field">
+                  <span>Regime</span>
+                  <select name="regime_ano" aria-invalid="<%= fieldErr === 'regime_ano' ? 'true' : 'false' %>">
+                    <option value=""></option>
+                    <% regimes.forEach(function (reg) { %>
+                      <option value="<%= reg %>" <%= item.regime === reg ? 'selected' : '' %>><%= reg %></option>
+                    <% }) %>
+                    <% if (regimeLegadoDisponivel || item.regime === regimeNaoOptante) { %>
+                      <option value="<%= regimeNaoOptante %>" <%= item.regime === regimeNaoOptante ? 'selected' : '' %>><%= regimeNaoOptante %></option>
+                    <% } %>
+                  </select>
+                </label>
+                <button type="button" class="hub-btn hub-btn-ghost hub-btn-sm" data-remove-regime-ano>Tirar</button>
+              </div>
             <% }) %>
-          </select>
-          <% if (fieldErr === 'regime') { %><span class="hub-field-error"><%= error %></span><% } %>
-        </label>
+          </div>
+          <% if (fieldErr === 'ano' || fieldErr === 'regime_ano') { %>
+            <span class="hub-field-error"><%= error %></span>
+          <% } %>
+          <button type="button" class="hub-btn hub-btn-ghost" id="carteira-add-regime-ano">Adicionar ano</button>
+          <template id="carteira-regime-row-tpl">
+            <div class="carteira-regime-row">
+              <label class="hub-field">
+                <span>Ano</span>
+                <input name="ano" inputmode="numeric" maxlength="4" value="" />
+              </label>
+              <label class="hub-field">
+                <span>Regime</span>
+                <select name="regime_ano">
+                  <option value=""></option>
+                  <% regimes.forEach(function (reg) { %>
+                    <option value="<%= reg %>"><%= reg %></option>
+                  <% }) %>
+                  <% if (regimeLegadoDisponivel) { %>
+                    <option value="<%= regimeNaoOptante %>"><%= regimeNaoOptante %></option>
+                  <% } %>
+                </select>
+              </label>
+              <button type="button" class="hub-btn hub-btn-ghost hub-btn-sm" data-remove-regime-ano>Tirar</button>
+            </div>
+          </template>
+        </fieldset>
         <label class="hub-field">
           <span>Matriz/Filial</span>
           <select name="estabelecimento" aria-invalid="<%= fieldErr === 'estabelecimento' ? 'true' : 'false' %>">
@@ -407,6 +491,91 @@
       </footer>
     </form>
   </dialog>
+
+  <% if (sheetOpen) { %>
+  <script>
+  (function () {
+    const dialog = document.getElementById("hub-carteira-sheet");
+    const form = document.getElementById("carteira-sheet-form");
+    if (!dialog) return;
+
+    function closeHubMenu() {
+      const closeBtn = document.getElementById("hub-menu-close");
+      const drawer = document.getElementById("hub-app-menu");
+      if (drawer && !drawer.hidden && closeBtn) closeBtn.click();
+    }
+
+    function listUrlFromCancel() {
+      const cancel = form && form.querySelector(".hub-sheet-foot a.hub-btn-ghost");
+      if (cancel && cancel.getAttribute("href")) return cancel.getAttribute("href");
+      const url = new URL(window.location.href);
+      url.searchParams.delete("novo");
+      url.searchParams.delete("editar");
+      url.searchParams.delete("confirmar");
+      url.searchParams.delete("erro");
+      url.searchParams.delete("ok");
+      return url.pathname + (url.searchParams.toString() ? "?" + url.searchParams.toString() : "");
+    }
+
+    function replaceUrl(href) {
+      window.history.replaceState({}, "", href);
+    }
+
+    function upgradeToModal() {
+      if (typeof dialog.showModal !== "function") return;
+      if (!dialog.hasAttribute("open")) return;
+      closeHubMenu();
+      try {
+        dialog.removeAttribute("open");
+        dialog.showModal();
+      } catch (_) {
+        dialog.setAttribute("open", "");
+      }
+    }
+
+    function closeSheet() {
+      const href = listUrlFromCancel();
+      if (typeof dialog.close === "function" && dialog.open) dialog.close();
+      else dialog.removeAttribute("open");
+      replaceUrl(href);
+    }
+
+    upgradeToModal();
+
+    dialog.addEventListener("cancel", function (event) {
+      event.preventDefault();
+      closeSheet();
+    });
+
+    dialog.addEventListener("click", function (event) {
+      if (event.target === dialog) closeSheet();
+    });
+
+    const first = form && form.querySelector("input:not([readonly]):not([type='hidden']):not([type='checkbox'])");
+    if (first) first.focus();
+  })();
+  </script>
+  <% } %>
+
+  <script>
+  (function () {
+    const rows = document.getElementById("carteira-regime-rows");
+    const add = document.getElementById("carteira-add-regime-ano");
+    const tpl = document.getElementById("carteira-regime-row-tpl");
+    if (!rows || !add || !tpl) return;
+    add.addEventListener("click", function () {
+      rows.appendChild(tpl.content.cloneNode(true));
+      const input = rows.querySelector(".carteira-regime-row:last-child input[name='ano']");
+      if (input) input.focus();
+    });
+    rows.addEventListener("click", function (event) {
+      const btn = event.target.closest("[data-remove-regime-ano]");
+      if (!btn) return;
+      const row = btn.closest(".carteira-regime-row");
+      if (row) row.remove();
+    });
+  })();
+  </script>
 
   <%- include('partials/hub-chrome-end') %>
 </body>

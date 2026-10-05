@@ -11,14 +11,20 @@ const SEED_PATH = path.join(__dirname, 'data', 'carteira-empresas.json');
 const REGIMES = [
   'Simples Nacional',
   'MEI',
+  'Lucro Presumido',
+  'Lucro Real',
   'Não encontrado',
-  'Não optante pelo Simples (Lucro Presumido ou Real – não informado publicamente)',
 ];
+
+const REGIME_NAO_OPTANTE = 'Não optante pelo Simples (Lucro Presumido ou Real \u2013 não informado publicamente)';
+const REGIMES_FILTRO = REGIMES.concat([REGIME_NAO_OPTANTE]);
+const ANO_PADRAO = 2026;
+const ANO_MIN = 1990;
+const ANO_MAX = 2100;
 
 const ESTABELECIMENTOS = ['MATRIZ', 'FILIAL', 'CPF'];
 const SITUACOES = ['Ativa', 'Inativa', 'M'];
 const TIPOS = ['comercio', 'servico', 'industria'];
-const REGIME_NAO_OPTANTE = REGIMES[3];
 
 function trimStr(value, max = 500) {
   return String(value == null ? '' : value).trim().slice(0, max);
@@ -63,8 +69,86 @@ function tipoLabel(row) {
   return parts.join(' e ');
 }
 
-function mapRow(row) {
+function regimeCss(regime) {
+  if (regime === 'Simples Nacional') return 'simples';
+  if (regime === 'MEI') return 'mei';
+  if (regime === 'Lucro Presumido') return 'presumido';
+  if (regime === 'Lucro Real') return 'real';
+  if (regime === REGIME_NAO_OPTANTE) return 'nao-optante';
+  if (regime === 'Não encontrado' || !regime) return 'ausente';
+  return 'ausente';
+}
+
+function regimeCurto(regime) {
+  if (regime === REGIME_NAO_OPTANTE) return 'Não optante pelo Simples';
+  return regime || '';
+}
+
+function decorateRegime(ano, regime) {
+  const text = regime || '';
+  return {
+    ano: Number(ano),
+    regime: text,
+    regimeCurto: regimeCurto(text),
+    regimeCss: regimeCss(text),
+  };
+}
+
+function asList(value) {
+  if (Array.isArray(value)) return value;
+  if (value == null || value === '') return [];
+  return [value];
+}
+
+function parseRegimeDraft(body) {
+  const anos = asList(body && body.ano);
+  const regimes = asList(body && body.regime_ano);
+  const len = Math.max(anos.length, regimes.length);
+  const rows = [];
+  for (let i = 0; i < len; i += 1) {
+    rows.push({
+      ano: trimStr(anos[i], 4),
+      regime: trimStr(regimes[i], 200),
+    });
+  }
+  return rows;
+}
+
+function parseRegimeRows(body, allowLegacy) {
+  const seen = new Set();
+  const out = [];
+  for (const row of parseRegimeDraft(body)) {
+    if (!row.regime) continue;
+    if (!/^\d{4}$/.test(row.ano)) {
+      throw fieldError('Ano inválido.', 'ano');
+    }
+    const ano = Number(row.ano);
+    if (ano < ANO_MIN || ano > ANO_MAX) {
+      throw fieldError('Ano inválido.', 'ano');
+    }
+    if (seen.has(ano)) {
+      throw fieldError('Ano já informado.', 'ano');
+    }
+    seen.add(ano);
+    if (row.regime === REGIME_NAO_OPTANTE) {
+      if (!allowLegacy) throw fieldError('Regime tributário inválido.', 'regime_ano');
+    } else if (!REGIMES.includes(row.regime)) {
+      throw fieldError('Regime tributário inválido.', 'regime_ano');
+    }
+    out.push({ ano, regime: row.regime });
+  }
+  return out;
+}
+
+function regimeDe2026(regimes) {
+  const found = (regimes || []).find((row) => Number(row.ano) === ANO_PADRAO);
+  return found ? found.regime : null;
+}
+
+function mapRow(row, regimes) {
   if (!row) return null;
+  const regime = row.regime || '';
+  const list = Array.isArray(regimes) ? regimes : [];
   return {
     id: row.id,
     codigo: row.codigo,
@@ -72,8 +156,12 @@ function mapRow(row) {
     uf: row.uf || '',
     documento: row.documento || '',
     documentoFmt: formatDocumento(row.documento),
-    regime: row.regime || '',
-    regimeCurto: row.regime === REGIME_NAO_OPTANTE ? 'Não optante pelo Simples' : (row.regime || ''),
+    regime,
+    regimeCurto: regimeCurto(regime),
+    regimeCss: regimeCss(regime),
+    regimes: list
+      .map((item) => decorateRegime(item.ano, item.regime))
+      .sort((a, b) => a.ano - b.ano),
     estabelecimento: row.estabelecimento || '',
     situacao: row.situacao || '',
     cnae: row.cnae || '',
@@ -101,7 +189,8 @@ function parseDraft(body) {
     razao: trimStr(body && body.razao, 200),
     uf: trimStr(body && body.uf, 2).toUpperCase(),
     documento: digitsOnly(body && body.documento, 20),
-    regime: trimStr(body && body.regime, 120),
+    regime: trimStr(body && body.regime, 200),
+    regimes: parseRegimeDraft(body),
     estabelecimento: trimStr(body && body.estabelecimento, 20),
     situacao: trimStr(body && body.situacao, 20),
     cnae: trimStr(body && body.cnae, 2000),
@@ -122,15 +211,21 @@ function parseDraft(body) {
   };
 }
 
-function parsePayload(body) {
+function parsePayload(body, options = {}) {
   const data = parseDraft(body);
   if (!data.codigo) throw fieldError('Informe o código.', 'codigo');
   if (!data.razao) throw fieldError('Informe a razão social.', 'razao');
   if (data.uf && !/^[A-Z]{2}$/.test(data.uf)) {
     throw fieldError('UF inválida.', 'uf');
   }
-  if (data.regime && !REGIMES.includes(data.regime)) {
-    throw fieldError('Regime tributário inválido.', 'regime');
+  if (options.seed) {
+    if (data.regime && !REGIMES_FILTRO.includes(data.regime)) {
+      throw fieldError('Regime tributário inválido.', 'regime');
+    }
+    data.regimes = [];
+  } else {
+    data.regimes = parseRegimeRows(body, Boolean(options.allowLegacy));
+    data.regime = regimeDe2026(data.regimes);
   }
   if (data.estabelecimento && !ESTABELECIMENTOS.includes(data.estabelecimento)) {
     throw fieldError('Matriz/Filial inválido.', 'estabelecimento');
@@ -221,7 +316,7 @@ async function seedCarteiraOnce() {
         servico: row.servico ? '1' : '',
         comercio: row.comercio ? '1' : '',
         industria: row.industria ? '1' : '',
-      });
+      }, { seed: true });
       await client.query(INSERT_SQL, insertParams(data));
     }
     await client.query(
@@ -237,6 +332,14 @@ async function seedCarteiraOnce() {
   } finally {
     client.release();
   }
+}
+
+function normalizeAno(value) {
+  const text = String(value == null ? '' : value).trim();
+  if (!/^\d{4}$/.test(text)) return ANO_PADRAO;
+  const ano = Number(text);
+  if (ano < ANO_MIN || ano > ANO_MAX) return ANO_PADRAO;
+  return ano;
 }
 
 function buildCarteiraWhere(filters = {}) {
@@ -258,9 +361,17 @@ function buildCarteiraWhere(filters = {}) {
     params.push(filters.sit);
     clauses.push(`situacao = $${params.length}`);
   }
-  if (REGIMES.includes(filters.regime)) {
+  if (filters.regime && REGIMES_FILTRO.includes(filters.regime)) {
+    const ano = normalizeAno(filters.ano);
+    params.push(ano);
+    const anoIdx = params.length;
     params.push(filters.regime);
-    clauses.push(`regime = $${params.length}`);
+    clauses.push(`EXISTS (
+      SELECT 1 FROM carteira_regimes cr
+      WHERE cr.empresa_id = carteira_empresas.id
+        AND cr.ano = $${anoIdx}
+        AND cr.regime = $${params.length}
+    )`);
   }
   if (TIPOS.includes(filters.tipo)) {
     clauses.push(`${filters.tipo} = true`);
@@ -271,12 +382,38 @@ function buildCarteiraWhere(filters = {}) {
   };
 }
 
+async function attachRegimes(rows) {
+  if (!rows.length) return [];
+  const ids = rows.map((row) => row.id);
+  const result = await query(
+    `SELECT empresa_id, ano, regime
+     FROM carteira_regimes
+     WHERE empresa_id = ANY($1::uuid[])
+     ORDER BY ano`,
+    [ids],
+  );
+  const map = new Map();
+  for (const item of result.rows) {
+    const key = String(item.empresa_id);
+    const list = map.get(key) || [];
+    list.push({ ano: Number(item.ano), regime: item.regime });
+    map.set(key, list);
+  }
+  return rows.map((row) => mapRow(row, map.get(String(row.id)) || []));
+}
+
 async function listCarteira(filters = {}, paging = {}) {
   const { where, params } = buildCarteiraWhere(filters);
   let sql = `SELECT ${COLS}
      FROM carteira_empresas
      ${where}
      ORDER BY
+       CASE situacao
+         WHEN 'Ativa' THEN 0
+         WHEN 'Inativa' THEN 1
+         WHEN 'M' THEN 2
+         ELSE 3
+       END,
        CASE WHEN codigo ~ '^[0-9]+$' THEN codigo::bigint END NULLS LAST,
        codigo,
        razao`;
@@ -293,7 +430,7 @@ async function listCarteira(filters = {}, paging = {}) {
     sql += ` OFFSET $${params.length}`;
   }
   const result = await query(sql, params);
-  return result.rows.map(mapRow);
+  return attachRegimes(result.rows);
 }
 
 async function countCarteira(filters = {}) {
@@ -305,30 +442,75 @@ async function countCarteira(filters = {}) {
   return result.rows[0] ? result.rows[0].n : 0;
 }
 
+async function listRegimeAnos() {
+  const result = await query('SELECT DISTINCT ano FROM carteira_regimes');
+  const anos = new Set([ANO_PADRAO, 2027]);
+  for (const row of result.rows) {
+    const ano = Number(row.ano);
+    if (Number.isInteger(ano) && ano >= ANO_MIN && ano <= ANO_MAX) anos.add(ano);
+  }
+  return Array.from(anos).sort((a, b) => a - b);
+}
+
 async function getCarteira(id) {
   if (!isUuid(id)) return null;
   const result = await query(
     `SELECT ${COLS} FROM carteira_empresas WHERE id = $1 LIMIT 1`,
     [id],
   );
-  return mapRow(result.rows[0]);
+  if (!result.rows[0]) return null;
+  const mapped = await attachRegimes(result.rows);
+  return mapped[0] || null;
+}
+
+async function empresaTemRegimeLegado(id) {
+  if (!isUuid(id)) return false;
+  const result = await query(
+    `SELECT 1 FROM carteira_regimes WHERE empresa_id = $1 AND regime = $2
+     UNION ALL
+     SELECT 1 FROM carteira_empresas WHERE id = $1 AND regime = $2
+     LIMIT 1`,
+    [id, REGIME_NAO_OPTANTE],
+  );
+  return result.rowCount > 0;
+}
+
+async function writeRegimes(client, empresaId, regimes) {
+  await client.query('DELETE FROM carteira_regimes WHERE empresa_id = $1', [empresaId]);
+  for (const row of regimes) {
+    await client.query(
+      `INSERT INTO carteira_regimes (empresa_id, ano, regime) VALUES ($1, $2, $3)`,
+      [empresaId, row.ano, row.regime],
+    );
+  }
 }
 
 async function createCarteira(body) {
-  const data = parsePayload(body);
+  const data = parsePayload(body, { allowLegacy: false });
+  const client = await getPool().connect();
   try {
-    const result = await query(INSERT_SQL, insertParams(data));
-    return mapRow(result.rows[0]);
+    await client.query('BEGIN');
+    const result = await client.query(INSERT_SQL, insertParams(data));
+    const row = result.rows[0];
+    await writeRegimes(client, row.id, data.regimes);
+    await client.query('COMMIT');
+    return mapRow(row, data.regimes);
   } catch (err) {
+    await client.query('ROLLBACK');
     wrapUnique(err);
+  } finally {
+    client.release();
   }
 }
 
 async function updateCarteira(id, body) {
   if (!isUuid(id)) return null;
-  const data = parsePayload(body);
+  const allowLegacy = await empresaTemRegimeLegado(id);
+  const data = parsePayload(body, { allowLegacy });
+  const client = await getPool().connect();
   try {
-    const result = await query(
+    await client.query('BEGIN');
+    const result = await client.query(
       `UPDATE carteira_empresas SET
         codigo = $2,
         razao = $3,
@@ -357,9 +539,18 @@ async function updateCarteira(id, body) {
        RETURNING ${COLS}`,
       [id, ...insertParams(data)],
     );
-    return mapRow(result.rows[0] || null);
+    if (!result.rowCount) {
+      await client.query('ROLLBACK');
+      return null;
+    }
+    await writeRegimes(client, id, data.regimes);
+    await client.query('COMMIT');
+    return mapRow(result.rows[0], data.regimes);
   } catch (err) {
+    await client.query('ROLLBACK');
     wrapUnique(err);
+  } finally {
+    client.release();
   }
 }
 
@@ -374,6 +565,9 @@ async function deleteCarteira(id) {
 
 module.exports = {
   REGIMES,
+  REGIMES_FILTRO,
+  REGIME_NAO_OPTANTE,
+  ANO_PADRAO,
   ESTABELECIMENTOS,
   SITUACOES,
   TIPOS,
@@ -382,10 +576,13 @@ module.exports = {
   formatDocumento,
   tipoLabel,
   parseDraft,
+  normalizeAno,
   seedCarteiraOnce,
   listCarteira,
   countCarteira,
+  listRegimeAnos,
   getCarteira,
+  empresaTemRegimeLegado,
   createCarteira,
   updateCarteira,
   deleteCarteira,

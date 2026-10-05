@@ -1525,6 +1525,12 @@ body.hub-body .hub-btn-danger-fill:hover {
     border-radius: 16px 16px 0 0;
     height: 100dvh;
   }
+  #hub-carteira-sheet.hub-user-sheet {
+    width: min(48rem, calc(100vw - 1.5rem));
+    height: min(44rem, calc(100dvh - 1.5rem));
+    max-height: min(44rem, calc(100dvh - 1.5rem));
+    border-radius: 12px;
+  }
   .hub-mod-toggles {
     grid-template-columns: 1fr;
   }
@@ -2674,8 +2680,16 @@ body.hub-sidebar-open .hub-sidebar {
 }
 
 .hub-sidebar__logo {
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
+}
+
+body.hub-login-page .hub-login-brand__mark {
+  width: 4rem;
+  height: 4rem;
+  margin: 0 auto 0.75rem;
+  display: block;
   object-fit: contain;
 }
 
@@ -6160,11 +6174,26 @@ button[disabled][data-busy] {
 }
 
 .carteira-toolbar {
-  grid-template-columns: minmax(12rem, 1.4fr) minmax(7rem, 0.6fr) minmax(10rem, 1fr) minmax(7rem, 0.6fr) auto;
+  grid-template-columns: minmax(11rem, 1.3fr) minmax(6.5rem, 0.5fr) minmax(5.5rem, 0.4fr) minmax(9rem, 0.9fr) minmax(6.5rem, 0.55fr) auto;
 }
 
 #hub-carteira-sheet.hub-user-sheet {
-  width: min(36rem, 100%);
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(48rem, calc(100vw - 1.5rem));
+  height: min(44rem, calc(100dvh - 1.5rem));
+  max-height: min(44rem, calc(100dvh - 1.5rem));
+  max-width: none;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  z-index: 60;
+  box-shadow: var(--exito-shadow);
+}
+
+#hub-carteira-sheet.hub-user-sheet[open] {
+  animation: none;
 }
 
 .carteira-toolbar-actions {
@@ -6191,18 +6220,51 @@ body.hub-body .carteira-page .carteira-list-card {
 }
 
 .carteira-list {
+  display: grid;
+  gap: 0.75rem;
   margin: 0;
-  padding: 0;
+  padding: 0.75rem;
   list-style: none;
 }
 
 .carteira-item {
   position: relative;
-  border-bottom: 1px solid var(--exito-line);
+  border: 1px solid var(--exito-line);
+  border-radius: 12px;
+  background: #fff;
 }
 
-.carteira-item:last-child {
-  border-bottom: 0;
+.carteira-regime-simples {
+  background: var(--exito-green-soft);
+  color: var(--exito-green);
+}
+
+.carteira-regime-mei {
+  background: #e7eef8;
+  color: var(--hub-folha);
+}
+
+.carteira-regime-nao-optante,
+.carteira-regime-presumido {
+  background: #fff4d6;
+  color: #8a5a00;
+}
+
+.carteira-regime-real {
+  background: #ece7ff;
+  color: #4c1d95;
+}
+
+.carteira-regime-ausente {
+  background: #eef2f6;
+  color: var(--exito-muted);
+}
+
+.carteira-regime + .carteira-inline-value::before {
+  content: "·";
+  margin-right: 0.45rem;
+  color: var(--exito-muted);
+  font-weight: 700;
 }
 
 .carteira-row-summary {
@@ -6265,11 +6327,33 @@ body.hub-body .carteira-page .carteira-list-card {
   font-size: 0.78rem;
 }
 
+.carteira-name-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.45rem;
+  min-width: 0;
+}
+
+.carteira-year-pills {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
 .carteira-name {
   min-width: 0;
   color: var(--hub-ink);
   font-size: 0.92rem;
   line-height: 1.3;
+}
+
+.carteira-regime-mobile-line {
+  display: block;
+}
+
+.carteira-regime-mobile-line + .carteira-regime-mobile-line {
+  margin-top: 0.25rem;
 }
 
 .carteira-identity {
@@ -6399,10 +6483,31 @@ body.hub-body .carteira-page .carteira-list-card {
   margin-right: 0;
 }
 
-.carteira-tipo legend {
+.carteira-tipo legend,
+.carteira-regimes legend {
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--exito-muted);
+}
+
+.carteira-regimes {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.15rem 0 0;
+  border: 0;
+}
+
+.carteira-regime-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.carteira-regime-row .hub-field {
+  flex: 1 1 8rem;
+  margin: 0;
 }
 
 @media (max-width: 900px) {
@@ -6447,15 +6552,11 @@ body.hub-body .carteira-page .carteira-list-card {
   }
 
   .carteira-list {
-    display: grid;
-    gap: 0.65rem;
+    gap: 0.75rem;
   }
 
   .carteira-item {
     padding: 0.75rem;
-    border: 1px solid var(--exito-line);
-    border-radius: 12px;
-    background: #fff;
   }
 
   .carteira-row {

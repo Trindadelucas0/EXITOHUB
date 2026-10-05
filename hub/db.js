@@ -549,6 +549,42 @@ async function bootstrapHubDatabase() {
   } catch (err) {
     console.warn('[hub] seed carteira falhou:', err.message);
   }
+  try {
+    await ensureCarteiraRegimes();
+  } catch (err) {
+    console.warn('[hub] carteira regimes falhou:', err.message);
+  }
+}
+
+async function ensureCarteiraRegimes() {
+  await query(`
+    CREATE TABLE IF NOT EXISTS carteira_regimes (
+      empresa_id UUID NOT NULL REFERENCES carteira_empresas(id) ON DELETE CASCADE,
+      ano INTEGER NOT NULL,
+      regime TEXT NOT NULL,
+      PRIMARY KEY (empresa_id, ano)
+    )
+  `);
+  const done = await query(
+    `SELECT 1 FROM hub_meta WHERE key = $1 LIMIT 1`,
+    ['carteira_regimes_ano_v1'],
+  );
+  if (done.rowCount) return;
+  const { REGIME_NAO_OPTANTE } = require('./carteira-store');
+  await query(
+    `INSERT INTO carteira_regimes (empresa_id, ano, regime)
+     SELECT id, 2026, regime
+     FROM carteira_empresas
+     WHERE regime IN ('Simples Nacional', 'MEI', $1)
+     ON CONFLICT (empresa_id, ano) DO NOTHING`,
+    [REGIME_NAO_OPTANTE],
+  );
+  await query(
+    `INSERT INTO hub_meta (key, value) VALUES ($1, '1')
+     ON CONFLICT (key) DO NOTHING`,
+    ['carteira_regimes_ano_v1'],
+  );
+  console.log('[hub] carteira: regimes de 2026 gravados');
 }
 
 async function closePool() {

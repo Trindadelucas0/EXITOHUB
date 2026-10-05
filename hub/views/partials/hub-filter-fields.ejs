@@ -3,6 +3,9 @@
 <input type="hidden" name="cat" value="<%= filters.cat || '' %>" />
 <input type="hidden" name="dep" value="<%= filters.dep || '' %>" />
 <input type="hidden" name="regime" value="<%= filters.regime || '' %>" />
+<% if (filters && filters.ano && Number(filters.ano) !== 2026) { %>
+<input type="hidden" name="ano_lista" value="<%= filters.ano %>" />
+<% } %>
 <input type="hidden" name="tipo" value="<%= filters.tipo || '' %>" />
 <% if (filters && Number(filters.p) > 1) { %>
 <input type="hidden" name="p" value="<%= filters.p %>" />
