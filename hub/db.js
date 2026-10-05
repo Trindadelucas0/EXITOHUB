@@ -554,6 +554,32 @@ async function bootstrapHubDatabase() {
   } catch (err) {
     console.warn('[hub] carteira regimes falhou:', err.message);
   }
+  try {
+    await ensureApuracaoSimples();
+  } catch (err) {
+    console.warn('[hub] apuracao simples falhou:', err.message);
+  }
+}
+
+async function ensureApuracaoSimples() {
+  await query(`
+    CREATE TABLE IF NOT EXISTS apuracao_simples (
+      empresa_id UUID PRIMARY KEY REFERENCES carteira_empresas(id) ON DELETE CASCADE,
+      observacao TEXT,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await query('ALTER TABLE apuracao_simples DROP CONSTRAINT IF EXISTS apuracao_simples_anexo_check');
+  await query('ALTER TABLE apuracao_simples DROP COLUMN IF EXISTS anexo');
+  await query(`
+    CREATE TABLE IF NOT EXISTS apuracao_simples_arquivos (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      empresa_id UUID NOT NULL REFERENCES carteira_empresas(id) ON DELETE CASCADE,
+      file_id UUID NOT NULL REFERENCES portal_files(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      UNIQUE (empresa_id, file_id)
+    )
+  `);
 }
 
 async function ensureCarteiraRegimes() {

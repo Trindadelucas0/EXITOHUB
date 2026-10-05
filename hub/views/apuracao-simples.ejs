@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <%- include('partials/hub-head') %>
+</head>
+<body class="hub-body apuracao-simples-page">
+  <%- include('partials/hub-chrome', { current: 'apuracao-simples', breadcrumb: 'Apuração Simples Nacional' }) %>
+
+  <main class="hub-shell-main hub-users-page apuracao-simples-main">
+    <header class="hub-users-hero apuracao-simples-hero">
+      <div>
+        <h1>Apuração Simples Nacional</h1>
+        <p class="hub-muted">Empresas no Simples Nacional em <%= anoApuracao %>. Número, nome, atividade, regime e matriz/filial vêm da carteira. Anexe PDF ou Word aqui; observações ficam só nesta tela.</p>
+      </div>
+      <div class="apuracao-simples-hero__meta">
+        <span class="apuracao-simples-count"><%= empresas.length %> empresa<%= empresas.length === 1 ? '' : 's' %></span>
+      </div>
+    </header>
+
+    <% if (flash) { %>
+      <div class="hub-alert hub-alert-ok" role="status"><%= flash %></div>
+    <% } %>
+    <% if (error) { %>
+      <div class="hub-alert hub-alert-error" role="alert"><%= error %></div>
+    <% } %>
+
+    <div class="hub-excel-wrap apuracao-excel-wrap">
+      <table class="hub-excel-table apuracao-excel-table">
+        <thead>
+          <tr>
+            <th class="hub-excel-sticky hub-excel-sticky-col-1 hub-excel-col-num">Nº</th>
+            <th class="hub-excel-sticky hub-excel-sticky-col-2 hub-excel-col-nome">Nome</th>
+            <th class="hub-excel-col-atividade">Atividade</th>
+            <% (anos || []).forEach(function (ano) { %>
+              <th class="hub-excel-col-regime">Regime <%= ano %></th>
+            <% }) %>
+            <th class="hub-excel-col-estab">Matriz/Filial</th>
+            <th class="hub-excel-col-anexo">Anexos</th>
+            <th class="hub-excel-col-obs">Observações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!empresas.length) { %>
+            <tr>
+              <td colspan="<%= 6 + (anos || []).length %>" class="hub-excel-empty">Nenhuma empresa no Simples Nacional em <%= anoApuracao %>.</td>
+            </tr>
+          <% } %>
+          <% empresas.forEach(function (row) {
+            const formId = 'apuracao-form-' + row.id;
+            const regimeFn = typeof regimeForYear === 'function' ? regimeForYear : function () { return ''; };
+            const arquivos = Array.isArray(row.apuracaoArquivos) ? row.apuracaoArquivos : [];
+          %>
+            <tr data-apuracao-row data-empresa-id="<%= row.id %>">
+              <td class="hub-excel-sticky hub-excel-sticky-col-1 hub-excel-col-num"><%= row.codigo %></td>
+              <td class="hub-excel-sticky hub-excel-sticky-col-2 hub-excel-col-nome"><%= row.razao %></td>
+              <td class="hub-excel-col-atividade"><%= row.tipo || '—' %></td>
+              <% (anos || []).forEach(function (ano) {
+                const reg = regimeFn(row, ano);
+              %>
+                <td class="hub-excel-col-regime"><%= reg || '—' %></td>
+              <% }) %>
+              <td class="hub-excel-col-estab"><%= row.estabelecimento || '—' %></td>
+              <td class="hub-excel-col-anexo apuracao-files-cell">
+                <ul class="apuracao-file-list" data-apuracao-file-list>
+                  <% arquivos.forEach(function (arq) { %>
+                    <li class="apuracao-file-chip" data-arquivo-id="<%= arq.id %>">
+                      <span class="apuracao-file-chip__icon" aria-hidden="true"><%= (arq.mime || '').indexOf('pdf') !== -1 ? 'PDF' : 'DOC' %></span>
+                      <span class="apuracao-file-chip__name" title="<%= arq.nome %>"><%= arq.nome %></span>
+                      <a class="apuracao-file-chip__link" href="<%= arq.url %>" target="_blank" rel="noopener noreferrer">Baixar</a>
+                      <button type="button" class="apuracao-file-chip__remove" data-remove-arquivo="<%= arq.id %>" aria-label="Remover <%= arq.nome %>">×</button>
+                    </li>
+                  <% }) %>
+                </ul>
+                <label class="apuracao-upload-btn">
+                  <span>+ Anexar arquivo</span>
+                  <input
+                    type="file"
+                    name="arquivo"
+                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    data-apuracao-file-input
+                  />
+                </label>
+                <p class="apuracao-files-hint hub-muted">PDF ou Word, até 15 MB</p>
+              </td>
+              <td class="hub-excel-col-obs">
+                <textarea
+                  name="observacao"
+                  form="<%= formId %>"
+                  class="hub-excel-input hub-excel-textarea"
+                  rows="2"
+                  maxlength="4000"
+                  aria-label="Observações para <%= row.razao %>"
+                ><%= row.apuracaoObservacao || '' %></textarea>
+                <span class="hub-excel-row-status" data-apuracao-status role="status" aria-live="polite"></span>
+              </td>
+            </tr>
+            <form
+              id="<%= formId %>"
+              method="post"
+              action="/fiscal/apuracao-simples/<%= row.id %>"
+              data-apuracao-form
+              hidden
+            ></form>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="/hub-assets/hub-apuracao-simples.js"></script>
+  <%- include('partials/hub-chrome-end') %>
+</body>
+</html>

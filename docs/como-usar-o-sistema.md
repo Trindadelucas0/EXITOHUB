@@ -1,39 +1,10 @@
-# Como usar o Êxito Hub
+# Como usar o EXITO HUB
 
-Guia do dia a dia. Regras oficiais: [`DOCUMENTACAO-SISTEMA.md`](../DOCUMENTACAO-SISTEMA.md).
+Guia prático do dia a dia. Comportamento detalhado: [`DOCUMENTACAO-SISTEMA.md`](../DOCUMENTACAO-SISTEMA.md) na raiz do repositório.
 
-## Entrar
+## Home
 
-1. Abra o Hub e faça login em `/login`.
-2. A **sidebar** à esquerda mostra só o que o seu usuário pode acessar (no celular, use o botão de menu no topo).
-3. No **topo**, avatar (foto ou iniciais) e nome abrem **Meu perfil** (`/perfil`) — lá você troca só a foto (jpeg/png/webp). Login e e-mail só o admin altera em Gerenciar usuários.
-4. Quem tem **vários módulos** (ou nenhum) cai na **Home** `/` — o portal corporativo.
-5. Quem tem **um único módulo** (só Folha, só NCM, só Conciliação) continua indo direto para esse módulo no login. Para ver o portal, use **Início** na sidebar ou a marca Êxito HUB.
-
-## Home / Portal corporativo
-
-A Home muda conforme o status de integração. O miolo do shell fica sobre um canvas cinza-azulado (`#e4ebf5`); os cards são brancos com borda e sombra leves, com vão de 1.25rem entre blocos e margem lateral de 1.5rem no desktop (1rem no tablet, 0.75rem no celular). No monitor largo a Home ocupa a área ao lado do menu (sem coluna fixa estreita). No tablet (abaixo de 1024px) o menu vira gaveta e o carrossel empilha a foto em cima do texto. No celular (abaixo de 640px) a data fica abaixo da saudação, os atalhos quebram linha e Comunicados, Eventos e Agenda ocupam a largura da tela.
-
-**Se ainda não concluiu** (`PENDING` / `IN_PROGRESS`):
-
-- Banner verde **Bem-vindo ao Êxito** começa fechado, só com o título e o percentual. Clique nele para ver a barra de progresso (etapas), **Ver checklist** e **Continuar integração**; clique de novo para fechar.
-- **Cinco cards** com ícone — Vídeos, POPs, Diagrama, Informativos e Catálogos (com contagem real de itens quando houver) — passam sozinhos numa faixa contínua, três por vez no computador. Pare o ponteiro em cima da faixa para ela segurar e clique em **Acessar**.
-  - Em **Vídeos** (`/portal/videos`), o player YouTube fica em coluna central (~1040px); conclua o módulo com **Marcar como concluído** para liberar o próximo (`?v=`).
-  - Em **Diagrama**, **Informativos**, **Catálogos** e **Documentos**, o próximo item só libera depois de marcar o atual como concluído. POPs continuam livremente navegáveis.
-
-**Se já concluiu** (`COMPLETED`):
-
-- Card de saudação + **Acessos principais** (só os módulos que o seu login abre: Auditor Fiscal, Conciliação, Controle folha mensal; admin vê também Portal Corporativo e Gerenciar usuários) + **atalhos rápidos** em pills (inclui Documentos Corporativos; sem Logos).
-- Foco em Conteúdos Êxito, comunicados/eventos, agenda, links e contatos.
-
-Em ambos os casos:
-
-- **Conteúdos Êxito** — carrossel imagem + texto, só o que está **Publicado**. Com 2 ou mais publicados, troca sozinho a cada 5 s deslizando; pare o mouse em cima para segurar. Quando o conteúdo tem link, **Ver mais →** aparece no hover e o clique abre o link. O boot não deixa as fotos de exemplo (escritório). Se não houver conteúdo cadastrado, entra de novo a imagem original do carrossel. Sem nenhum item, a Home mostra “Em breve, novidades do Êxito.”
-- **Comunicados** — até 4 comunicados ativos em cartões coloridos pelo tipo: **Operacional** (azul), **HUB** (verde) e **Interno** (âmbar), com selo, título, data e texto. Sem registros, empty state. **Ver todos →** abre `/portal/comunicados` (lista simples).
-- **Agenda Êxito** — mostra o próximo evento quando houver; **Ver agenda completa** → `/portal/agenda` (mesma lista da semana; sem sync com Google Agenda).
-- **Links úteis** — grade 2 colunas com os atalhos **ativos** do admin (vazio: empty state).
-- **Contatos úteis** — linhas com foto ou iniciais, só os **ativos**; filtro por departamento; botões E-mail / WhatsApp quando cadastrados. O seed de teste preenche contatos só se a tabela estiver vazia.
-- **Vídeos, POPs, Diagrama, Informativos, Catálogos e Documentos** — não aparecem como item na Home. Abra a área (`/portal/videos`, `/portal/pops` e as demais). Em Vídeos, Diagrama, Informativos, Catálogos e Documentos, o próximo item só libera depois de **Marcar como concluído**; itens bloqueados aparecem como Bloqueado. POPs continuam livremente navegáveis.
+Após login, a Home mostra saudação, atalhos e painéis (comunicados, eventos, agenda). Quem ainda não concluiu a integração vê o banner e os cinco cards grandes da trilha.
 
 ## Integração (onboarding)
 
@@ -72,11 +43,11 @@ Só admin. Sidebar **Geral → Controle da Carteira de Clientes** (`/carteira`).
 
 Só admin. Sidebar **Fiscal → Apuração Simples Nacional** (`/fiscal/apuracao-simples`).
 
-1. A tela é uma **grade** (não card), com todas as empresas que estão no **Simples Nacional em 2026** na carteira — o mesmo critério do filtro Regime da carteira para esse ano.
-2. Colunas **Nº** e **Nome**, **Regime** com uma coluna por ano (2026, 2027 e os outros anos gravados na carteira), **Matriz/Filial** vêm da carteira e são só leitura.
-3. **Anexo do Simples** — escolha de — a **Anexo V**. Ao mudar, a linha grava sozinha.
-4. **Observações** — texto livre desta tela. Ao sair do campo, se mudou, grava. O botão **Salvar** da linha funciona sem JavaScript.
-5. Isso **não** altera a observação do card em **Controle da Carteira de Clientes**. Anexo e observação da apuração ficam só aqui.
+1. A tela é uma **grade** (não card), com todas as empresas no **Simples Nacional em 2026** na carteira.
+2. Colunas **Nº**, **Nome**, **Atividade** (Comércio, Serviço, etc., igual ao card da carteira), **Regime** (uma coluna por ano), **Matriz/Filial** — só leitura, vindas da carteira.
+3. **Anexos** — use **+ Anexar arquivo** para enviar **PDF ou Word** (até 15 MB). Pode anexar **vários arquivos** na mesma linha. Cada arquivo aparece em um chip com **Baixar** e **×** para remover.
+4. **Observações** — texto só desta tela. Ao sair do campo, se mudou, grava sozinha.
+5. Isso **não** altera a observação do card em **Controle da Carteira de Clientes**.
 
 ## Admin — Portal Corporativo
 
@@ -87,10 +58,3 @@ Só admin. Sidebar **Fiscal → Apuração Simples Nacional** (`/fiscal/apuracao
    - **Excluir:** botão **Excluir** na linha → diálogo **Excluir “nome”?** → confirmar. É definitivo. Nas áreas com trilha (Vídeos, Diagrama, Informativos, Catálogos, Documentos) e nas etapas do onboarding, se alguém já concluiu, o diálogo diz quantos colaboradores — esse progresso é apagado junto. Para só esconder, use **Desativar**.
    - **Comunicados:** título, texto, data de publicação, **Tipo** e Ativo. O Tipo (Operacional, HUB ou Interno; o novo já vem Operacional) escolhe a cor e o selo do cartão na Home. Aparecem na Home e em `/portal/comunicados` enquanto ativos.
    - **Eventos:** título, local, data/hora e Ativo. Aparecem na Home, em `/portal/eventos` e na Agenda enquanto ativos e com data futura.
-   - **Vídeo em destaque:** em **Vídeos**, **Definir como destaque** marca um único vídeo (pílula **Destaque** em `/portal/videos`). Se já houver outro, a tela pergunta se deve substituir. A ordem da trilha de vídeos não muda.
-4. Links externos e YouTube devem ser `https://`. Arquivos só abrem para quem está logado.
-5. Em **Gerenciar usuários**, no sheet criar/editar, campo **Foto de perfil** (opcional). A lista mostra a foto; o colaborador também troca em **Meu perfil**.
-
-## POPs
-
-Na área pública (`/portal/pops`), o conteúdo abre **dentro do HUB**: link YouTube vira player embutido; PDF/imagem anexados aparecem na página. A trilha troca o destaque (`?p=`). Não há botão para abrir fora do sistema.

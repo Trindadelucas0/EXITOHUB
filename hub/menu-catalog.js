@@ -78,6 +78,16 @@ function buildCatalog() {
           description: 'Auditor de NCM e regras fiscais.',
         },
         {
+          id: 'apuracao-simples',
+          label: 'Apuração Simples Nacional',
+          href: '/fiscal/apuracao-simples',
+          require: 'admin',
+          status: 'live',
+          icon: 'receipt',
+          currentKey: 'apuracao-simples',
+          description: 'Grade de apuração do Simples Nacional (empresas da carteira).',
+        },
+        {
           id: 'debitos',
           label: 'Controle de Débitos/ parcelamentos',
           href: '/hub/modulo/debitos',

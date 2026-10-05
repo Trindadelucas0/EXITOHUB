@@ -128,6 +128,11 @@ const TARGET_TYPES = ['none', 'internal', 'external'];
 
 const IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const DOC_MIMES = new Set(['application/pdf', ...IMAGE_MIMES]);
+const APURACAO_FILE_MIMES = new Set([
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+]);
 const VIDEO_MIMES = new Set(['video/mp4', ...DOC_MIMES]);
 
 const LIMITS = {
@@ -160,6 +165,7 @@ module.exports = {
   TARGET_TYPES,
   IMAGE_MIMES,
   DOC_MIMES,
+  APURACAO_FILE_MIMES,
   VIDEO_MIMES,
   LIMITS,
   DEFAULT_ONBOARDING_STEPS,

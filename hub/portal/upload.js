@@ -5,7 +5,13 @@ const fs = require('fs');
 const { randomUUID } = require('crypto');
 const multer = require('multer');
 const { query } = require('../db');
-const { IMAGE_MIMES, DOC_MIMES, VIDEO_MIMES, LIMITS } = require('./constants');
+const {
+  IMAGE_MIMES,
+  DOC_MIMES,
+  APURACAO_FILE_MIMES,
+  VIDEO_MIMES,
+  LIMITS,
+} = require('./constants');
 
 const UPLOAD_ROOT = path.join(__dirname, '..', 'uploads', 'portal');
 
@@ -18,6 +24,10 @@ function extensionForMime(mime) {
   if (mime === 'image/png') return '.png';
   if (mime === 'image/webp') return '.webp';
   if (mime === 'application/pdf') return '.pdf';
+  if (mime === 'application/msword') return '.doc';
+  if (mime === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+    return '.docx';
+  }
   if (mime === 'video/mp4') return '.mp4';
   return '';
 }
@@ -25,6 +35,7 @@ function extensionForMime(mime) {
 function maxBytesForMime(mime) {
   if (IMAGE_MIMES.has(mime)) return LIMITS.imageBytes;
   if (mime === 'application/pdf') return LIMITS.pdfBytes;
+  if (APURACAO_FILE_MIMES.has(mime)) return LIMITS.pdfBytes;
   if (mime === 'video/mp4') return LIMITS.videoBytes;
   return LIMITS.imageBytes;
 }
@@ -65,6 +76,7 @@ function createUploader(allowedMimes) {
 
 const uploadImage = createUploader(IMAGE_MIMES);
 const uploadDoc = createUploader(DOC_MIMES);
+const uploadApuracao = createUploader(APURACAO_FILE_MIMES);
 const uploadMedia = createUploader(VIDEO_MIMES);
 
 async function saveUploadedFile(file, userId) {
@@ -124,14 +136,31 @@ function mediaUrl(fileId) {
   return `/portal/media/${fileId}`;
 }
 
+async function deleteStoredFile(fileId) {
+  const file = await getFileById(fileId);
+  if (!file) return false;
+  const abs = absolutePathForStored(file.stored_path);
+  if (abs) {
+    try {
+      fs.unlinkSync(abs);
+    } catch (_) {
+      /* ignore */
+    }
+  }
+  await query('DELETE FROM portal_files WHERE id = $1', [file.id]);
+  return true;
+}
+
 module.exports = {
   UPLOAD_ROOT,
   ensureUploadDir,
   uploadImage,
   uploadDoc,
+  uploadApuracao,
   uploadMedia,
   saveUploadedFile,
   getFileById,
   absolutePathForStored,
   mediaUrl,
+  deleteStoredFile,
 };
