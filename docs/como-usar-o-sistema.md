@@ -49,7 +49,7 @@ Em ambos os casos:
 Clique no nome do departamento (Geral, Fiscal, Contábil, Folha, Administrativo, Operações & Gestão) para abrir ou fechar os links. O departamento da página atual já vem aberto. Abrir um fecha o outro do mesmo bloco. Item da página atual fica verde. Módulo ainda não pronto aparece com a pílula **Em breve**. Itens só de admin mostram badge **Admin**.
 
 - **Geral** — **Controle da Carteira de Clientes** (`/carteira`, admin: criar, editar e excluir a relação de empresas), certificados (SIEG) e login do cliente (admin; os dois últimos ainda “Em breve”).
-- **Fiscal** — Auditor Fiscal (`/ncm/`), Controle DAUTO (`/folha/fiscal`) e itens fiscais futuros (admin).
+- **Fiscal** — Auditor Fiscal (`/ncm/`), **Apuração Simples Nacional** (`/fiscal/apuracao-simples`, admin), Controle DAUTO (`/folha/fiscal`) e itens fiscais futuros (admin).
 - **Contábil** — Conciliação (`/conci/`).
 - **Folha de pagamento** — folha mensal, DAUTO Tintas e CCT/calculadora (admin, em breve).
 - **Administrativo** — Integração, áreas do portal e, em **Configuração** (admin): Portal Corporativo, Gerenciar usuários e Acompanhamento Onboarding.
@@ -62,11 +62,21 @@ Quem só tem NCM (consulta de cliente) vê **Fiscal → Auditor Fiscal** e as á
 Só admin. Sidebar **Geral → Controle da Carteira de Clientes** (`/carteira`).
 
 1. A relação mostra **25 empresas por página**, com **Ativa** no topo da lista (depois Inativa, M e demais). Use **Anterior** e **Próxima**. Cada empresa é um **card** com espaço entre eles. No computador, cada empresa tem dois andares: o primeiro prioriza código, razão, UF, CNPJ, matriz/filial, situação, **Editar** e **Excluir**, com **uma pílula por ano** ao lado do nome (por exemplo `2026 Simples Nacional`). O segundo mostra tipo, CNAE, contato e e-mail — o regime não se repete nessa linha. Lanchonete já gravada aparece como **Comércio e Serviço**. Clique na empresa para abrir CNAE secundário, sócios e observações. No celular, o cartão traz os campos; **Regime Tributário** lista os anos, um por linha. Sem ano gravado, não há pílula.
-2. Filtre por busca (código, razão ou CNPJ), situação, **ano** (padrão 2026) e regime daquele ano, ou tipo. **Regime** em Todos não esconde empresa. **Limpar** tira o filtro. **Exportar Excel** usa os campos que estão na barra na hora do clique (não precisa **Filtrar** antes) e baixa **todas** as empresas desse filtro (não só as 25 da tela), com CNAE secundário, sócios, observações e **uma coluna por ano** (Regime 2026, Regime 2027 e os outros anos que existirem). Com filtro ativo, o botão pode mostrar a quantidade `(N)` e uma linha avisa que o arquivo traz todas do filtro. Sem filtro, vêm as ~233 empresas, ativas primeiro.
+2. Filtre por busca (código, razão ou CNPJ), situação, **ano** (padrão 2026) e regime daquele ano, ou tipo. No computador largo esses filtros ficam na mesma linha. Quando a área útil é menor que 68rem, Situação, Ano, Regime e Tipo abrem em **Filtros** (o bloco já vem aberto se algum deles não for o padrão: Todas, 2026, Todos). **Regime** em Todos não esconde empresa. **Limpar** tira o filtro. **Exportar Excel** continua à vista, usa os campos que estão na barra na hora do clique (não precisa **Filtrar** antes) e baixa **todas** as empresas desse filtro (não só as 25 da tela), com CNAE secundário, sócios, observações e **uma coluna por ano** (Regime 2026, Regime 2027 e os outros anos que existirem). A explicação fica na dica do próprio botão. Com filtro ativo, o botão pode mostrar a quantidade `(N)`. O contador e **Anterior** / **Próxima** ficam na mesma linha. O CNPJ na relação e no arquivo sai só com os 14 números. Sem filtro, vêm as ~233 empresas, ativas primeiro.
 3. **+ Nova empresa** abre um **modal no centro** da tela. Código e razão social são obrigatórios. Tipo da atividade: marque **Serviço**, **Comércio** e/ou **Indústria** juntos — uma lanchonete pode ser Comércio além de Serviço, e a relação já gravada foi alinhada a isso (Comércio e Serviço juntos). Em **Regime tributário**, use **Adicionar ano** para informar o ano e o regime; **Tirar** remove a linha. 2027 só aparece depois de escolhido.
 4. **Editar** na linha abre o mesmo modal. **Salvar** grava; **Cancelar**, o **X**, **Esc** ou clique fora do modal fecham sem alterar.
 5. **Excluir** pede confirmação. Não desfaz. Código repetido não grava; o mesmo CNPJ pode existir em dois códigos.
 6. Isso não cadastra a empresa na Conciliação nem no Auditor Fiscal.
+
+## Apuração Simples Nacional
+
+Só admin. Sidebar **Fiscal → Apuração Simples Nacional** (`/fiscal/apuracao-simples`).
+
+1. A tela é uma **grade** (não card), com todas as empresas que estão no **Simples Nacional em 2026** na carteira — o mesmo critério do filtro Regime da carteira para esse ano.
+2. Colunas **Nº** e **Nome**, **Regime** com uma coluna por ano (2026, 2027 e os outros anos gravados na carteira), **Matriz/Filial** vêm da carteira e são só leitura.
+3. **Anexo do Simples** — escolha de — a **Anexo V**. Ao mudar, a linha grava sozinha.
+4. **Observações** — texto livre desta tela. Ao sair do campo, se mudou, grava. O botão **Salvar** da linha funciona sem JavaScript.
+5. Isso **não** altera a observação do card em **Controle da Carteira de Clientes**. Anexo e observação da apuração ficam só aqui.
 
 ## Admin — Portal Corporativo
 

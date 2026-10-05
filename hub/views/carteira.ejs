@@ -39,6 +39,13 @@
       return '';
     }
 
+    const filtrosFora =
+      (filters.sit ? 1 : 0) +
+      (filters.regime ? 1 : 0) +
+      (filters.tipo ? 1 : 0) +
+      (Number(filters.ano) !== 2026 ? 1 : 0);
+    const excelHint = 'Baixa todas as empresas deste filtro (CNAE secundário, sócios, observações e regime por ano), não só as 25 da página.';
+
   %>
 
   <main class="hub-shell-main hub-users-page carteira-page">
@@ -69,85 +76,92 @@
         <span>Busca</span>
         <input type="search" name="q" value="<%= filters.q %>" placeholder="Código, razão ou CNPJ" maxlength="120" autocomplete="off" form="carteira-filter" />
       </label>
-      <label class="hub-field">
-        <span>Situação</span>
-        <select name="sit" form="carteira-filter">
-          <option value="">Todas</option>
-          <% situacoes.forEach(function (sit) { %>
-            <option value="<%= sit %>" <%= filters.sit === sit ? 'selected' : '' %>><%= sit %></option>
-          <% }) %>
-        </select>
-      </label>
-      <label class="hub-field">
-        <span>Ano</span>
-        <select name="ano" form="carteira-filter">
-          <% (anos || [2026, 2027]).forEach(function (ano) { %>
-            <option value="<%= ano %>" <%= Number(filters.ano) === Number(ano) ? 'selected' : '' %>><%= ano %></option>
-          <% }) %>
-        </select>
-      </label>
-      <label class="hub-field">
-        <span>Regime</span>
-        <select name="regime" form="carteira-filter">
-          <option value="">Todos</option>
-          <% (regimesFiltro || regimes).forEach(function (reg) { %>
-            <option value="<%= reg %>" <%= filters.regime === reg ? 'selected' : '' %>><%= reg === regimeNaoOptante ? 'Não optante pelo Simples' : reg %></option>
-          <% }) %>
-        </select>
-      </label>
-      <label class="hub-field">
-        <span>Tipo</span>
-        <select name="tipo" form="carteira-filter">
-          <option value="">Todos</option>
-          <option value="comercio" <%= filters.tipo === 'comercio' ? 'selected' : '' %>>Comércio</option>
-          <option value="servico" <%= filters.tipo === 'servico' ? 'selected' : '' %>>Serviço</option>
-          <option value="industria" <%= filters.tipo === 'industria' ? 'selected' : '' %>>Indústria</option>
-        </select>
-      </label>
+      <button type="submit" class="hub-btn hub-btn-ghost carteira-excel" form="carteira-filter" formaction="/carteira/excel" formmethod="get" formnovalidate title="<%= excelHint %>" aria-describedby="carteira-excel-hint">Exportar Excel<% if (hasFilter && filteredCount) { %> (<%= filteredCount %>)<% } %></button>
+      <div class="carteira-filtros-bar">
+      <details class="carteira-filtros"<% if (filtrosFora) { %> open<% } %>>
+        <summary>Filtros<% if (filtrosFora) { %> · <%= filtrosFora %><% } %></summary>
+        <div class="carteira-filtros-fields">
+          <label class="hub-field">
+            <span>Situação</span>
+            <select name="sit" form="carteira-filter">
+              <option value="">Todas</option>
+              <% situacoes.forEach(function (sit) { %>
+                <option value="<%= sit %>" <%= filters.sit === sit ? 'selected' : '' %>><%= sit %></option>
+              <% }) %>
+            </select>
+          </label>
+          <label class="hub-field">
+            <span>Ano</span>
+            <select name="ano" form="carteira-filter">
+              <% (anos || [2026, 2027]).forEach(function (ano) { %>
+                <option value="<%= ano %>" <%= Number(filters.ano) === Number(ano) ? 'selected' : '' %>><%= ano %></option>
+              <% }) %>
+            </select>
+          </label>
+          <label class="hub-field">
+            <span>Regime</span>
+            <select name="regime" form="carteira-filter">
+              <option value="">Todos</option>
+              <% (regimesFiltro || regimes).forEach(function (reg) { %>
+                <option value="<%= reg %>" <%= filters.regime === reg ? 'selected' : '' %>><%= reg === regimeNaoOptante ? 'Não optante pelo Simples' : reg %></option>
+              <% }) %>
+            </select>
+          </label>
+          <label class="hub-field">
+            <span>Tipo</span>
+            <select name="tipo" form="carteira-filter">
+              <option value="">Todos</option>
+              <option value="comercio" <%= filters.tipo === 'comercio' ? 'selected' : '' %>>Comércio</option>
+              <option value="servico" <%= filters.tipo === 'servico' ? 'selected' : '' %>>Serviço</option>
+              <option value="industria" <%= filters.tipo === 'industria' ? 'selected' : '' %>>Indústria</option>
+            </select>
+          </label>
+        </div>
+      </details>
       <div class="carteira-toolbar-actions">
         <button type="submit" class="hub-btn hub-btn-ghost" form="carteira-filter" formnovalidate>Filtrar</button>
         <% if (hasFilter) { %>
           <a class="hub-btn hub-btn-ghost" href="/carteira">Limpar</a>
         <% } %>
-        <button type="submit" class="hub-btn hub-btn-ghost" form="carteira-filter" formaction="/carteira/excel" formmethod="get" formnovalidate>Exportar Excel<% if (hasFilter && filteredCount) { %> (<%= filteredCount %>)<% } %></button>
+      </div>
       </div>
     </form>
 
-    <% if (hasFilter) { %>
-      <p class="hub-muted hub-users-count">O Excel traz todas as empresas deste filtro (CNAE secundário, sócios, observações e colunas Regime por ano), não só as 25 da página.</p>
-    <% } %>
+    <p id="carteira-excel-hint" class="visually-hidden"><%= excelHint %></p>
 
-    <p class="hub-users-count">
-      <% if (!filteredCount) { %>
-        <% if (hasFilter) { %>
-          0 empresas neste filtro
+    <div class="carteira-meta">
+      <p class="hub-users-count">
+        <% if (!filteredCount) { %>
+          <% if (hasFilter) { %>
+            0 empresas neste filtro
+            · <a href="/carteira">Limpar</a>
+          <% } else { %>
+            0 empresas
+          <% } %>
+        <% } else if (hasFilter) { %>
+          Mostrando <%= from %>–<%= to %> de <%= filteredCount %> <%= filteredCount === 1 ? 'empresa' : 'empresas' %> neste filtro
           · <a href="/carteira">Limpar</a>
         <% } else { %>
-          0 empresas
+          Mostrando <%= from %>–<%= to %> de <%= filteredCount %> <%= filteredCount === 1 ? 'empresa' : 'empresas' %>
         <% } %>
-      <% } else if (hasFilter) { %>
-        Mostrando <%= from %>–<%= to %> de <%= filteredCount %> <%= filteredCount === 1 ? 'empresa' : 'empresas' %> neste filtro
-        · <a href="/carteira">Limpar</a>
-      <% } else { %>
-        Mostrando <%= from %>–<%= to %> de <%= filteredCount %> <%= filteredCount === 1 ? 'empresa' : 'empresas' %>
-      <% } %>
-    </p>
+      </p>
 
-    <% if (empresas.length) { %>
-      <nav class="carteira-pager" aria-label="Paginação da carteira">
-        <% if (page > 1) { %>
-          <a class="hub-btn hub-btn-ghost" href="<%= listHref({ p: page - 1 }) %>">Anterior</a>
-        <% } else { %>
-          <span class="hub-btn hub-btn-ghost carteira-pager-disabled" aria-disabled="true">Anterior</span>
-        <% } %>
-        <span>Página <%= page %> de <%= pageCount %></span>
-        <% if (page < pageCount) { %>
-          <a class="hub-btn hub-btn-ghost" href="<%= listHref({ p: page + 1 }) %>">Próxima</a>
-        <% } else { %>
-          <span class="hub-btn hub-btn-ghost carteira-pager-disabled" aria-disabled="true">Próxima</span>
-        <% } %>
-      </nav>
-    <% } %>
+      <% if (empresas.length) { %>
+        <nav class="carteira-pager" aria-label="Paginação da carteira">
+          <% if (page > 1) { %>
+            <a class="hub-btn hub-btn-ghost" href="<%= listHref({ p: page - 1 }) %>">Anterior</a>
+          <% } else { %>
+            <span class="hub-btn hub-btn-ghost carteira-pager-disabled" aria-disabled="true">Anterior</span>
+          <% } %>
+          <span>Página <%= page %> de <%= pageCount %></span>
+          <% if (page < pageCount) { %>
+            <a class="hub-btn hub-btn-ghost" href="<%= listHref({ p: page + 1 }) %>">Próxima</a>
+          <% } else { %>
+            <span class="hub-btn hub-btn-ghost carteira-pager-disabled" aria-disabled="true">Próxima</span>
+          <% } %>
+        </nav>
+      <% } %>
+    </div>
 
     <section class="hub-card carteira-list-card">
       <% if (!totalCount) { %>
