@@ -39,16 +39,6 @@
       return '';
     }
 
-    function excelHref() {
-      const params = new URLSearchParams();
-      if (filters.q) params.set('q', filters.q);
-      if (filters.sit) params.set('sit', filters.sit);
-      if (filters.ano && Number(filters.ano) !== 2026) params.set('ano', String(filters.ano));
-      if (filters.regime) params.set('regime', filters.regime);
-      if (filters.tipo) params.set('tipo', filters.tipo);
-      const qs = params.toString();
-      return qs ? '/carteira/excel?' + qs : '/carteira/excel';
-    }
   %>
 
   <main class="hub-shell-main hub-users-page carteira-page">
@@ -119,9 +109,13 @@
         <% if (hasFilter) { %>
           <a class="hub-btn hub-btn-ghost" href="/carteira">Limpar</a>
         <% } %>
-        <a class="hub-btn hub-btn-ghost" href="<%= excelHref() %>">Exportar Excel</a>
+        <button type="submit" class="hub-btn hub-btn-ghost" form="carteira-filter" formaction="/carteira/excel" formmethod="get" formnovalidate>Exportar Excel<% if (hasFilter && filteredCount) { %> (<%= filteredCount %>)<% } %></button>
       </div>
     </form>
+
+    <% if (hasFilter) { %>
+      <p class="hub-muted hub-users-count">O Excel traz todas as empresas deste filtro (CNAE secundário, sócios, observações e colunas Regime por ano), não só as 25 da página.</p>
+    <% } %>
 
     <p class="hub-users-count">
       <% if (!filteredCount) { %>

@@ -366,12 +366,27 @@ function buildCarteiraWhere(filters = {}) {
     params.push(ano);
     const anoIdx = params.length;
     params.push(filters.regime);
-    clauses.push(`EXISTS (
+    const regimeIdx = params.length;
+    let regimeClause = `(EXISTS (
       SELECT 1 FROM carteira_regimes cr
       WHERE cr.empresa_id = carteira_empresas.id
         AND cr.ano = $${anoIdx}
-        AND cr.regime = $${params.length}
-    )`);
+        AND cr.regime = $${regimeIdx}
+    )`;
+    if (ano === ANO_PADRAO) {
+      params.push(ANO_PADRAO);
+      const anoPadraoIdx = params.length;
+      regimeClause += ` OR (
+        carteira_empresas.regime = $${regimeIdx}
+        AND NOT EXISTS (
+          SELECT 1 FROM carteira_regimes cr2
+          WHERE cr2.empresa_id = carteira_empresas.id
+            AND cr2.ano = $${anoPadraoIdx}
+        )
+      )`;
+    }
+    regimeClause += ')';
+    clauses.push(regimeClause);
   }
   if (TIPOS.includes(filters.tipo)) {
     clauses.push(`${filters.tipo} = true`);

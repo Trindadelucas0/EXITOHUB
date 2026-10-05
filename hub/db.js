@@ -565,26 +565,47 @@ async function ensureCarteiraRegimes() {
       PRIMARY KEY (empresa_id, ano)
     )
   `);
-  const done = await query(
+  const { REGIME_NAO_OPTANTE } = require('./carteira-store');
+  const v1done = await query(
     `SELECT 1 FROM hub_meta WHERE key = $1 LIMIT 1`,
     ['carteira_regimes_ano_v1'],
   );
-  if (done.rowCount) return;
-  const { REGIME_NAO_OPTANTE } = require('./carteira-store');
-  await query(
-    `INSERT INTO carteira_regimes (empresa_id, ano, regime)
-     SELECT id, 2026, regime
-     FROM carteira_empresas
-     WHERE regime IN ('Simples Nacional', 'MEI', $1)
-     ON CONFLICT (empresa_id, ano) DO NOTHING`,
-    [REGIME_NAO_OPTANTE],
+  if (!v1done.rowCount) {
+    await query(
+      `INSERT INTO carteira_regimes (empresa_id, ano, regime)
+       SELECT id, 2026, regime
+       FROM carteira_empresas
+       WHERE regime IN ('Simples Nacional', 'MEI', $1)
+       ON CONFLICT (empresa_id, ano) DO NOTHING`,
+      [REGIME_NAO_OPTANTE],
+    );
+    await query(
+      `INSERT INTO hub_meta (key, value) VALUES ($1, '1')
+       ON CONFLICT (key) DO NOTHING`,
+      ['carteira_regimes_ano_v1'],
+    );
+    console.log('[hub] carteira: regimes de 2026 gravados');
+  }
+  const v2done = await query(
+    `SELECT 1 FROM hub_meta WHERE key = $1 LIMIT 1`,
+    ['carteira_regimes_ano_v2'],
   );
-  await query(
-    `INSERT INTO hub_meta (key, value) VALUES ($1, '1')
-     ON CONFLICT (key) DO NOTHING`,
-    ['carteira_regimes_ano_v1'],
-  );
-  console.log('[hub] carteira: regimes de 2026 gravados');
+  if (!v2done.rowCount) {
+    await query(
+      `INSERT INTO carteira_regimes (empresa_id, ano, regime)
+       SELECT id, 2026, regime
+       FROM carteira_empresas
+       WHERE regime IN ('Lucro Presumido', 'Lucro Real', 'Não encontrado')
+         AND regime IS NOT NULL
+       ON CONFLICT (empresa_id, ano) DO NOTHING`,
+    );
+    await query(
+      `INSERT INTO hub_meta (key, value) VALUES ($1, '1')
+       ON CONFLICT (key) DO NOTHING`,
+      ['carteira_regimes_ano_v2'],
+    );
+    console.log('[hub] carteira: regimes legados 2026 (v2) gravados');
+  }
 }
 
 async function closePool() {
