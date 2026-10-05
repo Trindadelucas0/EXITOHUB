@@ -1,7 +1,7 @@
 # EXITO HUB — Documentação do sistema
 
 > Fonte oficial de comportamento do monorepo **EXITO HUB** (Folha, Conciliação, NCM, Portal Corporativo).
-> Versão: 1.5.52 — Carteira: **Exportar Excel** envia o formulário de filtros (`formaction` `/carteira/excel`); backfill `carteira_regimes_ano_v2` para Lucro Presumido/Real/Não encontrado.
+> Versão: 1.5.53 — Carteira: **Exportar Excel** deixa de ser interceptado pelo filtro AJAX em [`hub-admin-actions.js`](hub/public/hub-admin-actions.js) (botões com `formaction` seguem o GET nativo para `/carteira/excel`).
 
 ## 1. Visão geral
 
@@ -55,6 +55,7 @@ Persona pronta de consulta da BAIFER: seed [`hub/seed-baifer-consulta.js`](hub/s
 
 | Versão | Data | O que mudou |
 |--------|------|-------------|
+| 1.5.53 | 05/10/2026 | Carteira (`/carteira`): **Exportar Excel** voltou a baixar `carteira-empresas.xlsx`. Causa: em [`hub-admin-actions.js`](hub/public/hub-admin-actions.js) o clique em todo `button[type="submit"]` do form `[data-users-filter]` fazia `preventDefault` e `form.submit()` para `/carteira`, ignorando o `formaction="/carteira/excel"` do botão. Correção: não interceptar botões que tenham `formaction`. **Filtrar** e auto-filtro (select/busca) inalterados. Sem mudança de rota, tabela ou dado gravado |
 | 1.5.52 | 05/10/2026 | Carteira (`/carteira`): **Exportar Excel** deixa o link estático e passa a ser botão `submit` do form `#carteira-filter` com `formaction="/carteira/excel"` — o download usa os valores **atuais** da barra (`q`, `sit`, `ano`, `regime`, `tipo`) sem precisar **Filtrar** antes; rótulo `Exportar Excel (N)` quando há filtro. Texto de apoio: o arquivo traz todas do filtro, não só as 25 da página. Filtro **Regime** em [`buildCarteiraWhere`](hub/carteira-store.js): para o ano padrão 2026, inclui fallback na coluna legada `carteira_empresas.regime` quando não há linha em `carteira_regimes` para 2026. Boot: meta `hub_meta.carteira_regimes_ano_v2` copia Lucro Presumido, Lucro Real e Não encontrado para `carteira_regimes` (2026), idempotente (`ON CONFLICT DO NOTHING`) |
 | 1.5.51 | 05/10/2026 | NCM em produção no HUB: [`NCM/fiscal/package.json`](NCM/fiscal/package.json) script `build:hub` (`HUB_MODE=1`, `NEXT_PUBLIC_BASE_PATH=/ncm`). [`SUBIR-VPS.txt`](SUBIR-VPS.txt) e [`NCM/fiscal/docs/DEPLOY.md`](NCM/fiscal/docs/DEPLOY.md) passam a usar `build:hub` em vez de `build` — sem isso o `.next` fica com `basePath` vazio e o navegador mostra *Application error* em `/ncm/*` |
 | 1.5.50 | 05/10/2026 | VPS `vps-avadesk` (`ssh root@179.199.149.12`): repo `/root/PROJETOS/exito/EXITOHUB`, PM2 `exito-hub`. Comando repetível: bloco em [`SUBIR-VPS.txt`](SUBIR-VPS.txt) (colar na sessão SSH) — `git pull --ff-only`, `npm ci`, `migrate-conci`, Prisma + `next build` do NCM, `pm2 restart exito-hub`. Árvore git suja aborta sem apagar arquivos locais. Distinto do servidor `192.168.15.10` / `exito-hub.avadesk.com.br` |

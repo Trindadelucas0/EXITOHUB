@@ -102,6 +102,7 @@
     }
     filterForm.querySelectorAll('button[type="submit"]').forEach(function (btn) {
       btn.addEventListener('click', function (event) {
+        if (btn.hasAttribute('formaction')) return;
         event.preventDefault();
         applyListFilter();
       });
