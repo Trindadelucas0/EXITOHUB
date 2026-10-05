@@ -6176,6 +6176,22 @@ button[disabled][data-busy] {
 .carteira-page {
   container-type: inline-size;
   container-name: carteira;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+/* Evita barra horizontal no body (sensação de “zoom” ampliado) */
+body.hub-body:has(main.carteira-page) {
+  overflow-x: clip;
+}
+
+/* iOS/Safari não amplia a página ao focar busca/filtros com fonte menor que 16px */
+@media (max-width: 900px) {
+  .carteira-page .hub-field input,
+  .carteira-page .hub-field select {
+    font-size: 1rem;
+  }
 }
 
 .carteira-toolbar {
@@ -6273,6 +6289,41 @@ button[disabled][data-busy] {
   }
 }
 
+@container carteira (width < 40rem) {
+  .carteira-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .carteira-toolbar .hub-users-search,
+  .carteira-excel {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .carteira-excel {
+    justify-self: stretch;
+    width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .carteira-filtros-bar {
+    grid-template-columns: 1fr;
+    row-gap: 0.5rem;
+  }
+
+  .carteira-toolbar-actions {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: stretch;
+  }
+
+  .carteira-toolbar-actions .hub-btn,
+  .carteira-toolbar-actions a.hub-btn {
+    flex: 1 1 auto;
+  }
+}
+
 #hub-carteira-sheet.hub-user-sheet {
   position: fixed;
   inset: 0;
@@ -6350,11 +6401,12 @@ button[disabled][data-busy] {
   }
 
   .carteira-filtros-fields > .hub-field {
-    min-width: max-content;
+    min-width: 0;
   }
 
   .carteira-filtros-fields .hub-field select {
-    width: max-content;
+    width: 100%;
+    max-width: 14rem;
   }
 
   .carteira-toolbar-actions {
@@ -6700,18 +6752,37 @@ body.hub-body .carteira-page .carteira-list-card {
 }
 
 @media (max-width: 900px) {
+  .carteira-row-summary {
+    padding-right: 1rem;
+  }
+
   .carteira-row-primary {
-    grid-template-columns: minmax(2.25rem, auto) minmax(10rem, 1fr) auto;
+    grid-template-columns: minmax(2.25rem, auto) minmax(0, 1fr) auto;
   }
 
   .carteira-identity {
-    grid-column: 2 / 3;
-    grid-row: 2;
+    grid-column: 1 / -1;
+    grid-row: auto;
+    white-space: normal;
+    flex-wrap: wrap;
+    max-width: 100%;
   }
 
   .carteira-row-primary > .hub-pill {
     grid-column: 3;
     grid-row: 1;
+  }
+
+  .carteira-row-secondary {
+    margin-left: 2.35rem;
+  }
+
+  .carteira-row-actions {
+    position: static;
+    justify-content: flex-end;
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
+    border-top: 1px solid var(--exito-line);
   }
 }
 
@@ -7090,4 +7161,131 @@ body.hub-body .carteira-page .carteira-list-card {
 
 .apuracao-simples-page .hub-excel-table tbody td {
   padding: 0.55rem 0.6rem;
+}
+
+/* Apuração — scroll contido (evita página “zoom” / barra horizontal no body) */
+body.apuracao-simples-page {
+  overflow-x: clip;
+}
+
+body.apuracao-simples-page .apuracao-simples-main {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.apuracao-excel-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* iOS não amplia ao focar textarea com fonte ≥ 16px */
+.apuracao-simples-page .hub-excel-input,
+.apuracao-simples-page .hub-excel-textarea {
+  font-size: 1rem;
+}
+
+.apuracao-scroll-hint {
+  display: none;
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 900px) {
+  .apuracao-simples-hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .apuracao-simples-hero__meta {
+    align-self: flex-start;
+  }
+
+  .apuracao-scroll-hint {
+    display: block;
+  }
+
+  .apuracao-excel-wrap {
+    max-height: min(58vh, 720px);
+  }
+
+  .apuracao-simples-page .hub-excel-sticky {
+    position: static;
+    left: auto;
+    box-shadow: none;
+    z-index: auto;
+  }
+
+  .apuracao-simples-page .hub-excel-sticky-col-1,
+  .apuracao-simples-page .hub-excel-sticky-col-2 {
+    min-width: 0;
+    max-width: none;
+  }
+
+  .apuracao-simples-page .hub-excel-col-nome {
+    min-width: 9rem;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .apuracao-simples-page .hub-excel-col-atividade {
+    min-width: 6.5rem;
+    max-width: none;
+  }
+
+  .apuracao-simples-page .hub-excel-col-regime,
+  .apuracao-simples-page .hub-excel-col-estab {
+    min-width: 5.5rem;
+    white-space: normal;
+  }
+
+  .apuracao-simples-page .hub-excel-col-anexo,
+  .apuracao-simples-page .hub-excel-col-obs {
+    min-width: 11rem;
+  }
+
+  .apuracao-files-cell {
+    min-width: 11rem;
+    max-width: none;
+  }
+
+  .apuracao-file-chip__name {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  .apuracao-excel-wrap {
+    max-height: min(52vh, 640px);
+    margin-left: calc(-1 * var(--hub-gutter));
+    margin-right: calc(-1 * var(--hub-gutter));
+    width: calc(100% + 2 * var(--hub-gutter));
+    max-width: calc(100% + 2 * var(--hub-gutter));
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+  }
+
+  .apuracao-excel-table {
+    font-size: 0.8125rem;
+  }
+
+  .apuracao-excel-table thead th {
+    font-size: 0.6875rem;
+    padding: 0.45rem 0.5rem;
+  }
+
+  .apuracao-simples-page .hub-excel-table tbody td {
+    padding: 0.45rem 0.5rem;
+  }
+
+  .apuracao-upload-btn span {
+    font-size: 0.875rem;
+  }
 }
