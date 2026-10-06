@@ -7023,7 +7023,7 @@ body.hub-body .carteira-page .carteira-list-card {
 }
 
 .apuracao-simples-page .apuracao-excel-table tbody td {
-  padding: 0.4rem 0.45rem;
+  padding: 0.12rem 0.4rem;
   vertical-align: middle;
   border-right-color: rgba(18, 65, 103, 0.12);
   border-bottom-color: rgba(18, 65, 103, 0.12);
@@ -7136,9 +7136,20 @@ body.hub-body .carteira-page .carteira-list-card {
   min-height: 1.1rem;
 }
 
+.apuracao-simples-page .hub-excel-row-status:empty {
+  min-height: 0;
+  margin: 0;
+}
+
+.apuracao-simples-page .apuracao-excel-table .hub-excel-input {
+  padding: 0.12rem 0.28rem;
+  line-height: 1.25;
+}
+
 .apuracao-simples-page .apuracao-excel-table .hub-excel-textarea {
-  min-height: 2rem;
-  padding: 0.3rem 0.35rem;
+  min-height: 0;
+  padding: 0.12rem 0.28rem;
+  line-height: 1.25;
 }
 
 /* Apuração — scroll contido (evita página “zoom” / barra horizontal no body) */
@@ -7161,10 +7172,9 @@ body.apuracao-simples-page .apuracao-simples-main {
   overscroll-behavior-x: contain;
 }
 
-/* iOS não amplia ao focar textarea com fonte ≥ 16px */
 .apuracao-simples-page .hub-excel-input,
 .apuracao-simples-page .hub-excel-textarea {
-  font-size: 1rem;
+  font-size: 0.8125rem;
 }
 
 .apuracao-scroll-hint {
@@ -7233,6 +7243,12 @@ body.apuracao-simples-page .apuracao-simples-main {
     min-width: 5.5rem;
     max-width: none;
   }
+
+  /* iOS não amplia ao focar textarea com fonte ≥ 16px */
+  .apuracao-simples-page .hub-excel-input,
+  .apuracao-simples-page .hub-excel-textarea {
+    font-size: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -7257,7 +7273,7 @@ body.apuracao-simples-page .apuracao-simples-main {
   }
 
   .apuracao-simples-page .apuracao-excel-table tbody td {
-    padding: 0.4rem 0.45rem;
+    padding: 0.12rem 0.4rem;
   }
 
   .apuracao-upload-btn span {

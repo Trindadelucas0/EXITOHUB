@@ -45,8 +45,8 @@ Só admin. Sidebar **Fiscal → Apuração Simples Nacional** (`/fiscal/apuracao
 
 1. A tela é uma **grade** (não card), com todas as empresas no **Simples Nacional em 2026** na carteira. No celular, **deslize a tabela** para ver todas as colunas; a página não deve ampliar sozinha ao tocar em **Observações**.
 2. Colunas **Nº**, **Nome**, **Atividade** (Comércio, Serviço, etc., igual ao card da carteira), **Regime** (uma coluna por ano), **Matriz/Filial** — só leitura, vindas da carteira.
-3. **Anexos** — escolha **I**, **II**, **III**, **IV** ou **V** no seletor (um anexo por empresa). O botão **!** acima do seletor abre um card com o enquadramento da LC 123/2006 daquele anexo. Sem anexo escolhido, o card pede para selecionar. A escolha grava ao mudar o seletor.
-4. **Observações** — texto só desta tela. Ao sair do campo, se mudou, grava sozinha.
+3. **Anexos** — escolha **I**, **II**, **III**, **IV** ou **V** no seletor (um anexo por empresa), ao lado do botão **!**. Com anexo marcado, **passe o mouse no seletor** (desktop) para ver a descrição da atividade daquele anexo; opção **—** não mostra tooltip. O **!** abre o card com o enquadramento da **LC 123/2006** (lei), não a descrição de atividade. Sem anexo escolhido, o card pede para selecionar. A escolha grava ao mudar o seletor.
+4. **Observações** — texto só desta tela; o campo começa com **uma linha** (texto longo rola dentro dele; dá para esticar pela alça). Ao sair do campo, se mudou, grava sozinha.
 5. Isso **não** altera a observação do card em **Controle da Carteira de Clientes**.
 
 ## Admin — Portal Corporativo

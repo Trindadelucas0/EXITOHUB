@@ -22,10 +22,24 @@
     },
   };
 
+  var ANEXO_ATIVIDADE = {
+    I: 'ANEXO I — Comércio',
+    II: 'ANEXO II — Fábricas/indústrias',
+    III:
+      'ANEXO III — Serviços de instalação, de reparos e de manutenção, além de agências de viagens, treinamentos e algumas atividades que a Receita não considera que deva possuir responsabilidade técnica.',
+    IV: 'ANEXO IV — Serviço de limpeza, vigilância, obras, construção de imóveis, serviços advocatícios.',
+    V: 'ANEXO V — Serviços de auditoria, jornalismo, tecnologia, publicidade, engenharia, entre outros.',
+  };
+
   var EMPTY_LEI = {
     title: 'Anexo',
     text: 'Selecione um anexo para ver a lei.',
   };
+
+  function syncAnexoSelectTitle(select) {
+    if (!select) return;
+    select.title = ANEXO_ATIVIDADE[select.value] || '';
+  }
 
   var leiDialog = document.getElementById('apuracao-anexo-lei');
   var leiTitle = leiDialog && leiDialog.querySelector('[data-apuracao-lei-title]');
@@ -136,8 +150,10 @@
 
     const anexo = row.querySelector('select[name="anexo"]');
     if (anexo && form) {
+      syncAnexoSelectTitle(anexo);
       anexo.dataset.initialValue = anexo.value;
       anexo.addEventListener('change', function () {
+        syncAnexoSelectTitle(anexo);
         const initial = anexo.dataset.initialValue != null ? anexo.dataset.initialValue : '';
         if (anexo.value === initial) return;
         submitRow(form, row);

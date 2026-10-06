@@ -5,8 +5,24 @@ const {
   ANO_PADRAO,
   isUuid,
   listCarteira,
+  countCarteira,
   listRegimeAnos,
 } = require('./carteira-store');
+
+const REGIME_APURACAO = 'Simples Nacional';
+
+function trimQ(value) {
+  return String(value == null ? '' : value).trim().slice(0, 120);
+}
+
+function apuracaoCarteiraFilters(filters = {}) {
+  const q = trimQ(filters.q);
+  return {
+    q,
+    regime: REGIME_APURACAO,
+    ano: ANO_PADRAO,
+  };
+}
 
 const ANEXOS_VALIDOS = new Set(['I', 'II', 'III', 'IV', 'V']);
 
@@ -54,13 +70,18 @@ async function attachApuracaoData(rows) {
   });
 }
 
-async function listApuracaoSimples() {
+async function listApuracaoSimples(filters = {}) {
+  const carteiraFilters = apuracaoCarteiraFilters(filters);
   const [empresas, anos] = await Promise.all([
-    listCarteira({ regime: 'Simples Nacional', ano: ANO_PADRAO }),
+    listCarteira(carteiraFilters),
     listRegimeAnos(),
   ]);
   const rows = await attachApuracaoData(empresas);
   return { empresas: rows, anos };
+}
+
+async function countApuracaoSimples(filters = {}) {
+  return countCarteira(apuracaoCarteiraFilters(filters));
 }
 
 async function empresaNaApuracao(id) {

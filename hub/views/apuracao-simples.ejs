@@ -64,7 +64,7 @@
               <% }) %>
               <td class="hub-excel-col-estab"><%= row.estabelecimento || '—' %></td>
               <td class="hub-excel-col-anexo apuracao-anexo-cell">
-                <div class="apuracao-anexo-stack">
+                <div class="apuracao-anexo-row">
                   <button
                     type="button"
                     class="apuracao-anexo-lei-btn"
@@ -90,7 +90,7 @@
                   name="observacao"
                   form="<%= formId %>"
                   class="hub-excel-input hub-excel-textarea"
-                  rows="2"
+                  rows="1"
                   maxlength="4000"
                   aria-label="Observações para <%= row.razao %>"
                 ><%= row.apuracaoObservacao || '' %></textarea>
