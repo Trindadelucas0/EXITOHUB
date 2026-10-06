@@ -23,13 +23,9 @@ const {
 } = require('./provision-modules');
 const { requireHubAuth, requireHubAdmin, logoutHub } = require('./middleware');
 const { getMenuForUser, findSoonModule, AVADESK_URL } = require('./menu-catalog');
-const fs = require('fs');
 const {
   uploadImage,
-  uploadApuracao,
   saveUploadedFile,
-  absolutePathForStored,
-  deleteStoredFile,
 } = require('./portal/upload');
 const portalRoutes = require('./portal/routes');
 const {
@@ -58,9 +54,6 @@ const {
   regimeForYear,
   listApuracaoSimples,
   saveObservacao,
-  addArquivo,
-  removeArquivo,
-  getArquivoAutorizado,
 } = require('./apuracao-simples-store');
 
 const router = express.Router();
@@ -503,85 +496,6 @@ router.post('/fiscal/apuracao-simples/:id', requireHubAdmin, async (req, res) =>
     if (json) return res.status(status).json({ error: message });
     if (status === 404) return res.status(404).send(message);
     return res.redirect(`/fiscal/apuracao-simples?erro=${encodeURIComponent(message)}`);
-  }
-});
-
-function apuracaoUploadError(err, res, json) {
-  if (!err) return false;
-  const status = err.status || (err.code === 'LIMIT_FILE_SIZE' ? 413 : 415);
-  const message = err.message || 'Não foi possível enviar o arquivo.';
-  if (json) {
-    res.status(status).json({ error: message });
-  } else {
-    res.redirect(`/fiscal/apuracao-simples?erro=${encodeURIComponent(message)}`);
-  }
-  return true;
-}
-
-router.post('/fiscal/apuracao-simples/:id/arquivo', requireHubAdmin, (req, res) => {
-  const json = wantsJsonResponse(req);
-  uploadApuracao.single('arquivo')(req, res, async (err) => {
-    if (apuracaoUploadError(err, res, json)) return;
-    try {
-      if (!isUuid(req.params.id)) {
-        if (json) return res.status(404).json({ error: 'Empresa não encontrada.' });
-        return res.status(404).send('Empresa não encontrada');
-      }
-      if (!req.file) {
-        if (json) return res.status(400).json({ error: 'Selecione um arquivo.' });
-        return res.redirect('/fiscal/apuracao-simples?erro=Selecione%20um%20arquivo.');
-      }
-      const saved = await saveUploadedFile(req.file, req.hubUser.id);
-      let file;
-      try {
-        file = await addArquivo(req.params.id, saved);
-      } catch (linkErr) {
-        await deleteStoredFile(saved.id);
-        throw linkErr;
-      }
-      if (json) return res.json({ ok: true, file });
-      return res.redirect('/fiscal/apuracao-simples?ok=salvo');
-    } catch (e) {
-      console.error('[hub] apuracao arquivo upload', e);
-      const status = e.status || 500;
-      const message = status === 500 ? 'Não foi possível enviar o arquivo.' : e.message;
-      if (json) return res.status(status).json({ error: message });
-      return res.redirect(`/fiscal/apuracao-simples?erro=${encodeURIComponent(message)}`);
-    }
-  });
-});
-
-router.delete('/fiscal/apuracao-simples/:id/arquivo/:arquivoId', requireHubAdmin, async (req, res) => {
-  const json = wantsJsonResponse(req);
-  try {
-    await removeArquivo(req.params.id, req.params.arquivoId);
-    if (json) return res.json({ ok: true });
-    return res.redirect('/fiscal/apuracao-simples?ok=salvo');
-  } catch (err) {
-    const status = err.status || 500;
-    const message = status === 500 ? 'Não foi possível remover.' : err.message;
-    if (json) return res.status(status).json({ error: message });
-    if (status === 404) return res.status(404).send(message);
-    return res.redirect(`/fiscal/apuracao-simples?erro=${encodeURIComponent(message)}`);
-  }
-});
-
-router.get('/fiscal/apuracao-simples/arquivo/:fileId', requireHubAdmin, async (req, res) => {
-  try {
-    const file = await getArquivoAutorizado(req.params.fileId);
-    if (!file) return res.status(404).send('Arquivo não encontrado');
-    const abs = absolutePathForStored(file.stored_path);
-    if (!abs || !fs.existsSync(abs)) return res.status(404).send('Arquivo não encontrado');
-    res.setHeader('Content-Type', file.mime || 'application/octet-stream');
-    res.setHeader(
-      'Content-Disposition',
-      `inline; filename="${encodeURIComponent(file.original_name || 'arquivo')}"`,
-    );
-    res.setHeader('Cache-Control', 'private, max-age=3600');
-    return fs.createReadStream(abs).pipe(res);
-  } catch (err) {
-    console.error('[hub] apuracao arquivo download', err);
-    return res.status(500).send('Erro ao ler arquivo');
   }
 });
 

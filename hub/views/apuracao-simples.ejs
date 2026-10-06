@@ -10,7 +10,7 @@
     <header class="hub-users-hero apuracao-simples-hero">
       <div>
         <h1>Apuração Simples Nacional</h1>
-        <p class="hub-muted">Empresas no Simples Nacional em <%= anoApuracao %>. Número, nome, atividade, regime e matriz/filial vêm da carteira. Anexe PDF ou Word aqui; observações ficam só nesta tela.</p>
+        <p class="hub-muted">Empresas no Simples Nacional em <%= anoApuracao %>. Número, nome, atividade, regime e matriz/filial vêm da carteira. Escolha o anexo I a V; observações ficam só nesta tela.</p>
       </div>
       <div class="apuracao-simples-hero__meta">
         <span class="apuracao-simples-count"><%= empresas.length %> empresa<%= empresas.length === 1 ? '' : 's' %></span>
@@ -50,7 +50,8 @@
           <% empresas.forEach(function (row) {
             const formId = 'apuracao-form-' + row.id;
             const regimeFn = typeof regimeForYear === 'function' ? regimeForYear : function () { return ''; };
-            const arquivos = Array.isArray(row.apuracaoArquivos) ? row.apuracaoArquivos : [];
+            const anexoAtual = row.apuracaoAnexo || '';
+            const anexosOpcoes = ['I', 'II', 'III', 'IV', 'V'];
           %>
             <tr data-apuracao-row data-empresa-id="<%= row.id %>">
               <td class="hub-excel-sticky hub-excel-sticky-col-1 hub-excel-col-num"><%= row.codigo %></td>
@@ -62,27 +63,27 @@
                 <td class="hub-excel-col-regime"><%= reg || '—' %></td>
               <% }) %>
               <td class="hub-excel-col-estab"><%= row.estabelecimento || '—' %></td>
-              <td class="hub-excel-col-anexo apuracao-files-cell">
-                <ul class="apuracao-file-list" data-apuracao-file-list>
-                  <% arquivos.forEach(function (arq) { %>
-                    <li class="apuracao-file-chip" data-arquivo-id="<%= arq.id %>">
-                      <span class="apuracao-file-chip__icon" aria-hidden="true"><%= (arq.mime || '').indexOf('pdf') !== -1 ? 'PDF' : 'DOC' %></span>
-                      <span class="apuracao-file-chip__name" title="<%= arq.nome %>"><%= arq.nome %></span>
-                      <a class="apuracao-file-chip__link" href="<%= arq.url %>" target="_blank" rel="noopener noreferrer">Baixar</a>
-                      <button type="button" class="apuracao-file-chip__remove" data-remove-arquivo="<%= arq.id %>" aria-label="Remover <%= arq.nome %>">×</button>
-                    </li>
-                  <% }) %>
-                </ul>
-                <label class="apuracao-upload-btn">
-                  <span>+ Anexar arquivo</span>
-                  <input
-                    type="file"
-                    name="arquivo"
-                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    data-apuracao-file-input
-                  />
-                </label>
-                <p class="apuracao-files-hint hub-muted">PDF ou Word, até 15 MB</p>
+              <td class="hub-excel-col-anexo apuracao-anexo-cell">
+                <div class="apuracao-anexo-stack">
+                  <button
+                    type="button"
+                    class="apuracao-anexo-lei-btn"
+                    data-apuracao-lei-btn
+                    aria-label="Ver a lei do anexo selecionado"
+                    title="Ver a lei do anexo"
+                  >!</button>
+                  <select
+                    name="anexo"
+                    form="<%= formId %>"
+                    class="hub-excel-input apuracao-anexo-select"
+                    aria-label="Anexo do Simples para <%= row.razao %>"
+                  >
+                    <option value=""<%= anexoAtual === '' ? ' selected' : '' %>>—</option>
+                    <% anexosOpcoes.forEach(function (opt) { %>
+                      <option value="<%= opt %>"<%= anexoAtual === opt ? ' selected' : '' %>><%= opt %></option>
+                    <% }) %>
+                  </select>
+                </div>
               </td>
               <td class="hub-excel-col-obs">
                 <textarea
@@ -107,6 +108,14 @@
         </tbody>
       </table>
     </div>
+
+    <dialog class="hub-dialog apuracao-anexo-lei-dialog" id="apuracao-anexo-lei" aria-labelledby="apuracao-anexo-lei-title">
+      <h2 id="apuracao-anexo-lei-title" data-apuracao-lei-title>Anexo</h2>
+      <p data-apuracao-lei-text>Selecione um anexo para ver a lei.</p>
+      <div class="hub-form-actions">
+        <button type="button" class="hub-btn hub-btn-primary" data-close-dialog>Fechar</button>
+      </div>
+    </dialog>
   </main>
 
   <script src="/hub-assets/hub-apuracao-simples.js"></script>

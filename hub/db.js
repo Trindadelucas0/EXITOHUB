@@ -569,8 +569,13 @@ async function ensureApuracaoSimples() {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
+  await query('ALTER TABLE apuracao_simples ADD COLUMN IF NOT EXISTS anexo TEXT');
   await query('ALTER TABLE apuracao_simples DROP CONSTRAINT IF EXISTS apuracao_simples_anexo_check');
-  await query('ALTER TABLE apuracao_simples DROP COLUMN IF EXISTS anexo');
+  await query(`
+    ALTER TABLE apuracao_simples
+    ADD CONSTRAINT apuracao_simples_anexo_check
+    CHECK (anexo IS NULL OR anexo IN ('I', 'II', 'III', 'IV', 'V'))
+  `);
   await query(`
     CREATE TABLE IF NOT EXISTS apuracao_simples_arquivos (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
