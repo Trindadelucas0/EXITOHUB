@@ -19,6 +19,7 @@ function apuracaoCarteiraFilters(filters = {}) {
   const q = trimQ(filters.q);
   return {
     q,
+    sit: 'Ativa',
     regime: REGIME_APURACAO,
     ano: ANO_PADRAO,
   };
@@ -89,6 +90,7 @@ async function empresaNaApuracao(id) {
   const result = await query(
     `SELECT id FROM carteira_empresas ce
      WHERE ce.id = $1
+       AND ce.situacao = 'Ativa'
        AND (
          EXISTS (
            SELECT 1 FROM carteira_regimes cr
