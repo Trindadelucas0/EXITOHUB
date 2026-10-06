@@ -6985,6 +6985,10 @@ body.hub-body .carteira-page .carteira-list-card {
   color: var(--exito-muted);
 }
 
+.apuracao-simples-toolbar {
+  margin-bottom: 0.5rem;
+}
+
 .apuracao-simples-hero {
   align-items: flex-end;
   gap: 1rem;

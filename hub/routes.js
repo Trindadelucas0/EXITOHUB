@@ -53,6 +53,7 @@ const {
   ANO_APURACAO,
   regimeForYear,
   listApuracaoSimples,
+  countApuracaoSimples,
   saveObservacao,
 } = require('./apuracao-simples-store');
 
@@ -461,14 +462,29 @@ function wantsJsonResponse(req) {
   return accept.includes('application/json');
 }
 
+function apuracaoPath(filters, extra = {}) {
+  const params = new URLSearchParams();
+  if (filters.q) params.set('q', filters.q);
+  if (extra.ok) params.set('ok', extra.ok);
+  if (extra.erro) params.set('erro', String(extra.erro).slice(0, 300));
+  const qs = params.toString();
+  return qs ? `/fiscal/apuracao-simples?${qs}` : '/fiscal/apuracao-simples';
+}
+
 router.get('/fiscal/apuracao-simples', requireHubAdmin, async (req, res) => {
   try {
-    const { empresas, anos } = await listApuracaoSimples();
+    const initialQ = queryValue(req.query, 'q').slice(0, 120);
+    const [{ empresas, anos }, totalCount] = await Promise.all([
+      listApuracaoSimples(),
+      countApuracaoSimples(),
+    ]);
     return res.render('apuracao-simples', {
       title: 'Apuração Simples Nacional — EXITO HUB',
       hubUser: req.hubUser,
       empresas,
       anos,
+      filters: { q: initialQ },
+      totalCount,
       anoApuracao: ANO_APURACAO,
       regimeForYear,
       flash: req.query.ok === 'salvo' ? 'Alterações salvas.' : null,
@@ -489,13 +505,13 @@ router.post('/fiscal/apuracao-simples/:id', requireHubAdmin, async (req, res) =>
     }
     await saveObservacao(req.params.id, req.body);
     if (json) return res.json({ ok: true });
-    return res.redirect('/fiscal/apuracao-simples?ok=salvo');
+    return res.redirect(apuracaoPath({}, { ok: 'salvo' }));
   } catch (err) {
     const status = err.status || 500;
     const message = status === 500 ? 'Não foi possível salvar.' : err.message;
     if (json) return res.status(status).json({ error: message });
     if (status === 404) return res.status(404).send(message);
-    return res.redirect(`/fiscal/apuracao-simples?erro=${encodeURIComponent(message)}`);
+    return res.redirect(apuracaoPath({}, { erro: message }));
   }
 });
 

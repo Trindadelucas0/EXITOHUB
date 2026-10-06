@@ -70,8 +70,8 @@ async function attachApuracaoData(rows) {
   });
 }
 
-async function listApuracaoSimples(filters = {}) {
-  const carteiraFilters = apuracaoCarteiraFilters(filters);
+async function listApuracaoSimples() {
+  const carteiraFilters = apuracaoCarteiraFilters({});
   const [empresas, anos] = await Promise.all([
     listCarteira(carteiraFilters),
     listRegimeAnos(),
@@ -142,7 +142,9 @@ async function saveObservacao(id, body) {
 
 module.exports = {
   ANO_APURACAO: ANO_PADRAO,
+  apuracaoCarteiraFilters,
   regimeForYear,
   listApuracaoSimples,
+  countApuracaoSimples,
   saveObservacao,
 };

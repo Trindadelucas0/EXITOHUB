@@ -134,6 +134,110 @@
       });
   }
 
+  // Espelha buildCarteiraWhere (carteira-store.js) para codigo, razao e documento.
+  function digitsOnly(value, max) {
+    return String(value == null ? '' : value).replace(/\D/g, '').slice(0, max || 20);
+  }
+
+  function rowMatchesSearch(row, rawQ) {
+    var q = String(rawQ == null ? '' : rawQ).trim().slice(0, 120);
+    if (!q) return true;
+    var codigo = row.getAttribute('data-search-codigo') || '';
+    var razao = row.getAttribute('data-search-razao') || '';
+    var doc = row.getAttribute('data-search-documento') || '';
+    var qLower = q.toLowerCase();
+    var codigoMatch = codigo.toLowerCase().indexOf(qLower) !== -1;
+    var razaoMatch = razao.toLowerCase().indexOf(qLower) !== -1;
+    var digits = digitsOnly(q, 20);
+    var docMatch;
+    if (digits.length >= 3) {
+      docMatch = digitsOnly(doc, 20).indexOf(digits) !== -1;
+    } else {
+      docMatch = doc.toLowerCase().indexOf(qLower) !== -1;
+    }
+    return codigoMatch || razaoMatch || docMatch;
+  }
+
+  var searchInput = document.querySelector('[data-apuracao-search]');
+  var countEl = document.querySelector('[data-apuracao-count]');
+  var emptyFilterRow = document.querySelector('[data-apuracao-empty-filter]');
+  var clearButtons = document.querySelectorAll('[data-apuracao-search-clear]');
+  var searchDebounceTimer = null;
+  var totalCount = countEl ? Number.parseInt(countEl.getAttribute('data-apuracao-total'), 10) : 0;
+  if (!Number.isFinite(totalCount)) totalCount = 0;
+
+  function updateCountLabel(visible, hasQuery) {
+    if (!countEl) return;
+    var n = hasQuery ? visible : totalCount;
+    var text = n + ' empresa' + (n === 1 ? '' : 's');
+    if (hasQuery) text += ' neste filtro';
+    countEl.textContent = text;
+  }
+
+  function syncSearchUrl(q) {
+    var term = String(q == null ? '' : q).trim().slice(0, 120);
+    var path = '/fiscal/apuracao-simples';
+    var next = term ? path + '?q=' + encodeURIComponent(term) : path;
+    var current = window.location.pathname + window.location.search;
+    if (current !== next) {
+      window.history.replaceState(null, '', next);
+    }
+  }
+
+  function toggleClearButtons(show) {
+    clearButtons.forEach(function (btn) {
+      btn.hidden = !show;
+    });
+  }
+
+  function applyFilter() {
+    if (!searchInput) return;
+    var q = searchInput.value;
+    var hasQuery = Boolean(String(q).trim());
+    var rows = document.querySelectorAll('[data-apuracao-row]');
+    var visible = 0;
+    rows.forEach(function (row) {
+      var show = rowMatchesSearch(row, q);
+      row.hidden = !show;
+      if (show) visible += 1;
+    });
+    if (emptyFilterRow) {
+      emptyFilterRow.hidden = !(hasQuery && visible === 0 && rows.length > 0);
+    }
+    updateCountLabel(visible, hasQuery);
+    toggleClearButtons(hasQuery);
+    syncSearchUrl(q);
+  }
+
+  function clearSearch() {
+    if (!searchInput) return;
+    searchInput.value = '';
+    applyFilter();
+    searchInput.focus();
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function () {
+      window.clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = window.setTimeout(applyFilter, 280);
+    });
+    searchInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        window.clearTimeout(searchDebounceTimer);
+        applyFilter();
+      }
+    });
+  }
+  clearButtons.forEach(function (btn) {
+    btn.addEventListener('click', function (event) {
+      event.preventDefault();
+      clearSearch();
+    });
+  });
+
+  applyFilter();
+
   document.querySelectorAll('[data-apuracao-row]').forEach(function (row) {
     const formId = row.querySelector('textarea[form]') && row.querySelector('textarea[form]').getAttribute('form');
     const form = formId ? document.getElementById(formId) : null;

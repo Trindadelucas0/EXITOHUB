@@ -13,7 +13,11 @@
         <p class="hub-muted">Empresas no Simples Nacional em <%= anoApuracao %>. Número, nome, atividade, regime e matriz/filial vêm da carteira. Escolha o anexo I a V; observações ficam só nesta tela.</p>
       </div>
       <div class="apuracao-simples-hero__meta">
-        <span class="apuracao-simples-count"><%= empresas.length %> empresa<%= empresas.length === 1 ? '' : 's' %></span>
+        <span
+          class="apuracao-simples-count"
+          data-apuracao-count
+          data-apuracao-total="<%= totalCount %>"
+        ><%= totalCount %> empresa<%= totalCount === 1 ? '' : 's' %></span>
       </div>
     </header>
 
@@ -23,6 +27,22 @@
     <% if (error) { %>
       <div class="hub-alert hub-alert-error" role="alert"><%= error %></div>
     <% } %>
+
+    <div class="hub-users-toolbar apuracao-simples-toolbar" role="search">
+      <label class="hub-field hub-users-search">
+        <span>Busca</span>
+        <input
+          type="search"
+          name="q"
+          data-apuracao-search
+          value="<%= filters.q %>"
+          placeholder="Código, razão ou CNPJ"
+          maxlength="120"
+          autocomplete="off"
+        />
+      </label>
+      <button type="button" class="hub-btn hub-btn-ghost" data-apuracao-search-clear hidden>Limpar</button>
+    </div>
 
     <p class="apuracao-scroll-hint hub-muted">Deslize a tabela horizontalmente para ver todas as colunas.</p>
 
@@ -53,7 +73,13 @@
             const anexoAtual = row.apuracaoAnexo || '';
             const anexosOpcoes = ['I', 'II', 'III', 'IV', 'V'];
           %>
-            <tr data-apuracao-row data-empresa-id="<%= row.id %>">
+            <tr
+              data-apuracao-row
+              data-empresa-id="<%= row.id %>"
+              data-search-codigo="<%= row.codigo || '' %>"
+              data-search-razao="<%= row.razao || '' %>"
+              data-search-documento="<%= row.documento || '' %>"
+            >
               <td class="hub-excel-sticky hub-excel-sticky-col-1 hub-excel-col-num"><%= row.codigo %></td>
               <td class="hub-excel-sticky hub-excel-sticky-col-2 hub-excel-col-nome"><%= row.razao %></td>
               <td class="hub-excel-col-atividade"><%= row.tipo || '—' %></td>
@@ -105,6 +131,14 @@
               hidden
             ></form>
           <% }) %>
+          <% if (empresas.length) { %>
+            <tr data-apuracao-empty-filter hidden>
+              <td colspan="<%= 6 + (anos || []).length %>" class="hub-excel-empty">
+                Nenhuma empresa neste filtro.
+                <button type="button" class="hub-btn hub-btn-ghost hub-btn-sm" data-apuracao-search-clear>Limpar</button>
+              </td>
+            </tr>
+          <% } %>
         </tbody>
       </table>
     </div>
