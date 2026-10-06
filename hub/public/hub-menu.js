@@ -22,31 +22,16 @@
 
   if (!btn || !drawer) return;
 
-  const mq = window.matchMedia('(min-width: 1024px)');
-
-  function isDesktop() {
-    return mq.matches;
-  }
-
   function setOpen(open) {
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     btn.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
     document.body.classList.toggle('hub-sidebar-open', open);
-    if (overlay) overlay.hidden = !open || isDesktop();
-  }
-
-  function syncDesktop() {
-    if (isDesktop()) {
-      setOpen(false);
-      document.body.classList.remove('hub-sidebar-open');
-      if (overlay) overlay.hidden = true;
-    }
+    if (overlay) overlay.hidden = !open;
   }
 
   btn.addEventListener('click', function (event) {
     event.preventDefault();
     event.stopPropagation();
-    if (isDesktop()) return;
     const open = btn.getAttribute('aria-expanded') !== 'true';
     setOpen(open);
   });
@@ -62,12 +47,4 @@
       setOpen(false);
     }
   });
-
-  if (typeof mq.addEventListener === 'function') {
-    mq.addEventListener('change', syncDesktop);
-  } else if (typeof mq.addListener === 'function') {
-    mq.addListener(syncDesktop);
-  }
-
-  syncDesktop();
 })();

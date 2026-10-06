@@ -33,12 +33,20 @@ Nos wireframes: `[ Entrar #006b2b ]` = botão primário; `[ Cancelar ghost ]` = 
 Shell padrão (todas as telas autenticadas):
 
 ```text
-┌────────────┬──────────────────────────────────────────────────────┐
-│ LOGO HUB   │ ☰ (mobile)  Êxito HUB / Página  [Ambiente Seguro]   │
-│ sidebar    │                              🔔  Nome  [ Sair ]      │
-│ grupos…    ├──────────────────────────────────────────────────────┤
-│            │  conteúdo da tela                                    │
-└────────────┴──────────────────────────────────────────────────────┘
+Fechado (padrão)
+┌──────────────────────────────────────────────────────────────────┐
+│ ☰  Êxito HUB / Página  [Ambiente Seguro]              Nome [Sair] │
+├──────────────────────────────────────────────────────────────────┤
+│ conteúdo na largura toda                                          │
+└──────────────────────────────────────────────────────────────────┘
+
+Aberto (clique no ☰)
+┌──────────────────────────────────────────────────────────────────┐
+│ ☰  Êxito HUB / Página  [Ambiente Seguro]              Nome [Sair] │
+├──────────────┬───────────────────────────────────────────────────┤
+│ LOGO / menu  │ overlay (clique fecha)                            │
+│ Módulos…     │                                                   │
+└──────────────┴───────────────────────────────────────────────────┘
 ```
 
 ---
@@ -218,7 +226,7 @@ Shell padrão (todas as telas autenticadas):
 └────────────────────┘
 ```
 
-No desktop a sidebar fica fixa; abaixo de 1024px vira gaveta aberta pelo botão ☰ do topbar.
+Em qualquer largura a sidebar nasce fechada; o botão ☰ do topbar abre a gaveta (fecha com ☰, clique no overlay ou Esc).
 
 **Catálogo:** [`hub/menu-catalog.js`](../hub/menu-catalog.js)
 

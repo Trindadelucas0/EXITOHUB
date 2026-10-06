@@ -2637,7 +2637,7 @@ body.hub-body {
 
 .hub-sidebar {
   position: fixed;
-  top: 0;
+  top: var(--hub-topbar-h);
   left: 0;
   bottom: 0;
   width: var(--hub-sidebar-w);
@@ -2653,6 +2653,10 @@ body.hub-body {
 
 body.hub-sidebar-open .hub-sidebar {
   transform: translateX(0);
+}
+
+body.hub-sidebar-open .hub-topbar {
+  z-index: 60;
 }
 
 .hub-sidebar__inner {
@@ -4637,24 +4641,8 @@ main.hub-shell-main {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .hub-sidebar {
-    transform: translateX(0);
-  }
-
-  .hub-shell {
-    padding-left: var(--hub-sidebar-w);
-  }
-
-  .hub-menu-btn {
-    display: none;
-  }
-
   .hub-topbar__user-meta {
     display: flex;
-  }
-
-  .hub-shell-overlay {
-    display: none !important;
   }
 }
 
@@ -7019,11 +7007,54 @@ body.hub-body .carteira-page .carteira-list-card {
 
 .apuracao-excel-wrap {
   margin-top: 0.5rem;
+  border-radius: 10px;
+  box-shadow: var(--hub-shadow);
 }
 
-.apuracao-excel-table thead th {
+.apuracao-simples-page .apuracao-excel-table {
+  font-size: 0.8125rem;
+}
+
+.apuracao-simples-page .apuracao-excel-table thead th {
   background: rgba(0, 107, 43, 0.07);
   color: var(--exito-ink);
+  padding: 0.45rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.apuracao-simples-page .apuracao-excel-table tbody td {
+  padding: 0.4rem 0.45rem;
+  vertical-align: middle;
+  border-right-color: rgba(18, 65, 103, 0.12);
+  border-bottom-color: rgba(18, 65, 103, 0.12);
+}
+
+.apuracao-simples-page .apuracao-excel-table tbody td.hub-excel-col-obs {
+  vertical-align: top;
+}
+
+.apuracao-simples-page .apuracao-excel-table tbody tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+.apuracao-simples-page .apuracao-excel-table tbody tr:nth-child(even) td.hub-excel-sticky {
+  background: #f3f6f9;
+}
+
+.apuracao-simples-page .apuracao-excel-table tbody tr:hover td {
+  background: rgba(0, 107, 43, 0.04);
+}
+
+.apuracao-simples-page .apuracao-excel-table tbody tr:hover td.hub-excel-sticky {
+  background: rgba(0, 107, 43, 0.05);
+}
+
+.apuracao-simples-page .apuracao-excel-table .hub-excel-col-regime {
+  min-width: 7.5rem;
+}
+
+.apuracao-simples-page .apuracao-excel-table .hub-excel-col-estab {
+  min-width: 5.5rem;
 }
 
 .hub-excel-col-atividade {
@@ -7032,23 +7063,18 @@ body.hub-body .carteira-page .carteira-list-card {
   line-height: 1.35;
 }
 
-.apuracao-anexo-cell {
-  min-width: 4.25rem;
-  max-width: 5rem;
-  background: rgba(18, 65, 103, 0.02) !important;
+.apuracao-simples-page .apuracao-anexo-cell {
+  min-width: 5.75rem;
+  max-width: none;
 }
 
-.apuracao-excel-table tbody tr:nth-child(even) td.apuracao-anexo-cell {
-  background: rgba(18, 65, 103, 0.035) !important;
-}
-
-.apuracao-anexo-stack {
+.apuracao-anexo-row {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem;
   width: 100%;
-  max-width: 4.5rem;
   margin-inline: auto;
 }
 
@@ -7056,8 +7082,9 @@ body.hub-body .carteira-page .carteira-list-card {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.65rem;
-  height: 1.65rem;
+  flex-shrink: 0;
+  width: 1.45rem;
+  height: 1.45rem;
   padding: 0;
   border: 1px solid rgba(0, 107, 43, 0.45);
   border-radius: 999px;
@@ -7081,7 +7108,8 @@ body.hub-body .carteira-page .carteira-list-card {
 }
 
 .apuracao-anexo-select {
-  width: 100%;
+  flex: 1 1 auto;
+  width: auto;
   min-width: 3rem;
   max-width: 4.5rem;
   padding-inline: 0.25rem;
@@ -7095,7 +7123,7 @@ body.hub-body .carteira-page .carteira-list-card {
 }
 
 .apuracao-simples-page .hub-excel-col-anexo {
-  min-width: 4.25rem;
+  min-width: 5.75rem;
 }
 
 .apuracao-simples-page .hub-excel-col-obs {
@@ -7104,12 +7132,13 @@ body.hub-body .carteira-page .carteira-list-card {
 
 .apuracao-simples-page .hub-excel-row-status {
   display: block;
-  margin-top: 0.35rem;
+  margin-top: 0.2rem;
   min-height: 1.1rem;
 }
 
-.apuracao-simples-page .hub-excel-table tbody td {
-  padding: 0.55rem 0.6rem;
+.apuracao-simples-page .apuracao-excel-table .hub-excel-textarea {
+  min-height: 2rem;
+  padding: 0.3rem 0.35rem;
 }
 
 /* Apuração — scroll contido (evita página “zoom” / barra horizontal no body) */
@@ -7193,16 +7222,16 @@ body.apuracao-simples-page .apuracao-simples-main {
   }
 
   .apuracao-simples-page .hub-excel-col-anexo {
-    min-width: 4.5rem;
+    min-width: 5.5rem;
   }
 
   .apuracao-simples-page .hub-excel-col-obs {
     min-width: 11rem;
   }
 
-  .apuracao-anexo-cell {
-    min-width: 4.25rem;
-    max-width: 5rem;
+  .apuracao-simples-page .apuracao-anexo-cell {
+    min-width: 5.5rem;
+    max-width: none;
   }
 }
 
@@ -7227,8 +7256,8 @@ body.apuracao-simples-page .apuracao-simples-main {
     padding: 0.45rem 0.5rem;
   }
 
-  .apuracao-simples-page .hub-excel-table tbody td {
-    padding: 0.45rem 0.5rem;
+  .apuracao-simples-page .apuracao-excel-table tbody td {
+    padding: 0.4rem 0.45rem;
   }
 
   .apuracao-upload-btn span {
